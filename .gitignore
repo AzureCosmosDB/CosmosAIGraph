@@ -1,3 +1,25 @@
+# cj, augmented .gitignore entries
+
+**/.idea/
+**/.DS_Store
+**/.env
+**/__pycache__/
+**/bin/
+**/include/
+**/htmlcov/
+**/lib/
+**/lib64/
+**/man/
+**/tmp/
+**/Scripts/
+**/venv/
+**/.vscode/
+**/__MACOSX/
+
+**/pyvenv.cfg
+**/*.pyc 
+
+# Standard Python .gitignore entries per GitHub below:
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
