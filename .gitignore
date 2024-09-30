@@ -19,6 +19,16 @@
 **/pyvenv.cfg
 **/*.pyc 
 
+impl/app/ontologies/doc*.*
+impl/app/ontologies/gdoc*.*
+impl/app/ontologies/kdoc*.*
+impl/app/ontologies/otl*.*
+
+impl/app/rdf/doc*.*
+impl/app/rdf/gdoc*.*
+impl/app/rdf/kdoc*.*
+impl/app/rdf/libraries-graph.nt
+
 # Standard Python .gitignore entries per GitHub below:
 # Byte-compiled / optimized / DLL files
 __pycache__/
