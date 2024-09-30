@@ -1,0 +1,10 @@
+{
+  "Movie|title|<class 'str'>": 10000,
+  "Movie|year|<class 'int'>": 10000,
+  "Movie|rating|<class 'int'>": 10000,
+  "Movie|genre|<class 'str'>": 10000,
+
+  "Person|name|<class 'str'>": 10000,
+  "Person|born|<class 'int'>": 10000,
+  "Person|died|<class 'str'>": 10000
+}

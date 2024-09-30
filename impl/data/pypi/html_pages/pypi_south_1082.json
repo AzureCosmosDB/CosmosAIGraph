@@ -1,0 +1,7 @@
+{
+  "libtype": "pypi",
+  "libname": "south",
+  "url": "http://south.aeracode.org/",
+  "html": "<html><head>        <title>South</title>        <style>                body {                        font-family: sans-serif;                        line-height: 150%;                }                p:first {                        margin-top: 70px;                }                p {                        margin: 20px auto 20px auto;                        width: 600px;                }        </style></head><body>        <p>                <img src=\"logo-trac.png\">        </p>        <p>                <b>South has been deprecated.</b>        </p>        <p>                From Django 1.7 upwards, migrations are built into the core of Django. If you are running a previous                version, you can find the repository <a href=\"https://bitbucket.org/andrewgodwin/south/src\">on BitBucket</a>.        </p>        <p>                If you're looking for documentation, you can find it in the repository.        </p></body></html>",
+  "embeddings": []
+}

@@ -1,0 +1,54 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "intended audience :: developers",
+    "license :: osi approved :: bsd license",
+    "natural language :: english",
+    "programming language :: python",
+    "programming language :: python :: 2",
+    "programming language :: python :: 2.7",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3.4",
+    "programming language :: python :: 3.5",
+    "programming language :: python :: 3.6",
+    "programming language :: python :: 3.7",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "programming language :: python :: implementation :: cpython",
+    "programming language :: python :: implementation :: pypy"
+  ],
+  "description": "requests-oauthlib |build-status| |coverage-status| |docs|\n=========================================================\n\nthis project provides first-class oauth library support for `requests <http://python-requests.org>`_.\n\nthe oauth 1 workflow\n--------------------\n\noauth 1 can seem overly complicated and it sure has its quirks. luckily,\nrequests_oauthlib hides most of these and let you focus at the task at hand.\n\naccessing protected resources using requests_oauthlib is as simple as:\n\n.. code-block:: pycon\n\n    >>> from requests_oauthlib import oauth1session\n    >>> twitter = oauth1session('client_key',\n                                client_secret='client_secret',\n                                resource_owner_key='resource_owner_key',\n                                resource_owner_secret='resource_owner_secret')\n    >>> url = 'https://api.twitter.com/1/account/settings.json'\n    >>> r = twitter.get(url)\n\nbefore accessing resources you will need to obtain a few credentials from your\nprovider (e.g. twitter) and authorization from the user for whom you wish to\nretrieve resources for. you can read all about this in the full\n`oauth 1 workflow guide on rtd <https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html>`_.\n\nthe oauth 2 workflow\n--------------------\n\noauth 2 is generally simpler than oauth 1 but comes in more flavours. the most\ncommon being the authorization code grant, also known as the webapplication\nflow.\n\nfetching a protected resource after obtaining an access token can be extremely\nsimple. however, before accessing resources you will need to obtain a few\ncredentials from your provider (e.g. google) and authorization from the user\nfor whom you wish to retrieve resources for. you can read all about this in the\nfull `oauth 2 workflow guide on rtd <https://requests-oauthlib.readthedocs.io/en/latest/oauth2_workflow.html>`_.\n\ninstallation\n-------------\n\nto install requests and requests_oauthlib you can use pip:\n\n.. code-block:: bash\n\n    $ pip install requests requests_oauthlib\n\n.. |build-status| image:: https://github.com/requests/requests-oauthlib/actions/workflows/run-tests.yml/badge.svg\n   :target: https://github.com/requests/requests-oauthlib/actions\n.. |coverage-status| image:: https://img.shields.io/coveralls/requests/requests-oauthlib.svg\n   :target: https://coveralls.io/r/requests/requests-oauthlib\n.. |docs| image:: https://readthedocs.org/projects/requests-oauthlib/badge/\n   :alt: documentation status\n   :scale: 100%\n   :target: https://requests-oauthlib.readthedocs.io/\n\n\nhistory\n-------\n\nv1.3.1 (21 january 2022)\n++++++++++++++++++++++++\n\n- add initial support for oauth mutual tls (draft-ietf-oauth-mtls)\n- add ebay compliance fix\n- add spotify oauth 2 tutorial\n- add support for python 3.8, 3.9\n- fixed linkedin compliance fixes\n- fixed readthedocs documentation and sphinx errors\n- moved pipeline to github actions\n\nv1.3.0 (6 november 2019)\n++++++++++++++++++++++++\n\n- instagram compliance fix\n- added ``force_querystring`` argument to fetch_token() method on oauth2session\n\nv1.2.0 (14 january 2019)\n++++++++++++++++++++++++\n\n- this project now depends on oauthlib 3.0.0 and above. it does **not** support\n  versions of oauthlib before 3.0.0.\n- updated oauth2 tests to use 'sess' for an oauth2session instance instead of `auth`\n  because oauth2session objects and methods acceept an `auth` paramether which is\n  typically an instance of `requests.auth.httpbasicauth`\n- `oauth2session.fetch_token` previously tried to guess how and where to provide\n  \"client\" and \"user\" credentials incorrectly. this was incompatible with some\n  oauth servers and incompatible with breaking changes in oauthlib that seek to\n  correctly provide the `client_id`. the older implementation also did not raise\n  the correct exceptions when username and password are not present on legacy\n  clients.\n- avoid automatic netrc authentication for oauth2session.\n\nv1.1.0 (9 january 2019)\n+++++++++++++++++++++++\n\n- adjusted version specifier for ``oauthlib`` dependency: this project is\n  not yet compatible with ``oauthlib`` 3.0.0.\n- dropped dependency on ``nose``.\n- minor changes to clean up the code and make it more readable/maintainable.\n\nv1.0.0 (4 june 2018)\n++++++++++++++++++++\n\n- **removed support for python 2.6 and python 3.3.**\n  this project now supports python 2.7, and python 3.4 and above.\n- added several examples to the documentation.\n- added plentymarkets compliance fix.\n- added a ``token`` property to oauth1session, to match the corresponding\n  ``token`` property on oauth2session.\n\nv0.8.0 (14 february 2017)\n+++++++++++++++++++++++++\n\n- added fitbit compliance fix.\n- fixed an issue where newlines in the response body for the access token\n  request would cause errors when trying to extract the token.\n- fixed an issue introduced in v0.7.0 where users passing ``auth`` to several\n  methods would encounter conflicts with the ``client_id`` and\n  ``client_secret``-derived auth. the user-supplied ``auth`` argument is now\n  used in preference to those options.\n\nv0.7.0 (22 september 2016)\n++++++++++++++++++++++++++\n\n- allowed ``oauth2session.request`` to take the ``client_id`` and\n  ``client_secret`` parameters for the purposes of automatic token refresh,\n  which may need them.\n\nv0.6.2 (12 july 2016)\n+++++++++++++++++++++\n\n- use ``client_id`` and ``client_secret`` for the authorization header if\n  provided.\n- allow explicit bypass of the authorization header by setting ``auth=false``.\n- pass through the ``proxies`` kwarg when refreshing tokens.\n- miscellaneous cleanups.\n\nv0.6.1 (19 february 2016)\n+++++++++++++++++++++++++\n\n- fixed a bug when sending authorization in headers with no username and\n  password present.\n- make sure we clear the session token before obtaining a new one.\n- some improvements to the slack compliance fix.\n- avoid timing problems around token refresh.\n- allow passing arbitrary arguments to requests when calling\n  ``fetch_request_token`` and ``fetch_access_token``.\n\nv0.6.0 (14 december 2015)\n+++++++++++++++++++++++++\n\n- add compliance fix for slack.\n- add compliance fix for mailchimp.\n- ``tokenrequestdenied`` exceptions now carry the entire response, not just the\n  status code.\n- pass through keyword arguments when refreshing tokens automatically.\n- send authorization in headers, not just body, to maximize compatibility.\n- more getters/setters available for oauth2 session client values.\n- allow sending custom headers when refreshing tokens, and set some defaults.\n\n\nv0.5.0 (4 may 2015)\n+++++++++++++++++++\n- fix ``typeerror`` being raised instead of ``tokenmissing`` error.\n- raise requests exceptions on 4xx and 5xx responses in the oauth2 flow.\n- avoid ``attributeerror`` when initializing the ``oauth2session`` class\n  without complete client information.\n\nv0.4.2 (16 october 2014)\n++++++++++++++++++++++++\n- new ``authorized`` property on oauth1session and oauth2session, which allows\n  you to easily determine if the session is already authorized with oauth tokens\n  or not.\n- new ``tokenmissing`` and ``verifiermissing`` exception classes for oauth1session:\n  this will make it easier to catch and identify these exceptions.\n\nv0.4.1 (6 june 2014)\n++++++++++++++++++++\n- new install target ``[rsa]`` for people using oauth1 rsa-sha1 signature\n  method.\n- fixed bug in oauth2 where supplied state param was not used in auth url.\n- oauth2 https checking can be disabled by setting environment variable\n  ``oauthlib_insecure_transport``.\n- oauth1 now re-authorize upon redirects.\n- oauth1 token fetching now raise a detailed error message when the\n  response body is incorrectly encoded or the request was denied.\n- added support for custom oauth1 clients.\n- oauth2 compliance fix for sina weibo.\n- multiple fixes to facebook compliance fix.\n- compliance fixes now re-encode body properly as bytes in python 3.\n- logging now properly done under ``requests_oauthlib`` namespace instead\n  of piggybacking on oauthlib namespace.\n- logging introduced for oauth1 auth and session.\n\nv0.4.0 (29 september 2013)\n++++++++++++++++++++++++++\n- oauth1session methods only return unicode strings. #55.\n- renamed requests_oauthlib.core to requests_oauthlib.oauth1_auth for consistency. #79.\n- added facebook compliance fix and access_token_response hook to oauth2session. #63.\n- added linkedin compliance fix.\n- added refresh_token_response compliance hook, invoked before parsing the refresh token.\n- correctly limit compliance hooks to running only once!\n- content type guessing should only be done when no content type is given\n- oauth1 now updates r.headers instead of replacing it with non case insensitive dict\n- remove last use of response.content (in oauth1session). #44.\n- state param can now be supplied in oauth2session.authorize_url\n\n\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "isc",
+  "name": "requests-oauthlib",
+  "package_url": "https://pypi.org/project/requests-oauthlib/",
+  "project_url": "https://pypi.org/project/requests-oauthlib/",
+  "project_urls": {
+    "Homepage": "https://github.com/requests/requests-oauthlib"
+  },
+  "release_url": "https://pypi.org/project/requests-oauthlib/1.3.1/",
+  "requires_dist": [
+    "oauthlib (>=3.0.0)",
+    "requests (>=2.0.0)",
+    "oauthlib[signedtoken] (>=3.0.0) ; extra == 'rsa'"
+  ],
+  "requires_python": ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+  "summary": "oauthlib authentication support for requests.",
+  "version": "1.3.1",
+  "releases": [],
+  "developers": [
+    "kenneth_reitz",
+    "me@kennethreitz.com"
+  ],
+  "kwds": "requests_oauthlib oauthlib oauth1_workflow oauth2_workflow oauth1_auth",
+  "license_kwds": "isc",
+  "libtype": "pypi",
+  "id": "pypi_requests_oauthlib",
+  "homepage": "https://github.com/requests/requests-oauthlib",
+  "release_count": 19,
+  "dependency_ids": [
+    "pypi_oauthlib",
+    "pypi_requests"
+  ]
+}

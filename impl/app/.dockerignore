@@ -1,0 +1,7 @@
+.env
+**/tmp/
+**/*.ps1
+**/*.sh
+**/dotenv_example
+**/readme.md
+**/*.pyc

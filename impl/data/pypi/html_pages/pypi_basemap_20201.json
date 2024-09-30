@@ -1,0 +1,7 @@
+{
+  "libtype": "pypi",
+  "libname": "basemap",
+  "url": "https://matplotlib.org/basemap",
+  "html": "<meta http-equiv=\"refresh\" content=\"0; url=./stable/\" /><script defer src=\"https://static.cloudflareinsights.com/beacon.min.js/v84a3a4012de94ce1a686ba8c167c359c1696973893317\" integrity=\"sha512-euoFGowhlaLqXsPWQ48qSkBSCFs3DPRyiwVu3FjR96cMPx+Fr+gpWRhIafcHwqwCqWS42RZhIudOvEI+Ckf6MA==\" data-cf-beacon='{\"rayId\":\"85fddd1a19f4b054\",\"b\":1,\"version\":\"2024.2.4\",\"token\":\"0175964edbd040b6ac0bff692bcb22ec\"}' crossorigin=\"anonymous\"></script>",
+  "embeddings": []
+}

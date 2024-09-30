@@ -1,0 +1,7 @@
+{
+  "libtype": "pypi",
+  "libname": "unicode",
+  "url": "http://kassiopeia.juls.savba.sk/~garabik/software/unicode.html",
+  "html": "<html><head><title>unicode</title></head><body><h1>unicode</h1><hr>unicode is a simple command line utility that displaysproperties for a given unicode character, or searchesunicode database for a given name.To learn more,read the <a href=\"unicode/README.txt\">README</a> file coming with it.<p>The <a href=\"https://github.com/garabik/unicode\">official repository</a> is on github now.You can download the tarball and Debian package <a href=\"unicode/\">from here</a>.The software is licensed under <a href=\"http://www.gnu.org/licenses/agpl.txt\">GPLv3</a>.</body></html>",
+  "embeddings": []
+}

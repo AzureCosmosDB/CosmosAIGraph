@@ -1,0 +1,66 @@
+# Docker Compose script to run both microservices (web, graph) locally.
+# Use of this script:
+#   docker compose -f docker/docker-compose.yml up
+#   docker compose -f docker/docker-compose.yml down   (in a second terminal window)
+# Docker Image Notes:
+#   caig_web and caig_graph support Cosmos DB vCore API only
+#   caig_web_v2 and caig_graph_v2 support either Cosmos DB vCore API or Cosmos DB SQL API
+# Chris Joakim, Microsoft
+
+services:
+
+  web_app:
+    image: cjoakim/caig_web_v2:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./tmp:/tmp:rw
+    environment:
+      CAIG_GRAPH_SOURCE_TYPE:            cosmos_nosql
+      CAIG_GRAPH_SERVICE_PORT:           $CAIG_GRAPH_SERVICE_PORT
+      CAIG_GRAPH_SERVICE_URL:            http://graph_service
+      CAIG_AZURE_OPENAI_COMPLETIONS_DEP: $CAIG_AZURE_OPENAI_COMPLETIONS_DEP
+      CAIG_AZURE_OPENAI_EMBEDDINGS_DEP:  $CAIG_AZURE_OPENAI_EMBEDDINGS_DEP
+      CAIG_AZURE_OPENAI_KEY:             $CAIG_AZURE_OPENAI_KEY
+      CAIG_AZURE_OPENAI_URL:             $CAIG_AZURE_OPENAI_URL
+      CAIG_COSMOSDB_NOSQL_URI:           $CAIG_COSMOSDB_NOSQL_URI
+      CAIG_COSMOSDB_NOSQL_KEY1:          $CAIG_COSMOSDB_NOSQL_KEY1
+      CAIG_AZURE_MONGO_VCORE_CONN_STR:   $CAIG_AZURE_MONGO_VCORE_CONN_STR
+      CAIG_GRAPH_SOURCE_DB:              $CAIG_GRAPH_SOURCE_DB
+      CAIG_GRAPH_SOURCE_CONTAINER:       $CAIG_GRAPH_SOURCE_CONTAINER
+      CAIG_CONVERSATIONS_CONTAINER:      $CAIG_CONVERSATIONS_CONTAINER
+      CAIG_DOCUMENTS_CONTAINER:          $CAIG_DOCUMENTS_CONTAINER
+      CAIG_DEFINED_AUTH_USERS:           $CAIG_DEFINED_AUTH_USERS
+      CAIG_LOG_LEVEL:                    debug
+      PORT:                              8000
+      WEB_CONCURRENCY:                   1
+
+  graph_service:
+    image: cjoakim/caig_graph_v2:latest
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./tmp:/tmp:rw
+    environment:
+      CAIG_GRAPH_SOURCE_TYPE:            cosmos_nosql
+      CAIG_GRAPH_NAMESPACE:              $CAIG_GRAPH_NAMESPACE
+      CAIG_COSMOSDB_NOSQL_URI:           $CAIG_COSMOSDB_NOSQL_URI
+      CAIG_COSMOSDB_NOSQL_KEY1:          $CAIG_COSMOSDB_NOSQL_KEY1
+      CAIG_AZURE_MONGO_VCORE_CONN_STR:   $CAIG_AZURE_MONGO_VCORE_CONN_STR
+      CAIG_GRAPH_SOURCE_DB:              $CAIG_GRAPH_SOURCE_DB
+      CAIG_GRAPH_SOURCE_CONTAINER:       $CAIG_GRAPH_SOURCE_CONTAINER
+      CAIG_CONVERSATIONS_CONTAINER:      $CAIG_CONVERSATIONS_CONTAINER
+      CAIG_DOCUMENTS_CONTAINER:          $CAIG_DOCUMENTS_CONTAINER
+      CAIG_GRAPH_SOURCE_OWL_FILENAME:    $CAIG_GRAPH_SOURCE_OWL_FILENAME
+      CAIG_GRAPH_SOURCE_RDF_FILENAME:    $CAIG_GRAPH_SOURCE_RDF_FILENAME
+      CAIG_DEFINED_AUTH_USERS:           $CAIG_DEFINED_AUTH_USERS
+      CAIG_LOG_LEVEL:                    debug
+      PORT:                              8001
+      WEB_CONCURRENCY:                   1
+
+
+# WEB_CONCURRENCY relates to uvicorn and the --workers count; see https://www.uvicorn.org
+
+# Use of this script:
+# docker compose -f docker/docker-compose.yml up
+# docker compose -f docker/docker-compose.yml down   (in a second terminal window)

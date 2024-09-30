@@ -1,0 +1,60 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "intended audience :: developers",
+    "intended audience :: information technology",
+    "license :: osi approved :: apache software license",
+    "operating system :: os independent",
+    "programming language :: python",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.6",
+    "programming language :: python :: 3.7",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "topic :: utilities"
+  ],
+  "description": "    python client for kubernetes http://kubernetes.io/\n    \n",
+  "docs_url": null,
+  "keywords": "swagger,openapi,kubernetes",
+  "license": "apache license version 2.0",
+  "name": "kubernetes-asyncio",
+  "package_url": "https://pypi.org/project/kubernetes-asyncio/",
+  "project_url": "https://pypi.org/project/kubernetes-asyncio/",
+  "project_urls": {
+    "Homepage": "https://github.com/tomplus/kubernetes_asyncio"
+  },
+  "release_url": "https://pypi.org/project/kubernetes-asyncio/28.2.1/",
+  "requires_dist": [
+    "certifi >=14.05.14",
+    "six >=1.9.0",
+    "python-dateutil >=2.5.3",
+    "setuptools >=21.0.0",
+    "urllib3 >=1.24.2",
+    "pyyaml >=3.12",
+    "aiohttp <4.0.0,>=3.7.0"
+  ],
+  "requires_python": "",
+  "summary": "kubernetes asynchronous python client",
+  "version": "28.2.1",
+  "releases": [],
+  "developers": [
+    "kubernetes"
+  ],
+  "kwds": "swagger,openapi,kubernetes python client for kubernetes http://kubernetes.io/ kubernetes asynchronous python client",
+  "license_kwds": "apache license version 2.0",
+  "libtype": "pypi",
+  "id": "pypi_kubernetes_asyncio",
+  "homepage": "https://github.com/tomplus/kubernetes_asyncio",
+  "release_count": 54,
+  "dependency_ids": [
+    "pypi_aiohttp",
+    "pypi_certifi",
+    "pypi_python_dateutil",
+    "pypi_pyyaml",
+    "pypi_setuptools",
+    "pypi_six",
+    "pypi_urllib3"
+  ]
+}

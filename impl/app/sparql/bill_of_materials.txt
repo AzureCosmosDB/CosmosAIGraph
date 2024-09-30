@@ -1,0 +1,6 @@
+PREFIX c: <http://cosmosdb.com/caig#> 
+SELECT ?used_lib
+WHERE {
+    <http://cosmosdb.com/caig/{{libname}}> c:uses_lib ?used_lib .
+}
+LIMIT {{limit}}

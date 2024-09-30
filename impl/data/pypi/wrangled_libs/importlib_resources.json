@@ -1,0 +1,69 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "intended audience :: developers",
+    "license :: osi approved :: apache software license",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3 :: only"
+  ],
+  "description": ".. image:: https://img.shields.io/pypi/v/importlib_resources.svg\n   :target: https://pypi.org/project/importlib_resources\n\n.. image:: https://img.shields.io/pypi/pyversions/importlib_resources.svg\n\n.. image:: https://github.com/python/importlib_resources/workflows/tests/badge.svg\n   :target: https://github.com/python/importlib_resources/actions?query=workflow%3a%22tests%22\n   :alt: tests\n\n.. image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json\n    :target: https://github.com/astral-sh/ruff\n    :alt: ruff\n\n.. image:: https://img.shields.io/badge/code%20style-black-000000.svg\n   :target: https://github.com/psf/black\n   :alt: code style: black\n\n.. image:: https://readthedocs.org/projects/importlib-resources/badge/?version=latest\n   :target: https://importlib-resources.readthedocs.io/en/latest/?badge=latest\n\n.. image:: https://img.shields.io/badge/skeleton-2023-informational\n   :target: https://blog.jaraco.com/skeleton\n\n.. image:: https://tidelift.com/badges/package/pypi/importlib-resources\n   :target: https://tidelift.com/subscription/pkg/pypi-importlib-resources?utm_source=pypi-importlib-resources&utm_medium=readme\n\n``importlib_resources`` is a backport of python standard library\n`importlib.resources\n<https://docs.python.org/3/library/importlib.html#module-importlib.resources>`_\nmodule for older pythons.\n\nthe key goal of this module is to replace parts of `pkg_resources\n<https://setuptools.readthedocs.io/en/latest/pkg_resources.html>`_ with a\nsolution in python's stdlib that relies on well-defined apis.  this makes\nreading resources included in packages easier, with more stable and consistent\nsemantics.\n\ncompatibility\n=============\n\nnew features are introduced in this third-party library and later merged\ninto cpython. the following table indicates which versions of this library\nwere contributed to different versions in the standard library:\n\n.. list-table::\n   :header-rows: 1\n\n   * - importlib_resources\n     - stdlib\n   * - 6.0\n     - 3.13\n   * - 5.12\n     - 3.12\n   * - 5.7\n     - 3.11\n   * - 5.0\n     - 3.10\n   * - 1.3\n     - 3.9\n   * - 0.5 (?)\n     - 3.7\n\nfor enterprise\n==============\n\navailable as part of the tidelift subscription.\n\nthis project and the maintainers of thousands of other packages are working with tidelift to deliver one enterprise subscription that covers all of the open source you use.\n\n`learn more <https://tidelift.com/subscription/pkg/pypi-importlib-resources?utm_source=pypi-importlib-resources&utm_medium=referral&utm_campaign=github>`_.\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "",
+  "name": "importlib-resources",
+  "package_url": "https://pypi.org/project/importlib-resources/",
+  "project_url": "https://pypi.org/project/importlib-resources/",
+  "project_urls": {
+    "Documentation": "https://importlib-resources.readthedocs.io/",
+    "Homepage": "https://github.com/python/importlib_resources"
+  },
+  "release_url": "https://pypi.org/project/importlib-resources/6.1.1/",
+  "requires_dist": [
+    "zipp >=3.1.0 ; python_version < \"3.10\"",
+    "sphinx >=3.5 ; extra == 'docs'",
+    "sphinx <7.2.5 ; extra == 'docs'",
+    "jaraco.packaging >=9.3 ; extra == 'docs'",
+    "rst.linker >=1.9 ; extra == 'docs'",
+    "furo ; extra == 'docs'",
+    "sphinx-lint ; extra == 'docs'",
+    "jaraco.tidelift >=1.4 ; extra == 'docs'",
+    "pytest >=6 ; extra == 'testing'",
+    "pytest-checkdocs >=2.4 ; extra == 'testing'",
+    "pytest-cov ; extra == 'testing'",
+    "pytest-enabler >=2.2 ; extra == 'testing'",
+    "pytest-ruff ; extra == 'testing'",
+    "zipp >=3.17 ; extra == 'testing'",
+    "pytest-black >=0.3.7 ; (platform_python_implementation != \"PyPy\") and extra == 'testing'",
+    "pytest-mypy >=0.9.1 ; (platform_python_implementation != \"PyPy\") and extra == 'testing'"
+  ],
+  "requires_python": ">=3.8",
+  "summary": "read resources from python packages",
+  "version": "6.1.1",
+  "releases": [],
+  "developers": [
+    "barry@python.org",
+    "barry_warsaw"
+  ],
+  "kwds": "importlib_resources importlib pkg_resources badges badge",
+  "license_kwds": "",
+  "libtype": "pypi",
+  "id": "pypi_importlib_resources",
+  "homepage": "https://github.com/python/importlib_resources",
+  "release_count": 66,
+  "dependency_ids": [
+    "pypi_furo",
+    "pypi_jaraco.packaging",
+    "pypi_jaraco.tidelift",
+    "pypi_pytest",
+    "pypi_pytest_black",
+    "pypi_pytest_checkdocs",
+    "pypi_pytest_cov",
+    "pypi_pytest_enabler",
+    "pypi_pytest_mypy",
+    "pypi_pytest_ruff",
+    "pypi_rst.linker",
+    "pypi_sphinx",
+    "pypi_sphinx_lint",
+    "pypi_zipp"
+  ]
+}

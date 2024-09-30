@@ -1,0 +1,41 @@
+{
+  "classifiers": [
+    "license :: osi approved :: mit license",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3 :: only",
+    "programming language :: python :: 3.6",
+    "programming language :: python :: 3.7",
+    "programming language :: python :: 3.8"
+  ],
+  "description": "[![build status](https://dev.azure.com/asottile/asottile/_apis/build/status/asottile.re-assert?branchname=master)](https://dev.azure.com/asottile/asottile/_build/latest?definitionid=31&branchname=master)\n[![azure devops coverage](https://img.shields.io/azure-devops/coverage/asottile/asottile/31/master.svg)](https://dev.azure.com/asottile/asottile/_build/latest?definitionid=31&branchname=master)\n\nre-assert\n=========\n\nshow where your regex match assertion failed!\n\n## installation\n\n`pip install re-assert`\n\n## usage\n\n`re-assert` provides a helper class to make assertions of regexes simpler.\n\n### `re_assert.matches(pattern: str, *args, **kwargs)`\n\nconstruct a `matches` object.\n\n_note_: under the hood, `re-assert` uses the [`regex`] library for matching,\nany `*args` / `**kwargs` that `regex.compile` supports will work.  in general,\n the `regex` library is 100% compatible with the `re` library (and will even\naccept its flags, etc.)\n\n[`regex`]: https://pypi.org/project/regex/\n\n### `re_assert.matches.from_pattern(pattern: pattern[str]) -> matches`\n\nconstruct a `matches` object from an already-compiled regex.\n\nthis is useful (for instance) if you're testing an existing compiled regex.\n\n```pycon\n>>> import re\n>>> reg = re.compile('foo')\n>>> matches.from_pattern(reg) == 'fork'\nfalse\n>>> matches.from_pattern(reg) == 'food'\ntrue\n```\n\n### `matches.__eq__(other)` (`==`)\n\nthe equality operator is overridden for use with assertion frameworks such\nas pytest\n\n```pycon\n>>> pat = matches('foo')\n>>> pat == 'bar'\nfalse\n>>> pat == 'food'\ntrue\n```\n\n### `matches.__repr__()` (`repr(...)`)\n\na side-effect of an equality failure changes the `repr(...)` of a `matches`\nobject.  this allows for useful pytest assertion messages:\n\n```pytest\n>       assert matches('foo') == 'fork'\ne       assertionerror: assert matches('foo'...ork\\n    #    ^ == 'fork'\ne         -matches('foo')\\n\ne         -    # regex failed to match at:\\n\ne         -    #\\n\ne         -    #> fork\\n\ne         -    #    ^\ne         +'fork'\n```\n\n### `matches.assert_matches(s: str)`\n\nif you're using some other test framework, this method is useful for producing\na readable traceback\n\n```pycon\n>>> matches('foo').assert_matches('food')\n>>> matches('foo').assert_matches('fork')\ntraceback (most recent call last):\n  file \"<stdin>\", line 1, in <module>\n  file \"/home/asottile/workspace/re-assert/re_assert.py\", line 63, in assert_matches\n    assert self == s, self._fail\nassertionerror:  regex failed to match at:\n\n> fork\n    ^\n```\n\n\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "mit",
+  "name": "re-assert",
+  "package_url": "https://pypi.org/project/re-assert/",
+  "project_url": "https://pypi.org/project/re-assert/",
+  "project_urls": {
+    "Homepage": "https://github.com/asottile/re-assert"
+  },
+  "release_url": "https://pypi.org/project/re-assert/1.1.0/",
+  "requires_dist": [
+    "regex"
+  ],
+  "requires_python": ">=3.6.1",
+  "summary": "show where your regex match assertion failed!",
+  "version": "1.1.0",
+  "releases": [],
+  "developers": [
+    "anthony_sottile",
+    "asottile@umich.edu"
+  ],
+  "kwds": "assert_matches re_assert asottile assert azure",
+  "license_kwds": "mit",
+  "libtype": "pypi",
+  "id": "pypi_re_assert",
+  "homepage": "https://github.com/asottile/re-assert",
+  "release_count": 3,
+  "dependency_ids": [
+    "pypi_regex"
+  ]
+}

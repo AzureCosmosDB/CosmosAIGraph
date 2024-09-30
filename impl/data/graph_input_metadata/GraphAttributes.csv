@@ -1,0 +1,4 @@
+source_label,attribute_name,datatype
+Customer,first_name,str
+Customer,last_name,str
+Customer,member_since,int

@@ -1,0 +1,210 @@
+{% extends "layout.html" %}
+{% block title %} Conversational AI {% endblock %}
+
+{% block content %}
+<div class="container">
+  <h5>Conversational AI Console</h5>
+</div>
+
+<form method="post"  id="form" name="form" action="/conv_ai_console">
+<input type="hidden" id="conversation_id" name="conversation_id" value="{{ conversation_id }}">
+
+<div class="container">
+  <div class="card" style="width: 90%;">
+    <div class="card-body">
+      <h6 class="card-title">Conversation ID: {{ conversation_id }}</h6>
+      <p></p>
+      {% for comp in conv["completions"] %}
+      {% set content_lines = comp["content"].split("\n") %} 
+      <div class="row">
+        <div class="col">
+          <p class="text-start fw-bold fs-6" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ comp["user_text"] }}
+          </p>
+          <p class="text-end fs-6" style="border-radius: 15px; background-color: #fbfbfb;">
+            {% for line in content_lines %}
+             {{ line }}<br/>
+            {% endfor %}
+          </p>
+          <p class="text-end fw-light fs-6">
+            prompt tokens: {{ comp["usage"]["prompt_tokens"] }},
+            completion tokens: {{ comp["usage"]["completion_tokens"] }},
+            total tokens: {{ comp["usage"]["total_tokens"] }},
+            rag strategy: {{ comp["rag_strategy"] }}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+      <hr>
+      <div>
+        <label class="form-label fs-6" for="user_text">Enter your natural-language query:</label>
+        <input class="form-control" type="text" id="user_text" name="user_text" placeholder="enter your query here">
+        <p></p>
+        <div>
+          <button type="submit" class="btn btn-outline-primary" id="continue_button" name="continue_button">Continue</button>
+          <button type="button" class="btn btn-outline-secondary" id="feedback_button" name="feedback_button">Feedback</button>
+          <button type="button" class="btn btn-outline-secondary" id="prompts_button" name="prompts_button">Prompts</button>
+          <button type="button" class="btn btn-outline-secondary" id="json_button" name="json_button">Show/Hide conversation JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+<div class="container" id="feedback_div" name="feedback_div">
+  <hr>
+  <h5>Feedback</h5>
+  <form method="post" id="feedback_form" name="feedback_form" action="/conv_ai_feedback" onsubmit="submitForm(); return false;">
+    <input type="hidden" id="conversation_id" name="conversation_id" value="{{ conversation_id }}">
+  <div>
+    <label class="form-label fs-6" for="user_text">Enter your feedback regarding the last response:</label>
+    <input class="form-control" type="text" id="feedback_conversation_id" name="feedback_conversation_id" value="Conversation ID: {{ conversation_id }}" readonly>
+    <input class="form-control" type="text" id="feedback_last_question"   name="feedback_last_question" value="Question: {{ last_user_question }}" readonly">
+    <input class="form-control" type="text" id="feedback_user_feedback"   name="feedback_user_feedback" placeholder="enter your feedback here">
+    <div>
+      <button type="submit" class="btn btn-outline-primary" id="feedback_submit_button" name="feedback_submit_button">Submit Feedback</button>
+    </div>
+  </div>
+  </form>
+</div>
+
+<div class="container" id="prompts_div" name="prompts_div">
+  <hr>
+  <h5>Prompts</h5>
+  <pre>
+  <code>
+{{ prompts_text }}
+  </code>
+  </pre>
+</div>
+
+<div class="container" id="conversation_data" name="conversation_data">
+  <hr>
+  <h5>Conversation JSON</h5>
+  <pre>
+  <code>
+{{ conversation_data }}
+  </code>
+  </pre>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+const form = document.getElementById("form");
+const user_text = document.getElementById("user_text");
+const continue_button = document.getElementById("continue_button");
+const json_button = document.getElementById("json_button");
+const conversation_data = document.getElementById("conversation_data");
+const feedback_div = document.getElementById("feedback_div");
+const prompts_div = document.getElementById("prompts_div");
+
+user_text.focus();
+continue_button.disabled = true;
+conversation_data.style.visibility = "hidden";
+feedback_div.style.visibility = "hidden";
+prompts_div.style.visibility = "hidden";
+
+continue_button.addEventListener('click', 
+    function(event) {
+      console.log("continue_button click");
+      event.preventDefault();
+      if (user_text.value.trim().length > 0) {
+        continue_button.disabled = true;
+        continue_button.textContent = "Processing...";
+        json_button.disabled = true;
+        form.submit();
+      }
+    }
+);
+
+feedback_button.addEventListener('click', 
+    function(event) {
+      console.log("feedback_button click");
+      event.preventDefault();
+      if (feedback_div.style.visibility == "hidden") {
+        feedback_div.style.visibility = "visible";
+      }
+      else {
+        feedback_div.style.visibility = "hidden";
+      }
+    }
+);
+
+feedback_submit_button.addEventListener('click', 
+    function(event) {
+      console.log("feedback_submit_button click");
+      event.preventDefault();
+      submitFeedbackForm();
+      feedback_div.style.visibility = "hidden";
+    }
+);
+
+prompts_button.addEventListener('click', 
+    function(event) {
+      console.log("prompts_button click");
+      event.preventDefault();
+      if (prompts_div.style.visibility == "hidden") {
+        prompts_div.style.visibility = "visible";
+      }
+      else {
+        prompts_div.style.visibility = "hidden";
+      }
+    }
+);
+
+json_button.addEventListener('click', 
+    function(event) {
+      console.log("json_button click");
+      event.preventDefault();
+      if (conversation_data.style.visibility == "hidden") {
+        conversation_data.style.visibility = "visible";
+      }
+      else {
+        conversation_data.style.visibility = "hidden";
+      }
+    }
+);
+
+continue_button.addEventListener('click', 
+    function(event) {
+      console.log("continue_button click");
+      event.preventDefault();
+      if (user_text.value.trim().length > 0) {
+        continue_button.disabled = true;
+        continue_button.textContent = "Processing...";
+        form.submit();
+      }
+    }
+);
+
+user_text.addEventListener("input", () => {
+  console.log("user_text: " + user_text.value);
+  if (user_text.value.trim().length > 0) {
+    continue_button.disabled = false;
+  }
+  else {
+    continue_button.disabled = true;
+  }
+});
+
+function submitFeedbackForm() {
+    var http = new XMLHttpRequest();
+    http.open("POST", "/conv_ai_feedback", true);
+    http.setRequestHeader("Content-type", "application/json");
+    postObj = {};
+    postObj["conversation_id"] = document.getElementById('conversation_id').value;
+    postObj["feedback_last_question"] = document.getElementById('feedback_last_question').value;
+    postObj["feedback_user_feedback"] = document.getElementById('feedback_user_feedback').value;
+    console.log("submitFeedbackForm: " + JSON.stringify(postObj));
+    http.send(JSON.stringify(postObj));
+    http.onload = function() {
+      console.log(http.responseText);
+      document.getElementById('feedback_user_feedback').value = "";
+    }
+}
+
+</script>
+{% endblock %}

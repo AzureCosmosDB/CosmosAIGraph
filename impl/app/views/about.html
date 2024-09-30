@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block title %} About {% endblock %}
+{% block content %}
+<div class="container">
+
+<p class="h3">About CosmosAIGraph</p>
+<p class="lead">
+</p>
+<ul>
+    <li class="lead bold">
+        CosmosAIGraph is not a product, it's an open-source set of reference implementations.
+    </li>
+    <li class="lead bold">
+        It implements the <strong>Hybrid RAG</strong> pattern for effective generative-AI functionality.
+    </li>
+    <li class="lead bold">
+        It is built on <strong>Azure Cosmos DB</strong>, <strong>Azure OpenAI</strong>, <strong>RDF Graph Technology</strong>, and <strong>Python 3</strong>.
+    </li>
+    <li class="lead">
+    See the public 
+    <a href="https://github.com/cjoakim/CosmosAIGraph" target="_blank">
+        GitHub repository</a>, 
+    <a href="https://github.com/cjoakim/CosmosAIGraph/blob/main/presentations/CosmosAIGraph-v2.pdf" target="_blank">
+        presentation</a>.
+    and 
+    <a href="https://github.com/cjoakim/CosmosAIGraph/blob/main/impl/docs/readme.md" target="_blank">
+        documentation</a>.
+    </li>
+</ul>
+
+<pre>
+
+</pre>
+
+<hr>
+
+<pre>
+
+</pre>
+<img src="static/omnirag-pattern.png" class="rounded mx-auto d-block" width="70%" alt="...">
+
+<hr>
+
+<pre>
+
+</pre>
+
+
+
+<img src="static/app-architecture-v2.png" class="rounded mx-auto d-block" width="70%" alt="...">
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    version:   {{ code_version }}
+    source:    {{ graph_source }}
+    db:        {{ graph_source_db }}
+    container: {{ graph_source_container }}
+</pre>
+
+{% endblock %}
+
+{% block js %}
+<script>
+</script>
+{% endblock %}

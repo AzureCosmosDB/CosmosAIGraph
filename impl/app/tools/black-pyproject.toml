@@ -1,0 +1,6 @@
+# Example command-line use from the app directory:
+# black --config tools/black-pyproject.toml main_nosql.py
+
+[tool.black]
+line-length = 88
+target-version = ['py312']

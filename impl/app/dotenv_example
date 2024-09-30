@@ -1,0 +1,19 @@
+# This file can be copied to the file named '.env' in this directory
+# and these values will override the system environment variables
+# via the python-dotenv library.
+# Chris Joakim, Microsoft
+
+CAIG_LOG_LEVEL="debug"
+
+# CAIG_GRAPH_SOURCE_TYPE should be rdf_file or cosmos_vcore or cosmos_nosql
+CAIG_GRAPH_SOURCE_TYPE="cosmos_vcore"
+#CAIG_GRAPH_SOURCE_DB="caig"
+#CAIG_GRAPH_SOURCE_CONTAINER="libraries"
+#CAIG_GRAPH_SOURCE_OWL_FILENAME="ontologies/libraries.owl"
+#CAIG_GRAPH_SOURCE_RDF_FILENAME="rdf/libraries-graph.nt"
+#CAIG_CONFIG_CONTAINER="config"
+#CAIG_CONVERSATIONS_CONTAINER="conversations"
+
+CAIG_AZURE_OPENAI_COMPLETIONS_DEP="gpt4"
+
+CAIG_MSAL_SSH_KEY_FILE="keys/example-msal-ssh-key.txt"

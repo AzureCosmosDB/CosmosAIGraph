@@ -1,0 +1,53 @@
+{
+  "classifiers": [
+    "framework :: sphinx :: extension",
+    "license :: osi approved :: mit license",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3 :: only",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.7",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9"
+  ],
+  "description": "# sphinx-copybutton\n\n[![pypi](https://img.shields.io/pypi/v/sphinx-copybutton.svg)](https://pypi.org/project/sphinx_copybutton/) | [![conda version](https://img.shields.io/conda/vn/conda-forge/sphinx-copybutton.svg)](https://anaconda.org/conda-forge/sphinx-copybutton) | [![documentation](https://readthedocs.org/projects/sphinx-copybutton/badge/?version=latest)](https://sphinx-copybutton.readthedocs.io/en/latest/?badge=latest)\n\na small sphinx extension to add a \"copy\" button to code blocks.\n\nsee [the sphinx-copybutton documentation](https://sphinx-copybutton.readthedocs.io/en/latest/) for more details!\n\n![copy button demo](https://user-images.githubusercontent.com/1839645/150200219-73663c59-08fd-4185-b157-62f3769c02ac.gif)\n\n## installation\n\nyou can install `sphinx-copybutton` with `pip`:\n\n```bash\npip install sphinx-copybutton\n```\n\nor with `conda` via `conda-forge`:\n\n```bash\nconda install -c conda-forge sphinx-copybutton\n```\n\n\n## usage\n\nin your `conf.py` configuration file, add `sphinx_copybutton` to your extensions list.\ne.g.:\n\n```python\nextensions = [\n    ...\n    'sphinx_copybutton'\n    ...\n]\n```\n\nwhen you build your site, your code blocks should now have little copy buttons to their\nright. clicking the button will copy the code inside!\n\n## customization\n\nif you'd like to customize the look of the copy buttons, you can over-write any of the\ncss rules specified in the sphinx-copybutton css file ([link](sphinx_copybutton/_static/copybutton.css))\n\n## development\n\ndevelopment should principally adhere to the [ebp developer conventions](https://github.com/executablebooks/.github/blob/master/contributing.md)\n\nsphinx-copybutton is [hosted on the pypi repository](https://pypi.org/project/sphinx-copybutton/).\nafter a release - following the [ebp release instructions](https://github.com/executablebooks/.github/blob/master/contributing.md#releases-and-change-logs) - confirm that the new version of sphinx-copybutton [is posted to pypi](https://pypi.org/project/sphinx-copybutton/).\n\n## acknowledgements\n\nmany thanks to the excellent [clipboard.js library](https://clipboardjs.com/) for the lightweight javascript code that powers the copy button!\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "mit license",
+  "name": "sphinx-copybutton",
+  "package_url": "https://pypi.org/project/sphinx-copybutton/",
+  "project_url": "https://pypi.org/project/sphinx-copybutton/",
+  "project_urls": {
+    "Homepage": "https://github.com/executablebooks/sphinx-copybutton"
+  },
+  "release_url": "https://pypi.org/project/sphinx-copybutton/0.5.2/",
+  "requires_dist": [
+    "sphinx (>=1.8)",
+    "pre-commit (==2.12.1) ; extra == 'code_style'",
+    "sphinx ; extra == 'rtd'",
+    "ipython ; extra == 'rtd'",
+    "myst-nb ; extra == 'rtd'",
+    "sphinx-book-theme ; extra == 'rtd'",
+    "sphinx-examples ; extra == 'rtd'"
+  ],
+  "requires_python": ">=3.7",
+  "summary": "add a copy button to each of your code cells.",
+  "version": "0.5.2",
+  "releases": [],
+  "developers": [
+    "executable_book_project"
+  ],
+  "kwds": "sphinx_copybutton copybutton sphinx buttons button",
+  "license_kwds": "mit license",
+  "libtype": "pypi",
+  "id": "pypi_sphinx_copybutton",
+  "homepage": "https://github.com/executablebooks/sphinx-copybutton",
+  "release_count": 30,
+  "dependency_ids": [
+    "pypi_ipython",
+    "pypi_myst_nb",
+    "pypi_pre_commit",
+    "pypi_sphinx",
+    "pypi_sphinx_book_theme",
+    "pypi_sphinx_examples"
+  ]
+}

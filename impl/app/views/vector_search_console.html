@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block title %} Vector Search Console {% endblock %}
+
+{% block content %}
+<div class="container">
+  <h5>Vector Search Console</h5>
+  <p></p>
+
+<form method="post" id="form" name="form" action="/vector_search_console">
+  <div class="row  align-items-center">
+    <div class="col-2">
+      <label for="libtype" class="form-label">Select a Libtype</label>
+      <select id="libtype" name="libtype" class="form-select">
+        <option selected value="pypi">pypi</option>
+      </select>
+    </div>
+    <div class="col-6">
+      <label for="libname" class="form-label">Enter a library name or 'text:your text...'</label>
+      <input type="text" class="form-control" id="libname" name="libname" value='{{ libname }}' /> 
+    </div>
+    <div class="col-2">
+      <label for="show_embeddings" class="form-label">Show Embeddings</label>
+      <input type="text" class="form-control" id="show_embeddings" name="show_embeddings" placeholder="Y or N (default)" value='' /> 
+    </div>
+    <div class="col-1">
+      <span>
+        <label for="search_button" class="form-label">&nbsp;</label>
+        <button id="search_button" name="search_button" type="submit" class="btn btn-outline-primary">Search</button>
+      </span>
+    </div>
+  </div>
+  <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+</form>
+</div>
+
+<hr>
+
+<div class="container" id="results_div" name="results_div">
+  <h5>{{ results_message }}</h5>
+  <pre>
+  <code>
+{{ results }}
+  </code>
+  </pre>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+const form = document.getElementById("form");
+const search_button = document.getElementById("search_button");
+
+search_button.addEventListener('click', 
+    function(event) {
+      event.preventDefault();
+      search_button.disabled = true;
+      search_button.textContent = "Processing...";
+      form.submit();
+    }
+);
+</script>
+{% endblock %}

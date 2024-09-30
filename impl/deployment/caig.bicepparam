@@ -1,0 +1,23 @@
+
+using './caig.bicep'
+
+param acaEnvironmentName = readEnvironmentVariable('CAIG_ACA_ENVIRONMENT_NAME')
+param azureMongoVcoreConnStr = readEnvironmentVariable('CAIG_AZURE_MONGO_VCORE_CONN_STR')
+param azureOpenaiCompletionsDep = readEnvironmentVariable('CAIG_AZURE_OPENAI_COMPLETIONS_DEP')
+param azureOpenaiEmbeddingsDep = readEnvironmentVariable('CAIG_AZURE_OPENAI_EMBEDDINGS_DEP')
+param azureOpenaiKey = readEnvironmentVariable('AZURE_OPENAI_KEY')
+param azureOpenaiUrl = readEnvironmentVariable('AZURE_OPENAI_URL')
+param azureRegion = readEnvironmentVariable('CAIG_AZURE_REGION')
+param conversationsContainer = readEnvironmentVariable('CAIG_CONVERSATIONS_CONTAINER')
+param cosmosdbNosqlKey1 = readEnvironmentVariable('CAIG_COSMOSDB_NOSQL_KEY1')
+param cosmosdbNosqlUri = readEnvironmentVariable('CAIG_COSMOSDB_NOSQL_URI')
+param definedAuthUsers = readEnvironmentVariable('CAIG_DEFINED_AUTH_USERS')
+param graphNamespace = readEnvironmentVariable('CAIG_GRAPH_NAMESPACE')
+param graphServiceName = readEnvironmentVariable('CAIG_GRAPH_SERVICE_NAME')
+param graphSourceContainer = readEnvironmentVariable('CAIG_GRAPH_SOURCE_CONTAINER')
+param graphSourceDb = readEnvironmentVariable('CAIG_GRAPH_SOURCE_DB')
+param graphSourceOwlFilename = readEnvironmentVariable('CAIG_GRAPH_SOURCE_OWL_FILENAME')
+param graphSourceRdfFilename = readEnvironmentVariable('CAIG_GRAPH_SOURCE_RDF_FILENAME')
+param graphSourceType = readEnvironmentVariable('CAIG_GRAPH_SOURCE_TYPE')
+param laWorkspaceName = readEnvironmentVariable('CAIG_LA_WORKSPACE_NAME')
+param webAppName = readEnvironmentVariable('CAIG_WEB_APP_NAME')

@@ -1,0 +1,7 @@
+{
+  "libtype": "pypi",
+  "libname": "openml",
+  "url": "https://openml.org/",
+  "html": "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"/><link rel=\"shortcut icon\" href=\"/favicon.ico\"/><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,shrink-to-fit=no\"/><meta name=\"theme-color\" content=\"#000000\"/><meta name=\"description\" content=\"OpenML is an open platform for sharing datasets, algorithms, and experiments - to learn how to learn better, together.\"/><link rel=\"manifest\" href=\"/manifest.json\"/><title>OpenML</title><noscript id=\"jss-insertion-point\"></noscript><script defer=\"defer\" src=\"/static/js/main.1663ce3e.js\"></script></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id=\"root\"></div></body></html>",
+  "embeddings": []
+}

@@ -1,0 +1,55 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "environment :: console",
+    "framework :: sphinx :: extension",
+    "intended audience :: developers",
+    "intended audience :: information technology",
+    "license :: osi approved :: mit license",
+    "operating system :: os independent",
+    "programming language :: python",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3 :: only",
+    "topic :: documentation",
+    "topic :: documentation :: sphinx",
+    "topic :: utilities"
+  ],
+  "description": "============\nsphinx-click\n============\n\n.. image:: https://github.com/click-contrib/sphinx-click/actions/workflows/ci.yaml/badge.svg\n    :target: https://github.com/click-contrib/sphinx-click/actions/workflows/ci.yaml\n    :alt: build status\n\n.. image:: https://readthedocs.org/projects/sphinx-click/badge/?version=latest\n    :target: https://sphinx-click.readthedocs.io/en/latest/?badge=latest\n    :alt: documentation status\n\n``sphinx-click`` is a `sphinx`__ plugin that allows you to automatically extract\ndocumentation from a `click-based`__ application and include it in your docs.\n\n__ http://www.sphinx-doc.org/\n__ http://click.pocoo.org/\n\ninstallation\n------------\n\ninstall the plugin using ``pip``:\n\n.. code-block:: shell\n\n   $ pip install sphinx-click\n\nalternatively, install from source by cloning this repo then running ``pip``\nlocally:\n\n.. code-block:: shell\n\n   $ pip install .\n\nusage\n-----\n\n.. important::\n\n   to document a click-based application, both the application itself and any\n   additional dependencies required by that application **must be installed**.\n\nenable the plugin in your sphinx ``conf.py`` file:\n\n.. code-block:: python\n\n   extensions = ['sphinx_click']\n\nonce enabled, you can now use the plugin wherever necessary in the\ndocumentation.\n\n.. code-block::\n\n   .. click:: module:parser\n      :prog: hello-world\n      :nested: full\n\ndetailed information on the various options available is provided in the\n`documentation <https://sphinx-click.readthedocs.io>`_.\n\nalternative\n-----------\n\nthis plugin is perfect to document a click-based cli in sphinx, as it properly\nrenders the help screen and its options in nice html with deep links and\nstyling.\n\nhowever, if you are looking to document the source code of a click-based cli,\nand the result of its execution, you might want to check out `click-extra`__.\nthe latter provides the ``.. click:example::`` and ``.. click:run::`` sphinx\ndirectives so you can `capture and render, with full colors, the result of your\ncli in your documentation`__.\n\n__ https://github.com/kdeldycke/click-extra/\n__ https://kdeldycke.github.io/click-extra/sphinx.html\n\n",
+  "docs_url": null,
+  "keywords": "sphinx click",
+  "license": "mit license",
+  "name": "sphinx-click",
+  "package_url": "https://pypi.org/project/sphinx-click/",
+  "project_url": "https://pypi.org/project/sphinx-click/",
+  "project_urls": {
+    "Bug Tracker": "https://github.com/click-contrib/sphinx-click/issues",
+    "Documentation": "https://sphinx-click.readthedocs.io/en/latest",
+    "Homepage": "https://github.com/click-contrib/sphinx-click",
+    "Source Code": "https://github.com/click-contrib/sphinx-click"
+  },
+  "release_url": "https://pypi.org/project/sphinx-click/5.1.0/",
+  "requires_dist": [
+    "sphinx >=2.0",
+    "click >=7.0",
+    "docutils"
+  ],
+  "requires_python": ">=3.8",
+  "summary": "sphinx extension that automatically documents click applications",
+  "version": "5.1.0",
+  "releases": [],
+  "developers": [
+    "stephen@that.guru",
+    "stephen_finucane"
+  ],
+  "kwds": "sphinx_click sphinx documentation document doc",
+  "license_kwds": "mit license",
+  "libtype": "pypi",
+  "id": "pypi_sphinx_click",
+  "homepage": "https://github.com/click-contrib/sphinx-click",
+  "release_count": 39,
+  "dependency_ids": [
+    "pypi_click",
+    "pypi_docutils",
+    "pypi_sphinx"
+  ]
+}

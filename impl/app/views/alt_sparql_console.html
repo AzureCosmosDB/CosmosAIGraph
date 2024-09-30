@@ -1,0 +1,224 @@
+{% extends "layout.html" %}
+{% block title %} SPARQL Console {% endblock %}
+
+{% block content %}
+<div class="container">
+  <h5>SPARQL Console</h5>
+  <p></p>
+  <form method="post">
+    <div class="mb-3">
+      <label for="sparql" class="form-label">Enter a SPARQL query:</label>
+      <textarea rows='8' class="form-control" id="sparql" name="sparql" value="{{ sparql }}">{{ sparql }}</textarea>
+    </div>
+    <div class="mb-6">
+      <button type="submit" class="btn btn-outline-secondary mb-3">Submit</button>
+    </div>
+    <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+  </form>
+</div>
+
+<hr>
+
+<div class="container" id="results_div" name="results_div">
+  <h5>{{ results_message }}</h5>
+  <pre>
+  <code>
+{{ results }}
+  </code>
+  </pre>
+  <br>
+  <br>
+</div>
+
+<hr/>
+
+<div class="container-fluid" id="d3viz" name="d3viz">
+  <svg style="width:95%;height:1024px;">
+      <g></g>
+  </svg>
+</div>
+
+<div class="invisible" id="inline_bom_json" name="inline_bom_json">
+  {{ inline_bom_json }}
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+  // function showResultsBtnClick(e) {
+  //   console.log('showResultsBtnClick');
+  //   $("p").toggle();
+  // }
+
+  // function showGraphBtnClick(e) {
+  //   console.log('showGraphBtnClick');
+  // }
+
+  $(document).ready(function() {
+    var method  = "{{ method }}";
+    var libtype = "{{ libtype }}";
+    var libtype_prefix_idx = libtype.length + 1;
+    console.log("method: " + method);
+    console.log("libtype: " + libtype);
+    console.log("libtype_prefix_idx: " + libtype_prefix_idx);
+
+    // Get the Bill-of-Materials (BOM) data that is embedded in the page.
+    var bom_json = document.getElementById("inline_bom_json").innerHTML.trim().replaceAll("'", "\"");
+    var bom_obj = JSON.parse(bom_json);
+    console.log(JSON.stringify(bom_obj, null, 2));
+
+    // Transform the BOM data into a structure that is usable by D3.js to render the graph.
+    var bom_libs = bom_obj['bom_libs'];  // bom_libs is an Object/dict
+    var nodes_set = new Set();
+    var lib_keys = Object.keys(bom_libs);
+    var nodes = Array();
+    var edges = Array();
+    for (let i = 0; i < lib_keys.length; i++) {
+      var lib_key = lib_keys[i]; 
+      var lib_key_no_prefix = lib_key.substring(libtype_prefix_idx);
+      console.log('lib_key: ' + lib_key + ' -> ' + lib_key_no_prefix);
+      nodes_set.add(lib_key_no_prefix);
+
+      dep_libs = bom_obj['bom_libs'][lib_key];  // dep_libs is an Array/list, or the string 'unvisited'
+      if (Array.isArray(dep_libs)) {
+        for (let d = 0; d < dep_libs.length; d++) {
+          var dep_lib = dep_libs[d];
+          var dep_lib_no_prefix = dep_lib.substring(libtype_prefix_idx);
+          console.log('dep_lib: ' + dep_lib + ' -> ' + dep_lib_no_prefix);
+          nodes_set.add(dep_lib_no_prefix);
+          edge = {};
+          edge["source"] = lib_key_no_prefix;
+          edge["target"] = dep_lib_no_prefix;
+          edge["weight"] = 1.0;
+          edges.push(edge);
+        }
+      }
+    }
+    nodes_set.forEach(s => {
+      n = {};
+      n["name"] = s;
+      n["type"] = "vertex";
+      n["adjCount"] = 0;
+      nodes.push(n);
+    });
+    console.log('nodes count: ' + nodes.length);
+    console.log('edges count: ' + edges.length);
+
+    function nodeClicked(e, d) {
+      console.log("nodeClicked: " + d.name);
+    }
+    function nodeDblClicked(e, d) {
+      console.log("nodeDblClicked: " + d.name);
+    }
+    function nodeMouseOver(e, d) {
+      //console.log("nodeMouseOver: " + d.name);
+    }
+    function nodeMouseOut(e, d) {
+      //console.log("nodeMouseOut: " + d.name);
+    }
+    function initZoom() {
+      d3.select('svg').call(zoom);
+    }
+    function handleZoom(e) {
+      console.log('handle zoom');
+      d3.select('svg g').attr('transform', e.transform);
+    }
+    let zoom = d3.zoom().on('zoom', handleZoom);
+
+    var typeScale = d3.scaleOrdinal()
+      .domain(["library", "author", "maintainer"])
+      .range(["#75739F", "#41A368", "#FE9922"]);
+
+    generateGraphViz(nodes, edges);
+
+    function generateGraphViz(nodes, edges) {
+      console.log("generateGraphViz");
+
+      var marker = d3.select("svg").append('defs')
+          .append('marker')
+          .attr("id", "Triangle")
+          .attr("refX", 12)
+          .attr("refY", 6)
+          .attr("markerUnits", 'userSpaceOnUse')
+          .attr("markerWidth", 12)
+          .attr("markerHeight", 18)
+          .attr("orient", 'auto')
+          .append('path')
+          .attr("d", 'M 0 0 12 6 0 12 3 6');
+
+      var nodeHash = {};
+      nodes.forEach(n => {
+          nodeHash[n.name] = n;
+      });
+      edges.forEach(edge => {
+          edge.weight = parseInt(edge.weight);
+          edge.source = nodeHash[edge.source];
+          edge.target = nodeHash[edge.target];
+      });
+
+      var linkForce = d3.forceLink(edges);
+
+      var simulation = d3.forceSimulation()
+          .force("charge", d3.forceManyBody().strength(-2000))
+          .force("center", d3.forceCenter().x(800).y(500))
+          .force("link", linkForce)
+          .nodes(nodes)
+          .on("tick", forceTick);
+
+      simulation.force("link").links(edges);
+
+      d3.select("svg g").selectAll("line.link")
+          .data(edges, d => `${d.source.id}-${d.target.id}`)
+          .enter()
+          .append("line")
+          .attr("class", "link")
+          .style("opacity", 1.0)
+          .style("stroke", "red")
+          .style("stroke-width", d => d.weight);
+
+      d3.selectAll("line").attr("marker-end", "url(#Triangle)");
+
+      var nodeEnter = d3.select("svg g").selectAll("g.node")
+          .data(nodes, d => d.name)
+          .enter()
+          .append("g")
+          .attr("class", "node");
+
+      nodeEnter.append("circle")
+          .attr("r", 5)
+          .style("fill", d => typeScale(d.type));
+      nodeEnter.append("text")
+          .style("text-anchor", "middle")
+          .attr("y", 15)
+          .text(d => d.name);
+
+      // Register mouse event handler functions for each Node
+
+      d3.selectAll("g.node").on("click", function(e, d) {
+          nodeClicked(e, d);
+      });
+      d3.selectAll("g.node").on("dblclick", function(e, d) {
+          nodeDblClicked(e, d);
+      });
+      d3.selectAll("g.node").on("mouseover", function(e, d) {
+          nodeMouseOver(e, d);
+      });
+      d3.selectAll("g.node").on("mouseout", function(e, d) {
+          nodeMouseOut(e, d);
+      });
+
+      function forceTick() {
+          d3.selectAll("line.link")
+              .attr("x1", d => d.source.x)
+              .attr("x2", d => d.target.x)
+              .attr("y1", d => d.source.y)
+              .attr("y2", d => d.target.y);
+          d3.selectAll("g.node")
+              .attr("transform", d => `translate(${d.x},${d.y})`);
+      }
+      initZoom();
+    }
+  });
+</script>
+{% endblock %}

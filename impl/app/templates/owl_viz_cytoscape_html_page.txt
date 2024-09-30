@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Graph Visualization</title>
+
+<style type="text/css">
+  html,
+  body {
+    font: 11pt arial;
+  }
+  #graph_viz {
+    width: 100%;
+    height: 768px;
+    border: 1px solid lightgray;
+  }
+  #cy {
+    width: 100%;
+    height: 768px;
+    display: block;
+  }
+</style>
+
+<script
+  type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.1/cytoscape.min.js">
+</script>
+
+<script type="text/javascript">
+  function initGraph() {
+    var cy = cytoscape({
+
+      container: document.getElementById('cy'),
+
+      elements: [ 
+        { 
+          data: { id: 'a' }
+        },
+        { 
+          data: { id: 'b' }
+        },
+        { 
+          data: { id: 'c' }
+        },
+        { 
+          data: { id: 'd' }
+        },
+        { 
+          data: { id: 'ab', source: 'a', target: 'b' }
+        },
+        { 
+          data: { id: 'ac', source: 'a', target: 'c' }
+        },
+        { 
+          data: { id: 'bd', source: 'b', target: 'd' }
+        }
+      ],
+
+      style: [ // the stylesheet for the graph
+        {
+          selector: 'node',
+          style: {
+            'background-color': '#ccc',
+            'label': 'data(id)'
+          }
+        },
+
+        {
+          selector: 'edge',
+          style: {
+            'label': 'data(id)',
+            'width': 1,
+            'line-color': '#ccc',
+            'target-arrow-color': '#ccc',
+            'target-arrow-shape': 'triangle',
+            'curve-style': 'bezier'
+          }
+        }
+      ],
+
+      layout: {
+        name: 'random',
+        fit: true,
+        padding: 200,
+        boundingBox: undefined,
+        animate: false,
+        animationDuration: 500, 
+        animationEasing: undefined,
+        animateFilter: function ( node, i ){ return true; }, 
+        ready: undefined,
+        stop: undefined,
+        transform: function (node, position ){ return position; }
+      }
+    });
+  }
+</script>
+</head>
+
+<body onload="initGraph();"> 
+  <div id="cy"></div>
+</body>
+</html>

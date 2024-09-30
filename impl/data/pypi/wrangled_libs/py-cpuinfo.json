@@ -1,0 +1,35 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "license :: osi approved :: mit license",
+    "programming language :: python :: 3",
+    "topic :: utilities"
+  ],
+  "description": "py-cpuinfo\n==========\n\n\npy-cpuinfo gets cpu info with pure python. py-cpuinfo should work\nwithout any extra programs or libraries, beyond what your os provides.\nit does not require any compilation(c/c++, assembly, et cetera) to use.\nit works with python 3.\n\ndocumentation can be viewed here: https://github.com/workhorsy/py-cpuinfo\n\n\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "mit",
+  "name": "py-cpuinfo",
+  "package_url": "https://pypi.org/project/py-cpuinfo/",
+  "project_url": "https://pypi.org/project/py-cpuinfo/",
+  "project_urls": {
+    "Homepage": "https://github.com/workhorsy/py-cpuinfo"
+  },
+  "release_url": "https://pypi.org/project/py-cpuinfo/9.0.0/",
+  "requires_dist": [],
+  "requires_python": "",
+  "summary": "get cpu info with pure python",
+  "version": "9.0.0",
+  "releases": [],
+  "developers": [
+    "matthew.brennan.jones@gmail.com",
+    "matthew_brennan_jones"
+  ],
+  "kwds": "cpuinfo cpu python py compilation",
+  "license_kwds": "mit",
+  "libtype": "pypi",
+  "id": "pypi_py_cpuinfo",
+  "homepage": "https://github.com/workhorsy/py-cpuinfo",
+  "release_count": 27,
+  "dependency_ids": []
+}

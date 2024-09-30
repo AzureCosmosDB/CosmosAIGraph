@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% block title %} Generate Graph {% endblock %}
+
+{% block content %}
+<div class="container">
+  <h5>Generate Graph Console</h5>
+  <p></p>
+
+  <form method="post" id="generate_form" name="generate_form" action="/gen_graph_generate" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="fileEntities" class="form-label">Select entity files:</label>
+      <input type="file" id="fileEntities" name="fileEntities" multiple />
+    </div>    
+    <div class="mb-3">
+      <label for="fileRelationships" class="form-label">Select entity relationship files:</label>
+      <input type="file" id="fileRelationships" name="fileRelationships" multiple />
+    </div>    
+    <div class="mb-3">
+      <label for="fileOntology" class="form-label">Select ontology file:</label>
+      <input type="file" id="fileOntology" name="fileOntology" />
+    </div>
+    <div class="mb-6">
+      <button type="submit" id="generate_button" name="generate_button" class="btn btn-outline-primary mb-3">Generate graph</button>
+    </div>
+    <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+  </form>
+</div>
+
+<hr>
+
+<div class="container" id="results_div" name="results_div">
+  <h5>{{ results_message }}</h5>
+  <pre>
+  <code>
+{{ results }}
+  </code>
+  </pre>
+</div>
+
+<hr>
+
+<div class="container" id="owl_div" name="owl_div">
+  <h5>Web Ontology (OWL)</h5>
+  <pre>
+  <code>
+{{ owl }}
+  </code>
+  </pre>
+  <br>
+  <br>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+const generate_form = document.getElementById("generate_form");
+const generate_button = document.getElementById("generate_button");
+
+const execute_form = document.getElementById("execute_form");
+const execute_button = document.getElementById("execute_button");
+
+generate_button.addEventListener('click', 
+    function(event) {
+      event.preventDefault();
+      generate_button.disabled = true;
+      generate_button.textContent = "Processing...";
+      generate_form.submit();
+    }
+);
+
+</script>
+{% endblock %}

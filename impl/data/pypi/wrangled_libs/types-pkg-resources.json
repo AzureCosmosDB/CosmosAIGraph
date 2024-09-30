@@ -1,0 +1,30 @@
+{
+  "classifiers": [
+    "license :: osi approved :: apache software license",
+    "typing :: typed"
+  ],
+  "description": "## typing stubs for pkg_resources\n\nthis is an auto-generated pep 561 type stub package for `pkg_resources` package.\nit can be used by type-checking tools like mypy, pycharm, pytype etc. to check code\nthat uses `pkg_resources`. the source for this package can be found at\nhttps://github.com/python/typeshed/tree/master/stubs/pkg_resources. all fixes for\ntypes and metadata should be contributed there.\n\nsee https://github.com/python/typeshed/blob/master/readme.md for more details.\nthis package was generated from typeshed commit `64f463172b27d7321461890dd3edf416a103ace7`.\n\n\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "apache-2.0 license",
+  "name": "types-pkg-resources",
+  "package_url": "https://pypi.org/project/types-pkg-resources/",
+  "project_url": "https://pypi.org/project/types-pkg-resources/",
+  "project_urls": {
+    "Homepage": "https://github.com/python/typeshed"
+  },
+  "release_url": "https://pypi.org/project/types-pkg-resources/0.1.3/",
+  "requires_dist": [],
+  "requires_python": "",
+  "summary": "typing stubs for pkg_resources",
+  "version": "0.1.3",
+  "releases": [],
+  "developers": [],
+  "kwds": "pkg_resources pycharm typeshed pytype types",
+  "license_kwds": "apache-2.0 license",
+  "libtype": "pypi",
+  "id": "pypi_types_pkg_resources",
+  "homepage": "https://github.com/python/typeshed",
+  "release_count": 4,
+  "dependency_ids": []
+}

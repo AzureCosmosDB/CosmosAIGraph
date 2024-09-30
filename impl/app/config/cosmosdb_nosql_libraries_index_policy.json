@@ -1,0 +1,23 @@
+{
+    "indexingMode": "consistent",
+    "automatic": true,
+    "includedPaths": [
+        {
+            "path": "/*"
+        }
+    ],
+    "excludedPaths": [
+        {
+            "path": "/_etag/?"
+        },
+        {
+            "path": "/embedding"
+        }
+    ],
+    "vectorIndexes": [
+        {
+            "path": "/embedding",
+            "type": "DiskANN"
+        }
+    ]
+}

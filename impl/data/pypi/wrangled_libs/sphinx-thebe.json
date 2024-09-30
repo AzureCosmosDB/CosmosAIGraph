@@ -1,0 +1,67 @@
+{
+  "classifiers": [
+    "development status :: 4 - beta",
+    "framework :: sphinx :: extension",
+    "intended audience :: developers",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3 :: only",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "programming language :: python :: implementation :: cpython",
+    "programming language :: python :: implementation :: pypy",
+    "topic :: software development :: libraries :: python modules"
+  ],
+  "description": "# sphinx-thebe\n\n[![documentation](https://readthedocs.org/projects/sphinx-thebe/badge/?version=latest)](https://sphinx-thebe.readthedocs.io/en/latest/?badge=latest)\n[![pypi](https://img.shields.io/pypi/v/sphinx-thebe.svg)](https://pypi.org/project/sphinx-thebe)\n\nintegrate interactive code blocks into your documentation with thebe and binder.\n\nsee [the sphinx-thebe documentation](https://sphinx-thebe.readthedocs.io/en/latest/) for more details!\n\n## install\n\nto install `sphinx-thebe` first clonse and install it:\n\n```\npip install sphinx-thebe\n```\n\nthen, add it to your sphinx site's `conf.py` file:\n\n```\nextensions = [\n    ...\n    \"sphinx_thebe\"\n    ...\n]\n```\n\nsee [the sphinx-thebe documentation](https://sphinx-thebe.readthedocs.io/en/latest/) for more details!\n",
+  "docs_url": null,
+  "keywords": "development,docutils,sphinx",
+  "license": "",
+  "name": "sphinx-thebe",
+  "package_url": "https://pypi.org/project/sphinx-thebe/",
+  "project_url": "https://pypi.org/project/sphinx-thebe/",
+  "project_urls": {
+    "Homepage": "https://github.com/executablebooks/sphinx-thebe"
+  },
+  "release_url": "https://pypi.org/project/sphinx-thebe/0.3.0/",
+  "requires_dist": [
+    "sphinx>=4",
+    "sphinx-thebe[testing]; extra == 'dev'",
+    "myst-nb; extra == 'sphinx'",
+    "sphinx-book-theme; extra == 'sphinx'",
+    "sphinx-copybutton; extra == 'sphinx'",
+    "sphinx-design; extra == 'sphinx'",
+    "beautifulsoup4; extra == 'testing'",
+    "matplotlib; extra == 'testing'",
+    "myst-nb>=1.0.0rc0; extra == 'testing'",
+    "pytest; extra == 'testing'",
+    "pytest-regressions; extra == 'testing'",
+    "sphinx-copybutton; extra == 'testing'",
+    "sphinx-design; extra == 'testing'"
+  ],
+  "requires_python": ">=3.8",
+  "summary": "integrate interactive code blocks into your documentation with thebe and binder.",
+  "version": "0.3.0",
+  "releases": [],
+  "developers": [
+    "executablebooks@gmail.com"
+  ],
+  "kwds": "sphinx_thebe sphinx documentation docutils pip",
+  "license_kwds": "",
+  "libtype": "pypi",
+  "id": "pypi_sphinx_thebe",
+  "homepage": "",
+  "release_count": 11,
+  "dependency_ids": [
+    "pypi_beautifulsoup4",
+    "pypi_matplotlib",
+    "pypi_myst_nb",
+    "pypi_pytest",
+    "pypi_pytest_regressions",
+    "pypi_sphinx",
+    "pypi_sphinx_book_theme",
+    "pypi_sphinx_copybutton",
+    "pypi_sphinx_design",
+    "pypi_sphinx_thebe"
+  ]
+}

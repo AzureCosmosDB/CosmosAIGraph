@@ -1,0 +1,67 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "environment :: console",
+    "environment :: web environment",
+    "framework :: sphinx",
+    "framework :: sphinx :: theme",
+    "intended audience :: developers",
+    "license :: osi approved :: mit license",
+    "operating system :: os independent",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3 :: only",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.6",
+    "programming language :: python :: 3.7",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "topic :: documentation",
+    "topic :: software development :: documentation"
+  ],
+  "description": "**************************\nread the docs sphinx theme\n**************************\n\n.. image:: https://img.shields.io/pypi/v/sphinx_rtd_theme.svg\n   :target: https://pypi.python.org/pypi/sphinx_rtd_theme\n   :alt: pypi version\n.. image:: https://circleci.com/gh/readthedocs/sphinx_rtd_theme.svg?style=svg\n   :alt: build status\n   :target: https://circleci.com/gh/readthedocs/sphinx_rtd_theme\n.. image:: https://img.shields.io/pypi/l/sphinx_rtd_theme.svg\n   :target: https://pypi.python.org/pypi/sphinx_rtd_theme/\n   :alt: license\n.. image:: https://readthedocs.org/projects/sphinx-rtd-theme/badge/?version=latest\n  :target: http://sphinx-rtd-theme.readthedocs.io/en/latest/?badge=latest\n  :alt: documentation status\n\nthis sphinx_ theme was designed to provide a great reader experience for\ndocumentation users on both desktop and mobile devices. this theme is used\nprimarily on `read the docs`_ but can work with any sphinx project. you can find\na working demo of the theme in the `theme documentation`_\n\n.. _sphinx: http://www.sphinx-doc.org\n.. _read the docs: http://www.readthedocs.org\n.. _theme documentation: https://sphinx-rtd-theme.readthedocs.io/en/stable/\n\ninstallation\n============\n\nthis theme is distributed on pypi_ and can be installed with ``pip``:\n\n.. code:: console\n\n   $ pip install sphinx-rtd-theme\n\nto use the theme in your sphinx project, you will need to edit\nyour ``conf.py`` file's ``html_theme`` setting:\n\n.. code:: python\n\n    html_theme = \"sphinx_rtd_theme\"\n\n.. admonition:: see also:\n\n    `supported browsers`_\n        officially supported and tested browser/operating system combinations\n\n    `supported dependencies`_\n        supported versions of python, sphinx, and other dependencies.\n\n    `example documentation`_\n        a full example of this theme output, with localized strings enabled.\n\n.. _pypi: https://pypi.python.org/pypi/sphinx_rtd_theme\n.. _supported browsers: https://sphinx-rtd-theme.readthedocs.io/en/stable/development.html#supported-browsers\n.. _supported dependencies: https://sphinx-rtd-theme.readthedocs.io/en/stable/development.html#supported-dependencies\n.. _example documentation:  https://sphinx-rtd-theme.readthedocs.io/en/stable/\n\nconfiguration\n=============\n\nthis theme is highly customizable on both the page level and on a global level.\nto see all the possible configuration options, read the documentation on\n`configuring the theme`_.\n\n.. _configuring the theme: https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html\n\ncontributing\n============\n\nif you would like to help modify or translate the theme, you'll find more\ninformation on contributing in our `contributing guide`_.\n\n.. _contributing guide: https://sphinx-rtd-theme.readthedocs.io/en/stable/contributing.html\n\n\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "mit",
+  "name": "sphinx-rtd-theme",
+  "package_url": "https://pypi.org/project/sphinx-rtd-theme/",
+  "project_url": "https://pypi.org/project/sphinx-rtd-theme/",
+  "project_urls": {
+    "Homepage": "https://sphinx-rtd-theme.readthedocs.io/",
+    "Issue Tracker": "https://github.com/readthedocs/sphinx_rtd_theme/issues",
+    "Source Code": "https://github.com/readthedocs/sphinx_rtd_theme"
+  },
+  "release_url": "https://pypi.org/project/sphinx-rtd-theme/2.0.0/",
+  "requires_dist": [
+    "sphinx (<8,>=5)",
+    "docutils (<0.21)",
+    "sphinxcontrib-jquery (<5,>=4)",
+    "transifex-client ; extra == 'dev'",
+    "sphinxcontrib-httpdomain ; extra == 'dev'",
+    "bump2version ; extra == 'dev'",
+    "wheel ; extra == 'dev'"
+  ],
+  "requires_python": ">=3.6",
+  "summary": "read the docs theme for sphinx",
+  "version": "2.0.0",
+  "releases": [],
+  "developers": [
+    "dave_snider",
+    "dev@readthedocs.org"
+  ],
+  "kwds": "sphinx_rtd_theme sphinx_ sphinx _sphinx _theme",
+  "license_kwds": "mit",
+  "libtype": "pypi",
+  "id": "pypi_sphinx_rtd_theme",
+  "homepage": "https://github.com/readthedocs/sphinx_rtd_theme",
+  "release_count": 52,
+  "dependency_ids": [
+    "pypi_bump2version",
+    "pypi_docutils",
+    "pypi_sphinx",
+    "pypi_sphinxcontrib_httpdomain",
+    "pypi_sphinxcontrib_jquery",
+    "pypi_transifex_client",
+    "pypi_wheel"
+  ]
+}

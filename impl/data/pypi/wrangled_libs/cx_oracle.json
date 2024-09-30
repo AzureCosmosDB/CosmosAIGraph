@@ -1,0 +1,42 @@
+{
+  "classifiers": [
+    "development status :: 6 - mature",
+    "intended audience :: developers",
+    "license :: osi approved :: bsd license",
+    "natural language :: english",
+    "operating system :: os independent",
+    "programming language :: c",
+    "programming language :: python :: 3 :: only",
+    "topic :: database"
+  ],
+  "description": "# cx_oracle version 8.3\n\ncx_oracle is a python extension module that enables access to oracle\ndatabase.  it conforms to the [python database api 2.0\nspecification][1] with a considerable number of additions and a couple\nof exclusions.  see the\n[homepage](https://oracle.github.io/python-cx_oracle/index.html) for a\nfeature list.\n\ncx_oracle 8.3 has been tested with python versions 3.6 through 3.10. you can\nuse cx_oracle with oracle 11.2, 12c, 18c, 19c and 21c client libraries.\noracle's standard client-server version interoperability allows connection to\nboth older and newer databases. for example oracle 19c client libraries can\nconnect to oracle database 11.2.   older versions of cx_oracle may work with\nolder versions of python.\n\n## installation\n\nsee [cx_oracle installation][15].\n\n## documentation\n\nsee the [cx_oracle documentation][2] and [release notes][14].\n\n## samples\n\nsee the [/samples][12] directory and the [tutorial][6].  you can also\nlook at the scripts in [cx_oracletools][7] and the modules in\n[cx_pyoraclelib][8].\n\n## help\n\nissues and questions can be raised with the cx_oracle community on\n[github][9] or on the [mailing list][5].\n\n## tests\n\nsee [/test][11].\n\n## contributing\n\nsee [contributing](https://github.com/oracle/python-cx_oracle/blob/main/contributing.md)\n\n## license\n\ncx_oracle is licensed under a bsd license which you can find [here][3].\n\n[1]: https://www.python.org/dev/peps/pep-0249\n[2]: http://cx-oracle.readthedocs.io\n[3]: https://github.com/oracle/python-cx_oracle/blob/main/license.txt\n[5]: http://lists.sourceforge.net/lists/listinfo/cx-oracle-users\n[6]: https://github.com/oracle/python-cx_oracle/tree/main/samples/tutorial\n[7]: http://cx-oracletools.sourceforge.net\n[8]: http://cx-pyoraclelib.sourceforge.net\n[9]: https://github.com/oracle/python-cx_oracle/issues\n[11]: https://github.com/oracle/python-cx_oracle/tree/main/test\n[12]: https://github.com/oracle/python-cx_oracle/tree/main/samples\n[14]: https://cx-oracle.readthedocs.io/en/latest/release_notes.html\n[15]: https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html\n\n\n",
+  "docs_url": null,
+  "keywords": "oracle,database",
+  "license": "bsd license",
+  "name": "cx-oracle",
+  "package_url": "https://pypi.org/project/cx-Oracle/",
+  "project_url": "https://pypi.org/project/cx-Oracle/",
+  "project_urls": {
+    "Documentation": "http://cx-oracle.readthedocs.io",
+    "Homepage": "https://oracle.github.io/python-cx_Oracle",
+    "Installation": "https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html",
+    "Issues": "https://github.com/oracle/python-cx_Oracle/issues",
+    "Release Notes": "https://cx-oracle.readthedocs.io/en/latest/release_notes.html#releasenotes",
+    "Samples": "https://github.com/oracle/python-cx_Oracle/tree/main/samples",
+    "Source": "https://github.com/oracle/python-cx_Oracle"
+  },
+  "release_url": "https://pypi.org/project/cx-Oracle/8.3.0/",
+  "requires_dist": [],
+  "requires_python": "",
+  "summary": "python interface to oracle",
+  "version": "8.3.0",
+  "releases": [],
+  "developers": [],
+  "kwds": "cx_oracle cx_oracletools oracle oracletools cx_pyoraclelib",
+  "license_kwds": "bsd license",
+  "libtype": "pypi",
+  "id": "pypi_cx_oracle",
+  "homepage": "https://oracle.github.io/python-cx_oracle",
+  "release_count": 55,
+  "dependency_ids": []
+}
