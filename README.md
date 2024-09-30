@@ -1,14 +1,35 @@
-# Project
+# CosmosAIGraph
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+**AI-Powered Graph and Knowledge Graph Solutions with Azure Cosmos DB and the OmniRAG pattern**
 
-As the maintainer of this project, please make a few updates:
+- [Azure Cosmos DB TV, Episode 95 Video](https://www.youtube.com/watch?v=0alvRmEgIpQ)
+- [Presentations](presentations/)
+- [Architecture Diagram](impl/docs/img/app-architecture-v2.png)
+- [Reference Application Documentation](impl/docs/readme.md)
+- [Implementation Code, Python](impl/app)
+- [Bicep Deployment Scripts](impl/deployment)
+- [Reference Dataset of Python libraries, pre-vectorized](impl/data/pypi/wrangled_libs)
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+<pre>
+
+</pre>
+
+<p align="center">
+  <img src="impl/docs/img/app-architecture-v2.png" width="90%">
+</p>
+
+---
+
+## Change Log
+
+- September 2024
+  - Added support for the **Cosmos DB NoSql API** in addition to Cosmos DB Mongo vCore
+  - Migrated to this public repo https://github.com/AzureCosmosDB/CosmosAIGraph
+
+## Roadmap
+
+- Add RBAC and Microsoft Entra ID/AAD authentication support for the **Cosmos DB NoSql API**
+- Update Azure OpenAI model from gpt-4
 
 ## Contributing
 
@@ -26,8 +47,9 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
+This project may contain trademarks or logos for projects, products, or services.
+Authorized use of Microsoft  trademarks or logos is subject to and must follow 
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
+Use of Microsoft trademarks or logos in modified versions of this project must
+not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
