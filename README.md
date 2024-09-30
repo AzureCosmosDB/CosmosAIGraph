@@ -30,6 +30,7 @@
 
 - Add RBAC and Microsoft Entra ID/AAD authentication support for the **Cosmos DB NoSql API**
 - Update Azure OpenAI model from gpt-4
+- Generic Graph Examples
 
 ## Contributing
 
