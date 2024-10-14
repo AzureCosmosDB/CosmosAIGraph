@@ -5,7 +5,6 @@ from azure.cosmos.aio import CosmosClient
 #from azure.cosmos import CosmosClient
 from azure.identity import ClientSecretCredential, DefaultAzureCredential
 
-
 from src.models.webservice_models import AiConvFeedbackModel
 from src.services.config_service import ConfigService
 
@@ -42,11 +41,21 @@ class CosmosNoSQLService:
 
     async def initialize(self):
         """This method should be called after the above constructor."""
-        logging.info("CosmosNoSQLService#initialize with key")
-        uri = ConfigService.cosmosdb_nosql_uri()
-        key = ConfigService.cosmosdb_nosql_key1()
-        self._client = CosmosClient(uri, key)
-        logging.info("CosmosNoSQLService - initialize() completed")
+        auth_mechanism = ConfigService.cosmosdb_nosql_auth_mechanism()
+        logging.error("CosmosNoSQLService#auth_mechanism: {}".format(auth_mechanism))
+        
+        if auth_mechanism == "key":
+            logging.info("CosmosNoSQLService#initialize with key")
+            uri = ConfigService.cosmosdb_nosql_uri()
+            key = ConfigService.cosmosdb_nosql_key1()
+            self._client = CosmosClient(uri, key)
+            logging.info("CosmosNoSQLService - initialize() with key completed")
+        else:
+            logging.info("CosmosNoSQLService#initialize with DefaultAzureCredential")
+            uri = ConfigService.cosmosdb_nosql_uri()
+            credential = DefaultAzureCredential()
+            self._client = CosmosClient(uri, credential=credential)
+            logging.info("CosmosNoSQLService - initialize() with DefaultAzureCredential completed")
 
     async def close(self):
         if self._client is not None:

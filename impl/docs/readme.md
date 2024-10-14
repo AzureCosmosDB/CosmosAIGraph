@@ -25,10 +25,10 @@ names will be **caig_web**, and **caig_graph**.
   - See https://www.python.org
 - **FastAPI** is used exclusively as the framework for the web and http services
   - See https://fastapi.tiangolo.com
-- **Azure Cosmos DB** is used as the persistent OLTP datastore
+- **Azure Cosmos DB** is used as the persistent datastore for source data and session history as well as a vector database
   - One or more Cosmos DB APIs may be part of your solution
   - See https://learn.microsoft.com/en-us/azure/cosmos-db/
-  - You can use either the **Cosmos DB Mongo vCore or NoSQL APIs**
+  - You can use either the **Cosmos DB for MongoDB vCore or Cosmos DB for NoSQL**
     - https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/vcore/
   - Your domain data, with embeddings, are stored here
   - AI sessions, prompt history, feedback, and completion history is persisted here
@@ -92,8 +92,8 @@ uses several environment variables, and they all begin with **CAIG_**.
 ### Load Cosmos DB with Library and Config Documents
 
 - See [Cosmos DB Document Design and Modeling](cosmos_design_modeling.md)
-- See [Load Azure Cosmos DB vCore](load_cosmos_vcore.md)
-- See [Load Azure Cosmos DB NoSQL](load_cosmos_nosql.md)
+- See [Load Azure Cosmos DB for MongoDB vCore](load_cosmos_vcore.md)
+- See [Load Azure Cosmos DB for NoSQL](load_cosmos_nosql.md)
 
 ### Run the Application on your Workstation
 
@@ -118,7 +118,7 @@ uses several environment variables, and they all begin with **CAIG_**.
 It is recommended that CosmosAIGraph Proof-of-Concept (POC) team
 has the following skillsets:
 
-- A data analysist who is familiar with your input graph data
+- A data analyst who is familiar with your input graph data
 - A data engineer who can wrangle/transform the raw data into JSON documents for Cosmos DB
 - A Python developer with UI skills
 

@@ -128,7 +128,7 @@ class ConfigService:
         d["CAIG_COSMOSDB_NOSQL_ACCT"] = "The Name of your Cosmos DB NoSQL account"
         d["CAIG_COSMOSDB_NOSQL_RG"] = "The Resource Group of your Cosmos DB NoSQL account"
         d["CAIG_COSMOSDB_NOSQL_URI"] = "The URI of your Cosmos DB NoSQL account"
-        d["CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM"] = "The Cosmos DB NoSQL authentication mechanism; key or aad"
+        d["CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM"] = "The Cosmos DB NoSQL authentication mechanism; key or rbac"
         d["CAIG_COSMOSDB_NOSQL_KEY1"] = "The key of your Cosmos DB NoSQL account"
         d["CAIG_COSMOSDB_NOSQL_PRIN_OBJ_ID"] = "Principal Oject ID for Cosmos DB NoSQL AAD Authentication"
         d["CAIG_COSMOSDB_NOSQL_RBAC_ROLE_ID"] = "RBAC Role ID for Cosmos DB NoSQL AAD Authentication"
@@ -186,7 +186,7 @@ class ConfigService:
         d["CAIG_COSMOSDB_NOSQL_ACCT"] = "mycosmosdbnosqlacct"
         d["CAIG_COSMOSDB_NOSQL_RG"]   = "myresourcegroup"
         d["CAIG_COSMOSDB_NOSQL_URI"]  = "https://<your-account>.documents.azure.com:443/"
-        d["CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM"] = "key"  # key or aad
+        d["CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM"] = "key"  # key or rbac
         d["CAIG_COSMOSDB_NOSQL_KEY1"] = ""
         d["CAIG_COSMOSDB_NOSQL_PRIN_OBJ_ID"] = ""
         d["CAIG_COSMOSDB_NOSQL_RBAC_ROLE_ID"] = ""
@@ -304,7 +304,22 @@ class ConfigService:
 
     @classmethod
     def cosmosdb_nosql_auth_mechanism(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM", None)
+        return cls.envvar("CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM", "key").lower()
+    
+    @classmethod
+    def cosmosdb_nosql_tenant_id(cls) -> str:
+        return cls.envvar("CAIG_COSMOSDB_NOSQL_TENANT_ID", None)
+    
+        # d["CAIG_COSMOSDB_NOSQL_PRIN_OBJ_ID"] = "Principal Oject ID for Cosmos DB NoSQL AAD Authentication"
+        # d["CAIG_COSMOSDB_NOSQL_RBAC_ROLE_ID"] = "RBAC Role ID for Cosmos DB NoSQL AAD Authentication"
+
+    @classmethod
+    def cosmosdb_nosql_client_id(cls) -> str:
+        return cls.envvar("CAIG_COSMOSDB_NOSQL_CLIENT_ID", None)
+    
+    @classmethod
+    def cosmosdb_nosql_client_secret(cls) -> str:
+        return cls.envvar("CAIG_COSMOSDB_NOSQL_CLIENT_SECRET", None)
     
     @classmethod
     def cosmosdb_nosql_key1(cls) -> str:

@@ -363,3 +363,7 @@ xmlformatter==0.2.6
     # via -r .\requirements.in
 yarl==1.9.4
     # via aiohttp
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip
+# setuptools
