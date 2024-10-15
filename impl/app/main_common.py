@@ -267,7 +267,6 @@ def owl_visualizer(infile):
     print(content)
 
 
-
 def ad_hoc_development():
     logging.info("ad_hoc_development")
     content = "Flask is a simple framework for building complex web applications. It is available on PyPI as version 3.0.2. This lightweight WSGI web application framework is designed for quick and easy startups, with the scalability needed for more complex applications. Released on February 3, 2024, Flask supports Python versions 3.8 and above. It is maintained by the Pallets project and is licensed under the BSD License. Flask is known for its flexibility, allowing developers to choose their tools and libraries without enforcing any dependencies or project layout. The framework encourages community contributions and provides extensive documentation, issue tracking, and a chat platform for support. Installation can be easily done using pip. Flask also emphasizes the importance of JavaScript for full functionality in web applications."

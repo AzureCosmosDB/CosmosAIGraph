@@ -12,17 +12,10 @@ class Prompts:
     def generate_sparql_system_prompt(self, minimized_owl) -> str | None:
         try:
             return f"""
-You are a helpful agent designed to generate a query to the knowledge graph, which is built using RDF 1.0 principles.
-
-The following ontology pertains to the knowledge graph:
+You are a helpful agent designed to generate a query to the knowledge graph, which is built using standard RDF principles and technologies.
+The following ontology describes the entities and relationships in the knowledge graph:
 {minimized_owl}
-
-The knowledge graph can match entities with multiple relationships to several other entities.
-
-Example user input:
-"Which documents have more than one client?"
-
-Return a JSON with SPARQL 1.0 query that would return the relevant entities and/or relationships from the knowledge graph.
+While not including type suffixes such as ^^xsd:string and using concise Turtle syntax, generate and return a JSON document with SPARQL 1.1 query that would return the relevant entities and/or relationships per user prompt. 
 """.strip()
         except Exception as e:
             logging.critical(

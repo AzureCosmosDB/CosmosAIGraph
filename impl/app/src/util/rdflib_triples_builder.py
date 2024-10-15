@@ -28,8 +28,15 @@ class RdflibTriplesBuilder:
             g.add((eref, RDF.type, CNS.Lib))
             g.add((eref, CNS.ln, Literal(doc["name"])))
             g.add((eref, CNS.lt, Literal(doc["libtype"])))
-            g.add((eref, CNS.lic, Literal(doc["license_kwds"])))
+            try:
+                g.add((eref, CNS.lic, Literal(doc["license"])))
+            except:
+                pass
             g.add((eref, CNS.kwds, Literal(doc["kwds"])))
+            try:
+                g.add((eref, CNS.description, Literal(doc["description"])))
+            except:
+                pass
 
             for dev in doc["developers"]:
                 devref = URIRef("http://cosmosdb.com/caig/{}".format(dev))

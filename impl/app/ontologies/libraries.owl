@@ -85,18 +85,11 @@
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
   </owl:DatatypeProperty>
 
-  <owl:DatatypeProperty rdf:ID="desc">
-    <rdfs:label xml:lang="en">desc</rdfs:label>
+  <owl:DatatypeProperty rdf:ID="description">
+    <rdfs:label xml:lang="en">description</rdfs:label>
     <rdfs:comment xml:lang="en">The description of a Library</rdfs:comment>
     <rdfs:domain rdf:resource="#Lib" />
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
-  </owl:DatatypeProperty>
-
-  <owl:DatatypeProperty rdf:ID="latestReleaseYear">
-    <rdfs:label xml:lang="en">latestReleaseYear</rdfs:label>
-    <rdfs:comment xml:lang="en">The year of the latest release of the Library</rdfs:comment>
-    <rdfs:domain rdf:resource="#Lib" />
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int" />
   </owl:DatatypeProperty>
 
 </rdf:RDF>

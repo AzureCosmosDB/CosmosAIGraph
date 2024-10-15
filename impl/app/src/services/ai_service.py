@@ -214,7 +214,7 @@ class AiService:
                 "AiService#generate_sparql_from_user_prompt - user_prompt: {}".format(
                     user_prompt
                 )
-            )            
+            )
             logging.info(
                 "AiService#generate_sparql_from_user_prompt - owl first 80 chars: {}".format(
                     str(owl)[0:80]
@@ -247,7 +247,13 @@ class AiService:
                 # https://platform.openai.com/docs/api-reference/chat/object
                 sparql = json.loads(completion.choices[0].message.content).get("query")
                 if sparql == "":
-                    sparql = json.loads(completion.choices[0].message.content).get("SPARQL")
+                    sparql = json.loads(completion.choices[0].message.content).get(
+                        "sparql"
+                    )
+                if sparql == "":
+                    sparql = json.loads(completion.choices[0].message.content).get(
+                        "SPARQL"
+                    )
                 resp_obj["completion_id"] = completion.id
                 resp_obj["completion_model"] = completion.model
                 resp_obj["prompt_tokens"] = completion.usage.prompt_tokens

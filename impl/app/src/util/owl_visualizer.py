@@ -11,7 +11,7 @@ from src.util.owl_sax_handler import OwlSaxHandler
 # See https://visjs.org/
 # See https://visjs.github.io/vis-network/examples/
 # See https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js
-# 
+#
 # Chris Joakim, Microsoft
 
 
@@ -33,41 +33,49 @@ class OwlVisualizer:
         object_properties = self.sax_data["object_properties"]
 
         lines.append('<script type="text/javascript">')
-        lines.append('')
+        lines.append("")
         lines.append('  // create an array with the nodes (i.e. - "entities")')
-        lines.append('  var nodes = new vis.DataSet([')
+        lines.append("  var nodes = new vis.DataSet([")
         for idx, c in enumerate(classes):
             if idx < last_classes_idx:
                 lines.append('    {{ id: "{}", label: "{}" }},'.format(c, c))
             else:
                 lines.append('    {{ id: "{}", label: "{}" }}'.format(c, c))
-        lines.append('  ]);')
-        lines.append('')
+        lines.append("  ]);")
+        lines.append("")
         lines.append('  // create an array with the edges (i.e. - "relationships")')
-        lines.append('  var edges = new vis.DataSet([')
+        lines.append("  var edges = new vis.DataSet([")
         rel_names = sorted(object_properties.keys())
         print(rel_names)
         edge_types = self.collect_edge_types()
         last_edge_types_idx = len(edge_types) - 1
         for idx, edge_key in enumerate(sorted(edge_types.keys())):
-            from_node = edge_key.split('|')[0]
-            to_node = edge_key.split('|')[1]
+            from_node = edge_key.split("|")[0]
+            to_node = edge_key.split("|")[1]
             relationships = edge_types[edge_key]
 
             if idx < last_edge_types_idx:
-                lines.append('    {{ from: "{}", to: "{}", title: "{}" }},'.format(
-                    from_node, to_node, relationships))
+                lines.append(
+                    '    {{ from: "{}", to: "{}", title: "{}" }},'.format(
+                        from_node, to_node, relationships
+                    )
+                )
             else:
-                lines.append('    {{ from: "{}", to: "{}", title: "{}" }}'.format(
-                    from_node, to_node, relationships))
-                
-        lines.append('  ]);')
-        lines.append('')
+                lines.append(
+                    '    {{ from: "{}", to: "{}", title: "{}" }}'.format(
+                        from_node, to_node, relationships
+                    )
+                )
+
+        lines.append("  ]);")
+        lines.append("")
         lines.append('  var html_container = document.getElementById("ontology_viz");')
-        lines.append('  var graph_data = { nodes: nodes, edges: edges };')
+        lines.append("  var graph_data = { nodes: nodes, edges: edges };")
         lines.append(self.graph_options())
-        lines.append('  var network = new vis.Network(html_container, graph_data, graph_options);')
-        lines.append('</script>')
+        lines.append(
+            "  var network = new vis.Network(html_container, graph_data, graph_options);"
+        )
+        lines.append("</script>")
         return "\n".join(lines)
 
     def collect_edge_types(self) -> dict:
@@ -76,8 +84,8 @@ class OwlVisualizer:
         rel_names = sorted(object_properties.keys())
         for rel_name in rel_names:
             rel_obj = object_properties[rel_name]
-            domains = rel_obj['domain']
-            ranges = rel_obj['range']
+            domains = rel_obj["domain"]
+            ranges = rel_obj["range"]
             for d in domains:
                 for r in ranges:
                     edge_key = "{}|{}".format(d, r)
@@ -86,9 +94,9 @@ class OwlVisualizer:
                         edges[edge_key] = "{}, {}".format(curr_value, rel_name)
                     else:
                         edges[edge_key] = rel_name
-        FS.write_json(edges, "tmp/owl_visualizer_collect_edge_types.json")     
+        FS.write_json(edges, "tmp/owl_visualizer_collect_edge_types.json")
         return edges
-    
+
     def graph_options(self) -> str:
         return """
   var graph_options = {
@@ -119,4 +127,3 @@ class OwlVisualizer:
       }
     }
   };""".strip()
-    

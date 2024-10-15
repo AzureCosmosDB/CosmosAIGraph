@@ -206,7 +206,7 @@ class GraphBuilder:
 
             # Read the appropriate JSON documents from Cosmos DB, and pass
             # each to your RdflibTriplesBuilder to be added to the graph.
-            sql = "select c._id, c.name, c.libtype, c.license_kwds, c.kwds, c.developers, c.dependency_ids from c offset 0 limit 999999"
+            sql = "select c._id, c.name, c.libtype, c.license, c.kwds, c.developers, c.dependency_ids, c.description from c offset 0 limit 999999"
             query_results = ctrproxy.query_items(query=sql)
             docs_read = 0
             async for doc in query_results:
