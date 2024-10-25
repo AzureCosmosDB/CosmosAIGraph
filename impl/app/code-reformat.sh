@@ -5,4 +5,5 @@
 # Chris Joakim, Microsoft
 
 black *.py
-black src 
+black src
+black tests

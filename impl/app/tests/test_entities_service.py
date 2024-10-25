@@ -8,6 +8,7 @@ from src.util.counter import Counter
 
 # pytest -v tests/test_entities_service.py
 
+
 @pytest.mark.asyncio
 async def test_with_vcore():
     ConfigService.set_standard_unit_test_env_vars()
@@ -48,7 +49,9 @@ async def test_with_vcore():
         assert counter.most_frequent() == "flask"
 
         # case 5
-        counter: Counter = entities_svc.identify("I want to express how much I like Fastapi, pydantic, you, and fastapi")
+        counter: Counter = entities_svc.identify(
+            "I want to express how much I like Fastapi, pydantic, you, and fastapi"
+        )
         assert counter is not None
         print(counter.get_data())  # {'express': 1, 'fastapi': 2, 'pydantic': 1}
         assert counter.most_frequent() == "fastapi"
@@ -56,6 +59,7 @@ async def test_with_vcore():
         assert counter.get_data()["fastapi"] == 2
     finally:
         await entities_svc.close()
+
 
 @pytest.mark.asyncio
 async def test_with_nosql():
@@ -97,11 +101,13 @@ async def test_with_nosql():
         assert counter.most_frequent() == "flask"
 
         # case 5
-        counter: Counter = entities_svc.identify("I want to express how much I like Fastapi, pydantic, you, and fastapi")
+        counter: Counter = entities_svc.identify(
+            "I want to express how much I like Fastapi, pydantic, you, and fastapi"
+        )
         assert counter is not None
         print(counter.get_data())  # {'express': 1, 'fastapi': 2, 'pydantic': 1}
         assert counter.most_frequent() == "fastapi"
         assert counter.get_data()["pydantic"] == 1
         assert counter.get_data()["fastapi"] == 2
     finally:
-       await entities_svc.close()
+        await entities_svc.close()

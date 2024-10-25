@@ -1,5 +1,6 @@
 import logging
 import traceback
+import uuid
 
 from azure.cosmos.aio import CosmosClient
 
@@ -49,12 +50,15 @@ class CosmosNoSQLService:
             logging.info("CosmosNoSQLService#initialize with key")
             uri = ConfigService.cosmosdb_nosql_uri()
             key = ConfigService.cosmosdb_nosql_key1()
+            logging.error("CosmosNoSQLService#uri: {}".format(uri))
+            # logging.error("CosmosNoSQLService#key: {}".format(key))
             self._client = CosmosClient(uri, key)
             logging.info("CosmosNoSQLService - initialize() with key completed")
         else:
             logging.info("CosmosNoSQLService#initialize with DefaultAzureCredential")
             uri = ConfigService.cosmosdb_nosql_uri()
             credential = DefaultAzureCredential()
+            # credential ino is injected into the runtime environment
             self._client = CosmosClient(uri, credential=credential)
             logging.info(
                 "CosmosNoSQLService - initialize() with DefaultAzureCredential completed"
@@ -166,7 +170,14 @@ class CosmosNoSQLService:
         result = False
         try:
             self.set_container(ConfigService.feedback_container())
-            await self.upsert_item(feedback)
+            doc = dict()
+            doc["id"] = str(uuid.uuid4())
+            doc["conversation_id"] = feedback.conversation_id
+            doc["last_question"] = feedback.feedback_last_question
+            doc["user"] = feedback.feedback_user_feedback
+            logging.info("CosmosNoSQLService#save_feedback: {} -> {}".format(
+                doc, ConfigService.feedback_container()))    
+            await self.create_item(doc)
             result = True
         except Exception as e:
             logging.critical(

@@ -13,18 +13,29 @@ param azureOpenaiEmbeddingsDep string
 param azureOpenaiKey string
 param azureOpenaiUrl string
 param azureRegion string
+param configContainer string
 param conversationsContainer string
+param cosmosdbNosqlAcct string
+param cosmosdbNosqlAuthMechanism string
 param cosmosdbNosqlKey1 string
+param cosmosdbNosqlRg string
 param cosmosdbNosqlUri string
 param definedAuthUsers string
+param encryptionSymmetricKey string
+param feedbackContainer string
 param graphNamespace string
 param graphServiceName string
+param graphServicePort string
+//param graphServiceUrl string
 param graphSourceContainer string
 param graphSourceDb string
 param graphSourceOwlFilename string
 param graphSourceRdfFilename string
 param graphSourceType string
 param laWorkspaceName string
+param logLevel string
+param websvcAuthHeader string
+param websvcAuthValue string
 param webAppName string
 
 
@@ -80,48 +91,120 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
           name: graphServiceName
           env: [
             {
-              name: 'CAIG_GRAPH_SOURCE_TYPE'
-              value: graphSourceType
-            }
-            {
-              name: 'CAIG_GRAPH_SOURCE_OWL_FILENAME'
-              value: graphSourceOwlFilename
-            }
-            {
-              name: 'CAIG_GRAPH_NAMESPACE'
-              value: graphNamespace
-            }
-            {
-              name: 'CAIG_GRAPH_SOURCE_RDF_FILENAME'
-              value: graphSourceRdfFilename
+              name: 'CAIG_ACA_ENVIRONMENT_NAME'
+              value: acaEnvironmentName
             }
             {
               name: 'CAIG_AZURE_MONGO_VCORE_CONN_STR'
               value: azureMongoVcoreConnStr
             }
             {
-              name: 'CAIG_COSMOSDB_NOSQL_URI'
-              value: cosmosdbNosqlUri
+              name: 'CAIG_AZURE_OPENAI_COMPLETIONS_DEP'
+              value: azureOpenaiCompletionsDep
             }
             {
-              name: 'CAIG_COSMOSDB_NOSQL_KEY1'
-              value: cosmosdbNosqlKey1
+              name: 'CAIG_AZURE_OPENAI_EMBEDDINGS_DEP'
+              value: azureOpenaiEmbeddingsDep
             }
             {
-              name: 'CAIG_GRAPH_SOURCE_DB'
-              value: graphSourceDb
+              name: 'CAIG_AZURE_OPENAI_KEY'
+              value: azureOpenaiKey
             }
             {
-              name: 'CAIG_GRAPH_SOURCE_CONTAINER'
-              value: graphSourceContainer
+              name: 'CAIG_AZURE_OPENAI_URL'
+              value: azureOpenaiUrl
+            }
+            {
+              name: 'CAIG_AZURE_REGION'
+              value: azureRegion
+            }
+            {
+              name: 'CAIG_CONFIG_CONTAINER'
+              value: configContainer
             }
             {
               name: 'CAIG_CONVERSATIONS_CONTAINER'
               value: conversationsContainer
             }
             {
+              name: 'CAIG_COSMOSDB_NOSQL_ACCT'
+              value: cosmosdbNosqlAcct
+            }
+            {
+              name: 'CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM'
+              value: cosmosdbNosqlAuthMechanism
+            }
+            {
+              name: 'CAIG_COSMOSDB_NOSQL_KEY1'
+              value: cosmosdbNosqlKey1
+            }
+            {
+              name: 'CAIG_COSMOSDB_NOSQL_RG'
+              value: cosmosdbNosqlRg
+            }
+            {
+              name: 'CAIG_COSMOSDB_NOSQL_URI'
+              value: cosmosdbNosqlUri
+            }
+            {
+              name: 'CAIG_DEFINED_AUTH_USERS'
+              value: definedAuthUsers
+            }
+            {
+              name: 'CAIG_ENCRYPTION_SYMMETRIC_KEY'
+              value: encryptionSymmetricKey
+            }
+            {
+              name: 'CAIG_FEEDBACK_CONTAINER'
+              value: feedbackContainer
+            }
+            {
+              name: 'CAIG_GRAPH_NAMESPACE'
+              value: graphNamespace
+            }
+            {
+              name: 'CAIG_GRAPH_SERVICE_NAME'
+              value: graphServiceName
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_CONTAINER'
+              value: graphSourceContainer
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_DB'
+              value: graphSourceDb
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_OWL_FILENAME'
+              value: graphSourceOwlFilename
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_RDF_FILENAME'
+              value: graphSourceRdfFilename
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_TYPE'
+              value: graphSourceType
+            }
+            {
+              name: 'CAIG_LA_WORKSPACE_NAME'
+              value: laWorkspaceName
+            }
+            {
               name: 'CAIG_LOG_LEVEL'
-              value: '5'
+              value: logLevel
+            }
+            {
+              name: 'CAIG_WEBSVC_AUTH_HEADER'
+              value: websvcAuthHeader
+            }
+            {
+              name: 'CAIG_WEBSVC_AUTH_VALUE'
+              value: websvcAuthValue
+            }
+            {
+              name: 'CAIG_WEB_APP_NAME'
+              value: webAppName
             }
           ]
           probes: [
@@ -182,69 +265,122 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
               name: 'CAIG_GRAPH_SERVICE_PORT'
               value: '80'
             }
+
+            {
+              name: 'CAIG_ACA_ENVIRONMENT_NAME'
+              value: acaEnvironmentName
+            }
             {
               name: 'CAIG_AZURE_MONGO_VCORE_CONN_STR'
               value: azureMongoVcoreConnStr
-            }
-            {
-              name: 'CAIG_GRAPH_SOURCE_TYPE'
-              value: graphSourceType
-            }
-            {
-              name: 'CAIG_GRAPH_SOURCE_OWL_FILENAME'
-              value: graphSourceOwlFilename
-            }
-            {
-              name: 'CAIG_GRAPH_NAMESPACE'
-              value: graphNamespace
-            }
-            {
-              name: 'CAIG_GRAPH_SOURCE_RDF_FILENAME'
-              value: graphSourceRdfFilename
-            }
-            {
-              name: 'CAIG_COSMOSDB_NOSQL_URI'
-              value: cosmosdbNosqlUri
-            }
-            {
-              name: 'CAIG_COSMOSDB_NOSQL_KEY1'
-              value: cosmosdbNosqlKey1
-            }
-            {
-              name: 'CAIG_GRAPH_SOURCE_DB'
-              value: graphSourceDb
-            }
-            {
-              name: 'CAIG_GRAPH_SOURCE_CONTAINER'
-              value: graphSourceContainer
-            }
-            {
-              name: 'CAIG_CONVERSATIONS_CONTAINER'
-              value: conversationsContainer
-            }
-            {
-              name: 'CAIG_AZURE_OPENAI_URL'
-              value: azureOpenaiUrl
-            }
-            {
-              name: 'CAIG_AZURE_OPENAI_KEY'
-              value: azureOpenaiKey
-            }
-            {
-              name: 'CAIG_AZURE_OPENAI_EMBEDDINGS_DEP'
-              value: azureOpenaiEmbeddingsDep
             }
             {
               name: 'CAIG_AZURE_OPENAI_COMPLETIONS_DEP'
               value: azureOpenaiCompletionsDep
             }
             {
+              name: 'CAIG_AZURE_OPENAI_EMBEDDINGS_DEP'
+              value: azureOpenaiEmbeddingsDep
+            }
+            {
+              name: 'CAIG_AZURE_OPENAI_KEY'
+              value: azureOpenaiKey
+            }
+            {
+              name: 'CAIG_AZURE_OPENAI_URL'
+              value: azureOpenaiUrl
+            }
+            {
+              name: 'CAIG_AZURE_REGION'
+              value: azureRegion
+            }
+            {
+              name: 'CAIG_CONFIG_CONTAINER'
+              value: configContainer
+            }
+            {
+              name: 'CAIG_CONVERSATIONS_CONTAINER'
+              value: conversationsContainer
+            }
+            {
+              name: 'CAIG_COSMOSDB_NOSQL_ACCT'
+              value: cosmosdbNosqlAcct
+            }
+            {
+              name: 'CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM'
+              value: cosmosdbNosqlAuthMechanism
+            }
+            {
+              name: 'CAIG_COSMOSDB_NOSQL_KEY1'
+              value: cosmosdbNosqlKey1
+            }
+            {
+              name: 'CAIG_COSMOSDB_NOSQL_RG'
+              value: cosmosdbNosqlRg
+            }
+            {
+              name: 'CAIG_COSMOSDB_NOSQL_URI'
+              value: cosmosdbNosqlUri
+            }
+            {
               name: 'CAIG_DEFINED_AUTH_USERS'
               value: definedAuthUsers
             }
             {
+              name: 'CAIG_ENCRYPTION_SYMMETRIC_KEY'
+              value: encryptionSymmetricKey
+            }
+            {
+              name: 'CAIG_FEEDBACK_CONTAINER'
+              value: feedbackContainer
+            }
+            {
+              name: 'CAIG_GRAPH_NAMESPACE'
+              value: graphNamespace
+            }
+            {
+              name: 'CAIG_GRAPH_SERVICE_NAME'
+              value: graphServiceName
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_CONTAINER'
+              value: graphSourceContainer
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_DB'
+              value: graphSourceDb
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_OWL_FILENAME'
+              value: graphSourceOwlFilename
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_RDF_FILENAME'
+              value: graphSourceRdfFilename
+            }
+            {
+              name: 'CAIG_GRAPH_SOURCE_TYPE'
+              value: graphSourceType
+            }
+            {
+              name: 'CAIG_LA_WORKSPACE_NAME'
+              value: laWorkspaceName
+            }
+            {
               name: 'CAIG_LOG_LEVEL'
-              value: '5'
+              value: logLevel
+            }
+            {
+              name: 'CAIG_WEBSVC_AUTH_HEADER'
+              value: websvcAuthHeader
+            }
+            {
+              name: 'CAIG_WEBSVC_AUTH_VALUE'
+              value: websvcAuthValue
+            }
+            {
+              name: 'CAIG_WEB_APP_NAME'
+              value: webAppName
             }
           ]
           probes: [

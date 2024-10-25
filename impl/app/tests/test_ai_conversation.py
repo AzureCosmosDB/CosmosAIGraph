@@ -7,8 +7,9 @@ from src.util.fs import FS
 
 # pytest -v tests/test_ai_conversation.py
 
+
 def test_chat_history():
-    """ This test just explores and verifies the SK ChatHistory functionality. """
+    """This test just explores and verifies the SK ChatHistory functionality."""
     hist1 = ChatHistory()
     hist1.add_user_message("this is a user message")
     hist1.add_system_message("this is a system message")
@@ -20,6 +21,7 @@ def test_chat_history():
 
     hist2 = ChatHistory.restore_chat_history(jstr)
     assert len(hist2.messages) == 4
+
 
 def test_constructor_and_messages():
     conv1 = AiConversation()
@@ -84,6 +86,7 @@ def test_constructor_and_messages():
     #     "truncate_llm_context_max_ntokens": 0,
     #     "generate_graph_temperature": 0.0
     # }
+
 
 def test_truncate_context_and_history():
     pass

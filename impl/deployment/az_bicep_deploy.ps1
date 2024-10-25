@@ -1,12 +1,13 @@
+# Deploy the Azure Container App (ACA) using Bicep.
+# Chris Joakim, Microsoft
 
-
-$RESOURCE_GROUP="caigaca11"
+$RESOURCE_GROUP="caigaca25vcore"
 $REGION="eastus"
 
-echo "az group create ..."
+Write-Host "az group create ..."
 az group create --name $RESOURCE_GROUP --location $REGION
 
-echo "az deployment group create with bicep ..."
+Write-Host "az deployment group create with bicep ..."
 az deployment group create `
     --resource-group $RESOURCE_GROUP `
     --template-file caig.bicep `

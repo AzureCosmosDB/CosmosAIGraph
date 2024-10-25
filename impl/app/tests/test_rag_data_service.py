@@ -14,6 +14,7 @@ from src.util.fs import FS
 # pytest -v tests/test_rag_data_service.py
 # del tmp/*.* ; pytest tests/test_rag_data_service.py
 
+
 @pytest.mark.asyncio
 async def test_get_database_rag_data():
     ConfigService.set_standard_unit_test_env_vars()
@@ -40,6 +41,7 @@ async def test_get_database_rag_data():
     assert rdr.get_query() == "{'libtype': 'pypi', 'name': 'flask'}"
     assert len(rdr.get_rag_docs()) > 0
 
+
 @pytest.mark.asyncio
 async def test_get_vector_rag_data():
     ConfigService.set_standard_unit_test_env_vars()
@@ -61,6 +63,7 @@ async def test_get_vector_rag_data():
     FS.write("tmp/test_get_vector_rag_system_prompt.txt", text)
     assert len(rdr.get_rag_docs()) > 0
 
+
 @pytest.mark.asyncio
 async def test_get_graph_rag_data():
     ConfigService.set_standard_unit_test_env_vars()
@@ -75,8 +78,8 @@ async def test_get_graph_rag_data():
     strategy_obj = await sb.determine(user_text)
     assert strategy_obj["strategy"] == "graph"
 
-    rdr: RAGDataResult = await rds.get_rag_data(user_text,5)
-    FS.write_json(rdr.get_data(),"tmp/test_get_graph_rag_data.json")
+    rdr: RAGDataResult = await rds.get_rag_data(user_text, 5)
+    FS.write_json(rdr.get_data(), "tmp/test_get_graph_rag_data.json")
     text = rdr.as_system_prompt_text()
     FS.write("tmp/test_get_graph_rag_system_prompt.txt", text)
     assert len(rdr.get_rag_docs()) > 0

@@ -4,7 +4,7 @@ or to a specific database (vCore, NoSQL, etc).
 Usage:
     python main_common.py log_defined_env_vars
     python main_common.py gen_ps1_env_var_script
-    python main_common.py gen_bicep_params_files
+    python main_common.py gen_bicep_file_fragments
     python main_common.py gen_environment_variables_md
     python main_common.py gen_all
     python main_common.py owl_visualizer ontologies/libraries.owl
@@ -17,6 +17,8 @@ Usage:
     python main_common.py http_get http://localhost:8001/owl_info
     python main_common.py http_post_sparql_query http://localhost:8001/sparql_query pypi_m26
     python main_common.py http_post_sparql_bom_query http://localhost:8001/sparql_bom_query pypi flask 2
+    python main_common.py encryption_example
+    python main_common.py encrypt_your_env_values tmp/envvars.txt
     Options:
   -h --help     Show this screen.
   --version     Show version.
@@ -29,6 +31,7 @@ import sys
 import textwrap
 import time
 
+from datetime import datetime
 from docopt import docopt
 from dotenv import load_dotenv
 
@@ -89,7 +92,7 @@ def gen_ps1_env_var_script():
     FS.write_lines(lines, "../set-caig-env-vars-sample.ps1")
 
 
-def gen_bicep_params_files():
+def gen_bicep_file_fragments():
     bicep_parm_names_lines = list()
     bicep_bicepparam_lines = list()
     bicep_parm_names_lines.append(
@@ -108,13 +111,14 @@ def gen_bicep_params_files():
 
     env_var_names = sorted(ConfigService.defined_environment_variables().keys())
     excluded_var_names = excluded_bicep_envvars()
+    names_map = dict()  # key is the envvar name, value is the bicep name
 
     for name in env_var_names:
         if name in excluded_var_names:
             pass
         else:
             bicepName = camel_case(name)
-            value = ConfigService.envvar(name, "")
+            names_map[name] = bicepName
 
             # declare the param in the bicep file
             bicep_parm_names_lines.append("param {} string".format(bicepName))
@@ -131,6 +135,20 @@ def gen_bicep_params_files():
     FS.write_lines(bicep_parm_names_lines, "../deployment/generated-param-names.bicep")
     FS.write_lines(bicep_bicepparam_lines, "../deployment/generated.bicepparam")
 
+    bicep_env_lines = list()
+    for env_name in sorted(names_map.keys()):
+        bicep_name = names_map[env_name]
+        bicep_env_lines.append("{")
+        bicep_env_lines.append("  name: '{}'".format(env_name))
+        bicep_env_lines.append("  value: {}".format(bicep_name))
+        bicep_env_lines.append("}")
+    FS.write_lines(bicep_env_lines, "../deployment/generated.bicep.env")
+    
+    compose_env_lines = list()
+    for env_name in sorted(names_map.keys()):
+        name_with_colon = env_name + ":"
+        compose_env_lines.append("{:<35} ${}".format(name_with_colon, env_name))
+    FS.write_lines(compose_env_lines, "../deployment/generated.compose.env")
 
 def excluded_bicep_envvars():
     """
@@ -139,10 +157,10 @@ def excluded_bicep_envvars():
     elsewhere in the system, but not by the Bicep deployment process.
     """
     vars = list()
-    vars.append("CAIG_GRAPH_SERVICE_PORT")
-    vars.append("CAIG_GRAPH_SERVICE_URL")
+    # vars.append("CAIG_GRAPH_SERVICE_PORT")
+    # vars.append("CAIG_GRAPH_SERVICE_URL")
+    # vars.append("CAIG_LOG_LEVEL")
     vars.append("CAIG_HOME")
-    vars.append("CAIG_LOG_LEVEL")
     vars.append("CAIG_USE_ALT_SPARQL_CONSOLE")
     vars.append("CAIG_WEB_APP_PORT")
     vars.append("CAIG_WEB_APP_URL")
@@ -256,7 +274,7 @@ def gen_environment_variables_md():
 def gen_all():
     gen_envvars_master_entries()
     gen_ps1_env_var_script()
-    gen_bicep_params_files()
+    gen_bicep_file_fragments()
     gen_environment_variables_md()
 
 
@@ -267,12 +285,129 @@ def owl_visualizer(infile):
     print(content)
 
 
+def encryption_example():
+    logging.info("encryption_example")
+    test_cases = [
+        "",
+        "hello earth",
+        "867-5309",
+        "8888fbdbb32943ad9874ceXX729f53bh",
+        "jwonQQTexjIQvYTfX4Rx6LoVT5mCf8yYDorkAz8LrK4FsGzOa8L9At33Kzflj26xCS4JCiYr9swgXYDbV8pnqQ==",
+        "https://en.wikipedia.org/wiki/Easter_Island",
+    ]
+
+    # Example of how to generate your own key
+    fernet_key = ConfigService.generate_fernet_key()
+    print("fernet_key: {}".format(fernet_key))
+
+    key = ConfigService.symmetric_encryption_key()
+    print("key: {}".format(key))
+
+    for idx, value in enumerate(test_cases):
+        encrypted = ConfigService.sym_encrypt(value)
+        decrypted = ConfigService.sym_decrypt(encrypted)
+        print("test_case {}:".format(idx))
+        print("  value:     <{}>".format(value))
+        print("  encrypted: <{}>".format(encrypted))
+        print("  decrypted: <{}>".format(decrypted))
+        if value == decrypted:
+            print("  SUCCESS")
+        else:
+            print("  FAILURE")
+
+
+def encrypt_your_env_values(infile):
+    """
+    Produce Windows PowerShell script tmp/encrypted_envvars.ps1
+    to set the encrypted environment variables per your input text file.
+    The input file contains lines with environment variable names, a colon,
+    and their corresponding unencrypted values.
+
+    You may want to encrypt the following environment values:
+    CAIG_AZURE_MONGO_VCORE_CONN_STR
+    CAIG_AZURE_OPENAI_KEY
+    CAIG_AZURE_OPENAI_URL
+    CAIG_COSMOSDB_NOSQL_KEY1
+    CAIG_COSMOSDB_NOSQL_URI
+
+    Please see the input text file validation logic below.
+    """
+    lines = FS.read_lines(infile)
+    file_has_errors = False
+    ps1_line_template = '[Environment]::SetEnvironmentVariable("{}", "{}", "User")'
+    output_lines = list()
+    today = datetime.today().strftime('%Y-%m-%d')
+    output_lines.append("# This script was generated on {} with the following command:".format(today))
+    output_lines.append("# python main_common.py encrypt_your_env_values {}".format(infile))
+
+    # First, validate the file:
+    # Each line must contain three tokens - an environment variable name, a colon, and a value.
+    # The colon must be surrounded by spaces.
+    # The environment variable name in the first line must be CAIG_ENCRYPTION_SYMMETRIC_KEY,
+    # and its corresponding value will be used for this encryption process.
+    for idx, line in enumerate(lines):
+        line = line.strip()
+        tokens = line.split(" : ")
+        if idx == 0:
+            if tokens[0] != "CAIG_ENCRYPTION_SYMMETRIC_KEY":
+                print(
+                    "ERROR: first line must be CAIG_ENCRYPTION_SYMMETRIC_KEY : your-encryption-key"
+                )
+                file_has_errors = True
+        if len(tokens) != 2:
+            print(
+                "ERROR: line {} has {} tokens, expected 2".format(idx + 1, len(tokens))
+            )
+            file_has_errors = True
+
+    if file_has_errors == True:
+        print("ERROR: file has errors, aborting, please correct the file and try again")
+        return
+
+    for idx, line in enumerate(lines):
+        line = line.strip()
+        tokens = line.split(" : ")
+        if idx == 0:
+            encryption_key = tokens[1].strip()
+            print("using encryption_key: {}".format(encryption_key))
+            os.environ["CAIG_ENCRYPTION_SYMMETRIC_KEY"] = encryption_key
+            if ConfigService.symmetric_encryption_key() == encryption_key:
+                print("Ok encryption_key has been set in ConfigService")
+                line = ps1_line_template.format(
+                    "CAIG_ENCRYPTION_SYMMETRIC_KEY", encryption_key
+                )
+                output_lines.append("")
+                output_lines.append(line)
+            else:
+                print("ERROR: encryption_key has not been set in ConfigService")
+                file_has_errors = True
+                return
+        else:
+            if file_has_errors == False:
+                env_var_name = tokens[0].strip()
+                env_var_value = tokens[1].strip()
+                encrypted = ConfigService.sym_encrypt(env_var_value)
+                decrypted = ConfigService.sym_decrypt(encrypted)
+                if env_var_value == decrypted:
+                    ps1_line_template = (
+                        '[Environment]::SetEnvironmentVariable("{}", "{}", "User")'
+                    )
+                    line = ps1_line_template.format(env_var_name, encrypted)
+                    output_lines.append("")
+                    output_lines.append("# original value {}".format(env_var_value))
+                    output_lines.append(line)
+                else:
+                    print(
+                        "ERROR: encryption/decryption mismatch for line {}".format(line)
+                    )
+                    file_has_errors = True
+
+    if file_has_errors == False:
+        FS.write_lines(output_lines, "tmp/encrypted_envvars.ps1")
+
+
 def ad_hoc_development():
-    logging.info("ad_hoc_development")
-    content = "Flask is a simple framework for building complex web applications. It is available on PyPI as version 3.0.2. This lightweight WSGI web application framework is designed for quick and easy startups, with the scalability needed for more complex applications. Released on February 3, 2024, Flask supports Python versions 3.8 and above. It is maintained by the Pallets project and is licensed under the BSD License. Flask is known for its flexibility, allowing developers to choose their tools and libraries without enforcing any dependencies or project layout. The framework encourages community contributions and provides extensive documentation, issue tracking, and a chat platform for support. Installation can be easily done using pip. Flask also emphasizes the importance of JavaScript for full functionality in web applications."
-    wrapped = textwrap.wrap(content, width=70)
-    print("content: {}".format(content))
-    print("wrapped: {}".format(wrapped))
+    pass
 
 
 def generate_rdflib_triples_builder(vertex_signatures_filename: str):
@@ -377,8 +512,8 @@ if __name__ == "__main__":
                 log_defined_env_vars()
             elif func == "gen_ps1_env_var_script":
                 gen_ps1_env_var_script()
-            elif func == "gen_bicep_params_files":
-                gen_bicep_params_files()
+            elif func == "gen_bicep_file_fragments":
+                gen_bicep_file_fragments()
             elif func == "gen_environment_variables_md":
                 gen_environment_variables_md()
             elif func == "gen_all":
@@ -412,6 +547,11 @@ if __name__ == "__main__":
                 libname = sys.argv[4]
                 max_depth = sys.argv[5]
                 http_post_sparql_bom_query(url, libtype, libname, max_depth)
+            elif func == "encryption_example":
+                encryption_example()
+            elif func == "encrypt_your_env_values":
+                infile = sys.argv[2]
+                encrypt_your_env_values(infile)
             elif func == "ad_hoc":
                 ad_hoc_development()
             else:

@@ -18,26 +18,28 @@ def test_pretty():
     print("--- expected")
     print(expected)
 
-    diff = ndiff(
-        pretty.splitlines(keepends=True),
-        expected.splitlines(keepends=True))
-    print(''.join(diff), end="")
+    diff = ndiff(pretty.splitlines(keepends=True), expected.splitlines(keepends=True))
+    print("".join(diff), end="")
 
     assert line_by_line_diff(pretty, expected) == "None"
+
 
 def test_pretty_noinput():
     pretty = SparqlFormatter().pretty(None)
     assert pretty == None
 
+
 def test_inject_prefix_and_limit():
     pretty = SparqlFormatter().pretty(no_prefix_query())
     assert pretty.startswith(SparqlFormatter().default_prefix())
-    assert pretty.endswith(' LIMIT 100')
+    assert pretty.endswith(" LIMIT 100")
+
 
 def sample_generated_sparql():
     return """
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX : <http://cosmosdb.com/caig#> SELECT ?dependency ?subDependency WHERE { ?lib :ln 'flask' . ?lib :lt 'pypi' . ?lib :uses_lib ?dependency . OPTIONAL { ?dependency :uses_lib ?subDependency . } }
 """.strip()
+
 
 def no_prefix_query():
     return """
@@ -48,6 +50,7 @@ SELECT ?dependencyName WHERE {
   ?dependency caig:ln ?dependencyName .
 }
 """.strip()
+
 
 def sample_expected_sparql():
     return """
@@ -61,8 +64,9 @@ WHERE {
     OPTIONAL { ?dependency :uses_lib ?subDependency .
 }} LIMIT 100""".strip()
 
+
 def line_by_line_diff(s1, s2):
-    """ return the string value 'None' if no differences, else return a diff description. """
+    """return the string value 'None' if no differences, else return a diff description."""
     lines1 = s1.strip().split("\n")
     lines2 = s2.strip().split("\n")
     lines1_count = len(lines1)
@@ -74,5 +78,5 @@ def line_by_line_diff(s1, s2):
         s1 = line1.rstrip()
         s2 = line2.rstrip()
         if s1 != s2:
-            return "line {} not equal: {}".format(idx+1, s1)
-    return 'None'
+            return "line {} not equal: {}".format(idx + 1, s1)
+    return "None"

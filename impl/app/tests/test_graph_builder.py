@@ -6,6 +6,7 @@ from src.services.config_service import ConfigService
 
 # pytest -v tests/test_graph_builder.py
 
+
 @pytest.mark.asyncio
 async def test_build_with_libraries_mini_nt_and_owl_file():
     ConfigService.set_standard_unit_test_env_vars()

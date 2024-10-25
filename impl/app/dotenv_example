@@ -5,8 +5,9 @@
 
 CAIG_LOG_LEVEL="debug"
 
-# CAIG_GRAPH_SOURCE_TYPE should be rdf_file or cosmos_vcore or cosmos_nosql
+# CAIG_GRAPH_SOURCE_TYPE should be rdf_file or 'cosmos_vcore' or 'cosmos_nosql'
 CAIG_GRAPH_SOURCE_TYPE="cosmos_vcore"
+
 #CAIG_GRAPH_SOURCE_DB="caig"
 #CAIG_GRAPH_SOURCE_CONTAINER="libraries"
 #CAIG_GRAPH_SOURCE_OWL_FILENAME="ontologies/libraries.owl"
@@ -16,7 +17,13 @@ CAIG_GRAPH_SOURCE_TYPE="cosmos_vcore"
 
 CAIG_AZURE_OPENAI_COMPLETIONS_DEP="gpt4"
 
-CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM="key"
+# CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM should be 'key' or 'rbac'
 #CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM="rbac"
+CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM="key"
+
+#CAIG_ENCRYPTION_SYMMETRIC_KEY="VFu-rwVkaiZfAzkyqjyFzhdh25MKyZJqLTWbtGRCkUg="
 
 CAIG_MSAL_SSH_KEY_FILE="keys/example-msal-ssh-key.txt"
+
+EASTER_ISLAND_KEY="VFu-rwVkaiZfAzkyqjyFzhdh25MKyZJqLTWbtGRCkUg="
+EASTER_ISLAND_URL="gAAAAABnGpr_pgqkJ43oopR895u1847HbqRWvFs88xmHyDopg-PJSQCEgl--aSVSg3OwRUmNp2TDSW1kBqF6BW8fL9Xn9qo0DdjwDOGBYVLEVOqWbppFU1k3wDJnglF2kyXs9BWSI7-6lXhas1-8MPJrsDfVk2nnBg=="

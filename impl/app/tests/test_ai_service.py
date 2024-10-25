@@ -20,6 +20,7 @@ def test_constructor():
     assert ai_svc.aoai_version.startswith("202")
     assert ai_svc.aoai_client is not None
 
+
 def test_generate_sparql_from_user_prompt():
     ai_svc = AiService()
     owl = FS.read("ontologies/libraries.owl")
@@ -54,8 +55,9 @@ def test_generate_sparql_from_user_prompt():
     sf = SparqlFormatter()
     sparql = result_obj["sparql"]
     pretty = SparqlFormatter().pretty(sparql)
-    assert 'http://cosmosdb.com/caig#' in pretty
+    assert "http://cosmosdb.com/caig#" in pretty
     print(pretty)
+
 
 def test_generate_embeddings():
     ai_svc = AiService()
@@ -64,4 +66,3 @@ def test_generate_embeddings():
     assert resp is not None
     assert "CreateEmbeddingResponse" in str(type(resp))
     assert len(resp.data[0].embedding) == 1536
-

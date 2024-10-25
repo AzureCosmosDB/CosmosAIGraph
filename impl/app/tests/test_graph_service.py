@@ -8,6 +8,7 @@ from src.util.fs import FS
 
 # pytest -v tests/test_graph_service.py
 
+
 @pytest.mark.asyncio
 async def test_init_and_query():
     ConfigService.set_standard_unit_test_env_vars()

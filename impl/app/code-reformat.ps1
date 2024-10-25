@@ -5,3 +5,4 @@
 
 black *.py
 black src 
+black tests

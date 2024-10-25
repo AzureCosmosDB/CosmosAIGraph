@@ -154,8 +154,10 @@ class RAGDataService:
             embedding = create_embedding_response.data[0].embedding
             self.db_svc.set_db(ConfigService.graph_source_db())
             self.db_svc.set_coll(ConfigService.graph_source_container())
-            vs_result = await self.db_svc.vector_search(embedding, k=max_doc_count)
-            for vs_doc in vs_result["results"]:
+            vs_result = await self.db_svc.rag_vector_search(embedding, k=max_doc_count)
+            #vs_result: [{'pk': 'pypi', 'id': 'pypi_asynch', 'name': 'asynch', 'libtype': 'pypi', 'score': 0.7382897035357523}, {'pk': 'pypi', 'id': 'pypi_asgiref', 'name': 'asgiref', 'libtype': 'pypi', 'score': 0.7101407670806869}, {'pk': 'pypi', 'id': 'pypi_asynctest', 'name': 'asynctest', 'libtype': 'pypi', 'score': 0.7097900906253423}] <class 'list'>
+            #print("vs_result: {} {}".format(vs_result, str(type(vs_result))))
+            for vs_doc in vs_result:
                 rag_docs_list.append(vs_doc)
         except Exception as e:
             logging.critical(

@@ -6,7 +6,6 @@ import traceback
 from typing import List
 
 from src.models.webservice_models import AiConvFeedbackModel
-
 from src.services.ai_conversation import AiConversation
 from src.services.base_db_service import BaseDBService
 from src.services.config_service import ConfigService
@@ -134,7 +133,7 @@ select c.libtype, c.name, c.summary, c.documentation_summary
         try:
             if self.using_nosql():
                 sql = """
-select top {} c.pk, c.id, c.name, c.libtype, VectorDistance(c.embedding, {}) as score 
+select top {} c.pk, c.id, c.name, c.summary, c.documentation_summary, c.libtype, VectorDistance(c.embedding, {}) as score 
 from c
 ORDER BY VectorDistance(c.embedding, {})""".strip().format(
                     k, json.dumps(embedding), json.dumps(embedding)
@@ -156,9 +155,13 @@ ORDER BY VectorDistance(c.embedding, {})""".strip().format(
     async def get_documents_by_libtype_and_names(self, libtype: str, names: List[str]):
         """Lookup in the database the given docs returned from a GraphRAG search."""
         docs_list = list()
+        if names == None or len(names) == 0:
+            return docs_list
+        logging.info("get_documents_by_libtype_and_names - names: {}".format(names))
         try:
             if self.using_nosql():
                 quoted_values = self.quoted_values_string(names)
+                logging.info("get_documents_by_libtype_and_names - quoted_values: {}".format(quoted_values))
                 sql = "select * from c where c.libtype = 'pypi' and c.name in ({})".format(
                     quoted_values
                 )

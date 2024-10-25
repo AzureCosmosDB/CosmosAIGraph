@@ -1,12 +1,20 @@
+import base64
 import json
 import logging
 import os
 import sys
 import time
+import traceback
+
+from cryptography.fernet import Fernet
 
 # Instances of this class are used to define and obtain all configuration
 # values in this solution.  These are typically obtained at runtime via
 # environment variables.
+#
+# This class also implements encryption and decryption using a symmetric-key
+# configured with environment variable CAIG_ENCRYPTION_SYMMETRIC_KEY.
+#
 # Chris Joakim, Microsoft
 
 
@@ -18,7 +26,7 @@ class ConfigService:
         Return the value of the given environment variable name,
         or the given default value."""
         if name in os.environ:
-            return os.environ[name]
+            return os.environ[name].strip()
         return default
 
     @classmethod
@@ -89,7 +97,7 @@ class ConfigService:
 
     @classmethod
     def code_version(cls) -> str:
-        return "2024/10/15"
+        return "2024/10/25"
 
     @classmethod
     def defined_environment_variables(cls) -> dict:
@@ -134,12 +142,6 @@ class ConfigService:
             "The Cosmos DB NoSQL authentication mechanism; key or rbac"
         )
         d["CAIG_COSMOSDB_NOSQL_KEY1"] = "The key of your Cosmos DB NoSQL account"
-        d["CAIG_COSMOSDB_NOSQL_PRIN_OBJ_ID"] = (
-            "Principal Oject ID for Cosmos DB NoSQL AAD Authentication"
-        )
-        d["CAIG_COSMOSDB_NOSQL_RBAC_ROLE_ID"] = (
-            "RBAC Role ID for Cosmos DB NoSQL AAD Authentication"
-        )
 
         d["CAIG_AZURE_OPENAI_URL"] = "The URL of your Azure OpenAI account"
         d["CAIG_AZURE_OPENAI_KEY"] = "The Key of your Azure OpenAI account"
@@ -164,15 +166,18 @@ class ConfigService:
         d["CAIG_GRAPH_SERVICE_PORT"] = ""
 
         # These three are experimental; possible future use
-        d["CAIG_PG_FLEX_SERVER"] = "Azure PostgreSQL Flex Server hostname"
-        d["CAIG_PG_FLEX_USER"] = "Azure PostgreSQL Flex Server user"
-        d["CAIG_PG_FLEX_PASS"] = "Azure PostgreSQL Flex Server user password"
+        # d["CAIG_PG_FLEX_SERVER"] = "Azure PostgreSQL Flex Server hostname"
+        # d["CAIG_PG_FLEX_USER"] = "Azure PostgreSQL Flex Server user"
+        # d["CAIG_PG_FLEX_PASS"] = "Azure PostgreSQL Flex Server user password"
 
         d["CAIG_WEBSVC_AUTH_HEADER"] = "x-caig-auth"
         d["CAIG_WEBSVC_AUTH_VALUE"] = "K6ZQw!81"
 
         d["CAIG_LOG_LEVEL"] = (
             "a python logging standard-lib level name: notset, debug, info, warning, error, or critical"
+        )
+        d["CAIG_ENCRYPTION_SYMMETRIC_KEY"] = (
+            "optional symmetric key for encryption/decryption"
         )
         return d
 
@@ -196,8 +201,6 @@ class ConfigService:
         d["CAIG_COSMOSDB_NOSQL_URI"] = "https://<your-account>.documents.azure.com:443/"
         d["CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM"] = "key"  # key or rbac
         d["CAIG_COSMOSDB_NOSQL_KEY1"] = ""
-        d["CAIG_COSMOSDB_NOSQL_PRIN_OBJ_ID"] = ""
-        d["CAIG_COSMOSDB_NOSQL_RBAC_ROLE_ID"] = ""
 
         d["CAIG_USE_ALT_SPARQL_CONSOLE"] = ""
         d["CAIG_AZURE_OPENAI_URL"] = ""
@@ -214,6 +217,7 @@ class ConfigService:
         d["CAIG_GRAPH_SERVICE_URL"] = "http://graph_service"
         d["CAIG_GRAPH_SERVICE_PORT"] = "8001"
         d["CAIG_LOG_LEVEL"] = "info"
+        d["CAIG_ENCRYPTION_SYMMETRIC_KEY"] = "<your symmetric key utf-8 str>"
         return d
 
     @classmethod
@@ -253,12 +257,26 @@ class ConfigService:
         return cls.envvar("CAIG_GRAPH_SERVICE_URL", "http://127.0.0.1")
 
     @classmethod
-    def using_nosql(cls) -> str:
+    def symmetric_encryption_key(cls) -> str:
+        return cls.envvar("CAIG_ENCRYPTION_SYMMETRIC_KEY", "")
+
+    @classmethod
+    def using_symmetric_encryption_key(cls) -> bool:
+        key = cls.symmetric_encryption_key()
+        if key == None:
+            return False
+        elif len(key) == 0:
+            return False
+        else:
+            return True
+
+    @classmethod
+    def using_nosql(cls) -> bool:
         db_api = cls.envvar("CAIG_GRAPH_SOURCE_TYPE", "cosmos_vcore").lower()
         return "cosmos_nosql" in db_api
 
     @classmethod
-    def using_vcore(cls) -> str:
+    def using_vcore(cls) -> bool:
         db_api = cls.envvar("CAIG_GRAPH_SOURCE_TYPE", "cosmos_vcore").lower()
         return "cosmos_vcore" in db_api
 
@@ -296,50 +314,31 @@ class ConfigService:
 
     @classmethod
     def mongo_vcore_conn_str(cls) -> str:
-        return cls.envvar("CAIG_AZURE_MONGO_VCORE_CONN_STR", None)
-
-    @classmethod
-    def cosmosdb_nosql_acct(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_ACCT", None)
-
-    @classmethod
-    def cosmosdb_nosql_resource_group(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_RG", None)
+        value = cls.envvar("CAIG_AZURE_MONGO_VCORE_CONN_STR", None)
+        if cls.using_symmetric_encryption_key():
+            return cls.sym_decrypt(value)
+        else:
+            return value
 
     @classmethod
     def cosmosdb_nosql_uri(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_URI", None)
+        value = cls.envvar("CAIG_COSMOSDB_NOSQL_URI", None)
+        if cls.using_symmetric_encryption_key():
+            return cls.sym_decrypt(value)
+        else:
+            return value
 
     @classmethod
     def cosmosdb_nosql_auth_mechanism(cls) -> str:
         return cls.envvar("CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM", "key").lower()
 
     @classmethod
-    def cosmosdb_nosql_tenant_id(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_TENANT_ID", None)
-
-        # d["CAIG_COSMOSDB_NOSQL_PRIN_OBJ_ID"] = "Principal Oject ID for Cosmos DB NoSQL AAD Authentication"
-        # d["CAIG_COSMOSDB_NOSQL_RBAC_ROLE_ID"] = "RBAC Role ID for Cosmos DB NoSQL AAD Authentication"
-
-    @classmethod
-    def cosmosdb_nosql_client_id(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_CLIENT_ID", None)
-
-    @classmethod
-    def cosmosdb_nosql_client_secret(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_CLIENT_SECRET", None)
-
-    @classmethod
     def cosmosdb_nosql_key1(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_KEY1", None)
-
-    @classmethod
-    def cosmosdb_nosql_principal_object_id(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_PRIN_OBJ_ID", None)
-
-    @classmethod
-    def cosmosdb_nosql_rbac_role_id(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_RBAC_ROLE_ID", None)
+        value = cls.envvar("CAIG_COSMOSDB_NOSQL_KEY1", None)
+        if cls.using_symmetric_encryption_key():
+            return cls.sym_decrypt(value)
+        else:
+            return value
 
     @classmethod
     def pg_flex_server(cls) -> str:
@@ -359,11 +358,19 @@ class ConfigService:
 
     @classmethod
     def azure_openai_url(cls) -> str:
-        return cls.envvar("CAIG_AZURE_OPENAI_URL", None)
+        value = cls.envvar("CAIG_AZURE_OPENAI_URL", None)
+        if cls.using_symmetric_encryption_key():
+            return cls.sym_decrypt(value)
+        else:
+            return value
 
     @classmethod
     def azure_openai_key(cls) -> str:
-        return cls.envvar("CAIG_AZURE_OPENAI_KEY", None)
+        value = cls.envvar("CAIG_AZURE_OPENAI_KEY", None)
+        if cls.using_symmetric_encryption_key():
+            return cls.sym_decrypt(value)
+        else:
+            return value
 
     @classmethod
     def azure_openai_version(cls) -> str:
@@ -492,6 +499,48 @@ class ConfigService:
                 if arg == flag:
                     return True
         return False
+
+    @classmethod
+    def sym_encrypt(cls, value: str) -> str | None:
+        if value is not None:
+            try:
+                key = ConfigService.symmetric_encryption_key()
+                # print("Encryption#sym_encrypt key: <{}>".format(key))
+                if len(key) > 0:
+                    fernet = Fernet(key)
+                    b64_bytes = base64.b64encode(value.encode("utf-8"))
+                    return fernet.encrypt(b64_bytes).decode("utf-8")
+                else:
+                    return value
+            except Exception as e:
+                print(str(e))
+                print(traceback.format_exc())
+                return None
+        else:
+            return value
+
+    @classmethod
+    def sym_decrypt(cls, value: str) -> str | None:
+        if value is not None:
+            try:
+                key = ConfigService.symmetric_encryption_key()
+                # print("Encryption#sym_decrypt key: <{}>".format(key))
+                if len(key) > 0:
+                    fernet = Fernet(key)
+                    bytes = fernet.decrypt(value)
+                    return base64.b64decode(bytes).decode("utf-8")
+                else:
+                    return value
+            except Exception as e:
+                print(str(e))
+                print(traceback.format_exc())
+                return None
+        else:
+            return value
+
+    @classmethod
+    def generate_fernet_key(cls) -> str:
+        return str(Fernet.generate_key().decode("utf-8"))
 
     @classmethod
     def set_standard_unit_test_env_vars(cls):

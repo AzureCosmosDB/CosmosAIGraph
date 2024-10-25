@@ -16,49 +16,54 @@ from src.util.prompt_optimizer import PromptOptimizer
 # test case: 4, initial_tokens: 15334, pruned_tokens: 3864, iteration_count: 3, ratio: 0.21711882092082951
 # test case: 5, initial_tokens: 39834, pruned_tokens: 3277, iteration_count: 7, ratio: 0.05282673093337349
 
+
 def test_generate_and_truncate():
     ai_svc = AiService()
     pu = PromptOptimizer()
     test_cases = list()
     prev_actual_tokens = -1
-    for idx, n in enumerate([3, 20, 42, 84, 160, 400]):  # relative sizes - 30, 80, 200 should be truncated
+    for idx, n in enumerate(
+        [3, 20, 42, 84, 160, 400]
+    ):  # relative sizes - 30, 80, 200 should be truncated
         test_case = dict()
         template = ai_svc.generic_prompt_template()
         context = generate_context(n)
         history = generate_history(n)
         user_query = "what is the capital of France"
         result_obj = pu.generate_and_truncate(
-            template,
-            context,
-            history,
-            user_query,
-            4096)
+            template, context, history, user_query, 4096
+        )
 
-        test_case['template_lines'] = list()
+        test_case["template_lines"] = list()
         for line in template.split("\n"):
-            test_case['template_lines'].append(line)
+            test_case["template_lines"].append(line)
 
-        test_case['context_lines'] = list()
+        test_case["context_lines"] = list()
         for line in context.split("\n"):
-            test_case['context_lines'].append(line)
+            test_case["context_lines"].append(line)
 
         test_cases.append(result_obj)
         FS.write_json(test_cases, "tmp/test_prompt_util_test_cases.json")
 
-        print("test case: {}, initial_tokens: {}, pruned_tokens: {}, iteration_count: {}, ratio: {}".format(
-            idx,
-            result_obj['initial_tokens'],
-            result_obj['pruned_tokens'],
-            result_obj['iteration_count'],
-            result_obj['initial_context_words_ratio']))
+        print(
+            "test case: {}, initial_tokens: {}, pruned_tokens: {}, iteration_count: {}, ratio: {}".format(
+                idx,
+                result_obj["initial_tokens"],
+                result_obj["pruned_tokens"],
+                result_obj["iteration_count"],
+                result_obj["initial_context_words_ratio"],
+            )
+        )
 
-        if result_obj['iteration_count'] == 1:
-            assert result_obj['initial_tokens'] == result_obj['pruned_tokens']
+        if result_obj["iteration_count"] == 1:
+            assert result_obj["initial_tokens"] == result_obj["pruned_tokens"]
         else:
-            assert result_obj['initial_tokens'] > result_obj['pruned_tokens']
-        assert result_obj['exception'] == ""
+            assert result_obj["initial_tokens"] > result_obj["pruned_tokens"]
+        assert result_obj["exception"] == ""
+
 
 # private methods below
+
 
 def generate_context(count: int) -> str:
     lines = list()
@@ -71,10 +76,11 @@ def generate_context(count: int) -> str:
         lines.append(" ".join(sentence) + ".")
     return "\n".join(lines)
 
+
 def generate_history(count: int) -> str:
     messages = list()
     history = dict()
-    history['messages'] = messages
+    history["messages"] = messages
     fake = faker.Faker()
     for n in range(count):
         msg = {
@@ -83,9 +89,9 @@ def generate_history(count: int) -> str:
             "metadata": {},
             "role": "user",
             "content": "",
-            "encoding": ""
+            "encoding": "",
         }
-        msg['inner_content'] = str(n)
-        msg['content'] = fake.paragraph()
+        msg["inner_content"] = str(n)
+        msg["content"] = fake.paragraph()
         messages.append(msg)
     return json.dumps(history, sort_keys=False, indent=2)
