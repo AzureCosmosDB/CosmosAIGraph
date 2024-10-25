@@ -92,7 +92,7 @@ fastapi==0.112.0
     # via
     #   -r .\requirements.in
     #   fastapi-msal
-fastapi-msal==2.1.4
+fastapi-msal==2.1.6
     # via -r .\requirements.in
 frozenlist==1.4.1
     # via

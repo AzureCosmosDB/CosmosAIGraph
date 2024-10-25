@@ -15,25 +15,25 @@ cryptography  # cryptography==43.0.0
 dnspython
 docopt
 fastapi
-fastapi_msal==2.1.4
+fastapi_msal==2.1.6
 httpie
 httpx
 hypercorn
 itsdangerous
-multidict==6.0.5  # issue with 6.0.4 seen on macOS on 3/23
+multidict
 openai
 pandas
 psutil
-#psycopg2  Error: pg_config executable not found.
 pymongo
 pytest-asyncio
 pytest-cov
-pytest==7.3.2
+pytest
 python-dotenv
-python-multipart==0.0.9  # issue with 0.0.9 seen on win docker builds 8/4
+python-multipart
 rdflib
 requests
-semantic-kernel==0.9.1b1
+semantic-kernel
+#semantic-kernel==0.9.1b1
 tiktoken
 uvicorn
 xmlformatter
