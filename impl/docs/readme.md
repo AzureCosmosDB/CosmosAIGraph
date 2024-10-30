@@ -126,3 +126,5 @@ has the following skillsets:
 
 - See [Code Generation](code_generation.md)
 
+- See the [FAQ Page](faq.md) to clarify your understanding of the CosmosAIGraph solution.
+
