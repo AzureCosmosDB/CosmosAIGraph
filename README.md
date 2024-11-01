@@ -9,6 +9,7 @@
 - [Implementation Code, Python](impl/app)
 - [Bicep Deployment Scripts](impl/deployment)
 - [Reference Dataset of Python libraries, pre-vectorized](impl/data/pypi/wrangled_libs)
+- [Frequently Asked Questions (FAQ)](impl/docs/faq.md)
 
 <pre>
 
