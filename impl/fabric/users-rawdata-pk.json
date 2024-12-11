@@ -1,0 +1,82 @@
+[
+    {
+        "pk": "user1",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "user1@example.com",
+        "state": "California",
+        "created_at": "2024-10-01T12:00:00Z"
+    },
+    {
+        "pk": "user2",
+        "first_name": "Jane",
+        "last_name": "Smith",
+        "email": "user2@example.com",
+        "state": "Ohio",
+        "created_at": "2024-10-01T12:00:00Z"
+    },
+    {
+        "pk": "user3",
+        "first_name": "Robert",
+        "last_name": "Johnson",
+        "email": "user3@example.com",
+        "state": "New York",
+        "created_at": "2024-10-01T12:00:00Z"
+    },
+    {
+        "pk": "user4",
+        "first_name": "Linda",
+        "last_name": "Brown",
+        "email": "user4@example.com",
+        "state": "California",
+        "created_at": "2024-10-01T12:00:00Z"
+    },
+    {
+        "pk": "user5",
+        "first_name": "Michael",
+        "last_name": "Davis",
+        "email": "user5@example.com",
+        "state": "Georgia",
+        "created_at": "2024-10-01T12:00:00Z"
+    },
+    {
+        "pk": "user6",
+        "first_name": "Emily",
+        "last_name": "Garcia",
+        "email": "user6@example.com",
+        "state": "Florida",
+        "created_at": "2024-10-01T12:00:00Z"
+    },
+    {
+        "pk": "user7",
+        "first_name": "Davpk",
+        "last_name": "Martinez",
+        "email": "user7@example.com",
+        "state": "Illinois",
+        "created_at": "2024-10-01T12:00:00Z"
+    },
+    {
+        "pk": "user8",
+        "first_name": "Sarah",
+        "last_name": "Wilson",
+        "email": "user8@example.com",
+        "state": "Georgia",
+        "created_at": "2024-10-01T12:00:00Z"
+    },
+    {
+        "pk": "user9",
+        "first_name": "James",
+        "last_name": "Lee",
+        "email": "user9@example.com",
+        "state": "California",
+        "created_at": "2024-10-01T12:00:00Z"
+    },
+    {
+        "pk": "user10",
+        "first_name": "Patricia",
+        "last_name": "White",
+        "email": "user10@example.com",
+        "state": "Florida",
+        "created_at": "2024-10-01T12:00:00Z"
+    }
+]
