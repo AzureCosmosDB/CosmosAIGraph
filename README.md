@@ -16,12 +16,16 @@
 </pre>
 
 <p align="center">
-  <img src="impl/docs/img/app-architecture-v2.png" width="90%">
+  <img src="impl/docs/img/app-architecture-v3.png" width="90%">
 </p>
 
 ---
 
 ## Change Log
+
+- January 2025
+  - Added the **Java and Apache Jena** implementation of the in-memory graph
+  - See https://jena.apache.org/index.html
 
 - September 2024
   - Added support for the **Cosmos DB NoSql API** in addition to Cosmos DB Mongo vCore
