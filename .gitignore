@@ -1,10 +1,15 @@
-# cj, augmented .gitignore entries
+# cj
 
-**/.idea/
 **/.DS_Store
 **/.env
+**/.gradle/
+**/.idea/
+**/.vscode/
 **/__pycache__/
+**/__MACOSX/
 **/bin/
+**/build/
+**/gradle/
 **/include/
 **/htmlcov/
 **/lib/
@@ -13,11 +18,12 @@
 **/tmp/
 **/Scripts/
 **/venv/
-**/.vscode/
-**/__MACOSX/
 
+**/*.class
+**/*.jar
 **/pyvenv.cfg
-**/*.pyc 
+**/.override.properties*
+
 
 impl/app/ontologies/doc*.*
 impl/app/ontologies/gdoc*.*
