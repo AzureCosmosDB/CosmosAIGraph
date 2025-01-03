@@ -23,10 +23,16 @@ All of these begin with the prefix `CAIG_`.
 | CAIG_AZURE_REGION | The Azure region where the ACA app is deployed to |
 | CAIG_CONFIG_CONTAINER | The vCore container for configuration JSON values |
 | CAIG_CONVERSATIONS_CONTAINER | The vCore container where the chat conversations and history are persisted |
+| CAIG_COSMOSDB_NOSQL_ACCT | The Name of your Cosmos DB NoSQL account |
+| CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM | The Cosmos DB NoSQL authentication mechanism; key or rbac |
 | CAIG_COSMOSDB_NOSQL_KEY1 | The key of your Cosmos DB NoSQL account |
+| CAIG_COSMOSDB_NOSQL_RG | The Resource Group of your Cosmos DB NoSQL account |
 | CAIG_COSMOSDB_NOSQL_URI | The URI of your Cosmos DB NoSQL account |
 | CAIG_DEFINED_AUTH_USERS |  |
+| CAIG_ENCRYPTION_SYMMETRIC_KEY | optional symmetric key for encryption/decryption |
 | CAIG_FEEDBACK_CONTAINER | The vCore container where user feedback is persisted |
+| CAIG_GRAPH_DUMP_OUTFILE | The file to write to if CAIG_GRAPH_DUMP_UPON_BUILD is true |
+| CAIG_GRAPH_DUMP_UPON_BUILD | Boolean true/false to dump the Java/Jena model to CAIG_GRAPH_DUMP_OUTFILE after GraphBuilder completes |
 | CAIG_GRAPH_NAMESPACE | The custom namespace for the RED graph |
 | CAIG_GRAPH_SERVICE_NAME |  |
 | CAIG_GRAPH_SERVICE_PORT |  |
@@ -39,9 +45,6 @@ All of these begin with the prefix `CAIG_`.
 | CAIG_HOME | Root directory of the CosmosAIGraph GitHub repository on your system |
 | CAIG_LA_WORKSPACE_NAME | The Log Analytics workspace name used by the Azure Container App (ACA) |
 | CAIG_LOG_LEVEL | a python logging standard-lib level name: notset, debug, info, warning, error, or critical |
-| CAIG_PG_FLEX_PASS | Azure PostgreSQL Flex Server user password |
-| CAIG_PG_FLEX_SERVER | Azure PostgreSQL Flex Server hostname |
-| CAIG_PG_FLEX_USER | Azure PostgreSQL Flex Server user |
 | CAIG_WEBSVC_AUTH_HEADER | x-caig-auth |
 | CAIG_WEBSVC_AUTH_VALUE | K6ZQw!81 |
 | CAIG_WEB_APP_NAME |  |

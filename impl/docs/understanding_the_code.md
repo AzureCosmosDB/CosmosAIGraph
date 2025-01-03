@@ -11,7 +11,7 @@ or none.
 
 ## The impl\app directory
 
-**This directory contains the current codebase.**
+**This directory contains the Python codebase.**
 
 It contains these directories:
 
@@ -24,10 +24,11 @@ It contains these directories:
 
 ## The impl\app directory
 
-This is where the implementation code and scripts are.  It contains these directories.
+This is where the Python implementation code and scripts are.
+It contains these directories.
 
 ```
-├── docker              Dockerfiles and docker-compose.yml
+├── docker              Dockerfiles and docker-compose yml files
 ├── keys                Future use
 ├── ontologies          OWL schema files, with *.owl file suffix
 ├── rdf                 RDF graph data files in "triples" format, with *.nt file suffix
@@ -275,3 +276,127 @@ personal coding style preferences.  In addition to reformatting the source
 code, black can also identify some problems/errors in the code.
 
 See the **code-reformat.ps1** and **code-reformat.sh** scripts in the impl directory.
+
+--- 
+
+## The impl\java_jena_graph_websvc directory
+
+This directory contains the newer Graph Microservice implemented
+with Java, Spring Boot, and Apache Jena.  Gradle is used as the
+build tool.
+
+Please see the readme.md file in this directory regarding
+building and executing this version of the Graph Microservice.
+
+It contains these directories:
+
+```
+├── build                Output of the Gradle-based compilation and packaging process
+├── data
+├── data/cosmosdb_documents.json   
+├── ontologies
+├── rdf                  RDF files optionally used to load the graph
+├── src                  Standard Java source code directory structure
+│   ├── main
+│   └── test
+└── tmp                  Create this directory if it doesn't already exist
+```
+
+### Key Classes in the Java/Jena implementation
+
+This section describes the primary Java classes in the Java/Jena implementation.
+
+#### com.microsoft.cosmosdb.caig.WebApp
+
+This is the Spring Boot entry point for the application, per the 
+@SpringBootApplication annotation.
+
+#### com.microsoft.cosmosdb.caig.web.GraphRestController
+
+Spring @RestController that implements the **/sparql_query** HTTP endpoint.
+This endpoint is invoked by the Python-based Web UI when
+executing graph queries.
+
+#### com.microsoft.cosmosdb.caig.web.HealthRestController
+
+Spring @RestController that implements the **/health** HTTP endpoint.
+This endpoint that can optionally be invoked by your container
+orchestrator runtime environment - such as Azure Container Apps (ACA)
+or Azure Kubernetes Service (AKS).
+
+#### com.microsoft.cosmosdb.caig.web.PingRestController
+
+Spring @RestController that implements the **/** and **/ping** HTTP endpoints.
+The / endpoint simply returns the epoch time, while /ping returns
+uptime and JVM memory information.
+
+#### com.microsoft.cosmosdb.caig.web.AppStartup
+
+This contains the application startup logic per the Spring
+ApplicationListener interface.  It contains this logic which 
+loads the in-memory graph in class AppGraph.
+
+```
+  AppGraph g = AppGraphBuilder.build(null);
+  AppGraph.setSingleton(g);```
+```
+
+#### com.microsoft.cosmosdb.caig.util.AppConfig
+
+This static class returns almost all configuration values for the 
+application, such as from **environment variables**.
+
+The environment variables begin with the **CAIG_** prefix and are described
+in the [Environment Variables](environment_variables.md) page
+
+The Spring Boot framework also uses the src/main/resources/application.properties
+file for some configuration values.  But all **application coniguration**
+is done with environment variables and class AppConfig.  This approach 
+is typically used by Docker containerized applications.
+
+#### com.microsoft.cosmosdb.caig.graph.AppGraphBuilder
+
+This class creates and populates the in-memory graph object
+which is an instance of class **org.apache.jena.rdf.model.Model**.
+
+AppGraphBuilder can populate the graph from one of several 
+sources per the CAIG_GRAPH_SOURCE_TYPE environment variable.
+CAIG_GRAPH_SOURCE_TYPE may have one of the following values:
+
+- json_docs_file - the graph is sourced from ile cosmosdb_documents.json in the repo
+- rdf_file - the graph is sourced from the file specified in CAIG_GRAPH_SOURCE_RDF_FILENAME
+- cosmos_nosql - the graph is sourced from your Cosmos DB NoSQL account
+- cosmos_vcore - the graph is sourced from your Cosmos DB Mongo vCore account
+
+After the Jena graph is populated, you can optionally dump that
+graph to a file per the CAIG_GRAPH_DUMP_UPON_BUILD and CAIG_GRAPH_DUMP_OUTFILE
+environment variables.
+
+#### com.microsoft.cosmosdb.caig.graph.AppGraph
+
+This class contains the singleton instance of class
+org.apache.jena.rdf.model.Model in the Apache Jena SDK.
+
+It implements this primary message signature:
+
+```
+    public synchronized SparqlQueryResponse query(SparqlQueryRequest request) {
+    }
+```
+
+The method is **synchronized** so as to be thread safe.  Each HTTP request 
+to the Spring Boot application runs in its' own Thread.
+
+Classes SparqlQueryRequest and SparqlQueryResponse are simple
+JSON serializable classes used to receive the HTTP POSTed query
+and to return the JSON response to the query. 
+
+#### com.microsoft.cosmosdb.caig.graph.LibrariesGraphTriplesBuilder
+
+For the cases where AppGraphBuilder sources the graph from Cosmos DB,
+instances of LibrariesGraphTriplesBuilder are uses to populate the
+graph from each appropriate Cosmos DB document.
+
+Customers should implement their own GraphTriplesBuilder class for
+their needs and implement as necessary per the shape of your Cosmos DB
+documents and graph schema.

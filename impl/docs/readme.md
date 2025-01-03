@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="img/app-architecture-v2.png" width="90%">
+  <img src="img/app-architecture-v3.png" width="90%">
 </p>
 
 

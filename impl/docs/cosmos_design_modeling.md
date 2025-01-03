@@ -46,16 +46,17 @@ This domain of software libraries was chosen because it should be **relatable**
 to most customers, and it also suitable for **Bill-of-Materials** graphs.
 
 The PyPi JSON files were obtained with HTTP requests to public URLs such as 
-**https://pypi.org/pypi/{libname}/json**, and their HTML contents were tranformed into JSON.
+**https://pypi.org/pypi/{libname}/json**, and their HTML contents were transformed into JSON.
 
 Subsequent data wrangling fetched referenced HTML documentation, produced 
 **text summarization with Azure OpenAI and semantic-kernel** and produced
-a **vectorized embedding value** from several concatinated text attributes
+a **vectorized embedding value** from several concatenated text attributes
 within each library JSON document.  A full description of this data wrangling
 process is beyond the scope of this documentation, but the process itself
 is in file 'impl/app/wrangle.py' in the repo.
 
 ## Next Steps: Load Cosmos DB with Library Documents
 
+Depending on the Cosmos DB API you chose:
 - See [Load Azure Cosmos DB vCore](load_cosmos_vcore.md)
 - See [Load Azure Cosmos DB NoSQL](load_cosmos_nosql.md)

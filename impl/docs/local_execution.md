@@ -39,19 +39,30 @@ This approach executes the application packaged as **Docker Containers** rather 
 
 Start your **Docker Desktop** application if it's not already running.
 
-Be sure to modify your environment variables in the **docker-compose.yml** 
-before starting the microservices.
+Be sure to modify your environment variables in the appropriate
+**docker-compose-xxx.yml** ile before starting the microservices.
+
+Two docker-compose yml files are available:
+
+- docker/docker-compose-with-rdflib.yml
+  - This uses the Python-based web application
+  - This uses the Python-based graph microservice using rdflib
+
+- docker-compose-with-jena.yml 
+  - This also uses the same Python-based web application
+  - This uses the Java-based graph microservice using Apache Jena
 
 Create two PowerShell Terminal windows, and navigate to the **impl/app/** directory in each.
 
-In the first terminal window, execute the following command to start the application
-(both microservices).
+In the first terminal window, execute the following command to start the application (both microservices).
 
 ```
-docker compose -f docker/docker-compose.yml up
+docker compose -f docker/docker-compose-with-rdflib.yml up
+or
+docker compose -f docker/docker-compose-with-jena.yml up
 ```
 
-You should see verbose output that includes the following:
+You should see similar verbose output that includes the following:
 
 <p align="center">
   <img src="img/docker-compose-up.png" width="50%">
@@ -62,10 +73,12 @@ You should see verbose output that includes the following:
 In the second terminal window, execute the following command to terminate the application.
 
 ```
-docker compose -f docker/docker-compose.yml down
+docker compose -f docker/docker-compose-with-rdflib.yml down
+or
+docker compose -f docker/docker-compose-with-jena.yml down
 ```
 
-You should see verbose output that includes the following:
+You should see similar verbose output that includes the following:
 
 <p align="center">
   <img src="img/docker-compose-down.png" width="40%">
@@ -75,15 +88,20 @@ You should see verbose output that includes the following:
 
 ### The Docker Containers
 
-These two pre-built Docker containers exist on **DockerHub**:
+These three pre-built Docker containers exist on **DockerHub**:
 
 - cjoakim/caig_web_v2:latest
 - cjoakim/caig_graph_v2:latest
+- cjoakim/caig_graph_java_jena_v1:latest
 
-These are used by default by the above **docker-compose** script
+These are used by default by the above **docker-compose** scripts
 and also by the **Azure Container App** deployment process.
 
-If you wish to rebuild these containers and deploy them to your own Container Registry,
-please see the **impl/app/docker-builds.ps1** and **impl/app/docker-builds.sh**
-scripts in this repository.  You're free to modify these as necessary.
+If you wish to rebuild these containers and deploy them to your own
+Container Registry, please see the following Dockerfiles in this repo.
+You're free to modify these as necessary.
 Please change the **cjoakim** prefix to your own identifier.
+
+- impl/app/docker/Dockerfile_graph
+- impl/app/docker/Dockerfile_web
+- impl/java_jena_graph_websvc/Dockerfile

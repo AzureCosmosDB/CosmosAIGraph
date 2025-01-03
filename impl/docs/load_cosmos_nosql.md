@@ -1,4 +1,4 @@
-# CosmosAIGraph : Load Azure Cosmos DB NoSQL
+# CosmosAIGraph : Load Azure Cosmos DB for NoSQL
 
 ## Configuration
 
@@ -8,6 +8,7 @@ This page assumes that you have set the following environment variables:
 CAIG_GRAPH_SOURCE_TYPE              <-- must be set to 'cosmos_nosql'
 CAIG_COSMOSDB_NOSQL_URI             <-- this value is unique to your Azure deployment
 CAIG_COSMOSDB_NOSQL_KEY1            <-- Read/Write key value
+CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM  <-- Authentication mechanism - key or RBAC (Entra ID)
 
 CAIG_GRAPH_SOURCE_DB                <-- defaults to 'caig'
 CAIG_GRAPH_SOURCE_CONTAINER         <-- defaults to 'libraries'
@@ -54,6 +55,18 @@ solution.
 
 ---
 
+Navigate to the **impl\app** directory of this repo and execute
+the following commands:
+
+```
+> .\venv.ps1                      <-- create the python virtual environment
+
+> .\venv\Scripts\Activate.ps1     <-- activate the python virtual environment
+```
+
+---
+
+
 ## Load the entities document into the config container
 
 This step will load one document into the **config** container.
@@ -90,13 +103,9 @@ For your CosmosAIGraph implementation, create and upload a similar file.
 
 ## Load the Library data into Cosmos DB NoSQL
 
-Navigate to the **impl\app** directory of this repo and execute
-the following commands:
+This step will load the main dataset into a libraries container :
 
 ```
-> .\venv.ps1                      <-- create the python virtual environment
-
-> .\venv\Scripts\Activate.ps1     <-- activate the python virtual environment
 
 > python main_nosql.py load_libraries caig libraries 999999
 
@@ -120,7 +129,7 @@ the following commands:
 
 ### Execute a Vector Search with the loaded data
 
-First generate an embedding value from the words: 
+First generate an embedding value from the words:
 "asynchronous web framework with pydantic".
 Then use that embedding in a vector search vs the Cosmos DB
 libraries container.
@@ -137,4 +146,3 @@ doc 3: {'pk': 'pypi', 'id': 'pypi_async_asgi_testclient', 'name': 'async-asgi-te
 ```
 
 Notice that the **FastAPI** library is correctly identified as the top semantic search result.
-
