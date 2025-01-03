@@ -158,6 +158,8 @@ async def post_sparql_query(
     resp_obj["results"] = None
     resp_obj["elapsed"] = -1.0
     resp_obj["error"] = None
+    resp_obj["servertype"] = "python"
+
     t1 = time.perf_counter()
     try:
         logging.warn("/sparql_query: {}".format(req_model.sparql))

@@ -1,0 +1,17 @@
+{
+  "sparql": "SELECT (COUNT(?s) AS ?triples) WHERE { ?s ?p ?o } LIMIT 10",
+  "results": {
+    "sparql": "SELECT (COUNT(?s) AS ?triples) WHERE { ?s ?p ?o } LIMIT 10",
+    "results": [
+      {
+        "triples": "230026"
+      }
+    ],
+    "exception": null,
+    "elapsed": 1.305109100008849,
+    "row_count": 1
+  },
+  "elapsed": 1.3052712000207976,
+  "servertype": "python",
+  "error": null
+}

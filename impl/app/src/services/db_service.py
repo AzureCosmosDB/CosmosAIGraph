@@ -12,11 +12,12 @@ from src.services.config_service import ConfigService
 
 # Instances of this class are a wrapper for one of several possible underlying databases,
 # including:
-# 1) Cosmos DB Mongo vCore API
-# 2) Cosmos DB NoSQL API
-# 3) Azure PostgreSQL (future implementation)
+# 1) Azure Cosmos DB for MongoDB vCore
+# 2) Azure Cosmos DB for NoSQL
+# 3) Azure Database for PostgreSQL (future implementation)
 # All methods are asynchronous for consistency between NoSQL (async) and vCore (sync).
 # Chris Joakim, Microsoft
+# Aleksey Savateyev, Microsoft
 
 
 class DBService(BaseDBService):
@@ -153,7 +154,7 @@ ORDER BY VectorDistance(c.embedding, {})""".strip().format(
         return docs_list
 
     async def get_documents_by_libtype_and_names(self, libtype: str, names: List[str]):
-        """Lookup in the database the given docs returned from a GraphRAG search."""
+        """Look up in the database the given docs returned from the graph"""
         docs_list = list()
         if names == None or len(names) == 0:
             return docs_list
@@ -162,7 +163,7 @@ ORDER BY VectorDistance(c.embedding, {})""".strip().format(
             if self.using_nosql():
                 quoted_values = self.quoted_values_string(names)
                 logging.info("get_documents_by_libtype_and_names - quoted_values: {}".format(quoted_values))
-                sql = "select * from c where c.libtype = 'pypi' and c.name in ({})".format(
+                sql = "select * from c where c.libtype = '"+ libtype +"' and c.name in ({})".format(
                     quoted_values
                 )
                 logging.info(sql)

@@ -1,0 +1,161 @@
+{
+  "sparql": "SELECT * WHERE { ?s ?p ?o . } LIMIT 10",
+  "results": "{ \"head\": {\n    \"vars\": [ \"s\" , \"p\" , \"o\" ]\n  } ,\n  \"results\": {\n    \"bindings\": [\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/jacob_rief\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#developer_of\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"pypi_django_sass_processor\" }\n      } ,\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/jacob_rief\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#developer_of\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"pypi_django_admin_sortable2\" }\n      } ,\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/pypi_fluent_logger\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#used_by_lib\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"pypi_tavern\" }\n      } ,\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/pypi_fluent_logger\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#developed_by\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"kazuki_ohta\" }\n      } ,\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/pypi_fluent_logger\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#developed_by\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"kazuki.ohta@gmail.com\" }\n      } ,\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/pypi_fluent_logger\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#developed_by\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"arcadiy_ivanov\" }\n      } ,\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/pypi_fluent_logger\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#developed_by\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"arcadiy@ivanov.biz\" }\n      } ,\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/pypi_fluent_logger\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#uses_lib\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"pypi_msgpack\" }\n      } ,\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/pypi_fluent_logger\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#kwds\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"logging logs logger loggers log\" }\n      } ,\n      { \n        \"s\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig/pypi_fluent_logger\" } ,\n        \"p\": { \"type\": \"uri\" , \"value\": \"http://cosmosdb.com/caig#name\" } ,\n        \"o\": { \"type\": \"literal\" , \"value\": \"fluent-logger\" }\n      }\n    ]\n  }\n}\n",
+  "elapsed": 1,
+  "error": null,
+  "servertype": "java",
+  "requestTime": 1735934700744,
+  "_parsed_results": {
+    "head": {
+      "vars": [
+        "s",
+        "p",
+        "o"
+      ]
+    },
+    "results": {
+      "bindings": [
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/jacob_rief"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#developer_of"
+          },
+          "o": {
+            "type": "literal",
+            "value": "pypi_django_sass_processor"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/jacob_rief"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#developer_of"
+          },
+          "o": {
+            "type": "literal",
+            "value": "pypi_django_admin_sortable2"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/pypi_fluent_logger"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#used_by_lib"
+          },
+          "o": {
+            "type": "literal",
+            "value": "pypi_tavern"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/pypi_fluent_logger"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#developed_by"
+          },
+          "o": {
+            "type": "literal",
+            "value": "kazuki_ohta"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/pypi_fluent_logger"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#developed_by"
+          },
+          "o": {
+            "type": "literal",
+            "value": "kazuki.ohta@gmail.com"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/pypi_fluent_logger"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#developed_by"
+          },
+          "o": {
+            "type": "literal",
+            "value": "arcadiy_ivanov"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/pypi_fluent_logger"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#developed_by"
+          },
+          "o": {
+            "type": "literal",
+            "value": "arcadiy@ivanov.biz"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/pypi_fluent_logger"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#uses_lib"
+          },
+          "o": {
+            "type": "literal",
+            "value": "pypi_msgpack"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/pypi_fluent_logger"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#kwds"
+          },
+          "o": {
+            "type": "literal",
+            "value": "logging logs logger loggers log"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig/pypi_fluent_logger"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#name"
+          },
+          "o": {
+            "type": "literal",
+            "value": "fluent-logger"
+          }
+        }
+      ]
+    }
+  }
+}

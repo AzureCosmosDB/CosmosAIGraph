@@ -1,0 +1,64 @@
+{
+  "sparql": "SELECT * WHERE { ?s ?p ?o . } LIMIT 10",
+  "results": {
+    "sparql": "SELECT * WHERE { ?s ?p ?o . } LIMIT 10",
+    "results": [
+      {
+        "p": "http://cosmosdb.com/caig#developed_by",
+        "o": "http://cosmosdb.com/caig/denis_kataev",
+        "s": "http://cosmosdb.com/caig/pypi_pytest_grpc"
+      },
+      {
+        "p": "http://cosmosdb.com/caig#used_by_lib",
+        "o": "http://cosmosdb.com/caig/pypi_livemark",
+        "s": "http://cosmosdb.com/caig/pypi_pytest_only"
+      },
+      {
+        "p": "http://cosmosdb.com/caig#developed_by",
+        "o": "http://cosmosdb.com/caig/sep@zepworks.com",
+        "s": "http://cosmosdb.com/caig/pypi_deepdiff"
+      },
+      {
+        "p": "http://cosmosdb.com/caig#used_by_lib",
+        "o": "http://cosmosdb.com/caig/pypi_apache_airflow_providers_apache_druid",
+        "s": "http://cosmosdb.com/caig/pypi_pydruid"
+      },
+      {
+        "p": "http://cosmosdb.com/caig#uses_lib",
+        "o": "http://cosmosdb.com/caig/pypi_pytest",
+        "s": "http://cosmosdb.com/caig/pypi_scikit_learn_extra"
+      },
+      {
+        "p": "http://cosmosdb.com/caig#used_by_lib",
+        "o": "http://cosmosdb.com/caig/pypi_cibuildwheel",
+        "s": "http://cosmosdb.com/caig/pypi_mkdocs_include_markdown_plugin"
+      },
+      {
+        "p": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "o": "http://cosmosdb.com/caig#Lib",
+        "s": "http://cosmosdb.com/caig/pypi_modelindex"
+      },
+      {
+        "p": "http://cosmosdb.com/caig#kwds",
+        "o": "pandas pandas_datareader matplotlib svg badge",
+        "s": "http://cosmosdb.com/caig/pypi_pandas_datareader"
+      },
+      {
+        "p": "http://cosmosdb.com/caig#uses_lib",
+        "o": "http://cosmosdb.com/caig/pypi_packaging",
+        "s": "http://cosmosdb.com/caig/pypi_pip_check_reqs"
+      },
+      {
+        "p": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "o": "http://cosmosdb.com/caig#Lib",
+        "s": "http://cosmosdb.com/caig/pypi_pyapacheatlas"
+      }
+    ],
+    "exception": null,
+    "elapsed": 0.010013399994932115,
+    "row_count": 10
+  },
+  "elapsed": 0.010179400036577135,
+  "servertype": "python",
+  "error": null
+}

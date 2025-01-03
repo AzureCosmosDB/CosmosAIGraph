@@ -18,8 +18,6 @@
   </form>
 </div>
 
-<hr>
-
 <div class="container">
     <p></p>
     <form method="post" id="execute_form" name="execute_form" action="/gen_sparql_console_execute_sparql">
@@ -34,8 +32,6 @@
     </form>
 </div>
 
-<hr>
-
 <div class="container" id="results_div" name="results_div">
   <h5>{{ results_message }}</h5>
   <pre>
@@ -45,8 +41,6 @@
   </pre>
 </div>
 
-<hr>
-
 <div class="container" id="owl_div" name="owl_div">
   <h5>Web Ontology (OWL)</h5>
   <pre>
@@ -54,8 +48,6 @@
 {{ owl }}
   </code>
   </pre>
-  <br>
-  <br>
 </div>
 
 <!-- see  https://github.com/visjs/vis-network -->
@@ -63,10 +55,7 @@
   <h5>Ontology Visualization</h5>
   <div class="container" id="ontology_viz" style="width:1024px;height:768px;border: 0px solid lightgray"></div>
 </div>
-
-
 {% endblock %}
-
 {% block js %}
 <script>
 const generate_form = document.getElementById("generate_form");
@@ -96,8 +85,6 @@ execute_button.addEventListener('click',
 );
 
 </script>
-
-
 <!--
 This <script> section was generated from an OWL file using this command:
 python main_common.py owl_visualizer ontologies/libraries.owl

@@ -439,9 +439,7 @@ class AiService:
             return None
 
     def generic_prompt_template(self) -> str:
-        ptxt = """ChatBot can have a conversation with you about any topic.
-It can give explicit instructions or say 'I don't know' if it does not have an answer.
-
+        ptxt = """You can have a conversation on any topic.
 Context:
 {{$context}}
 
@@ -466,7 +464,7 @@ HTML: ```{{$input_html}}```
         prompt_text = """
 {{$input_text}}
 
-One line TLDR with the fewest words."""
+Generate one-line TLDR with as few words as possible."""
         return prompt_text
 
     async def get_completion(self, user_prompt, system_prompt):

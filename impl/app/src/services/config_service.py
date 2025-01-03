@@ -97,7 +97,7 @@ class ConfigService:
 
     @classmethod
     def code_version(cls) -> str:
-        return "2024/10/25"
+        return "2025/01/03"
 
     @classmethod
     def defined_environment_variables(cls) -> dict:
@@ -164,6 +164,8 @@ class ConfigService:
         d["CAIG_GRAPH_SERVICE_NAME"] = ""
         d["CAIG_GRAPH_SERVICE_URL"] = ""
         d["CAIG_GRAPH_SERVICE_PORT"] = ""
+        d["CAIG_GRAPH_DUMP_UPON_BUILD"] = "Boolean true/false to dump the Java/Jena model to CAIG_GRAPH_DUMP_OUTFILE"
+        d["CAIG_GRAPH_DUMP_OUTFILE"] = "The file to write to if CAIG_GRAPH_DUMP_UPON_BUILD is true"
 
         # These three are experimental; possible future use
         # d["CAIG_PG_FLEX_SERVER"] = "Azure PostgreSQL Flex Server hostname"
@@ -187,11 +189,13 @@ class ConfigService:
         d["CAIG_HOME"] = ""
         d["CAIG_AZURE_REGION"] = "eastus"
         d["CAIG_GRAPH_NAMESPACE"] = "http://cosmosdb.com/caig#"
-        d["CAIG_GRAPH_SOURCE_TYPE"] = "cosmos_vcore"
+        d["CAIG_GRAPH_SOURCE_TYPE"] = "cosmos_nosql"
         d["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "ontologies/libraries.owl"
         d["CAIG_GRAPH_SOURCE_RDF_FILENAME"] = "rdf/libraries-graph.nt"
         d["CAIG_GRAPH_SOURCE_DB"] = "caig"
         d["CAIG_GRAPH_SOURCE_CONTAINER"] = "libraries"
+        d["CAIG_GRAPH_DUMP_UPON_BUILD"] = "false"
+        d["CAIG_GRAPH_DUMP_OUTFILE"] = "tmp/model_dump.nt"
         d["CAIG_CONFIG_CONTAINER"] = "config"
         d["CAIG_CONVERSATIONS_CONTAINER"] = "conversations"
         d["CAIG_AZURE_MONGO_VCORE_CONN_STR"] = "mongodb+srv://..."
@@ -201,8 +205,6 @@ class ConfigService:
         d["CAIG_COSMOSDB_NOSQL_URI"] = "https://<your-account>.documents.azure.com:443/"
         d["CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM"] = "key"  # key or rbac
         d["CAIG_COSMOSDB_NOSQL_KEY1"] = ""
-
-        d["CAIG_USE_ALT_SPARQL_CONSOLE"] = ""
         d["CAIG_AZURE_OPENAI_URL"] = ""
         d["CAIG_AZURE_OPENAI_KEY"] = ""
         d["CAIG_AZURE_OPENAI_COMPLETIONS_DEP"] = "gpt4"
@@ -351,10 +353,6 @@ class ConfigService:
     @classmethod
     def pg_flex_password(cls) -> str:
         return cls.envvar("CAIG_PG_FLEX_PASS", None)
-
-    @classmethod
-    def use_alt_sparql_console(cls) -> str:
-        return len(cls.envvar("CAIG_USE_ALT_SPARQL_CONSOLE", "")) > 0
 
     @classmethod
     def azure_openai_url(cls) -> str:

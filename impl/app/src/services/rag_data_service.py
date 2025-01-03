@@ -14,14 +14,14 @@ from src.services.rag_data_result import RAGDataResult
 from src.services.strategy_builder import StrategyBuilder
 
 
-# Instances of this class are used to identify and retrieve system prompt data
-# for the RAG pattern in a "OmniRAG" manner.  The RAG data will be read,
-# per given user_text, from either:
-# 1) Directly from Cosmos DB documents (DB RAG)
-# 2) From Cosmos DB documents identified per an in-memory graph query (Graph RAG)
-# 3) From Cosmos DB documents identified per a vector search to Cosmos (Vector RAG)
+# Instances of this class are used to identify and retrieve contextual data 
+# in OmniRAG pattern. The data will be read from one or more of the following:
+# 1) Directly from Cosmos DB documents
+# 2) From in-memory graph
+# 3) From Cosmos DB documents identified per a vector search to Cosmos DB
 #
 # Chris Joakim, Microsoft
+# Aleksey Savateyev, Microsoft
 
 
 class RAGDataService:
@@ -53,17 +53,15 @@ class RAGDataService:
         except Exception as e:
             logging.critical("Exception in RagDataService#__init__: {}".format(str(e)))
 
-    async def get_rag_data(self, user_text, max_doc_count=3) -> RAGDataResult:
+    async def get_rag_data(self, user_text, max_doc_count=10) -> RAGDataResult:
         """
-        Return a RAGDataResult object which contains an array of the RAG
-        documents to be used as a system prompt for a generative AI call
-        to Azure OpenAI.  Each RAG document is a document from the Cosmos DB
-        libraries collection.
-        In this "OmniRAG" implementation, the RAG data will be read,
-        per the given user_text, from one of either:
-        1) Directly from Cosmos DB documents (DB RAG)
-        2) From Cosmos DB documents identified per an in-memory graph query (Graph RAG)
-        3) From Cosmos DB documents identified per a vector search to Cosmos (Vector RAG)
+        Return a RAGDataResult object which contains an array of documents to 
+        be used as a system prompt of a completion call to Azure OpenAI.  
+        In this OmniRAG implementation, the RAG data will be read,
+        per the given user_text, from one of the following:
+        1) Directly from Cosmos DB documents
+        2) From in-memory graph
+        3) From Cosmos DB documents identified per a vector search to Cosmos DB
         """
         rdr = RAGDataResult()
         rdr.set_user_text(user_text)
@@ -128,11 +126,11 @@ class RAGDataService:
             )
             self.db_svc.set_db(ConfigService.graph_source_db())
             self.db_svc.set_coll(ConfigService.graph_source_container())
-            docs = await self.db_svc.get_documents_by_libtype_and_names(libtype, [name])
-            for doc in docs:
+            rag_docs_list = await self.db_svc.get_documents_by_libtype_and_names(libtype, [name])
+            for doc in rag_docs_list:
                 if "_id" in doc.keys():
                     del doc["_id"]  # Mongo _id is not JSON serializable
-            return docs
+            return rag_docs_list
 
         except Exception as e:
             logging.critical(
@@ -142,7 +140,7 @@ class RAGDataService:
         return rag_docs_list
 
     async def get_vector_rag_data(
-        self, user_text, max_doc_count=3, rdr: RAGDataResult = None
+        self, user_text, max_doc_count=10, rdr: RAGDataResult = None
     ) -> str:
         rag_docs_list = list()
         try:
@@ -167,7 +165,7 @@ class RAGDataService:
         return rag_docs_list
 
     async def get_graph_rag_data(
-        self, user_text, rdr: RAGDataResult, max_doc_count=6
+        self, user_text, rdr: RAGDataResult, max_doc_count=10
     ) -> str:
         rag_docs_list = list()
         try:
@@ -176,31 +174,33 @@ class RAGDataService:
             )
             # first generate and execute the SPARQL query vs the in-memory RDF graph
             info = dict()
+            # Only need NL and ontology/schema, without schema AI won't know what's in the graph
             info["natural_language"] = user_text
             info["owl"] = self.owl
             sparql = self.ai_svc.generate_sparql_from_user_prompt(info)["sparql"]
             rdr.set_sparql(sparql)
-            logging.info("get_graph_rag_data, sparql: {}".format(sparql))
             sparql_query_results = self._post_sparql_query_to_graph_microsvc(sparql)
-
+            logging.info("get_graph_rag_data, SPARQL results: {}".format(sparql_query_results))
             # iterate the SPARQL query results, collecting the libtype and names
             sparql_libtype_name_pairs = self._parse_sparql_rag_query_results(
                 sparql_query_results
             )
-            # query Cosmos DB using the graph-identified document libtype/libname coordinates
+            logging.info("get_graph_rag_data, getting documents from db for: {}".format(sparql_libtype_name_pairs.count))
+            # query Cosmos DB using the libtype/libname from the graph
             self.db_svc.set_db(ConfigService.graph_source_db())
             self.db_svc.set_coll(ConfigService.graph_source_container())
             libtype, libnames = "pypi", list()
             for pair in sparql_libtype_name_pairs:
                 libtype, name = pair[0], pair[1]
                 libnames.append(name)
-            docs = await self.db_svc.get_documents_by_libtype_and_names(
+                
+            rag_docs_list = await self.db_svc.get_documents_by_libtype_and_names(
                 libtype, libnames
             )
-            for doc in docs:
+            for doc in rag_docs_list:
                 if "_id" in doc.keys():
                     del doc["_id"]  # Mongo _id is not JSON serializable
-            return docs
+            return rag_docs_list
         except Exception as e:
             logging.critical(
                 "Exception in RagDataService#get_graph_rag_data: {}".format(str(e))
@@ -218,7 +218,7 @@ class RAGDataService:
         #         "sparql": "PREFIX caig: <http://cosmosdb.com/caig#> SELECT ?dependency WHERE { ?lib caig:ln 'flask' . ?lib caig:lt 'pypi' . ?lib caig:uses_lib ?dependency . }",
         #         "results": [
         #             {
-        #                 "dependency": "http://cosmosdb.com/caig/pypi_asgiref"
+        #                 "dependencyName": "asgiref"
         #             },
         libtype_name_pairs = list()
         try:
@@ -228,14 +228,18 @@ class RAGDataService:
             )
             for result in result_rows:
                 attr_key = sorted(result.keys())[0]
-                # "dependency": "http://cosmosdb.com/caig/pypi_asgiref"
                 value = result[attr_key]
                 tokens = value.split("/")
-                last_idx = len(tokens) - 1
-                libtype_name = tokens[last_idx]
+                if len(tokens) == 0:
+                    libtype_name = value
+                else:
+                    last_idx = len(tokens) - 1
+                    libtype_name = tokens[last_idx]
                 pair = libtype_name.split("_")
                 if len(pair) == 2:
                     libtype_name_pairs.append(pair)
+                else:
+                    libtype_name_pairs.append(["pypi", libtype_name]) #hardcode in case libtype wasn't part of resultset
         except Exception as e:
             logging.critical(
                 "Exception in RagDataService#_parse_sparql_rag_query_results: {}".format(

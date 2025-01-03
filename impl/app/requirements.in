@@ -11,11 +11,11 @@ azure-storage-blob
 beautifulsoup4
 black
 certifi
-cryptography  # cryptography==43.0.0
+cryptography
 dnspython
 docopt
-fastapi
-fastapi_msal==2.1.6
+fastapi #==0.115.6
+fastapi_msal #==2.1.6
 httpie
 httpx
 hypercorn
@@ -31,7 +31,6 @@ pytest
 python-dotenv
 python-multipart
 rdflib
-requests
 semantic-kernel
 #semantic-kernel==0.9.1b1
 tiktoken
@@ -39,8 +38,8 @@ uvicorn
 xmlformatter
 
 # Entries per Dependabot warnings"
-starlette>=0.40.0
+starlette>=0.37.0
 werkzeug>=3.0.6
 cryptography>=43.0.1
 aiohttp>=3.10.2
-requests>=2.32.0
+requests>=2.30.0

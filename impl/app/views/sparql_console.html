@@ -11,7 +11,7 @@
       <textarea rows='8' class="form-control" id="sparql" name="sparql" value="{{ sparql }}">{{ sparql }}</textarea>
     </div>
     <div class="mb-3">
-      <label for="bom_query" class="form-label">Enter a library name, and a depth integer, for a Bill-of-Materials traversal:</label>
+      <label for="bom_query" class="form-label">Enter a name of the node, and a dependency depth number, for a graph visualization:</label>
       <input type="text" class="form-control" id="bom_query" name="bom_query" value="{{ bom_query }}" placeholder="flask 3"></input>
     </div>
     <div class="mb-6">
@@ -20,8 +20,6 @@
     <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
   </form>
 </div>
-
-<hr>
 
 <div class="container" id="results_div" name="results_div">
   <h5>{{ results_message }}</h5>
@@ -34,16 +32,18 @@
   <br>
 </div>
 
-<hr/>
+<div class="container">
+  <h5>Graph Visualization</h5>
 
-<div class="container-fluid" id="d3viz" name="d3viz">
-  <svg style="width:95%;height:1024px;">
-      <g></g>
-  </svg>
-</div>
+  <div class="container-fluid" id="d3viz" name="d3viz">
+      <svg style="width:95%;height:1024px;">
+        <g></g>
+    </svg>
+  </div>
 
-<div class="invisible" id="inline_bom_json" name="inline_bom_json">
-  {{ inline_bom_json }}
+  <div class="invisible" id="inline_bom_json" name="inline_bom_json">
+    {{ inline_bom_json }}
+  </div>
 </div>
 
 {% endblock %}

@@ -8,8 +8,10 @@ aiofiles==23.2.1
     # via semantic-kernel
 aiohappyeyeballs==2.3.4
     # via aiohttp
-aiohttp==3.10.0
-    # via semantic-kernel
+aiohttp==3.10.5
+    # via
+    #   -r .\requirements.in
+    #   semantic-kernel
 aiosignal==1.3.1
     # via aiohttp
 annotated-types==0.7.0
@@ -67,7 +69,7 @@ colorama==0.4.6
     #   tqdm
 coverage[toml]==7.6.0
     # via pytest-cov
-cryptography==43.0.0
+cryptography==44.0.0
     # via
     #   -r .\requirements.in
     #   azure-identity
@@ -273,7 +275,7 @@ python-multipart==0.0.9
     # via -r .\requirements.in
 pytz==2024.1
     # via pandas
-pywin32==306
+pywin32==308
     # via portalocker
 pyyaml==6.0.1
     # via
@@ -334,6 +336,7 @@ soupsieve==2.5
     # via beautifulsoup4
 starlette==0.37.2
     # via
+    #   -r .\requirements.in
     #   fastapi
     #   fastapi-msal
 tiktoken==0.7.0
@@ -356,8 +359,10 @@ urllib3==2.2.2
     # via requests
 uvicorn==0.30.5
     # via -r .\requirements.in
-werkzeug==3.0.3
-    # via openapi-core
+werkzeug==3.1.3
+    # via
+    #   -r .\requirements.in
+    #   openapi-core
 wsproto==1.2.0
     # via hypercorn
 xmlformatter==0.2.6

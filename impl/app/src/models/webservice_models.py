@@ -39,6 +39,7 @@ class SparqlQueryResponseModel(BaseModel):
     sparql: str
     results: Any = None
     elapsed: float
+    servertype: str
     error: str | None
 
 

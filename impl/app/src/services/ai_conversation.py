@@ -18,6 +18,7 @@ from src.services.config_service import ConfigService
 # and related completions and token usage.  Instances are JSON-serializable and
 # can be persisted and read from Cosmos DB.
 # Chris Joakim, Microsoft
+# Aleksey Savateyev, Microsoft
 
 
 class AiConversation:
@@ -236,10 +237,7 @@ class AiConversation:
             )
 
     def last_completion(self) -> dict:
-        last_completion = None
-        for c in self.completions:
-            last_completion = c
-        return last_completion
+        return None if not self.completions else self.completions[-1]
 
     def last_completion_content(self):
         c = self.last_completion()

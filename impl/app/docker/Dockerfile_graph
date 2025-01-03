@@ -22,7 +22,7 @@ CMD     ["uvicorn", "websvc:app", "--host", "0.0.0.0", "--port", "8001"]
 # Chris Joakim, Microsoft
 #
 # Developer Notes:
-# docker build -t cjoakim/caig_graph .
+# docker build -f docker/Dockerfile_graph -t cjoakim/caig_graph .
 # docker image ls
 # docker ps
 # docker stop -t 2 008038664a58

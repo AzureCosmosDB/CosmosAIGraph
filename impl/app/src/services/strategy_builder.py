@@ -52,7 +52,7 @@ class StrategyBuilder:
 
         try:
             # Generate code to generate entity graph
-            # TODO: add historic/user-recommended sample questions at the end of each of the 3 sections below
+            # Note: add historic/user-recommended sample questions at the end of each of the 3 sections below
             system_prompt = f"""You are helping to determine the data source to use while fetching context to help answer a question in the user prompt. There are only 3 sources: database, vector index and graph. Assume that each of these sources has the same data but in different formats and with different degree of fidelity/detail.
             The user may want to obtain information from the database such as PII, transactions, records, incidents, requests, or other specific items. For example, if they want to "look something up" or "find" or "fetch", this would be a database search. Examples of questions that are best answered with the information from a database are:
             "which records are currently open for me",

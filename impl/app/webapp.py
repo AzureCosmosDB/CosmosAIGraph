@@ -35,11 +35,11 @@ from src.services.ai_service import AiService
 from src.services.db_service import DBService
 from src.services.config_service import ConfigService
 from src.services.logging_level_service import LoggingLevelService
+from src.services.ontology_service import OntologyService
 from src.services.rag_data_service import RAGDataService
 from src.services.rag_data_result import RAGDataResult
 from src.util.sparql_formatter import SparqlFormatter
-from src.services.ontology_service import OntologyService
-
+from src.util.fs import FS
 
 # standard initialization
 load_dotenv(override=True)
@@ -203,32 +203,43 @@ async def get_config(req: Request):
 
 @app.get("/sparql_console")
 async def get_sparql_console(req: Request):
-    if ConfigService.use_alt_sparql_console():
-        view_data = get_alt_sparql_console(req)
-        return views.TemplateResponse(
-            request=req, name="alt_sparql_console.html", context=view_data
-        )
-    else:
-        view_data = get_libraries_sparql_console(req)
-        return views.TemplateResponse(
-            request=req, name="sparql_console.html", context=view_data
-        )
+    view_data = get_libraries_sparql_console(req)
+    return views.TemplateResponse(
+        request=req, name="sparql_console.html", context=view_data
+    )
 
 
 @app.post("/sparql_console")
 async def post_sparql_console(req: Request):
     form_data = await req.form()  # <class 'starlette.datastructures.FormData'>
     logging.info("/sparql_console form_data: {}".format(form_data))
-    if ConfigService.use_alt_sparql_console():
-        view_data = post_alt_sparql_console(form_data)
-        return views.TemplateResponse(
-            request=req, name="alt_sparql_console.html", context=view_data
-        )
-    else:
-        view_data = post_libraries_sparql_console(form_data)
-        return views.TemplateResponse(
-            request=req, name="sparql_console.html", context=view_data
-        )
+    view_data = post_libraries_sparql_console(form_data)
+    try:
+        # These logic is temporary, and is for debugging purposes only.
+        # The logged files are used to compare the Python vs Java server responses.
+        query_results = json.loads(view_data["results"])
+        if "servertype" in query_results.keys():
+            servertype = str(query_results["servertype"])
+            sparql = str(query_results["sparql"]).lower()
+            suffix = None
+            if "select (count" in sparql:
+                suffix = "count"
+            elif "where { ?s ?p ?o . }" in sparql:
+                suffix = "triples"
+            elif "?used_lib" in sparql:
+                suffix = "dependencies"
+            if suffix is not None:
+                outfile = "tmp/sparql_console_results_{}_{}.json".format(
+                    servertype, suffix)
+                if servertype == "java":
+                    nested_results_json = query_results["results"]
+                    query_results["_parsed_results"] = json.loads(nested_results_json)
+                FS.write_json(query_results, outfile)
+    except Exception as e:
+        pass
+    return views.TemplateResponse(
+        request=req, name="sparql_console.html", context=view_data
+    )
 
 
 # cj - /gen_graph and /gen_graph_generate have been disabled in the UI; see layout.html
@@ -498,7 +509,7 @@ async def conv_ai_console(req: Request):
         else:
             if rdr.has_graph_rag_docs() == True:
                 # Add a pseudo-completion to the conversation with the
-                # names of the returned libraries/documents returned
+                # names of the returned documents returned
                 # from the graph SPARQL query.
                 completion = AiCompletion(conv.conversation_id, None)
                 completion.set_user_text(user_text)
@@ -604,7 +615,7 @@ def graph_microsvc_bom_query_url():
 
 
 # At this time the web application can support up to two different
-# SPARQL console views, the libraries view and an alternative view.
+# SPARQL console views: the libraries view and an alternative view.
 # But the UI will show only one of these.
 # The logic to handle these two cases is below.
 
@@ -631,23 +642,10 @@ LIMIT 10
     return view_data
 
 
-def get_alt_sparql_console(req: Request):
-    """Return the view data for the alternative SPARQL console"""
-    sparql = """
-SELECT * WHERE { ?s ?p ?o . } LIMIT 10
-"""
-    view_data = dict()
-    view_data["method"] = "get"
-    view_data["sparql"] = sparql
-    view_data["results_message"] = ""
-    view_data["results"] = ""
-    return view_data
-
-
 def post_libraries_sparql_console(form_data):
     global websvc_headers
 
-    sparql = form_data.get("sparql")
+    sparql = form_data.get("sparql").strip()
     bom_query = form_data.get("bom_query").strip()
     logging.info("sparql: {}".format(sparql))
     logging.info("bom_query: {}".format(bom_query))
@@ -657,54 +655,48 @@ def post_libraries_sparql_console(form_data):
     view_data["sparql"] = sparql
     view_data["bom_query"] = bom_query
     view_data["results_message"] = "Results"
-    view_data["results"] = ""
+    view_data["results"] = "{}"
     view_data["bom_json_str"] = "{}"
     view_data["inline_bom_json"] = "{}"
     view_data["libtype"] = ""
 
-    # execute either a BOM query or a simple SPARQL query, per Form input
-
-    if len(bom_query) > 0:
-        tokens = bom_query.split()
-        if len(tokens) > 1:
-            view_data["libtype"] = tokens[0]
-            bom_obj = None
-            url = graph_microsvc_bom_query_url()
-            logging.info("url: {}".format(url))
-            postdata = dict()
-            postdata["libtype"] = "pypi"
-            postdata["libname"] = tokens[0]
-            postdata["max_depth"] = tokens[1]
-            logging.info("postdata: {}".format(postdata))
-            r = httpx.post(
-                url,
-                headers=websvc_headers,
-                data=json.dumps(postdata),
-                timeout=120.0,
-            )
-            bom_obj = json.loads(r.text)
-            view_data["results"] = json.dumps(bom_obj, sort_keys=False, indent=2)
-            view_data["inline_bom_json"] = view_data["results"]
-        else:
-            view_data["results"] = "Invalid BOM query: {}".format(bom_query)
+    if sparql == "count":
+        view_data["sparql"] = "SELECT (COUNT(?s) AS ?triples) WHERE { ?s ?p ?o } LIMIT 10"
+    elif sparql == "triples":
+        view_data["sparql"] = "SELECT * WHERE { ?s ?p ?o . } LIMIT 10"
     else:
-        response_obj = post_sparql_query_to_graph_microsvc(sparql)
-        view_data["results"] = json.dumps(response_obj, sort_keys=False, indent=2)
-    return view_data
-
-
-def post_alt_sparql_console(form_data):
-    sparql = form_data.get("sparql")
-    view_data = dict()
-    view_data["method"] = "post"
-    view_data["sparql"] = sparql
-    view_data["results_message"] = ""
-    view_data["results"] = ""
-    logging.info("sparql: {}".format(sparql))
-
-    if len(sparql) > 0:
-        response_obj = post_sparql_query_to_graph_microsvc(sparql)
-        view_data["results"] = json.dumps(response_obj, sort_keys=False, indent=2)
+        # execute either a BOM query or a simple SPARQL query, per Form input
+        if len(bom_query) > 0:
+            tokens = bom_query.split()
+            if len(tokens) > 1:
+                view_data["libtype"] = tokens[0]
+                bom_obj = None
+                url = graph_microsvc_bom_query_url()
+                logging.info("url: {}".format(url))
+                postdata = dict()
+                postdata["libtype"] = "pypi"
+                postdata["libname"] = tokens[0]
+                postdata["max_depth"] = tokens[1]
+                logging.info("postdata: {}".format(postdata))
+                r = httpx.post(
+                    url,
+                    headers=websvc_headers,
+                    data=json.dumps(postdata),
+                    timeout=120.0,
+                )
+                bom_obj = json.loads(r.text)
+                view_data["results"] = json.dumps(bom_obj, sort_keys=False, indent=2)
+                view_data["inline_bom_json"] = view_data["results"]
+                try:
+                    # temporary, for debugging purposes only.  TODO - remove.
+                    FS.write_json(bom_obj, "tmp/bom_obj.json")
+                except Exception as e:
+                    pass
+            else:
+                view_data["results"] = "Invalid BOM query: {}".format(bom_query)
+        else:
+            response_obj = post_sparql_query_to_graph_microsvc(sparql)
+            view_data["results"] = json.dumps(response_obj, sort_keys=False, indent=2)
     return view_data
 
 

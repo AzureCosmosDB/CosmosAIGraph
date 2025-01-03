@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Recreate the python virtual environment and reinstall libs on mac/linux.
+# Note: This script works with 3.12.3 but not 3.13.x as of 1/3/2025.
+# python3 --version -> Python 3.12.3
 # Chris Joakim, Microsoft
 
 # delete previous venv directory

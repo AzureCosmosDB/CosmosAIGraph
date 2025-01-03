@@ -102,7 +102,7 @@ class OwlGenerator:
             class1, rel_name, class2 = tokens[0], tokens[1], tokens[2]
 
             # the same attribute name can be used in several classes; aggregate these
-            if rel_name == 'n/a':
+            if rel_name == "n/a":
                 pass
             else:
                 if rel_name in relationships_dict.keys():

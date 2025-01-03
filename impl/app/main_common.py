@@ -161,7 +161,6 @@ def excluded_bicep_envvars():
     # vars.append("CAIG_GRAPH_SERVICE_URL")
     # vars.append("CAIG_LOG_LEVEL")
     vars.append("CAIG_HOME")
-    vars.append("CAIG_USE_ALT_SPARQL_CONSOLE")
     vars.append("CAIG_WEB_APP_PORT")
     vars.append("CAIG_WEB_APP_URL")
     return vars

@@ -1,10 +1,7 @@
 # Docker Compose script to run both microservices (web, graph) locally.
 # Use of this script:
-#   docker compose -f docker/docker-compose.yml up
-#   docker compose -f docker/docker-compose.yml down   (in a second terminal window)
-# Docker Image Notes:
-#   caig_web and caig_graph support Cosmos DB vCore API only
-#   caig_web_v2 and caig_graph_v2 support either Cosmos DB vCore API or Cosmos DB SQL API
+#   docker compose -f docker/docker-compose-with-rdflib.yml up
+#   docker compose -f docker/docker-compose-with-rdflib.yml down   (in a second terminal window)
 # Chris Joakim, Microsoft
 
 services:
@@ -40,7 +37,7 @@ services:
       CAIG_GRAPH_SOURCE_DB:               $CAIG_GRAPH_SOURCE_DB
       CAIG_GRAPH_SOURCE_OWL_FILENAME:     $CAIG_GRAPH_SOURCE_OWL_FILENAME
       CAIG_GRAPH_SOURCE_RDF_FILENAME:     $CAIG_GRAPH_SOURCE_RDF_FILENAME
-      CAIG_GRAPH_SOURCE_TYPE:             $CAIG_GRAPH_SOURCE_TYPE
+      CAIG_GRAPH_SOURCE_TYPE:             cosmos_nosql
       CAIG_LA_WORKSPACE_NAME:             $CAIG_LA_WORKSPACE_NAME
       CAIG_LOG_LEVEL:                     $CAIG_LOG_LEVEL
       CAIG_WEBSVC_AUTH_HEADER:            $CAIG_WEBSVC_AUTH_HEADER
@@ -82,7 +79,7 @@ services:
       CAIG_GRAPH_SOURCE_DB:               $CAIG_GRAPH_SOURCE_DB
       CAIG_GRAPH_SOURCE_OWL_FILENAME:     $CAIG_GRAPH_SOURCE_OWL_FILENAME
       CAIG_GRAPH_SOURCE_RDF_FILENAME:     $CAIG_GRAPH_SOURCE_RDF_FILENAME
-      CAIG_GRAPH_SOURCE_TYPE:             $CAIG_GRAPH_SOURCE_TYPE
+      CAIG_GRAPH_SOURCE_TYPE:             cosmos_nosql
       CAIG_LA_WORKSPACE_NAME:             $CAIG_LA_WORKSPACE_NAME
       CAIG_LOG_LEVEL:                     $CAIG_LOG_LEVEL
       CAIG_WEBSVC_AUTH_HEADER:            $CAIG_WEBSVC_AUTH_HEADER
@@ -93,7 +90,3 @@ services:
 
 
 # WEB_CONCURRENCY relates to uvicorn and the --workers count; see https://www.uvicorn.org
-
-# Use of this script:
-# docker compose -f docker/docker-compose.yml up
-# docker compose -f docker/docker-compose.yml down   (in a second terminal window)

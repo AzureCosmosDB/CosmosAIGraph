@@ -18,7 +18,7 @@ def test_minimize():
         "You are a helpful agent designed to generate a query to the knowledge graph"
     )
     assert ptext.endswith(
-        "Return a JSON with SPARQL 1.0 query that would return the relevant entities and/or relationships from the knowledge graph."
+        "Return a JSON with SPARQL 1.1 query that would return the relevant entities and/or relationships from the knowledge graph."
     )
     assert "http://cosmosdb.com/caig#" in ptext
 

@@ -1,0 +1,67 @@
+{
+  "sparql": "PREFIX c: <http://cosmosdb.com/caig#>\r\nSELECT ?used_lib\r\nWHERE {\r\n    <http://cosmosdb.com/caig/pypi_flask> c:uses_lib ?used_lib .\r\n}\r\nLIMIT 10",
+  "results": "{ \"head\": {\n    \"vars\": [ \"used_lib\" ]\n  } ,\n  \"results\": {\n    \"bindings\": [\n      { \n        \"used_lib\": { \"type\": \"literal\" , \"value\": \"pypi_python_dotenv\" }\n      } ,\n      { \n        \"used_lib\": { \"type\": \"literal\" , \"value\": \"pypi_itsdangerous\" }\n      } ,\n      { \n        \"used_lib\": { \"type\": \"literal\" , \"value\": \"pypi_blinker\" }\n      } ,\n      { \n        \"used_lib\": { \"type\": \"literal\" , \"value\": \"pypi_importlib_metadata\" }\n      } ,\n      { \n        \"used_lib\": { \"type\": \"literal\" , \"value\": \"pypi_asgiref\" }\n      } ,\n      { \n        \"used_lib\": { \"type\": \"literal\" , \"value\": \"pypi_click\" }\n      } ,\n      { \n        \"used_lib\": { \"type\": \"literal\" , \"value\": \"pypi_werkzeug\" }\n      } ,\n      { \n        \"used_lib\": { \"type\": \"literal\" , \"value\": \"pypi_jinja2\" }\n      }\n    ]\n  }\n}\n",
+  "elapsed": 5,
+  "error": null,
+  "servertype": "java",
+  "requestTime": 1735934622312,
+  "_parsed_results": {
+    "head": {
+      "vars": [
+        "used_lib"
+      ]
+    },
+    "results": {
+      "bindings": [
+        {
+          "used_lib": {
+            "type": "literal",
+            "value": "pypi_python_dotenv"
+          }
+        },
+        {
+          "used_lib": {
+            "type": "literal",
+            "value": "pypi_itsdangerous"
+          }
+        },
+        {
+          "used_lib": {
+            "type": "literal",
+            "value": "pypi_blinker"
+          }
+        },
+        {
+          "used_lib": {
+            "type": "literal",
+            "value": "pypi_importlib_metadata"
+          }
+        },
+        {
+          "used_lib": {
+            "type": "literal",
+            "value": "pypi_asgiref"
+          }
+        },
+        {
+          "used_lib": {
+            "type": "literal",
+            "value": "pypi_click"
+          }
+        },
+        {
+          "used_lib": {
+            "type": "literal",
+            "value": "pypi_werkzeug"
+          }
+        },
+        {
+          "used_lib": {
+            "type": "literal",
+            "value": "pypi_jinja2"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -160,16 +160,6 @@ def test_azure_openai_deployment_names():
     assert embeddings == "embeddings"
 
 
-def test_use_alt_sparql_console():
-    ConfigService.set_standard_unit_test_env_vars()
-    envvar = ConfigService.envvar("CAIG_USE_ALT_SPARQL_CONSOLE")
-    bool = ConfigService.use_alt_sparql_console()
-    if len(envvar) == 0:
-        assert bool == False
-    else:
-        assert bool == True
-
-
 def test_invoke_kernel_max_tokens():
     ConfigService.set_standard_unit_test_env_vars()
     val = ConfigService.invoke_kernel_max_tokens()

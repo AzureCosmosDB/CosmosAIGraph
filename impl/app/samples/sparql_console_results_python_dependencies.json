@@ -1,0 +1,38 @@
+{
+  "sparql": "PREFIX c: <http://cosmosdb.com/caig#>\r\nSELECT ?used_lib\r\nWHERE {\r\n    <http://cosmosdb.com/caig/pypi_flask> c:uses_lib ?used_lib .\r\n}\r\nLIMIT 10",
+  "results": {
+    "sparql": "PREFIX c: <http://cosmosdb.com/caig#>\r\nSELECT ?used_lib\r\nWHERE {\r\n    <http://cosmosdb.com/caig/pypi_flask> c:uses_lib ?used_lib .\r\n}\r\nLIMIT 10",
+    "results": [
+      {
+        "used_lib": "http://cosmosdb.com/caig/pypi_asgiref"
+      },
+      {
+        "used_lib": "http://cosmosdb.com/caig/pypi_blinker"
+      },
+      {
+        "used_lib": "http://cosmosdb.com/caig/pypi_click"
+      },
+      {
+        "used_lib": "http://cosmosdb.com/caig/pypi_importlib_metadata"
+      },
+      {
+        "used_lib": "http://cosmosdb.com/caig/pypi_itsdangerous"
+      },
+      {
+        "used_lib": "http://cosmosdb.com/caig/pypi_jinja2"
+      },
+      {
+        "used_lib": "http://cosmosdb.com/caig/pypi_python_dotenv"
+      },
+      {
+        "used_lib": "http://cosmosdb.com/caig/pypi_werkzeug"
+      }
+    ],
+    "exception": null,
+    "elapsed": 0.09446370002115145,
+    "row_count": 8
+  },
+  "elapsed": 0.09467909997329116,
+  "servertype": "python",
+  "error": null
+}
