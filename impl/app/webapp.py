@@ -230,7 +230,8 @@ async def post_sparql_console(req: Request):
                 suffix = "dependencies"
             if suffix is not None:
                 outfile = "tmp/sparql_console_results_{}_{}.json".format(
-                    servertype, suffix)
+                    servertype, suffix
+                )
                 if servertype == "java":
                     nested_results_json = query_results["results"]
                     query_results["_parsed_results"] = json.loads(nested_results_json)
@@ -661,7 +662,9 @@ def post_libraries_sparql_console(form_data):
     view_data["libtype"] = ""
 
     if sparql == "count":
-        view_data["sparql"] = "SELECT (COUNT(?s) AS ?triples) WHERE { ?s ?p ?o } LIMIT 10"
+        view_data["sparql"] = (
+            "SELECT (COUNT(?s) AS ?triples) WHERE { ?s ?p ?o } LIMIT 10"
+        )
     elif sparql == "triples":
         view_data["sparql"] = "SELECT * WHERE { ?s ?p ?o . } LIMIT 10"
     else:

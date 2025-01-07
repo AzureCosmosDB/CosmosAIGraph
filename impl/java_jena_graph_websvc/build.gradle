@@ -18,7 +18,7 @@ bootJar {
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		//languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -38,6 +38,7 @@ dependencies {
 	implementation 'org.springframework.session:spring-session-core'
 	compileOnly 'org.projectlombok:lombok'
 	implementation 'com.azure:azure-cosmos:4.65.0'
+	implementation 'org.mongodb:mongodb-driver-sync:5.2.1'
 	implementation 'org.apache.jena:apache-jena-libs:5.2.0'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

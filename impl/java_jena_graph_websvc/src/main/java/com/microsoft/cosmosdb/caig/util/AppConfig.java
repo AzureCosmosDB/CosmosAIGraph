@@ -21,27 +21,29 @@ import java.util.Properties;
 public class AppConfig {
 
     // Constants
-    public static final String APPLICATION_VERSION = "2025/01/03";
+    public static final String APPLICATION_VERSION = "2025/01/06";
 
     // Constants - Environment Variable Names
-    public static final String CAIG_COSMOSDB_NOSQL_ACCT       = "CAIG_COSMOSDB_NOSQL_ACCT";
-    public static final String CAIG_COSMOSDB_NOSQL_URI        = "CAIG_COSMOSDB_NOSQL_URI";
+    public static final String CAIG_COSMOSDB_NOSQL_ACCT           = "CAIG_COSMOSDB_NOSQL_ACCT";
+    public static final String CAIG_COSMOSDB_NOSQL_URI            = "CAIG_COSMOSDB_NOSQL_URI";
     public static final String CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM = "CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM";
-    public static final String CAIG_COSMOSDB_NOSQL_KEY        = "CAIG_COSMOSDB_NOSQL_KEY";
-    public static final String CAIG_GRAPH_SOURCE_TYPE         = "CAIG_GRAPH_SOURCE_TYPE";
-    public static final String CAIG_GRAPH_SOURCE_DB           = "CAIG_GRAPH_SOURCE_DB";
-    public static final String CAIG_GRAPH_SOURCE_CONTAINER    = "CAIG_GRAPH_SOURCE_CONTAINER";
-    public static final String CAIG_GRAPH_SOURCE_OWL_FILENAME = "CAIG_GRAPH_SOURCE_OWL_FILENAME";
-    public static final String CAIG_GRAPH_SOURCE_RDF_FILENAME = "CAIG_GRAPH_SOURCE_RDF_FILENAME";
-    public static final String CAIG_GRAPH_NAMESPACE           = "CAIG_GRAPH_NAMESPACE";
-    public static final String CAIG_GRAPH_DUMP_UPON_BUILD     = "CAIG_GRAPH_DUMP_UPON_BUILD";
-    public static final String CAIG_GRAPH_DUMP_OUTFILE        = "CAIG_GRAPH_DUMP_OUTFILE";
+    public static final String CAIG_COSMOSDB_NOSQL_KEY            = "CAIG_COSMOSDB_NOSQL_KEY";
+    public static final String CAIG_AZURE_MONGO_VCORE_CONN_STR    = "CAIG_AZURE_MONGO_VCORE_CONN_STR";
+    public static final String CAIG_GRAPH_SOURCE_TYPE             = "CAIG_GRAPH_SOURCE_TYPE";
+    public static final String CAIG_GRAPH_SOURCE_DB               = "CAIG_GRAPH_SOURCE_DB";
+    public static final String CAIG_GRAPH_SOURCE_CONTAINER        = "CAIG_GRAPH_SOURCE_CONTAINER";
+    public static final String CAIG_GRAPH_SOURCE_OWL_FILENAME     = "CAIG_GRAPH_SOURCE_OWL_FILENAME";
+    public static final String CAIG_GRAPH_SOURCE_RDF_FILENAME     = "CAIG_GRAPH_SOURCE_RDF_FILENAME";
+    public static final String CAIG_GRAPH_NAMESPACE               = "CAIG_GRAPH_NAMESPACE";
+    public static final String CAIG_GRAPH_DUMP_UPON_BUILD         = "CAIG_GRAPH_DUMP_UPON_BUILD";
+    public static final String CAIG_GRAPH_DUMP_OUTFILE            = "CAIG_GRAPH_DUMP_OUTFILE";
 
     public static final String[] DEFINED_ENVIRONMENT_VARIABLES = {
             CAIG_COSMOSDB_NOSQL_ACCT,
             CAIG_COSMOSDB_NOSQL_URI,
             CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM,
             CAIG_COSMOSDB_NOSQL_KEY,
+            CAIG_AZURE_MONGO_VCORE_CONN_STR,
             CAIG_GRAPH_SOURCE_TYPE,
             CAIG_GRAPH_SOURCE_DB,
             CAIG_GRAPH_SOURCE_CONTAINER,
@@ -147,6 +149,10 @@ public class AppConfig {
 
     public static String getCosmosNoSqlKey1() {
         return getEnvVar(CAIG_COSMOSDB_NOSQL_KEY, null);
+    }
+
+    public static String getMongoVcoreConnectionString() {
+        return getEnvVar(CAIG_AZURE_MONGO_VCORE_CONN_STR, null);
     }
 
     public static String getGraphSourceType() {

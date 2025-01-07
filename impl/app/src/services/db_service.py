@@ -162,9 +162,15 @@ ORDER BY VectorDistance(c.embedding, {})""".strip().format(
         try:
             if self.using_nosql():
                 quoted_values = self.quoted_values_string(names)
-                logging.info("get_documents_by_libtype_and_names - quoted_values: {}".format(quoted_values))
-                sql = "select * from c where c.libtype = '"+ libtype +"' and c.name in ({})".format(
-                    quoted_values
+                logging.info(
+                    "get_documents_by_libtype_and_names - quoted_values: {}".format(
+                        quoted_values
+                    )
+                )
+                sql = (
+                    "select * from c where c.libtype = '"
+                    + libtype
+                    + "' and c.name in ({})".format(quoted_values)
                 )
                 logging.info(sql)
                 items = await self.nosql_svc.query_items(sql, True)

@@ -175,8 +175,11 @@ class CosmosNoSQLService:
             doc["conversation_id"] = feedback.conversation_id
             doc["last_question"] = feedback.feedback_last_question
             doc["user"] = feedback.feedback_user_feedback
-            logging.info("CosmosNoSQLService#save_feedback: {} -> {}".format(
-                doc, ConfigService.feedback_container()))    
+            logging.info(
+                "CosmosNoSQLService#save_feedback: {} -> {}".format(
+                    doc, ConfigService.feedback_container()
+                )
+            )
             await self.create_item(doc)
             result = True
         except Exception as e:

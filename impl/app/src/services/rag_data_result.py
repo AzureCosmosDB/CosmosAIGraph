@@ -98,7 +98,9 @@ class RAGDataResult:
             prompt_lines.append("type: {}".format(doc["libtype"]))
             prompt_lines.append("summary: {}".format(doc["summary"]))
             try:
-                prompt_lines.append("documentation: {}".format(doc["documentation_summary"]))
+                prompt_lines.append(
+                    "documentation: {}".format(doc["documentation_summary"])
+                )
             except:
                 try:
                     prompt_lines.append("description: {}".format(doc["description"]))

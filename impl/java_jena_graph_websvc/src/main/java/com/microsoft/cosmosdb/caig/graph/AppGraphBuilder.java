@@ -13,6 +13,8 @@ import com.microsoft.cosmosdb.caig.models.SparqlQueryRequest;
 import com.microsoft.cosmosdb.caig.models.SparqlQueryResponse;
 import com.microsoft.cosmosdb.caig.util.AppConfig;
 import com.microsoft.cosmosdb.caig.util.FileUtil;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Projections;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
@@ -23,7 +25,12 @@ import org.apache.jena.riot.RIOT;
 import org.apache.jena.util.FileManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.conversions.Bson;
 import reactor.core.publisher.Flux;
+
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import org.bson.Document;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
@@ -34,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+
+import static com.mongodb.client.model.Filters.eq;
 
 /**
  * Instances of this class are created at application startup to create/build the
@@ -195,10 +204,6 @@ public class AppGraphBuilder {
     }
 
     private static void populateFromCosmosDbNoSQL(AppGraph g) {
-
-        // See example here:
-        // https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/cosmos/azure-cosmos#create-cosmos-client
-
         String uri = AppConfig.getCosmosNoSqlUri();
         String key = AppConfig.getCosmosNoSqlKey1();
         String dbname = AppConfig.getGraphSourceDb();
@@ -232,8 +237,6 @@ public class AppGraphBuilder {
             for (int r = 0; r < results.size(); r++) {
                 Map doc = results.get(r);
                 docCounter.incrementAndGet();
-                //logger.warn(docAsJson(doc, true));
-                //allDocuments.add(doc);
                 triplesBuilder.ingestDocument(doc);
             }
             return Flux.empty();
@@ -242,12 +245,11 @@ public class AppGraphBuilder {
         g.setDocsRead(docCounter.get());
         logger.warn("populateFromCosmosDbNoSQL, docCount:  " + docCounter.get());
 
-        // Initial ad-hoc code to capture the Cosmos DB documents to a file for use
-        // in the above populateFromJsonDocsFile() method.
-        if (false) {
+        if (AppConfig.dumpGraphUponBuild()) {
             try {
                 FileUtil fileUtil = new FileUtil();
-                fileUtil.writeJson(allDocuments, "tmp/cosmosdb_documents.json", true, true);
+                String outfile = AppConfig.getGraphDumpOutfile();
+                fileUtil.writeJson(allDocuments, outfile, true, true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -255,7 +257,59 @@ public class AppGraphBuilder {
     }
 
     private static void populateFromCosmosDbVcore(AppGraph g) throws Exception {
-        throw new Exception("CosmosDB vCore graph source not currently implemented");
+        //throw new Exception("CosmosDB vCore graph source not currently implemented");
+
+        String connStr = AppConfig.getMongoVcoreConnectionString();
+        String dbname = AppConfig.getGraphSourceDb();
+        String cname = AppConfig.getGraphSourceContainer();
+        LibrariesGraphTriplesBuilder triplesBuilder = new LibrariesGraphTriplesBuilder(g);
+        AtomicLong docCounter = new AtomicLong(0);
+        ArrayList<Map> allDocuments = new ArrayList<>();
+
+        logger.warn("populateFromCosmosDbVcore, connStr: " + connStr);
+        logger.warn("populateFromCosmosDbVcore, dbname:  " + dbname);
+        logger.warn("populateFromCosmosDbVcore, cname:   " + cname);
+
+        // Code samples here:
+        // https://www.baeldung.com/java-mongodb
+
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(new ConnectionString(connStr))
+                .build();
+        MongoClient mongoClient = MongoClients.create(settings);
+        MongoDatabase database = mongoClient.getDatabase(dbname);
+        MongoCollection<Document> collection = database.getCollection(cname);
+
+        Bson projectionFields = Projections.fields(
+                Projections.include(
+                        "id", "libtype", "name", "kwds", "developers", "dependency_ids"),
+                Projections.excludeId());
+
+        FindIterable<Document> findIterable = collection.find(eq("libtype", "pypi"))
+                .projection(projectionFields);
+        MongoCursor<Document> cursor = findIterable.cursor();
+
+        while (cursor.hasNext()) {
+            Document document = cursor.next();
+            Map<String, Object> map = document;
+            map.put("_id", map.get("id"));  // normalize the doc to the format used in the NoSQL API data
+            docCounter.incrementAndGet();
+            allDocuments.add(map);
+            triplesBuilder.ingestDocument(map);
+        }
+
+        g.setDocsRead(docCounter.get());
+        logger.warn("populateFromCosmosDbVcore, docCount:  " + docCounter.get());
+
+        if (AppConfig.dumpGraphUponBuild()) {
+            try {
+                FileUtil fileUtil = new FileUtil();
+                String outfile = AppConfig.getGraphDumpOutfile();
+                fileUtil.writeJson(allDocuments, outfile, true, true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void populateFromRdfFile(AppGraph g) throws Exception {

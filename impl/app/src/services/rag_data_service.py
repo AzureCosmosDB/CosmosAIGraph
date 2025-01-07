@@ -14,7 +14,7 @@ from src.services.rag_data_result import RAGDataResult
 from src.services.strategy_builder import StrategyBuilder
 
 
-# Instances of this class are used to identify and retrieve contextual data 
+# Instances of this class are used to identify and retrieve contextual data
 # in OmniRAG pattern. The data will be read from one or more of the following:
 # 1) Directly from Cosmos DB documents
 # 2) From in-memory graph
@@ -55,8 +55,8 @@ class RAGDataService:
 
     async def get_rag_data(self, user_text, max_doc_count=10) -> RAGDataResult:
         """
-        Return a RAGDataResult object which contains an array of documents to 
-        be used as a system prompt of a completion call to Azure OpenAI.  
+        Return a RAGDataResult object which contains an array of documents to
+        be used as a system prompt of a completion call to Azure OpenAI.
         In this OmniRAG implementation, the RAG data will be read,
         per the given user_text, from one of the following:
         1) Directly from Cosmos DB documents
@@ -126,7 +126,9 @@ class RAGDataService:
             )
             self.db_svc.set_db(ConfigService.graph_source_db())
             self.db_svc.set_coll(ConfigService.graph_source_container())
-            rag_docs_list = await self.db_svc.get_documents_by_libtype_and_names(libtype, [name])
+            rag_docs_list = await self.db_svc.get_documents_by_libtype_and_names(
+                libtype, [name]
+            )
             for doc in rag_docs_list:
                 if "_id" in doc.keys():
                     del doc["_id"]  # Mongo _id is not JSON serializable
@@ -153,8 +155,8 @@ class RAGDataService:
             self.db_svc.set_db(ConfigService.graph_source_db())
             self.db_svc.set_coll(ConfigService.graph_source_container())
             vs_result = await self.db_svc.rag_vector_search(embedding, k=max_doc_count)
-            #vs_result: [{'pk': 'pypi', 'id': 'pypi_asynch', 'name': 'asynch', 'libtype': 'pypi', 'score': 0.7382897035357523}, {'pk': 'pypi', 'id': 'pypi_asgiref', 'name': 'asgiref', 'libtype': 'pypi', 'score': 0.7101407670806869}, {'pk': 'pypi', 'id': 'pypi_asynctest', 'name': 'asynctest', 'libtype': 'pypi', 'score': 0.7097900906253423}] <class 'list'>
-            #print("vs_result: {} {}".format(vs_result, str(type(vs_result))))
+            # vs_result: [{'pk': 'pypi', 'id': 'pypi_asynch', 'name': 'asynch', 'libtype': 'pypi', 'score': 0.7382897035357523}, {'pk': 'pypi', 'id': 'pypi_asgiref', 'name': 'asgiref', 'libtype': 'pypi', 'score': 0.7101407670806869}, {'pk': 'pypi', 'id': 'pypi_asynctest', 'name': 'asynctest', 'libtype': 'pypi', 'score': 0.7097900906253423}] <class 'list'>
+            # print("vs_result: {} {}".format(vs_result, str(type(vs_result))))
             for vs_doc in vs_result:
                 rag_docs_list.append(vs_doc)
         except Exception as e:
@@ -180,12 +182,18 @@ class RAGDataService:
             sparql = self.ai_svc.generate_sparql_from_user_prompt(info)["sparql"]
             rdr.set_sparql(sparql)
             sparql_query_results = self._post_sparql_query_to_graph_microsvc(sparql)
-            logging.info("get_graph_rag_data, SPARQL results: {}".format(sparql_query_results))
+            logging.info(
+                "get_graph_rag_data, SPARQL results: {}".format(sparql_query_results)
+            )
             # iterate the SPARQL query results, collecting the libtype and names
             sparql_libtype_name_pairs = self._parse_sparql_rag_query_results(
                 sparql_query_results
             )
-            logging.info("get_graph_rag_data, getting documents from db for: {}".format(sparql_libtype_name_pairs.count))
+            logging.info(
+                "get_graph_rag_data, getting documents from db for: {}".format(
+                    sparql_libtype_name_pairs.count
+                )
+            )
             # query Cosmos DB using the libtype/libname from the graph
             self.db_svc.set_db(ConfigService.graph_source_db())
             self.db_svc.set_coll(ConfigService.graph_source_container())
@@ -193,7 +201,7 @@ class RAGDataService:
             for pair in sparql_libtype_name_pairs:
                 libtype, name = pair[0], pair[1]
                 libnames.append(name)
-                
+
             rag_docs_list = await self.db_svc.get_documents_by_libtype_and_names(
                 libtype, libnames
             )
@@ -239,7 +247,9 @@ class RAGDataService:
                 if len(pair) == 2:
                     libtype_name_pairs.append(pair)
                 else:
-                    libtype_name_pairs.append(["pypi", libtype_name]) #hardcode in case libtype wasn't part of resultset
+                    libtype_name_pairs.append(
+                        ["pypi", libtype_name]
+                    )  # hardcode in case libtype wasn't part of resultset
         except Exception as e:
             logging.critical(
                 "Exception in RagDataService#_parse_sparql_rag_query_results: {}".format(

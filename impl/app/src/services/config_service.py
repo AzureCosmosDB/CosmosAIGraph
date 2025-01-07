@@ -164,8 +164,12 @@ class ConfigService:
         d["CAIG_GRAPH_SERVICE_NAME"] = ""
         d["CAIG_GRAPH_SERVICE_URL"] = ""
         d["CAIG_GRAPH_SERVICE_PORT"] = ""
-        d["CAIG_GRAPH_DUMP_UPON_BUILD"] = "Boolean true/false to dump the Java/Jena model to CAIG_GRAPH_DUMP_OUTFILE"
-        d["CAIG_GRAPH_DUMP_OUTFILE"] = "The file to write to if CAIG_GRAPH_DUMP_UPON_BUILD is true"
+        d["CAIG_GRAPH_DUMP_UPON_BUILD"] = (
+            "Boolean true/false to dump the Java/Jena model to CAIG_GRAPH_DUMP_OUTFILE"
+        )
+        d["CAIG_GRAPH_DUMP_OUTFILE"] = (
+            "The file to write to if CAIG_GRAPH_DUMP_UPON_BUILD is true"
+        )
 
         # These three are experimental; possible future use
         # d["CAIG_PG_FLEX_SERVER"] = "Azure PostgreSQL Flex Server hostname"

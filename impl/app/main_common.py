@@ -143,12 +143,13 @@ def gen_bicep_file_fragments():
         bicep_env_lines.append("  value: {}".format(bicep_name))
         bicep_env_lines.append("}")
     FS.write_lines(bicep_env_lines, "../deployment/generated.bicep.env")
-    
+
     compose_env_lines = list()
     for env_name in sorted(names_map.keys()):
         name_with_colon = env_name + ":"
         compose_env_lines.append("{:<35} ${}".format(name_with_colon, env_name))
     FS.write_lines(compose_env_lines, "../deployment/generated.compose.env")
+
 
 def excluded_bicep_envvars():
     """
@@ -335,9 +336,13 @@ def encrypt_your_env_values(infile):
     file_has_errors = False
     ps1_line_template = '[Environment]::SetEnvironmentVariable("{}", "{}", "User")'
     output_lines = list()
-    today = datetime.today().strftime('%Y-%m-%d')
-    output_lines.append("# This script was generated on {} with the following command:".format(today))
-    output_lines.append("# python main_common.py encrypt_your_env_values {}".format(infile))
+    today = datetime.today().strftime("%Y-%m-%d")
+    output_lines.append(
+        "# This script was generated on {} with the following command:".format(today)
+    )
+    output_lines.append(
+        "# python main_common.py encrypt_your_env_values {}".format(infile)
+    )
 
     # First, validate the file:
     # Each line must contain three tokens - an environment variable name, a colon, and a value.
