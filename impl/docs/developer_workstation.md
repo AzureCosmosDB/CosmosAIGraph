@@ -14,6 +14,20 @@ These are required to simply execute the solution on your workstation:
   - This solution uses Python command-line and web application programs, not Jupyter Notebooks
   - Python version 3.12.x is recommended
   - Conda is not recommended for this solution
+- **OpenJDK Java 21**
+  - The new graph microservice is implemented in Java 21, Spring Boot, and Apache Jena
+  - Download from: https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-21
+  - See [Understanding the Code](understanding_the_code.md)
+- A **Java IDE**, such as:
+  - [Eclipse](https://eclipseide.org/)
+  - [Jetbrains Intellij](https://www.jetbrains.com/idea/)
+  - [Visual Studio Code (VSC)](https://code.visualstudio.com/)
+- **Gradle Build Tool**, version 8.12
+  - Used to compile and package the Java code
+  - See https://gradle.org/
+  - See the build.gradle file in the repo
+  - Alternately use the Maven build tool
+    - Create your pom.xml file per the build.gradle contents.
 - **A Mongo Shell Program**, such as:
   - [Azure Data Studio](https://azure.microsoft.com/en-us/products/data-studio)
     - This is the recommended mongosh program for the CosmosAIGraph solution
@@ -49,18 +63,3 @@ this additional software is recommended:
 - [GitHub Copilot](https://github.com/features/copilot)
   - AI-powered coding assistant
   - Copilot integrates nicely with VSC; see https://code.visualstudio.com/docs/copilot/overview
-- OpenJDK Java 21
-  - The new graph microservice is implemented in Java 21, Spring Boot, and Apache Jena
-  - Download from: https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-21
-  - See [Understanding the Code](understanding_the_code.md)
-- A Java IDE, such as:
-  - [Eclipse](https://eclipseide.org/)
-  - [Jetbrains Intellij](https://www.jetbrains.com/idea/)
-  - Visual Studio Code
-- Gradle Build Tool, version 8.12
-  - Used to compile and package the Java code
-  - See https://gradle.org/
-  - See the build.gradle file in the repo
-  - Alternately use the Maven build tool
-    - Create your pom.xml file per the build.gradle contents.
-
