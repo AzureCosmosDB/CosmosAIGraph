@@ -1,7 +1,0 @@
-{
-  "libtype": "pypi",
-  "libname": "sphinx-gallery",
-  "url": "https://sphinx-gallery.github.io",
-  "html": "<!DOCTYPE HTML><html lang=\"en-US\">    <head>        <link rel=\"canonical\" href=\"https://sphinx-gallery.github.io/stable/index.html\">        <meta charset=\"UTF-8\">        <meta http-equiv=\"refresh\" content=\"1; url=https://sphinx-gallery.github.io/stable/index.html\">        <script type=\"text/javascript\">            window.location.href = \"https://sphinx-gallery.github.io/stable/index.html\"        </script>        <title>Page Redirection</title>    </head>    <body>        If you are not redirected automatically, follow this <a href='https://sphinx-gallery.github.io/stable/index.html'>link</a>.    </body></html>",
-  "embeddings": []
-}

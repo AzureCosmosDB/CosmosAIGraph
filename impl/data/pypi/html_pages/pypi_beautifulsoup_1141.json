@@ -1,7 +1,0 @@
-{
-  "libtype": "pypi",
-  "libname": "beautifulsoup",
-  "url": "http://www.crummy.com/software/beautifulsoup/",
-  "html": "<html><head><title>Smells Like Error 404</title></head><body><blockquote>A browsing Victorian chap<br/>Encountered a server mishap.<br/>The page was no more:<br/>\"Alas! Four-oh-four!\"<br/>Enough with this limerick crap.</blockquote><a href=\"/\">Crummy</a></body></html>",
-  "embeddings": []
-}

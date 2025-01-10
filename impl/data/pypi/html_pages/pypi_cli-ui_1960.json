@@ -1,7 +1,0 @@
-{
-  "libtype": "pypi",
-  "libname": "cli-ui",
-  "url": "https://git.sr.ht/~your-tools/python-cli-ui",
-  "html": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"/><meta content=\"width=device-width, initial-scale=1\" name=\"viewport\"/><title>git.sr.ht</title><link href=\"/static/logo.svg\" rel=\"icon\" type=\"image/svg+xml\"/><link href=\"/static/logo.png\" rel=\"icon\" sizes=\"any\" type=\"image/png\"/><link href=\"/static/main.min.df853ed0.css\" rel=\"stylesheet\"/></head><body><nav class=\"container navbar navbar-light navbar-expand-sm\"><span class=\"navbar-brand\"><span aria-hidden=\"true\" class=\"icon icon-circle\"><svg height=\"22\" viewbox=\"0 0 512 512\" width=\"22\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200z\"></path></svg></span><a href=\"https://sr.ht\">    sourcehut  </a></span><ul class=\"navbar-nav\"></ul><div class=\"login\"><span class=\"navbar-text\"><a href=\"https://meta.sr.ht/oauth/authorize?client_id=25ff6e5ce60d7345&amp;scopes=profile,keys,b99a95de3e69c958/jobs:write&amp;state=%2F~your-tools%2Fpython-cli-ui%3F\" rel=\"nofollow\">Log in</a>    \u2014    <a href=\"https://meta.sr.ht\">Register</a></span></div></nav><div class=\"container\"><h2>404 Not Found</h2><p>  Whatever you're looking for, it isn't here.  <a href=\"/\">Index <i class=\"fa fa-caret-right\"></i></a></p></div></body></html>",
-  "embeddings": []
-}

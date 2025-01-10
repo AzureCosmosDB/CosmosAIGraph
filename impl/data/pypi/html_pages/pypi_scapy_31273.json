@@ -1,7 +1,0 @@
-{
-  "libtype": "pypi",
-  "libname": "scapy",
-  "url": "https://scapy.net",
-  "html": "<!DOCTYPE html><html lang=\"en\"><head>  <meta charset=\"UTF-8\" />  <link rel=\"icon\" href=\"/favicon.ico\" />  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />  <title>Scapy</title>  <script type=\"module\" crossorigin src=\"/assets/index-5bda6d9c.js\"></script>  <link rel=\"stylesheet\" href=\"/assets/index-d33e2c08.css\"></head><body>  <div id=\"app\"></div>  </body></html>",
-  "embeddings": []
-}

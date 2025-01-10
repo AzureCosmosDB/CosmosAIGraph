@@ -1,7 +1,0 @@
-{
-  "libtype": "pypi",
-  "libname": "ccxt",
-  "url": "https://ccxt.com",
-  "html": "<html xmlns=\"http://www.w3.org/1999/xhtml\">      <head>          <title>CryptoCurrency eXchange Trading Library</title>          <meta http-equiv=\"refresh\" content=\"1;URL='https://github.com/ccxt/ccxt'\" />  </head>  <body></body></html>",
-  "embeddings": []
-}
