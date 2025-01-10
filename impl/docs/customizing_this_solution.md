@@ -69,7 +69,7 @@ See file **impl/app/ontologies/libraries.owl** as a reference.
 
 The owl file development process should be iterative.
 
-## Step 5: Create a Data-Wrangling process to populate an rdflib graph
+## Step 5: Create a Data-Wrangling process to populate a Jena graph
 
 Given your datasets, and your evolving OWL file, populate 
 an in-memory rdflib graph, then serialize it to a *.nt file.

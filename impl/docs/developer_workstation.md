@@ -49,6 +49,18 @@ this additional software is recommended:
 - [GitHub Copilot](https://github.com/features/copilot)
   - AI-powered coding assistant
   - Copilot integrates nicely with VSC; see https://code.visualstudio.com/docs/copilot/overview
-- [Apache Ant and Java 1.8+](https://ant.apache.org/)
-  - Ant is only necessary for the deploy_master_code.ps1 script
+- OpenJDK Java 21
+  - The new graph microservice is implemented in Java 21, Spring Boot, and Apache Jena
+  - Download from: https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-21
   - See [Understanding the Code](understanding_the_code.md)
+- A Java IDE, such as:
+  - [Eclipse](https://eclipseide.org/)
+  - [Jetbrains Intellij](https://www.jetbrains.com/idea/)
+  - Visual Studio Code
+- Gradle Build Tool, version 8.12
+  - Used to compile and package the Java code
+  - See https://gradle.org/
+  - See the build.gradle file in the repo
+  - Alternately use the Maven build tool
+    - Create your pom.xml file per the build.gradle contents.
+
