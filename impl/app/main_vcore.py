@@ -169,7 +169,7 @@ async def create_entities():
 async def persist_entities():
     entities_svc = EntitiesService()
     await entities_svc.initialize()
-    vcore = entities_svc.vcore
+    vcore = entities_svc.vcore_svc
     vcore.set_db(ConfigService.graph_source_db())
     vcore.set_coll(ConfigService.config_container())
     entities_doc = FS.read_json(entities_doc_filename())
@@ -232,7 +232,7 @@ if __name__ == "__main__":
             elif func == "create_entities":
                 asyncio.run(create_entities())
             elif func == "persist_entities":
-                persist_entities()
+                asyncio.run(persist_entities())
             elif func == "identify_entities":
                 asyncio.run(identify_entities())
             else:
