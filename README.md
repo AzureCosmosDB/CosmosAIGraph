@@ -4,7 +4,6 @@
 
 - [Azure Cosmos DB TV, Episode 95 Video](https://www.youtube.com/watch?v=0alvRmEgIpQ)
 - [Presentations](presentations/)
-- [Architecture Diagram](presentations/app-architecture-v3.png)
 - [Reference Application Documentation](docs/readme.md)
 - [Reference Dataset of Python libraries, pre-vectorized](data/pypi/wrangled_libs)
 - [Frequently Asked Questions (FAQ)](docs/faq.md)
@@ -14,7 +13,7 @@
 </pre>
 
 <p align="center">
-  <img src="impl/docs/img/app-architecture-v3.png" width="90%">
+  <img src="presentations/app-architecture-v3.png" width="90%">
 </p>
 
 ---
