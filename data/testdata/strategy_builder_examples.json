@@ -1,0 +1,68 @@
+[
+  {
+    "natural_language": "lookup Flask",
+    "strategy": "db",
+    "name": "flask",
+    "algorithm": "text"
+  },
+  {
+    "natural_language": "  find    flask   ",
+    "strategy": "db",
+    "name": "flask",
+    "algorithm": "text"
+  },
+  {
+    "natural_language": "fetch python pydantic",
+    "strategy": "db",
+    "name": "pydantic",
+    "algorithm": "text"
+  },
+  {
+    "natural_language": "find python azure-cosmos",
+    "strategy": "db",
+    "name": "azure-cosmos",
+    "algorithm": "text"
+  },
+  {
+    "natural_language": "lookup PyPi Flask",
+    "strategy": "db",
+    "name": "flask",
+    "algorithm": "llm"
+  },
+  {
+    "natural_language": "find the Flask Library",
+    "strategy": "db",
+    "name": "flask",
+    "algorithm": "llm"
+  },
+  {
+    "natural_language": "get details about the Python M26 Library",
+    "strategy": "db",
+    "name": "m26",
+    "algorithm": "llm"
+  },
+  {
+    "natural_language": "get dependencies of the pypi flask lib",
+    "strategy": "graph",
+    "name": "flask",
+    "algorithm": "llm"
+  },
+  {
+    "natural_language": "list authors of the pypi pydantic library",
+    "strategy": "graph",
+    "name": "pydantic",
+    "algorithm": "llm"
+  },
+  {
+    "natural_language": "show bill of materials for the pypi flask library",
+    "strategy": "graph",
+    "name": "flask",
+    "algorithm": "llm"
+  },
+  {
+    "natural_language": "show bill of materials for the python pydantic library",
+    "strategy": "graph",
+    "name": "pydantic",
+    "algorithm": "llm"
+  }
+]

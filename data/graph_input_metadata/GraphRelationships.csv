@@ -1,0 +1,8 @@
+source_label,relationship,destination_label
+Customer,has_address,Address
+Customer,acct_owner,CD
+Customer,acct_owner,HomeEquity
+Customer,acct_owner,Checking
+Customer,acct_owner,IRA
+Customer,acct_owner,AutoLoan
+Customer,acct_owner,Savings

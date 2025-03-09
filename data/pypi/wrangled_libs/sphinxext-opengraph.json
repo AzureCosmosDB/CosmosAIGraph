@@ -1,0 +1,53 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "environment :: plugins",
+    "environment :: web environment",
+    "framework :: sphinx :: extension",
+    "intended audience :: developers",
+    "license :: osi approved :: bsd license",
+    "natural language :: english",
+    "operating system :: os independent",
+    "programming language :: python",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "topic :: documentation",
+    "topic :: documentation :: sphinx",
+    "topic :: software development :: documentation",
+    "topic :: text processing",
+    "topic :: utilities"
+  ],
+  "description": "# sphinxext-opengraph\n\n[![build](https://github.com/wpilibsuite/sphinxext-opengraph/workflows/test%20and%20deploy/badge.svg)](https://github.com/wpilibsuite/sphinxext-opengraph/actions)\n[![code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)\n\nsphinx extension to generate [open graph metadata](https://ogp.me/) for each page of your documentation.\n\n## installation\n\n```sh\npython -m pip install sphinxext-opengraph\n```\n\n## usage\njust add `sphinxext.opengraph` to your extensions list in your `conf.py`\n\n```python\nextensions = [\n   \"sphinxext.opengraph\",\n]\n```\n## options\nthese values are placed in the `conf.py` of your sphinx project.\n\nusers hosting documentation on read the docs *do not* need to set any of the following unless custom configuration is wanted. the extension will automatically retrieve your site url.\n\n* `ogp_site_url`\n    * this config option is very important, set it to the url the site is being hosted on. \n* `ogp_description_length`\n    * configure the amount of characters taken from a page. the default of 200 is probably good for most people. if something other than a number is used, it defaults back to 200. \n* `ogp_site_name`\n    * this is not required. name of the site. this is displayed above the title. defaults to the sphinx [`project`](https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-project) config value.  set to `false` to unset and use no default.\n* `ogp_social_cards`\n    * configuration for automatically creating social media card pngs for each page.\n      for more information, see [the social media cards docs](docs/source/socialcards.md).\n* `ogp_image`\n    * this is not required. link to image to show. note that all relative paths are converted to be relative to the root of the html output as defined by `ogp_site_url`.\n* `ogp_image_alt`\n    * this is not required. alt text for image. defaults to using `ogp_site_name` or the document's title as alt text, if available. set to `false` if you want to turn off alt text completely.\n* `ogp_use_first_image`\n    * this is not required. set to `true` to use each page's first image, if available. if set to `true` but no image is found, sphinx will use `ogp_image` instead.\n* `ogp_type`\n    * this sets the ogp type attribute, for more information on the types available please take a look at [https://ogp.me/#types](https://ogp.me/#types). by default it is set to `website`, which should be fine for most use cases.\n* `ogp_custom_meta_tags`\n    * this is not required. list of custom html snippets to insert.\n* `ogp_enable_meta_description`\n    * this is not required. when `true`, generates `<meta name=\"description\" content=\"...\">` from the page.\n\n## example config\n\n### simple config\n\n```python\nogp_site_url = \"http://example.org/\"\nogp_image = \"http://example.org/image.png\"\n```\n\n### advanced config\n\n```python\nogp_site_url = \"http://example.org/\"\nogp_image = \"http://example.org/image.png\"\nogp_description_length = 300\nogp_type = \"article\"\n\nogp_custom_meta_tags = [\n    '<meta property=\"og:ignore_canonical\" content=\"true\" />',\n]\n\nogp_enable_meta_description = true\n```\n\n## per page overrides\n[field lists](https://www.sphinx-doc.org/en/master/usage/restructuredtext/field-lists.html) are used to allow you to override certain settings on each page and set unsupported arbitrary open graph tags.\n\nmake sure you place the fields at the very start of the document such that sphinx will pick them up and also won't build them into the html.\n\n### overrides\nthese are some overrides that can be used on individual pages, you can actually override any tag and field lists will always take priority.\n\n* `:ogp_description_length:`\n  * configure the amount of characters to grab for the description of the page. if the value isn't a number it will fall back to `ogp_description_length`.[^1]\n* `:ogp_disable:`\n  * disables generation of open graph tags on the page.[^1]\n* `:og:description:`\n  * lets you override the description of the page.\n* `:description:` or `.. meta::\\n :description:`\n  * sets the `<meta name=\"description\" content=\"...\">` description.\n* `:og:title:`\n  * lets you override the title of the page.\n* `:og:type:`\n  * override the type of the page, for the list of available types take a look at https://ogp.me/#types.\n* `:og:image:`\n  * set the image for the page.[^2]\n* `:og:image:alt:`\n  * sets the alt text. will be ignored if there is no image set.\n\n### example\nremember that the fields **must** be placed at the very start of the file. you can verify sphinx has picked up the fields if they aren't shown in the final html file.\n\n```rst\n:og:description: new description\n:og:image: http://example.org/image.png\n:og:image:alt: example image\n\npage contents\n=============\n```\n\n### arbitrary tags[^2]\nadditionally, you can use field lists to add any arbitrary open graph tag not supported by the extension. the syntax for arbitrary tags is the same with `:og:tag: content`. for example:\n\n```rst\n:og:video: http://example.org/video.mp4\n\npage contents\n=============\n```\n\n[^1]: note the slightly different syntax because this isn't directly an open graph tag.\n[^2]: note: relative file paths for images, videos and audio are currently **not** supported when using field lists. please use an absolute path instead.\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "license.md",
+  "name": "sphinxext-opengraph",
+  "package_url": "https://pypi.org/project/sphinxext-opengraph/",
+  "project_url": "https://pypi.org/project/sphinxext-opengraph/",
+  "project_urls": {
+    "Homepage": "https://github.com/wpilibsuite/sphinxext-opengraph"
+  },
+  "release_url": "https://pypi.org/project/sphinxext-opengraph/0.9.1/",
+  "requires_dist": [
+    "sphinx >=4.0"
+  ],
+  "requires_python": ">=3.8",
+  "summary": "sphinx extension to enable ogp support",
+  "version": "0.9.1",
+  "releases": [],
+  "developers": [
+    "itay220204@gmail.com",
+    "itay_ziv"
+  ],
+  "kwds": "sphinxext sphinx opengraph documentation ogp_enable_meta_description",
+  "license_kwds": "license.md",
+  "libtype": "pypi",
+  "id": "pypi_sphinxext_opengraph",
+  "homepage": "https://github.com/wpilibsuite/sphinxext-opengraph",
+  "release_count": 24,
+  "dependency_ids": [
+    "pypi_sphinx"
+  ]
+}

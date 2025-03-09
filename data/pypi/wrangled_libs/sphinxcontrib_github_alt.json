@@ -1,0 +1,43 @@
+{
+  "classifiers": [
+    "framework :: sphinx :: extension",
+    "license :: osi approved :: bsd license",
+    "topic :: documentation :: sphinx",
+    "topic :: software development :: bug tracking",
+    "topic :: software development :: documentation",
+    "topic :: software development :: version control"
+  ],
+  "description": "link to github issues, pull requests, commits and users for a particular project.\n\nto use this extension, add it to the ``extensions`` list in ``conf.py``,\nand set the variable ``github_project_url``:\n\n.. code-block:: python\n\n    extensions = [...\n                  'sphinxcontrib_github_alt',\n                 ]\n\n    github_project_url = \"https://github.com/ipython/ipython\"\n\nthen use these roles in your documentation:\n\n.. code-block:: rst\n\n    * :ghissue:`12` - link to issue #12\n    * :ghpull:`35` - link to pull request #35\n    * :ghcommit:`3a1cb54` - link to commit\n    * :ghuser:`ipython` - link to a user or organisation\n\n\nit's called 'alt' because `sphinxcontrib-github\n<https://pypi.python.org/pypi/sphinxcontrib-github/>`__ already exists. ipython\n& jupyter projects have been using the syntax defined in this extension for some\ntime before we made it into its own package, so we didn't want to switch to\n``sphinxcontrib-github``.\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "",
+  "name": "sphinxcontrib_github_alt",
+  "package_url": "https://pypi.org/project/sphinxcontrib_github_alt/",
+  "project_url": "https://pypi.org/project/sphinxcontrib_github_alt/",
+  "project_urls": {
+    "Homepage": "https://github.com/jupyter/sphinxcontrib_github_alt"
+  },
+  "release_url": "https://pypi.org/project/sphinxcontrib_github_alt/1.2/",
+  "requires_dist": [
+    "docutils",
+    "sphinx"
+  ],
+  "requires_python": "",
+  "summary": "link to github issues, pull requests, commits and users from sphinx docs.",
+  "version": "1.2",
+  "releases": [],
+  "developers": [
+    "jupyter@googlegroups.com",
+    "jupyter_development_team"
+  ],
+  "kwds": "sphinxcontrib_github_alt sphinxcontrib github_project_url sphinx github",
+  "license_kwds": "",
+  "libtype": "pypi",
+  "id": "pypi_sphinxcontrib_github_alt",
+  "homepage": "https://github.com/jupyter/sphinxcontrib_github_alt",
+  "release_count": 3,
+  "dependency_ids": [
+    "pypi_docutils",
+    "pypi_sphinx"
+  ]
+}

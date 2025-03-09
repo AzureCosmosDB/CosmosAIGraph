@@ -1,0 +1,47 @@
+{
+  "classifiers": [
+    "development status :: 4 - beta",
+    "environment :: console",
+    "intended audience :: science/research",
+    "license :: osi approved :: mit license",
+    "natural language :: english",
+    "programming language :: python :: 3.5",
+    "programming language :: python :: 3.6",
+    "programming language :: python :: 3.7",
+    "programming language :: python :: 3.8"
+  ],
+  "description": "# vega_datasets\n\n[![build status](http://img.shields.io/travis/altair-viz/vega_datasets/master.svg?style=flat)](https://travis-ci.org/altair-viz/vega_datasets)\n[![github actions](https://github.com/altair-viz/vega_datasets/workflows/build/badge.svg)](https://github.com/altair-viz/vega_datasets/actions?query=workflow%3abuild)\n[![github actions](https://github.com/altair-viz/vega_datasets/workflows/lint/badge.svg)](https://github.com/altair-viz/vega_datasets/actions?query=workflow%3alint)\n[![code style black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)\n\na python package for offline access to [vega datasets](https://github.com/vega/vega-datasets).\n\nthis package has several goals:\n\n- provide straightforward access in python to the datasets made available at [vega-datasets](https://github.com/vega/vega-datasets).\n- return the results in the form of a pandas dataframe.\n- wherever dataset size and/or license constraints make it possible, bundle the dataset with the package so that datasets can be loaded in the absence of a web connection.\n\ncurrently the package bundles a half-dozen datasets, and falls back to using http requests for the others.\n\n## installation\n``vega_datasets`` is compatible with python 3.5 or newer. install with:\n```\n$ pip install vega_datasets\n```\n\n## usage\n\nthe main object in this library is ``data``:\n\n```python\n>>> from vega_datasets import data\n```\n\nit contains attributes that access all available datasets, locally if\navailable. for example, here is the well-known iris dataset:\n\n```python\n>>> df = data.iris()\n>>> df.head()\n   petallength  petalwidth  sepallength  sepalwidth species\n0          1.4         0.2          5.1         3.5  setosa\n1          1.4         0.2          4.9         3.0  setosa\n2          1.3         0.2          4.7         3.2  setosa\n3          1.5         0.2          4.6         3.1  setosa\n4          1.4         0.2          5.0         3.6  setosa\n```\n\nif you're curious about the source data, you can access the url for any of the available datasets:\n\n```python\n>>> data.iris.url\n'https://cdn.jsdelivr.net/npm/vega-datasets@v1.29.0/data/iris.json'\n```\n\nfor datasets bundled with the package, you can also find their location on disk:\n\n```python\n>>> data.iris.filepath\n'/lib/python3.6/site-packages/vega_datasets/data/iris.json'\n```\n\n## available datasets\n\nto list all the available datsets, use ``list_datasets``:\n\n```python\n>>> data.list_datasets()\n['7zip', 'airports', 'anscombe', 'barley', 'birdstrikes', 'budget', 'budgets', 'burtin', 'cars', 'climate', 'co2-concentration', 'countries', 'crimea', 'disasters', 'driving', 'earthquakes', 'ffox', 'flare', 'flare-dependencies', 'flights-10k', 'flights-200k', 'flights-20k', 'flights-2k', 'flights-3m', 'flights-5k', 'flights-airport', 'gapminder', 'gapminder-health-income', 'gimp', 'github', 'graticule', 'income', 'iris', 'jobs', 'londonboroughs', 'londoncentroids', 'londontubelines', 'lookup_groups', 'lookup_people', 'miserables', 'monarchs', 'movies', 'normal-2d', 'obesity', 'points', 'population', 'population_engineers_hurricanes', 'seattle-temps', 'seattle-weather', 'sf-temps', 'sp500', 'stocks', 'udistrict', 'unemployment', 'unemployment-across-industries', 'us-10m', 'us-employment', 'us-state-capitals', 'weather', 'weball26', 'wheat', 'world-110m', 'zipcodes']\n```\n\nto list local datasets (i.e. those that are bundled with the package and can be used without a web connection), use the ``local_data`` object instead:\n\n```python\n>>> from vega_datasets import local_data\n>>> local_data.list_datasets()\n\n['airports', 'anscombe', 'barley', 'burtin', 'cars', 'crimea', 'driving', 'iowa-electricity', 'iris', 'seattle-temps', 'seattle-weather', 'sf-temps', 'stocks', 'us-employment', \"wheat\"]\n```\n\nwe plan to add more local datasets in the future, subject to size and licensing constraints. see the [local datasets issue](https://github.com/altair-viz/vega_datasets/issues/1) if you would like to help with this.\n\n## dataset information\n\nif you want more information about any dataset, you can use the ``description`` property:\n\n```python\n>>> data.iris.description\n'this classic dataset contains lengths and widths of petals and sepals for 150 iris flowers, drawn from three species. it was introduced by r.a. fisher in 1936 [1]_.'\n```\n\nthis information is also part of the ``data.iris`` doc string.\ndescriptions are not yet included for all the datasets in the package; we hope to add more information on this in the future.\n\n\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "mit",
+  "name": "vega-datasets",
+  "package_url": "https://pypi.org/project/vega-datasets/",
+  "project_url": "https://pypi.org/project/vega-datasets/",
+  "project_urls": {
+    "Bug Reports": "https://github.com/altair-viz/vega_datasets/issues",
+    "Download": "http://github.com/altair-viz/vega_datasets",
+    "Homepage": "http://github.com/altair-viz/vega_datasets",
+    "Source": "https://github.com/altair-viz/vega_datasets"
+  },
+  "release_url": "https://pypi.org/project/vega-datasets/0.9.0/",
+  "requires_dist": [
+    "pandas"
+  ],
+  "requires_python": ">=3.5",
+  "summary": "a python package for offline access to vega datasets",
+  "version": "0.9.0",
+  "releases": [],
+  "developers": [
+    "jake_vanderplas",
+    "jakevdp@gmail.com"
+  ],
+  "kwds": "vega_datasets altair actions workflows code",
+  "license_kwds": "mit",
+  "libtype": "pypi",
+  "id": "pypi_vega_datasets",
+  "homepage": "http://github.com/altair-viz/vega_datasets",
+  "release_count": 10,
+  "dependency_ids": [
+    "pypi_pandas"
+  ]
+}

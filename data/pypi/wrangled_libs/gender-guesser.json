@@ -1,0 +1,30 @@
+{
+  "classifiers": [],
+  "description": "==============\ngender guesser\n==============\n\n.. image:: https://travis-ci.org/lead-ratings/gender-guesser.svg?branch=master\n    :target: https://travis-ci.org/lead-ratings/gender-guesser\n\n\nthis package uses the underlying data from the program \"gender\" by jorg michael (described `here <http://www.autohotkey.com/community/viewtopic.php?t=22000>`_).  its use is pretty straightforward::\n\n    >>> import gender_guesser.detector as gender\n    >>> d = gender.detector()\n    >>> print(d.get_gender(u\"bob\"))\n    male\n    >>> print(d.get_gender(u\"sally\"))\n    female\n    >>> print(d.get_gender(u\"pauley\")) # should be androgynous\n    andy\n\nthe result will be one of ``unknown`` (name not found), ``andy`` (androgynous), ``male``, ``female``, ``mostly_male``, or ``mostly_female``. the difference between ``andy`` and ``unknown`` is that the former is found to have the same probability to be male than to be female, while the later means that the name wasn't found in the database.\n\ni18n is fully supported::\n\n    >>> print(d.get_gender(u\"\\xc1lfr\\xfan\"))  # u\"\u00e1lfr\u00fan\"\n    female\n\nadditionally, you can give preference to specific countries::\n\n    >>> print(d.get_gender(u\"jamie\"))\n    mostly_female\n    >>> print(d.get_gender(u\"jamie\", u'great_britain'))\n    mostly_male\n\nadditionally, you can create a detector that is not case sensitive (default *is* to be case sensitive)::\n\n    >>> d = gender.detector(case_sensitive=false)\n    >>> print(d.get_gender(u\"sally\"))\n    female\n    >>> print(d.get_gender(u\"sally\"))\n    female\n\ntry to avoid creating many detectors, as each creation means reading the data file.\n\nlicenses\n========\n\nthe generator code is distributed under the gplv3.  the data file nam_dict.txt is released under the gnu free documentation license.\n\n\nchangelog\n=========\n\n0.3.0 (2016-07-02)\n******************\n\n* remove ``unknown_value`` init option, since it can be implemented very easily with a wrapper if needed.\n* return ``unknown`` when name is not found and ``andy`` when it is valid equally for both male and female.\n* test readme examples as doctests.\n* fix incorrect country-wise gender detection for non-iso886-15 names coming from line length change after data file conversion to utf-8. see #gh2. thanks @miquelcamprodon.\n\n\n0.2.0 (2015-12-06)\n******************\n\n* wire in ``tox`` to test in both python 2 and python 3.\n* python 2 and 3 compatiblity.\n* remove obsolete character mapper code.\n\nfor previous versions, see `sexmachine <https://github.com/ferhatelmas/sexmachine/>`_.\n\n\ncredits\n=======\n\nthis is a fork of the ``sexmachine`` package by `ferhat elmas <https://github.com/ferhatelmas>`_. it was created to be able to publish a python 3 compatible version to pypi and to be able add some more improvements without bugging the original author.",
+  "docs_url": null,
+  "keywords": "",
+  "license": "gplv3",
+  "name": "gender-guesser",
+  "package_url": "https://pypi.org/project/gender-guesser/",
+  "project_url": "https://pypi.org/project/gender-guesser/",
+  "project_urls": {
+    "Download": "UNKNOWN",
+    "Homepage": "https://github.com/lead-ratings/gender-guesser"
+  },
+  "release_url": "https://pypi.org/project/gender-guesser/0.4.0/",
+  "requires_dist": [],
+  "requires_python": null,
+  "summary": "get the gender from first name.",
+  "version": "0.4.0",
+  "releases": [],
+  "developers": [
+    "israel@lead-ratings.com"
+  ],
+  "kwds": "gender_guesser get_gender gender guesser travis",
+  "license_kwds": "gplv3",
+  "libtype": "pypi",
+  "id": "pypi_gender_guesser",
+  "homepage": "https://github.com/lead-ratings/gender-guesser",
+  "release_count": 3,
+  "dependency_ids": []
+}

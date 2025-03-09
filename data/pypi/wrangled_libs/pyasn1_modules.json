@@ -1,0 +1,63 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "environment :: console",
+    "intended audience :: developers",
+    "intended audience :: education",
+    "intended audience :: information technology",
+    "intended audience :: system administrators",
+    "intended audience :: telecommunications industry",
+    "license :: osi approved :: bsd license",
+    "natural language :: english",
+    "operating system :: os independent",
+    "programming language :: python :: 2",
+    "programming language :: python :: 2.7",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.6",
+    "programming language :: python :: 3.7",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "programming language :: python :: implementation :: cpython",
+    "programming language :: python :: implementation :: pypy",
+    "topic :: communications",
+    "topic :: software development :: libraries :: python modules"
+  ],
+  "description": "\nasn.1 modules for python\n------------------------\n[![pypi](https://img.shields.io/pypi/v/pyasn1-modules.svg?maxage=2592000)](https://pypi.org/project/pyasn1-modules)\n[![python versions](https://img.shields.io/pypi/pyversions/pyasn1-modules.svg)](https://pypi.org/project/pyasn1-modules/)\n[![build status](https://github.com/pyasn1/pyasn1-modules/actions/workflows/main.yml/badge.svg)](https://github.com/pyasn1/pyasn1-modules/actions/workflows/main.yml)\n[![coverage status](https://img.shields.io/codecov/c/github/pyasn1/pyasn1-modules.svg)](https://codecov.io/github/pyasn1/pyasn1-modules)\n[![github license](https://img.shields.io/badge/license-bsd-blue.svg)](https://raw.githubusercontent.com/pyasn1/pyasn1-modules/master/license.txt)\n\nthe `pyasn1-modules` package contains a collection of\n[asn.1](https://www.itu.int/rec/dologin_pub.asp?lang=e&id=t-rec-x.208-198811-w!!pdf-e&type=items)\ndata structures expressed as python classes based on [pyasn1](https://github.com/pyasn1/pyasn1)\ndata model.\n\nif asn.1 module you need is not present in this collection, try using\n[asn1ate](https://github.com/kimgr/asn1ate) tool that compiles asn.1 documents\ninto pyasn1 code.\n\n**note:** the package is now maintained by *christian heimes* and\n*simon pichugin* in project https://github.com/pyasn1/pyasn1-modules.\n\nfeedback\n--------\n\nif something does not work as expected, \n[open an issue](https://github.com/pyasn1/pyasn1-modules/issues) at github\nor post your question [on stack overflow](https://stackoverflow.com/questions/ask)\n \nnew modules contributions are welcome via github pull requests.\n\ncopyright (c) 2005-2020, [ilya etingof](mailto:etingof@gmail.com).\nall rights reserved.\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "bsd",
+  "name": "pyasn1-modules",
+  "package_url": "https://pypi.org/project/pyasn1-modules/",
+  "project_url": "https://pypi.org/project/pyasn1-modules/",
+  "project_urls": {
+    "Changelog": "https://github.com/pyasn1/pyasn1-modules/blob/master/CHANGES.txt",
+    "Homepage": "https://github.com/pyasn1/pyasn1-modules",
+    "Issues": "https://github.com/pyasn1/pyasn1-modules/issues",
+    "Source": "https://github.com/pyasn1/pyasn1-modules"
+  },
+  "release_url": "https://pypi.org/project/pyasn1-modules/0.3.0/",
+  "requires_dist": [
+    "pyasn1 (<0.6.0,>=0.4.6)"
+  ],
+  "requires_python": "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7",
+  "summary": "a collection of asn.1-based protocols modules",
+  "version": "0.3.0",
+  "releases": [],
+  "developers": [
+    "christian@python.org",
+    "etingof@gmail.com",
+    "ilya_etingof",
+    "pyasn1_maintenance_organization"
+  ],
+  "kwds": "pyasn1 pyversions pypi modules module",
+  "license_kwds": "bsd",
+  "libtype": "pypi",
+  "id": "pypi_pyasn1_modules",
+  "homepage": "https://github.com/pyasn1/pyasn1-modules",
+  "release_count": 24,
+  "dependency_ids": [
+    "pypi_pyasn1"
+  ]
+}

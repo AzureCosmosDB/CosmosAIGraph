@@ -1,0 +1,44 @@
+{
+  "classifiers": [
+    "license :: osi approved :: mit license",
+    "operating system :: macos",
+    "operating system :: microsoft :: windows",
+    "operating system :: posix :: linux",
+    "programming language :: python :: 3 :: only",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.7",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "programming language :: python :: implementation :: cpython",
+    "programming language :: python :: implementation :: pypy",
+    "topic :: software development :: libraries :: python modules",
+    "typing :: typed"
+  ],
+  "description": "[![build status](https://github.com/hukkin/tomli-w/workflows/tests/badge.svg?branch=master)](https://github.com/hukkin/tomli-w/actions?query=workflow%3atests+branch%3amaster+event%3apush)\n[![codecov.io](https://codecov.io/gh/hukkin/tomli-w/branch/master/graph/badge.svg)](https://codecov.io/gh/hukkin/tomli-w)\n[![pypi version](https://img.shields.io/pypi/v/tomli-w)](https://pypi.org/project/tomli-w)\n\n# tomli-w\n\n> a lil' toml writer\n\n**table of contents**  *generated with [mdformat-toc](https://github.com/hukkin/mdformat-toc)*\n\n<!-- mdformat-toc start --slug=github --maxlevel=6 --minlevel=2 -->\n\n- [intro](#intro)\n- [installation](#installation)\n- [usage](#usage)\n  - [write to string](#write-to-string)\n  - [write to file](#write-to-file)\n- [faq](#faq)\n  - [does tomli-w sort the document?](#does-tomli-w-sort-the-document)\n  - [does tomli-w support writing documents with comments or custom whitespace?](#does-tomli-w-support-writing-documents-with-comments-or-custom-whitespace)\n  - [why does tomli-w not write a multi-line string if the string value contains newlines?](#why-does-tomli-w-not-write-a-multi-line-string-if-the-string-value-contains-newlines)\n  - [is tomli-w output guaranteed to be valid toml?](#is-tomli-w-output-guaranteed-to-be-valid-toml)\n\n<!-- mdformat-toc end -->\n\n## intro<a name=\"intro\"></a>\n\ntomli-w is a python library for writing [toml](https://toml.io).\nit is a write-only counterpart to [tomli](https://github.com/hukkin/tomli),\nwhich is a read-only toml parser.\ntomli-w is fully compatible with [toml v1.0.0](https://toml.io/en/v1.0.0).\n\n## installation<a name=\"installation\"></a>\n\n```bash\npip install tomli-w\n```\n\n## usage<a name=\"usage\"></a>\n\n### write to string<a name=\"write-to-string\"></a>\n\n```python\nimport tomli_w\n\ndoc = {\"table\": {\"nested\": {}, \"val3\": 3}, \"val2\": 2, \"val1\": 1}\nexpected_toml = \"\"\"\\\nval2 = 2\nval1 = 1\n\n[table]\nval3 = 3\n\n[table.nested]\n\"\"\"\nassert tomli_w.dumps(doc) == expected_toml\n```\n\n### write to file<a name=\"write-to-file\"></a>\n\n```python\nimport tomli_w\n\ndoc = {\"one\": 1, \"two\": 2, \"pi\": 3}\nwith open(\"path_to_file/conf.toml\", \"wb\") as f:\n    tomli_w.dump(doc, f)\n```\n\n## faq<a name=\"faq\"></a>\n\n### does tomli-w sort the document?<a name=\"does-tomli-w-sort-the-document\"></a>\n\nno, but it respects sort order of the input data,\nso one could sort the content of the `dict` (recursively) before calling `tomli_w.dumps`.\n\n### does tomli-w support writing documents with comments or custom whitespace?<a name=\"does-tomli-w-support-writing-documents-with-comments-or-custom-whitespace\"></a>\n\nno.\n\n### why does tomli-w not write a multi-line string if the string value contains newlines?<a name=\"why-does-tomli-w-not-write-a-multi-line-string-if-the-string-value-contains-newlines\"></a>\n\nthis default was chosen to achieve lossless parse/write round-trips.\n\ntoml strings can contain newlines where exact bytes matter, e.g.\n\n```toml\ns = \"here's a newline\\r\\n\"\n```\n\ntoml strings also can contain newlines where exact byte representation is not relevant, e.g.\n\n```toml\ns = \"\"\"here's a newline\n\"\"\"\n```\n\na parse/write round-trip that converts the former example to the latter does not preserve the original newline byte sequence.\nthis is why tomli-w avoids writing multi-line strings.\n\na keyword argument is provided for users who do not need newline bytes to be preserved:\n\n```python\nimport tomli_w\n\ndoc = {\"s\": \"here's a newline\\r\\n\"}\nexpected_toml = '''\\\ns = \"\"\"\nhere's a newline\n\"\"\"\n'''\nassert tomli_w.dumps(doc, multiline_strings=true) == expected_toml\n```\n\n### is tomli-w output guaranteed to be valid toml?<a name=\"is-tomli-w-output-guaranteed-to-be-valid-toml\"></a>\n\nno.\nif there's a chance that your input data is bad and you need output validation,\nparse the output string once with `tomli.loads`.\nif the parse is successful (does not raise `tomli.tomldecodeerror`) then the string is valid toml.\n\n",
+  "docs_url": null,
+  "keywords": "toml,tomli",
+  "license": "",
+  "name": "tomli-w",
+  "package_url": "https://pypi.org/project/tomli-w/",
+  "project_url": "https://pypi.org/project/tomli-w/",
+  "project_urls": {
+    "Changelog": "https://github.com/hukkin/tomli-w/blob/master/CHANGELOG.md",
+    "Homepage": "https://github.com/hukkin/tomli-w"
+  },
+  "release_url": "https://pypi.org/project/tomli-w/1.0.0/",
+  "requires_dist": [],
+  "requires_python": ">=3.7",
+  "summary": "a lil' toml writer",
+  "version": "1.0.0",
+  "releases": [],
+  "developers": [
+    "hukkin@users.noreply.github.com"
+  ],
+  "kwds": "tomli tomli_w expected_toml toml workflows",
+  "license_kwds": "",
+  "libtype": "pypi",
+  "id": "pypi_tomli_w",
+  "homepage": "",
+  "release_count": 7,
+  "dependency_ids": []
+}

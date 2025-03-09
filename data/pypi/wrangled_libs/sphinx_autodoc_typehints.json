@@ -1,0 +1,68 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "framework :: sphinx :: extension",
+    "intended audience :: developers",
+    "license :: osi approved :: mit license",
+    "programming language :: python",
+    "programming language :: python :: 3 :: only",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.12",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "topic :: documentation :: sphinx"
+  ],
+  "description": "# sphinx-autodoc-typehints\n\n[![pypi](https://img.shields.io/pypi/v/sphinx-autodoc-typehints?style=flat-square)](https://pypi.org/project/sphinx-autodoc-typehints/)\n[![supported python\nversions](https://img.shields.io/pypi/pyversions/sphinx-autodoc-typehints.svg)](https://pypi.org/project/sphinx-autodoc-typehints/)\n[![downloads](https://pepy.tech/badge/sphinx-autodoc-typehints/month)](https://pepy.tech/project/sphinx-autodoc-typehints)\n[![check](https://github.com/tox-dev/sphinx-autodoc-typehints/actions/workflows/check.yml/badge.svg)](https://github.com/tox-dev/sphinx-autodoc-typehints/actions/workflows/check.yml)\n\nthis extension allows you to use python 3 annotations for documenting acceptable argument types and return value types\nof functions. see an example of the sphinx render at the\n[pyproject-api docs](https://pyproject-api.readthedocs.io/en/latest/).\n\nthis allows you to use type hints in a very natural fashion, allowing you to migrate from this:\n\n```python\ndef format_unit(value, unit):\n    \"\"\"\n    formats the given value as a human readable string using the given units.\n\n    :param float|int value: a numeric value\n    :param str unit: the unit for the value (kg, m, etc.)\n    :rtype: str\n    \"\"\"\n    return f\"{value} {unit}\"\n```\n\nto this:\n\n```python\nfrom typing import union\n\n\ndef format_unit(value: union[float, int], unit: str) -> str:\n    \"\"\"\n    formats the given value as a human readable string using the given units.\n\n    :param value: a numeric value\n    :param unit: the unit for the value (kg, m, etc.)\n    \"\"\"\n    return f\"{value} {unit}\"\n```\n\n## installation and setup\n\nfirst, use pip to download and install the extension:\n\n```bash\npip install sphinx-autodoc-typehints\n```\n\nthen, add the extension to your `conf.py`:\n\n```python\nextensions = [\"sphinx.ext.autodoc\", \"sphinx_autodoc_typehints\"]\n```\n\n## options\n\nthe following configuration options are accepted:\n\n- `typehints_fully_qualified` (default: `false`): if `true`, class names are always fully qualified (e.g.\n  `module.for.class`). if `false`, just the class name displays (e.g. `class`)\n- `always_document_param_types` (default: `false`): if `false`, do not add type info for undocumented parameters. if\n  `true`, add stub documentation for undocumented parameters to be able to add type info.\n- `typehints_document_rtype` (default: `true`): if `false`, never add an `:rtype:` directive. if `true`, add the\n  `:rtype:` directive if no existing `:rtype:` is found.\n- `typehints_use_rtype` (default: `true`): controls behavior when `typehints_document_rtype` is set to `true`. if\n  `true`, document return type in the `:rtype:` directive. if `false`, document return type as part of the `:return:`\n  directive, if present, otherwise fall back to using `:rtype:`. use in conjunction with\n  [napoleon_use_rtype](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html#confval-napoleon_use_rtype)\n  to avoid generation of duplicate or redundant return type information.\n- `typehints_defaults` (default: `none`): if `none`, defaults are not added. otherwise, adds a default annotation:\n\n  - `'comma'` adds it after the type, changing sphinx\u2019 default look to \u201c**param** (_int_, default: `1`) -- text\u201d.\n  - `'braces'` adds `(default: ...)` after the type (useful for numpydoc like styles).\n  - `'braces-after'` adds `(default: ...)` at the end of the parameter documentation text instead.\n\n- `simplify_optional_unions` (default: `true`): if `true`, optional parameters of type \\\"union\\[\\...\\]\\\" are simplified\n  as being of type union\\[\\..., none\\] in the resulting documentation (e.g. optional\\[union\\[a, b\\]\\] -\\> union\\[a, b,\n  none\\]). if `false`, the \\\"optional\\\"-type is kept. note: if `false`, **any** union containing `none` will be\n  displayed as optional! note: if an optional parameter has only a single type (e.g optional\\[a\\] or union\\[a, none\\]),\n  it will **always** be displayed as optional!\n- `typehints_formatter` (default: `none`): if set to a function, this function will be called with `annotation` as first\n  argument and `sphinx.config.config` argument second. the function is expected to return a string with restructuredtext\n  code or `none` to fall back to the default formatter.\n- `typehints_use_signature` (default: `false`): if `true`, typehints for parameters in the signature are shown.\n- `typehints_use_signature_return` (default: `false`): if `true`, return annotations in the signature are shown.\n\n## how it works\n\nthe extension listens to the `autodoc-process-signature` and `autodoc-process-docstring` sphinx events. in the former,\nit strips the annotations from the function signature. in the latter, it injects the appropriate `:type argname:` and\n`:rtype:` directives into the docstring.\n\nonly arguments that have an existing `:param:` directive in the docstring get their respective `:type:` directives\nadded. the `:rtype:` directive is added if and only if no existing `:rtype:` is found.\n\n## compatibility with sphinx.ext.napoleon\n\nto use [sphinx.ext.napoleon](http://www.sphinx-doc.org/en/stable/ext/napoleon.html) with sphinx-autodoc-typehints, make\nsure you load [sphinx.ext.napoleon](http://www.sphinx-doc.org/en/stable/ext/napoleon.html) first, **before**\nsphinx-autodoc-typehints. see [issue 15](https://github.com/tox-dev/sphinx-autodoc-typehints/issues/15) on the issue\ntracker for more information.\n\n## dealing with circular imports\n\nsometimes functions or classes from two different modules need to reference each other in their type annotations. this\ncreates a circular import problem. the solution to this is the following:\n\n1. import only the module, not the classes/functions from it\n2. use forward references in the type annotations (e.g. `def methodname(self, param1: 'othermodule.otherclass'):`)\n\non python 3.7, you can even use `from __future__ import annotations` and remove the quotes.\n",
+  "docs_url": null,
+  "keywords": "environments,isolated,testing,virtual",
+  "license": "",
+  "name": "sphinx-autodoc-typehints",
+  "package_url": "https://pypi.org/project/sphinx-autodoc-typehints/",
+  "project_url": "https://pypi.org/project/sphinx-autodoc-typehints/",
+  "project_urls": {
+    "Changelog": "https://github.com/tox-dev/sphinx-autodoc-typehints/blob/main/CHANGELOG.md",
+    "Homepage": "https://github.com/tox-dev/sphinx-autodoc-typehints",
+    "Source": "https://github.com/tox-dev/sphinx-autodoc-typehints",
+    "Tracker": "https://github.com/tox-dev/sphinx-autodoc-typehints/issues"
+  },
+  "release_url": "https://pypi.org/project/sphinx-autodoc-typehints/1.25.2/",
+  "requires_dist": [
+    "sphinx>=7.1.2",
+    "furo>=2023.7.26; extra == 'docs'",
+    "sphinx>=7.1.2; extra == 'docs'",
+    "nptyping>=2.5; extra == 'numpy'",
+    "covdefaults>=2.3; extra == 'testing'",
+    "coverage>=7.3; extra == 'testing'",
+    "diff-cover>=7.7; extra == 'testing'",
+    "pytest-cov>=4.1; extra == 'testing'",
+    "pytest>=7.4; extra == 'testing'",
+    "sphobjinv>=2.3.1; extra == 'testing'",
+    "typing-extensions>=4.7.1; extra == 'testing'"
+  ],
+  "requires_python": ">=3.8",
+  "summary": "type hints (pep 484) support for the sphinx autodoc extension",
+  "version": "1.25.2",
+  "releases": [],
+  "developers": [
+    "gaborjbernat@gmail.com"
+  ],
+  "kwds": "sphinx_autodoc_typehints sphinx autodoc typehints_document_rtype typehints_use_rtype",
+  "license_kwds": "",
+  "libtype": "pypi",
+  "id": "pypi_sphinx_autodoc_typehints",
+  "homepage": "",
+  "release_count": 73,
+  "dependency_ids": [
+    "pypi_covdefaults",
+    "pypi_coverage",
+    "pypi_diff_cover",
+    "pypi_furo",
+    "pypi_nptyping",
+    "pypi_pytest",
+    "pypi_pytest_cov",
+    "pypi_sphinx",
+    "pypi_sphobjinv",
+    "pypi_typing_extensions"
+  ]
+}

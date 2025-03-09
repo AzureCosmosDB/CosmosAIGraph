@@ -1,0 +1,50 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "intended audience :: developers",
+    "intended audience :: science/research",
+    "license :: osi approved :: mit license",
+    "operating system :: os independent",
+    "programming language :: python",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.12",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "topic :: documentation",
+    "topic :: scientific/engineering",
+    "topic :: utilities"
+  ],
+  "description": "sphinxcontrib-katex\n===================\n\n|docs| |python-versions| |license|\n\na `sphinx extension`_ for rendering math in html pages.\n\nthe extension uses `katex`_ for rendering of math in html pages. it is designed\nas a replacement for the built-in extension `sphinx.ext.mathjax`_, which uses\n`mathjax`_ for rendering.\n\n* **documentation**: https://sphinxcontrib-katex.readthedocs.io/\n\n* **download**: https://pypi.org/project/sphinxcontrib-katex/#files\n\n* **development**: https://github.com/hagenw/sphinxcontrib-katex/\n\n.. _sphinx extension: http://www.sphinx-doc.org/en/master/extensions.html\n.. _mathjax: https://www.mathjax.org\n.. _katex: https://khan.github.io/katex/\n.. _sphinx.ext.mathjax:\n    https://github.com/sphinx-doc/sphinx/blob/master/sphinx/ext/mathjax.py\n\n.. |docs| image:: https://readthedocs.org/projects/sphinxcontrib-katex/badge/\n    :target: https://sphinxcontrib-katex.readthedocs.io/\n    :alt: sphinxcontrib.katex's documentation on read the docs\n.. |license| image:: https://img.shields.io/badge/license-mit-green.svg\n    :target: https://github.com/hagenw/sphinxcontrib-katex/blob/main/license\n    :alt: sphinxcontrib.katex's mit license\n.. |python-versions| image:: https://img.shields.io/pypi/pyversions/sphinxcontrib-katex.svg\n    :target: https://pypi.org/project/sphinxcontrib-katex/\n    :alt: sphinxcontrib-katex's supported python versions\n\n\ninstallation\n------------\n\nto install ``sphinxcontrib.katex`` into your python virtual environment run:\n\n.. code-block:: bash\n\n    $ pip install sphinxcontrib-katex\n\nif you want to pre-render the math\nby running javascript on your server\ninstead of running it in the browsers of the users,\nyou have to install nodejs_.\n\n.. _nodejs: https://nodejs.org/\n\n\nusage\n-----\n\nin ``conf.py`` of your sphinx project, add the extension with:\n\n.. code-block:: python\n\n    extensions = ['sphinxcontrib.katex']\n\nto enable server side pre-rendering\nadd in addition\n(nodejs_ installation needed):\n\n.. code-block:: python\n\n    katex_prerender = true\n\nsee the configuration section for all available settings.\n\n.. _nodejs: https://nodejs.org/\n\n\nconfiguration\n-------------\n\nthe behavior of ``sphinxcontrib.katex`` can be changed by configuration\nentries in ``conf.py`` of your documentation project. in the following\nall configuration entries are listed and their default values are shown.\n\n.. code-block:: python\n\n    katex_css_path = \\\n        'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css'\n    katex_js_path = 'katex.min.js'\n    katex_autorender_path = 'auto-render.min.js'\n    katex_inline = [r'\\(', r'\\)']\n    katex_display = [r'\\[', r'\\]']\n    katex_prerender = false\n    katex_options = ''\n\nthe specific delimiters written to html when math mode is encountered are\ncontrolled by the two lists ``katex_inline`` and ``katex_display``.\n\nif ``katex_prerender`` is set to ``true`` the equations will be pre-rendered on\nthe server and loading of the page in the browser will be faster.\non your server you must have a ``katex`` executable installed and in your path\nas described in the installation section.\n\nthe string variable ``katex_options`` allows you to change all available\nofficial `katex rendering options`_, e.g.\n\n.. code-block:: python\n\n    katex_options = r'''{\n        displaymode: true,\n        macros: {\n            \"\\\\rr\": \"\\\\mathbb{r}\"\n        }\n    }'''\n\nyou can also add `katex auto-rendering options`_ to ``katex_options``, but be\naware that the ``delimiters`` entry should contain the entries of\n``katex_inline`` and ``katex_display``.\n\n.. _katex rendering options:\n    https://khan.github.io/katex/docs/options.html\n.. _katex auto-rendering options:\n    https://khan.github.io/katex/docs/autorender.html\n\n\nlatex macros\n------------\n\nmost probably you want to add some of your latex math commands for the\nrendering. in katex this is supported by latex macros (``\\def``).\nyou can use the ``katex_options`` configuration setting to add those:\n\n.. code-block:: python\n\n    katex_options = r'''macros: {\n            \"\\\\i\": \"\\\\mathrm{i}\",\n            \"\\\\e\": \"\\\\mathrm{e}^{#1}\",\n            \"\\\\vec\": \"\\\\mathbf{#1}\",\n            \"\\\\x\": \"\\\\vec{x}\",\n            \"\\\\d\": \"\\\\operatorname{d}\\\\!{}\",\n            \"\\\\dirac\": \"\\\\operatorname{\\\\delta}\\\\left(#1\\\\right)\",\n            \"\\\\scalarprod\": \"\\\\left\\\\langle#1,#2\\\\right\\\\rangle\",\n        }'''\n\nthe disadvantage of this option is that those macros will be only available in\nthe html based `sphinx builders`_. if you want to use them in the latex based\nbuilders as well you have to add them as the ``latex_macros`` setting in your\n``conf.py`` and specify them using proper latex syntax. afterwards you can\ninclude them via the ``sphinxcontrib.katex.latex_defs_to_katex_macros``\nfunction into ``katex_options`` and add them to the latex preamble:\n\n.. code-block:: python\n\n    import sphinxcontrib.katex as katex\n\n    latex_macros = r\"\"\"\n        \\def \\i                {\\mathrm{i}}\n        \\def \\e              #1{\\mathrm{e}^{#1}}\n        \\def \\vec            #1{\\mathbf{#1}}\n        \\def \\x                {\\vec{x}}\n        \\def \\d                {\\operatorname{d}\\!}\n        \\def \\dirac          #1{\\operatorname{\\delta}\\left(#1\\right)}\n        \\def \\scalarprod   #1#2{\\left\\langle#1,#2\\right\\rangle}\n    \"\"\"\n\n    # translate latex macros to katex and add to options for html builder\n    katex_macros = katex.latex_defs_to_katex_macros(latex_macros)\n    katex_options = 'macros: {' + katex_macros + '}'\n\n    # add latex macros for latex builder\n    latex_elements = {'preamble': latex_macros}\n\n.. _sphinx builders: http://www.sphinx-doc.org/en/master/builders.html\n",
+  "docs_url": null,
+  "keywords": "sphinx,latex,katex,math,documentation",
+  "license": "the mit license  copyright (c) 2017 hagen wierstorf  permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"software\"), to deal in the software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, and to permit persons to whom the software is furnished to do so, subject to the following conditions:  the above copyright notice and this permission notice shall be included in all copies or substantial portions of the software.  the software is provided \"as is\", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.  ",
+  "name": "sphinxcontrib-katex",
+  "package_url": "https://pypi.org/project/sphinxcontrib-katex/",
+  "project_url": "https://pypi.org/project/sphinxcontrib-katex/",
+  "project_urls": {
+    "documentation": "https://sphinxcontrib-katex.readthedocs.io",
+    "repository": "https://github.com/hagenw/sphinxcontrib-katex/"
+  },
+  "release_url": "https://pypi.org/project/sphinxcontrib-katex/0.9.9/",
+  "requires_dist": [
+    "sphinx >=1.6"
+  ],
+  "requires_python": ">=3.7",
+  "summary": "a sphinx extension for rendering math in html pages",
+  "version": "0.9.9",
+  "releases": [],
+  "developers": [
+    "hagenw@posteo.de"
+  ],
+  "kwds": "sphinxcontrib _mathjax sphinx mathjax katex_display",
+  "license_kwds": "copyright liable license liability noninfringement",
+  "libtype": "pypi",
+  "id": "pypi_sphinxcontrib_katex",
+  "homepage": "",
+  "release_count": 33,
+  "dependency_ids": [
+    "pypi_sphinx"
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "natural_language": "lookup PyPi Flask",
+    "strategy": "db_search",
+    "libtype": "pypi",
+    "name": "flask"
+  },
+  {
+    "natural_language": "  find the PyPi Flask Library  ",
+    "strategy": "db_search",
+    "libtype": "pypi",
+    "name": "flask"
+  },
+  {
+    "natural_language": "get the Python M26 Library  ",
+    "strategy": "db_search",
+    "libtype": "pypi",
+    "name": "m26"
+  },
+  {
+    "natural_language": "dependencies of the pypi flask lib",
+    "strategy": "graph_search",
+    "libtype": "pypi",
+    "name": "flask"
+  },
+  {
+    "natural_language": "authors of the pypi pydantic library",
+    "strategy": "graph_search",
+    "libtype": "pypi",
+    "name": "pydantic"
+  },
+  {
+    "natural_language": "bill of materials for the pypi flask library",
+    "strategy": "graph_search",
+    "libtype": "pypi",
+    "name": "flask"
+  },
+  {
+    "natural_language": "bill of materials for the python pydantic library",
+    "strategy": "graph_search",
+    "libtype": "pypi",
+    "name": "pydantic"
+  }
+]

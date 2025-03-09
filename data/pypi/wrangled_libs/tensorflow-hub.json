@@ -1,0 +1,52 @@
+{
+  "classifiers": [
+    "development status :: 4 - beta",
+    "intended audience :: developers",
+    "intended audience :: education",
+    "intended audience :: science/research",
+    "license :: osi approved :: apache software license",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3 :: only",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.9",
+    "topic :: scientific/engineering",
+    "topic :: scientific/engineering :: artificial intelligence",
+    "topic :: scientific/engineering :: mathematics",
+    "topic :: software development",
+    "topic :: software development :: libraries",
+    "topic :: software development :: libraries :: python modules"
+  ],
+  "description": "",
+  "docs_url": null,
+  "keywords": "tensorflow machine learning share module subgraph component hub embedding retraining transfer",
+  "license": "apache 2.0",
+  "name": "tensorflow-hub",
+  "package_url": "https://pypi.org/project/tensorflow-hub/",
+  "project_url": "https://pypi.org/project/tensorflow-hub/",
+  "project_urls": {
+    "Homepage": "https://github.com/tensorflow/hub"
+  },
+  "release_url": "https://pypi.org/project/tensorflow-hub/0.15.0/",
+  "requires_dist": [
+    "numpy (>=1.12.0)",
+    "protobuf (>=3.19.6)"
+  ],
+  "requires_python": "",
+  "summary": "tensorflow hub is a library to foster the publication, discovery, and consumption of reusable parts of machine learning models.",
+  "version": "0.15.0",
+  "releases": [],
+  "developers": [
+    "google_llc",
+    "packages@tensorflow.org"
+  ],
+  "kwds": "tensorflow machine learning share module subgraph component hub embedding retraining transfer  tensorflow hub is a library to foster the publication, discovery, and consumption of reusable parts of machine learning models.",
+  "license_kwds": "apache 2.0",
+  "libtype": "pypi",
+  "id": "pypi_tensorflow_hub",
+  "homepage": "https://github.com/tensorflow/hub",
+  "release_count": 18,
+  "dependency_ids": [
+    "pypi_numpy",
+    "pypi_protobuf"
+  ]
+}

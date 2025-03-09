@@ -1,0 +1,63 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "environment :: console",
+    "environment :: web environment",
+    "framework :: sphinx :: extension",
+    "intended audience :: developers",
+    "license :: osi approved :: bsd license",
+    "operating system :: os independent",
+    "programming language :: python",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3 :: only",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.7",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "programming language :: python :: implementation :: cpython",
+    "topic :: documentation",
+    "topic :: utilities"
+  ],
+  "description": ".. -*- mode: rst -*-\n\n=========================\n sphinxcontrib-spelling\n=========================\n\nthis package contains sphinxcontrib.spelling, a spelling checker for\nsphinx-based documentation.  it uses pyenchant_ to produce a report\nshowing misspelled words.\n\nrefer to the `main documentation page\n<https://sphinxcontrib-spelling.readthedocs.io/en/latest/>`__ for\ninstallation and setup details.\n\nlicense\n=======\n\ncopyright doug hellmann, all rights reserved\n\npermission to use, copy, modify, and distribute this software and its\ndocumentation for any purpose and without fee is hereby granted,\nprovided that the above copyright notice appear in all copies and that\nboth that copyright notice and this permission notice appear in\nsupporting documentation, and that the name of doug hellmann not be used\nin advertising or publicity pertaining to distribution of the software\nwithout specific, written prior permission.\n\ndoug hellmann disclaims all warranties with regard to this software,\nincluding all implied warranties of merchantability and fitness, in no\nevent shall doug hellmann be liable for any special, indirect or\nconsequential damages or any damages whatsoever resulting from loss of\nuse, data or profits, whether in an action of contract, negligence or\nother tortious action, arising out of or in connection with the use or\nperformance of this software.\n\n.. _pyenchant: https://github.com/pyenchant/pyenchant\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "",
+  "name": "sphinxcontrib-spelling",
+  "package_url": "https://pypi.org/project/sphinxcontrib-spelling/",
+  "project_url": "https://pypi.org/project/sphinxcontrib-spelling/",
+  "project_urls": {
+    "homepage": "https://sphinxcontrib-spelling.readthedocs.io/en/latest/",
+    "repository": "https://github.com/sphinx-contrib/spelling"
+  },
+  "release_url": "https://pypi.org/project/sphinxcontrib-spelling/8.0.0/",
+  "requires_dist": [
+    "PyEnchant (>=3.1.1)",
+    "Sphinx (>=3.0.0)",
+    "importlib-metadata (>=1.7.0) ; python_version < \"3.8\"",
+    "pytest ; extra == 'test'",
+    "pytest-cov ; extra == 'test'",
+    "coverage (!=4.4,>=4.0) ; extra == 'test'"
+  ],
+  "requires_python": ">=3.7",
+  "summary": "sphinx spelling extension",
+  "version": "8.0.0",
+  "releases": [],
+  "developers": [
+    "doug@doughellmann.com"
+  ],
+  "kwds": "sphinxcontrib sphinx documentation spelling pyenchant_",
+  "license_kwds": "",
+  "libtype": "pypi",
+  "id": "pypi_sphinxcontrib_spelling",
+  "homepage": "",
+  "release_count": 51,
+  "dependency_ids": [
+    "pypi_coverage",
+    "pypi_importlib_metadata",
+    "pypi_pyenchant",
+    "pypi_pytest",
+    "pypi_pytest_cov",
+    "pypi_sphinx"
+  ]
+}

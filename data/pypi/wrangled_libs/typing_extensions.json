@@ -1,0 +1,48 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "environment :: console",
+    "intended audience :: developers",
+    "license :: osi approved :: python software foundation license",
+    "operating system :: os independent",
+    "programming language :: python :: 3",
+    "programming language :: python :: 3 :: only",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.12",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9",
+    "topic :: software development"
+  ],
+  "description": "# typing extensions\n\n[![chat at https://gitter.im/python/typing](https://badges.gitter.im/python/typing.svg)](https://gitter.im/python/typing)\n\n[documentation](https://typing-extensions.readthedocs.io/en/latest/#) \u2013\n[pypi](https://pypi.org/project/typing-extensions/)\n\n## overview\n\nthe `typing_extensions` module serves two related purposes:\n\n- enable use of new type system features on older python versions. for example,\n  `typing.typeguard` is new in python 3.10, but `typing_extensions` allows\n  users on previous python versions to use it too.\n- enable experimentation with new type system peps before they are accepted and\n  added to the `typing` module.\n\n`typing_extensions` is treated specially by static type checkers such as\nmypy and pyright. objects defined in `typing_extensions` are treated the same\nway as equivalent forms in `typing`.\n\n`typing_extensions` uses\n[semantic versioning](https://semver.org/). the\nmajor version will be incremented only for backwards-incompatible changes.\ntherefore, it's safe to depend\non `typing_extensions` like this: `typing_extensions >=x.y, <(x+1)`,\nwhere `x.y` is the first version that includes all features you need.\n\n## included items\n\nsee [the documentation](https://typing-extensions.readthedocs.io/en/latest/#) for a\ncomplete listing of module contents.\n\n## contributing\n\nsee [contributing.md](https://github.com/python/typing_extensions/blob/main/contributing.md)\nfor how to contribute to `typing_extensions`.\n\n",
+  "docs_url": null,
+  "keywords": "annotations,backport,checker,checking,function,hinting,hints,type,typechecking,typehinting,typehints,typing",
+  "license": "",
+  "name": "typing-extensions",
+  "package_url": "https://pypi.org/project/typing-extensions/",
+  "project_url": "https://pypi.org/project/typing-extensions/",
+  "project_urls": {
+    "Bug Tracker": "https://github.com/python/typing_extensions/issues",
+    "Changes": "https://github.com/python/typing_extensions/blob/main/CHANGELOG.md",
+    "Documentation": "https://typing-extensions.readthedocs.io/",
+    "Home": "https://github.com/python/typing_extensions",
+    "Q & A": "https://github.com/python/typing/discussions",
+    "Repository": "https://github.com/python/typing_extensions"
+  },
+  "release_url": "https://pypi.org/project/typing-extensions/4.9.0/",
+  "requires_dist": [],
+  "requires_python": ">=3.8",
+  "summary": "backported and experimental type hints for python 3.8+",
+  "version": "4.9.0",
+  "releases": [],
+  "developers": [
+    "levkivskyi@gmail.com"
+  ],
+  "kwds": "typing_extensions typechecking typeguard typehinting typehints",
+  "license_kwds": "",
+  "libtype": "pypi",
+  "id": "pypi_typing_extensions",
+  "homepage": "",
+  "release_count": 31,
+  "dependency_ids": []
+}

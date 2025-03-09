@@ -1,0 +1,46 @@
+{
+  "classifiers": [
+    "development status :: 5 - production/stable",
+    "license :: osi approved :: mit license",
+    "programming language :: python :: 3.10",
+    "programming language :: python :: 3.11",
+    "programming language :: python :: 3.8",
+    "programming language :: python :: 3.9"
+  ],
+  "description": "# microsoft kiota abstractions library for python\n[![pypi version](https://badge.fury.io/py/microsoft-kiota-abstractions.svg)](https://badge.fury.io/py/microsoft-kiota-abstractions)\n[![ci actions status](https://github.com/microsoft/kiota-abstractions-python/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/microsoft/kiota-abstractions-python/actions)\n[![downloads](https://pepy.tech/badge/microsoft-kiota-abstractions)](https://pepy.tech/project/microsoft-kiota-abstractions)\n\nthe microsoft kiota abstractions library for python is the python package defining the basic constructs kiota projects need once an sdk has been generated from an openapi definition.\n\na [kiota](https://github.com/microsoft/kiota) generated project will need a reference to the abstraction package to build and run.\n\nread more about kiota [here](https://github.com/microsoft/kiota/blob/main/readme.md).\n\n## using the abstractions library\n\nin order to use this library, install the package by running:\n\n```cmd\npip install microsoft-kiota-abstractions\n```\n\n## contributing\n\nthis project welcomes contributions and suggestions.  most contributions require you to agree to a\ncontributor license agreement (cla) declaring that you have the right to, and actually do, grant us\nthe rights to use your contribution. for details, visit https://cla.opensource.microsoft.com.\n\nwhen you submit a pull request, a cla bot will automatically determine whether you need to provide\na cla and decorate the pr appropriately (e.g., status check, comment). simply follow the instructions\nprovided by the bot. you will only need to do this once across all repos using our cla.\n\nthis project has adopted the [microsoft open source code of conduct](https://opensource.microsoft.com/codeofconduct/).\nfor more information see the [code of conduct faq](https://opensource.microsoft.com/codeofconduct/faq/) or\ncontact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.\n\n## trademarks\n\nthis project may contain trademarks or logos for projects, products, or services. authorized use of microsoft \ntrademarks or logos is subject to and must follow \n[microsoft's trademark & brand guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).\nuse of microsoft trademarks or logos in modified versions of this project must not cause confusion or imply microsoft sponsorship.\nany use of third-party trademarks or logos are subject to those third-party's policies.\n",
+  "docs_url": null,
+  "keywords": "kiota,openapi,microsoft,graph",
+  "license": "",
+  "name": "microsoft-kiota-abstractions",
+  "package_url": "https://pypi.org/project/microsoft-kiota-abstractions/",
+  "project_url": "https://pypi.org/project/microsoft-kiota-abstractions/",
+  "project_urls": {
+    "documentation": "https://microsoft.github.io/kiota/",
+    "homepage": "https://github.com/microsoft/kiota#readme",
+    "repository": "https://github.com/microsoft/kiota-abstractions-python"
+  },
+  "release_url": "https://pypi.org/project/microsoft-kiota-abstractions/1.0.0/",
+  "requires_dist": [
+    "std-uritemplate >=0.0.38",
+    "opentelemetry-api >=1.19.0",
+    "opentelemetry-sdk >=1.19.0"
+  ],
+  "requires_python": null,
+  "summary": "core abstractions for kiota generated libraries in python",
+  "version": "1.0.0",
+  "releases": [],
+  "developers": [
+    "graphtooling+python@microsoft.com"
+  ],
+  "kwds": "kiota openapi sdk python abstractions",
+  "license_kwds": "",
+  "libtype": "pypi",
+  "id": "pypi_microsoft_kiota_abstractions",
+  "homepage": "",
+  "release_count": 25,
+  "dependency_ids": [
+    "pypi_opentelemetry_api",
+    "pypi_opentelemetry_sdk",
+    "pypi_std_uritemplate"
+  ]
+}

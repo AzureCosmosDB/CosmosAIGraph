@@ -1,0 +1,38 @@
+{
+  "classifiers": [],
+  "description": "# mapbox_earcut\n\npython bindings for the c++ implementation of the mapbox earcut library, which\nprovides very fast and quite robust triangulation of 2d polygons.\n\noriginal code: [earcut.hpp](https://github.com/mapbox/earcut.hpp)\n\noriginal description:\n\n> the library implements a modified ear slicing algorithm, optimized by\n> [z-order curve](http://en.wikipedia.org/wiki/z-order_curve) hashing and\n> extended to handle holes, twisted polygons, degeneracies and self-intersections\n> in a way that doesn't _guarantee_ correctness of triangulation, but attempts to\n> always produce acceptable results for practical data like geographical shapes.\n\nprovided functions (depending on dtype of vertex data):\n```python\ntriangulate_float32\ntriangulate_float64\ntriangulate_int32\ntriangulate_int64\n```\n\nexample:\n```python\n\nimport mapbox_earcut as earcut\nimport numpy as np\n\n# a nx2 array of vertices. must be 2d.\nverts = np.array([[0, 0], [1, 0], [1, 1]]).reshape(-1, 2)\n\n# an array of end-indices for each ring.\n# the first ring is the outer contour of the polygon.\n# subsequent ones are holes.\n# this implies that the last index must always be equal to the size of verts!\nrings = np.array([3])\n\nresult = earcut.triangulate_float32(verts, rings)\n\n# result is an np.ndarray with dtype np.uint32 and shape (3,)\n# containing indices into the verts array.\n\nprint(verts[result])\n# [[1 0]\n#  [1 1]\n#  [0 0]]\n```\n",
+  "docs_url": null,
+  "keywords": "",
+  "license": "isc",
+  "name": "mapbox-earcut",
+  "package_url": "https://pypi.org/project/mapbox-earcut/",
+  "project_url": "https://pypi.org/project/mapbox-earcut/",
+  "project_urls": {
+    "Homepage": "https://github.com/skogler/mapbox_earcut_python",
+    "Original C++ Source": "https://github.com/mapbox/earcut.hpp",
+    "Source": "https://github.com/skogler/mapbox_earcut_python"
+  },
+  "release_url": "https://pypi.org/project/mapbox-earcut/1.0.1/",
+  "requires_dist": [
+    "numpy",
+    "pytest ; extra == 'test'"
+  ],
+  "requires_python": "",
+  "summary": "python bindings for the mapbox earcut c++ polygon triangulation library.",
+  "version": "1.0.1",
+  "releases": [],
+  "developers": [
+    "samuel.kogler@gmail.com",
+    "samuel_kogler"
+  ],
+  "kwds": "triangulation triangulate_int32 mapbox_earcut triangulate_int64 triangulate_float32",
+  "license_kwds": "isc",
+  "libtype": "pypi",
+  "id": "pypi_mapbox_earcut",
+  "homepage": "https://github.com/skogler/mapbox_earcut_python",
+  "release_count": 9,
+  "dependency_ids": [
+    "pypi_numpy",
+    "pypi_pytest"
+  ]
+}
