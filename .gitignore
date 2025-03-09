@@ -5,6 +5,7 @@
 **/.gradle/
 **/.idea/
 **/.vscode/
+**/.vscode
 **/__pycache__/
 **/__MACOSX/
 **/bin/
@@ -15,6 +16,8 @@
 **/lib/
 **/lib64/
 **/man/
+**/node_modules/
+**/out/
 **/tmp/
 **/Scripts/
 **/venv/
@@ -24,16 +27,6 @@
 **/pyvenv.cfg
 **/.override.properties*
 
-
-impl/app/ontologies/doc*.*
-impl/app/ontologies/gdoc*.*
-impl/app/ontologies/kdoc*.*
-impl/app/ontologies/otl*.*
-
-impl/app/rdf/doc*.*
-impl/app/rdf/gdoc*.*
-impl/app/rdf/kdoc*.*
-impl/app/rdf/libraries-graph.nt
 
 # Standard Python .gitignore entries per GitHub below:
 # Byte-compiled / optimized / DLL files
