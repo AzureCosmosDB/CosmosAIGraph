@@ -4,12 +4,10 @@
 
 - [Azure Cosmos DB TV, Episode 95 Video](https://www.youtube.com/watch?v=0alvRmEgIpQ)
 - [Presentations](presentations/)
-- [Architecture Diagram](impl/docs/img/app-architecture-v2.png)
-- [Reference Application Documentation](impl/docs/readme.md)
-- [Implementation Code, Python](impl/app)
-- [Bicep Deployment Scripts](impl/deployment)
-- [Reference Dataset of Python libraries, pre-vectorized](impl/data/pypi/wrangled_libs)
-- [Frequently Asked Questions (FAQ)](impl/docs/faq.md)
+- [Architecture Diagram](presentations/app-architecture-v3.png)
+- [Reference Application Documentation](docs/readme.md)
+- [Reference Dataset of Python libraries, pre-vectorized](data/pypi/wrangled_libs)
+- [Frequently Asked Questions (FAQ)](docs/faq.md)
 
 <pre>
 
@@ -22,6 +20,16 @@
 ---
 
 ## Change Log
+
+- March 2025
+  - "Version 3" codebase
+  - Now focused on Cosmos DB NoSQL API
+    - Eliminated vCore support
+  - Now focused on Java and Apache Jena for the in-memory RDF graph
+    - Eliminated rdflib support
+  - New DockerHub images created
+  - Presentatons updated - see the v3 files
+  - Docs are being updated, target completion date 3/31/2025
 
 - January 2025
   - Added the **Java and Apache Jena** implementation of the in-memory graph
