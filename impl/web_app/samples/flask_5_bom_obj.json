@@ -1,0 +1,2407 @@
+{
+  "libname": "flask",
+  "max_depth": 5,
+  "actual_depth": 6,
+  "libs": {
+    "http://cosmosdb.com/caig#jaraco.envs": {
+      "uri": "http://cosmosdb.com/caig#jaraco.envs",
+      "depth": 4,
+      "name": "jaraco.envs",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#path",
+        "http://cosmosdb.com/caig#pytest_mypy",
+        "http://cosmosdb.com/caig#virtualenv",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#rst.linker",
+        "http://cosmosdb.com/caig#tox",
+        "http://cosmosdb.com/caig#jaraco.packaging",
+        "http://cosmosdb.com/caig#pytest_ruff",
+        "http://cosmosdb.com/caig#pytest_checkdocs",
+        "http://cosmosdb.com/caig#sphinx_lint",
+        "http://cosmosdb.com/caig#pytest_enabler",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pytest_black"
+      ]
+    },
+    "http://cosmosdb.com/caig#tomlkit": {
+      "uri": "http://cosmosdb.com/caig#tomlkit",
+      "depth": 5,
+      "name": "tomlkit",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pkginfo": {
+      "uri": "http://cosmosdb.com/caig#pkginfo",
+      "depth": 5,
+      "name": "pkginfo",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#types_docutils": {
+      "uri": "http://cosmosdb.com/caig#types_docutils",
+      "depth": 5,
+      "name": "types_docutils",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_timeout": {
+      "uri": "http://cosmosdb.com/caig#pytest_timeout",
+      "depth": 4,
+      "name": "pytest_timeout",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#furo": {
+      "uri": "http://cosmosdb.com/caig#furo",
+      "depth": 4,
+      "name": "furo",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#sphinx_basic_ng",
+        "http://cosmosdb.com/caig#pygments",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#beautifulsoup4"
+      ]
+    },
+    "http://cosmosdb.com/caig#sphinx_argparse_cli": {
+      "uri": "http://cosmosdb.com/caig#sphinx_argparse_cli",
+      "depth": 5,
+      "name": "sphinx_argparse_cli",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pip": {
+      "uri": "http://cosmosdb.com/caig#pip",
+      "depth": 3,
+      "name": "pip",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#jinja2": {
+      "uri": "http://cosmosdb.com/caig#jinja2",
+      "depth": 1,
+      "name": "jinja2",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#babel",
+        "http://cosmosdb.com/caig#markupsafe"
+      ]
+    },
+    "http://cosmosdb.com/caig#validate_pyproject": {
+      "uri": "http://cosmosdb.com/caig#validate_pyproject",
+      "depth": 5,
+      "name": "validate_pyproject",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinxcontrib_applehelp": {
+      "uri": "http://cosmosdb.com/caig#sphinxcontrib_applehelp",
+      "depth": 5,
+      "name": "sphinxcontrib_applehelp",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#werkzeug": {
+      "uri": "http://cosmosdb.com/caig#werkzeug",
+      "depth": 1,
+      "name": "werkzeug",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#watchdog",
+        "http://cosmosdb.com/caig#markupsafe"
+      ]
+    },
+    "http://cosmosdb.com/caig#psycopg2": {
+      "uri": "http://cosmosdb.com/caig#psycopg2",
+      "depth": 5,
+      "name": "psycopg2",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyflakes": {
+      "uri": "http://cosmosdb.com/caig#pyflakes",
+      "depth": 5,
+      "name": "pyflakes",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#argcomplete": {
+      "uri": "http://cosmosdb.com/caig#argcomplete",
+      "depth": 3,
+      "name": "argcomplete",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pexpect",
+        "http://cosmosdb.com/caig#coverage",
+        "http://cosmosdb.com/caig#mypy",
+        "http://cosmosdb.com/caig#wheel",
+        "http://cosmosdb.com/caig#ruff"
+      ]
+    },
+    "http://cosmosdb.com/caig#setuptools": {
+      "uri": "http://cosmosdb.com/caig#setuptools",
+      "depth": 3,
+      "name": "setuptools",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#flake8_2020",
+        "http://cosmosdb.com/caig#jaraco.path",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pytest_mypy",
+        "http://cosmosdb.com/caig#build",
+        "http://cosmosdb.com/caig#pytest_timeout",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#filelock",
+        "http://cosmosdb.com/caig#jaraco.envs",
+        "http://cosmosdb.com/caig#pytest_perf",
+        "http://cosmosdb.com/caig#sphinx_lint",
+        "http://cosmosdb.com/caig#virtualenv",
+        "http://cosmosdb.com/caig#pytest_ruff",
+        "http://cosmosdb.com/caig#jaraco.develop",
+        "http://cosmosdb.com/caig#ini2toml",
+        "http://cosmosdb.com/caig#tomli",
+        "http://cosmosdb.com/caig#pytest_enabler",
+        "http://cosmosdb.com/caig#jaraco.packaging",
+        "http://cosmosdb.com/caig#pip",
+        "http://cosmosdb.com/caig#packaging",
+        "http://cosmosdb.com/caig#pytest_checkdocs",
+        "http://cosmosdb.com/caig#tomli_w",
+        "http://cosmosdb.com/caig#sphinx_reredirects",
+        "http://cosmosdb.com/caig#wheel",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#sphinx_inline_tabs",
+        "http://cosmosdb.com/caig#pygments_github_lexers",
+        "http://cosmosdb.com/caig#pytest_black",
+        "http://cosmosdb.com/caig#sphinxcontrib_towncrier",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#sphinx_notfound_page",
+        "http://cosmosdb.com/caig#rst.linker",
+        "http://cosmosdb.com/caig#sphinx_favicon",
+        "http://cosmosdb.com/caig#jaraco.tidelift",
+        "http://cosmosdb.com/caig#pytest_xdist"
+      ]
+    },
+    "http://cosmosdb.com/caig#openpyxl": {
+      "uri": "http://cosmosdb.com/caig#openpyxl",
+      "depth": 5,
+      "name": "openpyxl",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#markdown_it_py": {
+      "uri": "http://cosmosdb.com/caig#markdown_it_py",
+      "depth": 5,
+      "name": "markdown_it_py",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyopenssl": {
+      "uri": "http://cosmosdb.com/caig#pyopenssl",
+      "depth": 5,
+      "name": "pyopenssl",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#wheel": {
+      "uri": "http://cosmosdb.com/caig#wheel",
+      "depth": 4,
+      "name": "wheel",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#setuptools"
+      ]
+    },
+    "http://cosmosdb.com/caig#build": {
+      "uri": "http://cosmosdb.com/caig#build",
+      "depth": 4,
+      "name": "build",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pyproject_hooks",
+        "http://cosmosdb.com/caig#pytest_rerunfailures",
+        "http://cosmosdb.com/caig#tomli",
+        "http://cosmosdb.com/caig#setuptools",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#pytest_mock",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#sphinx_argparse_cli",
+        "http://cosmosdb.com/caig#virtualenv",
+        "http://cosmosdb.com/caig#pytest_xdist",
+        "http://cosmosdb.com/caig#mypy",
+        "http://cosmosdb.com/caig#filelock",
+        "http://cosmosdb.com/caig#wheel",
+        "http://cosmosdb.com/caig#sphinx_issues",
+        "http://cosmosdb.com/caig#sphinx_autodoc_typehints",
+        "http://cosmosdb.com/caig#typing_extensions",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#colorama",
+        "http://cosmosdb.com/caig#packaging"
+      ]
+    },
+    "http://cosmosdb.com/caig#subprocess_tee": {
+      "uri": "http://cosmosdb.com/caig#subprocess_tee",
+      "depth": 5,
+      "name": "subprocess_tee",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pathspec": {
+      "uri": "http://cosmosdb.com/caig#pathspec",
+      "depth": 5,
+      "name": "pathspec",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#types_requests": {
+      "uri": "http://cosmosdb.com/caig#types_requests",
+      "depth": 5,
+      "name": "types_requests",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#importlib_resources": {
+      "uri": "http://cosmosdb.com/caig#importlib_resources",
+      "depth": 5,
+      "name": "importlib_resources",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_reredirects": {
+      "uri": "http://cosmosdb.com/caig#sphinx_reredirects",
+      "depth": 4,
+      "name": "sphinx_reredirects",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#alabaster": {
+      "uri": "http://cosmosdb.com/caig#alabaster",
+      "depth": 5,
+      "name": "alabaster",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#mock": {
+      "uri": "http://cosmosdb.com/caig#mock",
+      "depth": 3,
+      "name": "mock",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#wheel",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#blurb",
+        "http://cosmosdb.com/caig#twine"
+      ]
+    },
+    "http://cosmosdb.com/caig#jaraco.tidelift": {
+      "uri": "http://cosmosdb.com/caig#jaraco.tidelift",
+      "depth": 4,
+      "name": "jaraco.tidelift",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#types_docutils",
+        "http://cosmosdb.com/caig#pytest_black",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#requests_toolbelt",
+        "http://cosmosdb.com/caig#pytest_checkdocs",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#flake8",
+        "http://cosmosdb.com/caig#pytest_flake8",
+        "http://cosmosdb.com/caig#pytest_enabler",
+        "http://cosmosdb.com/caig#sphinx_lint",
+        "http://cosmosdb.com/caig#autocommand",
+        "http://cosmosdb.com/caig#keyring",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#pytest_mypy",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#importlib_resources",
+        "http://cosmosdb.com/caig#jaraco.packaging",
+        "http://cosmosdb.com/caig#rst.linker"
+      ]
+    },
+    "http://cosmosdb.com/caig#iniconfig": {
+      "uri": "http://cosmosdb.com/caig#iniconfig",
+      "depth": 3,
+      "name": "iniconfig",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinxcontrib_devhelp": {
+      "uri": "http://cosmosdb.com/caig#sphinxcontrib_devhelp",
+      "depth": 5,
+      "name": "sphinxcontrib_devhelp",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#nbsphinx": {
+      "uri": "http://cosmosdb.com/caig#nbsphinx",
+      "depth": 5,
+      "name": "nbsphinx",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#attrs": {
+      "uri": "http://cosmosdb.com/caig#attrs",
+      "depth": 3,
+      "name": "attrs",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#sphinx_notfound_page",
+        "http://cosmosdb.com/caig#pympler",
+        "http://cosmosdb.com/caig#coverage",
+        "http://cosmosdb.com/caig#mypy",
+        "http://cosmosdb.com/caig#towncrier",
+        "http://cosmosdb.com/caig#sphinxcontrib_towncrier",
+        "http://cosmosdb.com/caig#hypothesis",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#cloudpickle",
+        "http://cosmosdb.com/caig#pre_commit",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#zope_interface",
+        "http://cosmosdb.com/caig#pytest_mypy_plugins",
+        "http://cosmosdb.com/caig#attrs",
+        "http://cosmosdb.com/caig#myst_parser",
+        "http://cosmosdb.com/caig#pytest_xdist"
+      ]
+    },
+    "http://cosmosdb.com/caig#pyxlsb": {
+      "uri": "http://cosmosdb.com/caig#pyxlsb",
+      "depth": 5,
+      "name": "pyxlsb",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#beautifulsoup4": {
+      "uri": "http://cosmosdb.com/caig#beautifulsoup4",
+      "depth": 4,
+      "name": "beautifulsoup4",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#lxml",
+        "http://cosmosdb.com/caig#soupsieve",
+        "http://cosmosdb.com/caig#html5lib"
+      ]
+    },
+    "http://cosmosdb.com/caig#pyobjc": {
+      "uri": "http://cosmosdb.com/caig#pyobjc",
+      "depth": 5,
+      "name": "pyobjc",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_env": {
+      "uri": "http://cosmosdb.com/caig#pytest_env",
+      "depth": 5,
+      "name": "pytest_env",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#zope_interface": {
+      "uri": "http://cosmosdb.com/caig#zope_interface",
+      "depth": 4,
+      "name": "zope_interface",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_basic_ng": {
+      "uri": "http://cosmosdb.com/caig#sphinx_basic_ng",
+      "depth": 5,
+      "name": "sphinx_basic_ng",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#importlib_metadata": {
+      "uri": "http://cosmosdb.com/caig#importlib_metadata",
+      "depth": 1,
+      "name": "importlib_metadata",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_perf": {
+      "uri": "http://cosmosdb.com/caig#pytest_perf",
+      "depth": 4,
+      "name": "pytest_perf",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#virtualenv": {
+      "uri": "http://cosmosdb.com/caig#virtualenv",
+      "depth": 4,
+      "name": "virtualenv",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pytest_freezer",
+        "http://cosmosdb.com/caig#platformdirs",
+        "http://cosmosdb.com/caig#sphinx_argparse",
+        "http://cosmosdb.com/caig#filelock",
+        "http://cosmosdb.com/caig#coverage",
+        "http://cosmosdb.com/caig#proselint",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#pytest_timeout",
+        "http://cosmosdb.com/caig#time_machine",
+        "http://cosmosdb.com/caig#distlib",
+        "http://cosmosdb.com/caig#covdefaults",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pytest_randomly",
+        "http://cosmosdb.com/caig#packaging",
+        "http://cosmosdb.com/caig#pytest_mock",
+        "http://cosmosdb.com/caig#sphinxcontrib_towncrier",
+        "http://cosmosdb.com/caig#setuptools",
+        "http://cosmosdb.com/caig#flaky",
+        "http://cosmosdb.com/caig#coverage_enable_subprocess",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#towncrier",
+        "http://cosmosdb.com/caig#pytest_env",
+        "http://cosmosdb.com/caig#pytest"
+      ]
+    },
+    "http://cosmosdb.com/caig#libcst": {
+      "uri": "http://cosmosdb.com/caig#libcst",
+      "depth": 4,
+      "name": "libcst",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#sphinx_rtd_theme",
+        "http://cosmosdb.com/caig#coverage",
+        "http://cosmosdb.com/caig#setuptools_rust",
+        "http://cosmosdb.com/caig#fixit",
+        "http://cosmosdb.com/caig#jupyter",
+        "http://cosmosdb.com/caig#hypothesis",
+        "http://cosmosdb.com/caig#usort",
+        "http://cosmosdb.com/caig#setuptools_scm",
+        "http://cosmosdb.com/caig#maturin",
+        "http://cosmosdb.com/caig#typing_inspect",
+        "http://cosmosdb.com/caig#prompt_toolkit",
+        "http://cosmosdb.com/caig#nbsphinx",
+        "http://cosmosdb.com/caig#jinja2",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#black",
+        "http://cosmosdb.com/caig#ufmt",
+        "http://cosmosdb.com/caig#slotscheck",
+        "http://cosmosdb.com/caig#pyre_check",
+        "http://cosmosdb.com/caig#flake8",
+        "http://cosmosdb.com/caig#pyyaml",
+        "http://cosmosdb.com/caig#hypothesmith",
+        "http://cosmosdb.com/caig#build",
+        "http://cosmosdb.com/caig#typing_extensions"
+      ]
+    },
+    "http://cosmosdb.com/caig#fsspec": {
+      "uri": "http://cosmosdb.com/caig#fsspec",
+      "depth": 5,
+      "name": "fsspec",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#rfc3986": {
+      "uri": "http://cosmosdb.com/caig#rfc3986",
+      "depth": 5,
+      "name": "rfc3986",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#usort": {
+      "uri": "http://cosmosdb.com/caig#usort",
+      "depth": 5,
+      "name": "usort",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sqlalchemy": {
+      "uri": "http://cosmosdb.com/caig#sqlalchemy",
+      "depth": 5,
+      "name": "sqlalchemy",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#hypothesmith": {
+      "uri": "http://cosmosdb.com/caig#hypothesmith",
+      "depth": 5,
+      "name": "hypothesmith",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#re_assert": {
+      "uri": "http://cosmosdb.com/caig#re_assert",
+      "depth": 5,
+      "name": "re_assert",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_issues": {
+      "uri": "http://cosmosdb.com/caig#sphinx_issues",
+      "depth": 5,
+      "name": "sphinx_issues",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#qtpy": {
+      "uri": "http://cosmosdb.com/caig#qtpy",
+      "depth": 5,
+      "name": "qtpy",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#jaraco.packaging": {
+      "uri": "http://cosmosdb.com/caig#jaraco.packaging",
+      "depth": 4,
+      "name": "jaraco.packaging",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#jaraco.context",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#types_docutils",
+        "http://cosmosdb.com/caig#rst.linker",
+        "http://cosmosdb.com/caig#jaraco.packaging",
+        "http://cosmosdb.com/caig#pytest_ruff",
+        "http://cosmosdb.com/caig#build",
+        "http://cosmosdb.com/caig#pytest_black",
+        "http://cosmosdb.com/caig#pytest_mypy",
+        "http://cosmosdb.com/caig#domdf_python_tools",
+        "http://cosmosdb.com/caig#pytest_checkdocs",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#sphinx_lint",
+        "http://cosmosdb.com/caig#pytest_enabler"
+      ]
+    },
+    "http://cosmosdb.com/caig#detect_test_pollution": {
+      "uri": "http://cosmosdb.com/caig#detect_test_pollution",
+      "depth": 5,
+      "name": "detect_test_pollution",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#odfpy": {
+      "uri": "http://cosmosdb.com/caig#odfpy",
+      "depth": 5,
+      "name": "odfpy",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#aiohttp!": {
+      "uri": "http://cosmosdb.com/caig#aiohttp!",
+      "depth": 5,
+      "name": "aiohttp!",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#numexpr": {
+      "uri": "http://cosmosdb.com/caig#numexpr",
+      "depth": 5,
+      "name": "numexpr",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pympler": {
+      "uri": "http://cosmosdb.com/caig#pympler",
+      "depth": 4,
+      "name": "pympler",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#soupsieve": {
+      "uri": "http://cosmosdb.com/caig#soupsieve",
+      "depth": 5,
+      "name": "soupsieve",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinxcontrib_serializinghtml": {
+      "uri": "http://cosmosdb.com/caig#sphinxcontrib_serializinghtml",
+      "depth": 5,
+      "name": "sphinxcontrib_serializinghtml",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#gcsfs": {
+      "uri": "http://cosmosdb.com/caig#gcsfs",
+      "depth": 5,
+      "name": "gcsfs",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#configupdater": {
+      "uri": "http://cosmosdb.com/caig#configupdater",
+      "depth": 5,
+      "name": "configupdater",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#ipywidgets": {
+      "uri": "http://cosmosdb.com/caig#ipywidgets",
+      "depth": 5,
+      "name": "ipywidgets",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#flake8_2020": {
+      "uri": "http://cosmosdb.com/caig#flake8_2020",
+      "depth": 4,
+      "name": "flake8_2020",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#prompt_toolkit": {
+      "uri": "http://cosmosdb.com/caig#prompt_toolkit",
+      "depth": 5,
+      "name": "prompt_toolkit",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#filelock": {
+      "uri": "http://cosmosdb.com/caig#filelock",
+      "depth": 4,
+      "name": "filelock",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#pytest_mock",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pytest_timeout",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#diff_cover",
+        "http://cosmosdb.com/caig#covdefaults",
+        "http://cosmosdb.com/caig#typing_extensions",
+        "http://cosmosdb.com/caig#sphinx_autodoc_typehints!",
+        "http://cosmosdb.com/caig#coverage"
+      ]
+    },
+    "http://cosmosdb.com/caig#mccabe": {
+      "uri": "http://cosmosdb.com/caig#mccabe",
+      "depth": 5,
+      "name": "mccabe",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sortedcontainers": {
+      "uri": "http://cosmosdb.com/caig#sortedcontainers",
+      "depth": 4,
+      "name": "sortedcontainers",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#markupsafe": {
+      "uri": "http://cosmosdb.com/caig#markupsafe",
+      "depth": 2,
+      "name": "markupsafe",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_enabler": {
+      "uri": "http://cosmosdb.com/caig#pytest_enabler",
+      "depth": 4,
+      "name": "pytest_enabler",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyarrow": {
+      "uri": "http://cosmosdb.com/caig#pyarrow",
+      "depth": 5,
+      "name": "pyarrow",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#memory_profiler": {
+      "uri": "http://cosmosdb.com/caig#memory_profiler",
+      "depth": 4,
+      "name": "memory_profiler",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#brotlicffi": {
+      "uri": "http://cosmosdb.com/caig#brotlicffi",
+      "depth": 5,
+      "name": "brotlicffi",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#jaraco.vcs": {
+      "uri": "http://cosmosdb.com/caig#jaraco.vcs",
+      "depth": 5,
+      "name": "jaraco.vcs",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_flake8": {
+      "uri": "http://cosmosdb.com/caig#pytest_flake8",
+      "depth": 5,
+      "name": "pytest_flake8",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#diff_cover": {
+      "uri": "http://cosmosdb.com/caig#diff_cover",
+      "depth": 5,
+      "name": "diff_cover",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#chardet": {
+      "uri": "http://cosmosdb.com/caig#chardet",
+      "depth": 4,
+      "name": "chardet",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#babel": {
+      "uri": "http://cosmosdb.com/caig#babel",
+      "depth": 2,
+      "name": "babel",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#freezegun",
+        "http://cosmosdb.com/caig#pytz"
+      ]
+    },
+    "http://cosmosdb.com/caig#jupyter": {
+      "uri": "http://cosmosdb.com/caig#jupyter",
+      "depth": 5,
+      "name": "jupyter",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pynacl": {
+      "uri": "http://cosmosdb.com/caig#pynacl",
+      "depth": 5,
+      "name": "pynacl",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#black": {
+      "uri": "http://cosmosdb.com/caig#black",
+      "depth": 4,
+      "name": "black",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#mypy_extensions",
+        "http://cosmosdb.com/caig#click",
+        "http://cosmosdb.com/caig#packaging",
+        "http://cosmosdb.com/caig#typing_extensions",
+        "http://cosmosdb.com/caig#colorama",
+        "http://cosmosdb.com/caig#ipython",
+        "http://cosmosdb.com/caig#platformdirs",
+        "http://cosmosdb.com/caig#tokenize_rt",
+        "http://cosmosdb.com/caig#tomli",
+        "http://cosmosdb.com/caig#uvloop",
+        "http://cosmosdb.com/caig#aiohttp",
+        "http://cosmosdb.com/caig#aiohttp!",
+        "http://cosmosdb.com/caig#pathspec"
+      ]
+    },
+    "http://cosmosdb.com/caig#jaraco.ui": {
+      "uri": "http://cosmosdb.com/caig#jaraco.ui",
+      "depth": 5,
+      "name": "jaraco.ui",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#aiohttp": {
+      "uri": "http://cosmosdb.com/caig#aiohttp",
+      "depth": 5,
+      "name": "aiohttp",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#typing_inspect": {
+      "uri": "http://cosmosdb.com/caig#typing_inspect",
+      "depth": 5,
+      "name": "typing_inspect",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_copybutton": {
+      "uri": "http://cosmosdb.com/caig#sphinx_copybutton",
+      "depth": 5,
+      "name": "sphinx_copybutton",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#tomli_w": {
+      "uri": "http://cosmosdb.com/caig#tomli_w",
+      "depth": 4,
+      "name": "tomli_w",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_asyncio": {
+      "uri": "http://cosmosdb.com/caig#pytest_asyncio",
+      "depth": 2,
+      "name": "pytest_asyncio",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#genshi": {
+      "uri": "http://cosmosdb.com/caig#genshi",
+      "depth": 5,
+      "name": "genshi",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#flake8_simplify": {
+      "uri": "http://cosmosdb.com/caig#flake8_simplify",
+      "depth": 5,
+      "name": "flake8_simplify",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#types_python_dateutil": {
+      "uri": "http://cosmosdb.com/caig#types_python_dateutil",
+      "depth": 5,
+      "name": "types_python_dateutil",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#mypy": {
+      "uri": "http://cosmosdb.com/caig#mypy",
+      "depth": 2,
+      "name": "mypy",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pip",
+        "http://cosmosdb.com/caig#tomli",
+        "http://cosmosdb.com/caig#psutil",
+        "http://cosmosdb.com/caig#lxml",
+        "http://cosmosdb.com/caig#setuptools",
+        "http://cosmosdb.com/caig#typing_extensions",
+        "http://cosmosdb.com/caig#mypy_extensions"
+      ]
+    },
+    "http://cosmosdb.com/caig#keyring": {
+      "uri": "http://cosmosdb.com/caig#keyring",
+      "depth": 5,
+      "name": "keyring",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_mypy": {
+      "uri": "http://cosmosdb.com/caig#pytest_mypy",
+      "depth": 4,
+      "name": "pytest_mypy",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pysocks": {
+      "uri": "http://cosmosdb.com/caig#pysocks",
+      "depth": 4,
+      "name": "pysocks",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pycodestyle": {
+      "uri": "http://cosmosdb.com/caig#pycodestyle",
+      "depth": 5,
+      "name": "pycodestyle",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#redis": {
+      "uri": "http://cosmosdb.com/caig#redis",
+      "depth": 4,
+      "name": "redis",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#requests",
+        "http://cosmosdb.com/caig#hiredis",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#async_timeout",
+        "http://cosmosdb.com/caig#cryptography",
+        "http://cosmosdb.com/caig#pyopenssl",
+        "http://cosmosdb.com/caig#typing_extensions"
+      ]
+    },
+    "http://cosmosdb.com/caig#sphinxcontrib_towncrier": {
+      "uri": "http://cosmosdb.com/caig#sphinxcontrib_towncrier",
+      "depth": 4,
+      "name": "sphinxcontrib_towncrier",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_autodoc_typehints": {
+      "uri": "http://cosmosdb.com/caig#sphinx_autodoc_typehints",
+      "depth": 5,
+      "name": "sphinx_autodoc_typehints",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx": {
+      "uri": "http://cosmosdb.com/caig#sphinx",
+      "depth": 4,
+      "name": "sphinx",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#snowballstemmer",
+        "http://cosmosdb.com/caig#filelock",
+        "http://cosmosdb.com/caig#ruff",
+        "http://cosmosdb.com/caig#sphinxcontrib_devhelp",
+        "http://cosmosdb.com/caig#html5lib",
+        "http://cosmosdb.com/caig#pygments",
+        "http://cosmosdb.com/caig#packaging",
+        "http://cosmosdb.com/caig#sphinxcontrib_htmlhelp",
+        "http://cosmosdb.com/caig#cython",
+        "http://cosmosdb.com/caig#flake8",
+        "http://cosmosdb.com/caig#sphinxcontrib_websupport",
+        "http://cosmosdb.com/caig#sphinxcontrib_jsmath",
+        "http://cosmosdb.com/caig#types_requests",
+        "http://cosmosdb.com/caig#jinja2",
+        "http://cosmosdb.com/caig#sphinx_lint",
+        "http://cosmosdb.com/caig#mypy",
+        "http://cosmosdb.com/caig#isort",
+        "http://cosmosdb.com/caig#docutils",
+        "http://cosmosdb.com/caig#alabaster",
+        "http://cosmosdb.com/caig#docutils_stubs",
+        "http://cosmosdb.com/caig#sphinxcontrib_applehelp",
+        "http://cosmosdb.com/caig#sphinxcontrib_serializinghtml",
+        "http://cosmosdb.com/caig#imagesize",
+        "http://cosmosdb.com/caig#requests",
+        "http://cosmosdb.com/caig#sphinxcontrib_qthelp",
+        "http://cosmosdb.com/caig#flake8_simplify",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#babel",
+        "http://cosmosdb.com/caig#colorama",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#setuptools"
+      ]
+    },
+    "http://cosmosdb.com/caig#proselint": {
+      "uri": "http://cosmosdb.com/caig#proselint",
+      "depth": 5,
+      "name": "proselint",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_lint": {
+      "uri": "http://cosmosdb.com/caig#sphinx_lint",
+      "depth": 4,
+      "name": "sphinx_lint",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#hatch_vcs": {
+      "uri": "http://cosmosdb.com/caig#hatch_vcs",
+      "depth": 5,
+      "name": "hatch_vcs",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pre_commit": {
+      "uri": "http://cosmosdb.com/caig#pre_commit",
+      "depth": 4,
+      "name": "pre_commit",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#matplotlib": {
+      "uri": "http://cosmosdb.com/caig#matplotlib",
+      "depth": 5,
+      "name": "matplotlib",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pygments_github_lexers": {
+      "uri": "http://cosmosdb.com/caig#pygments_github_lexers",
+      "depth": 4,
+      "name": "pygments_github_lexers",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#charset_normalizer": {
+      "uri": "http://cosmosdb.com/caig#charset_normalizer",
+      "depth": 4,
+      "name": "charset_normalizer",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#tox": {
+      "uri": "http://cosmosdb.com/caig#tox",
+      "depth": 4,
+      "name": "tox",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#covdefaults",
+        "http://cosmosdb.com/caig#sphinxcontrib_towncrier",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pluggy",
+        "http://cosmosdb.com/caig#psutil",
+        "http://cosmosdb.com/caig#sphinx_copybutton",
+        "http://cosmosdb.com/caig#flaky",
+        "http://cosmosdb.com/caig#devpi_process",
+        "http://cosmosdb.com/caig#colorama",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#sphinx_autodoc_typehints!",
+        "http://cosmosdb.com/caig#cachetools",
+        "http://cosmosdb.com/caig#sphinx_argparse_cli",
+        "http://cosmosdb.com/caig#sphinx_inline_tabs",
+        "http://cosmosdb.com/caig#towncrier",
+        "http://cosmosdb.com/caig#re_assert",
+        "http://cosmosdb.com/caig#pytest_xdist",
+        "http://cosmosdb.com/caig#pytest_mock",
+        "http://cosmosdb.com/caig#build",
+        "http://cosmosdb.com/caig#typing_extensions",
+        "http://cosmosdb.com/caig#hatch_vcs",
+        "http://cosmosdb.com/caig#hatchling",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#time_machine",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#virtualenv",
+        "http://cosmosdb.com/caig#chardet",
+        "http://cosmosdb.com/caig#platformdirs",
+        "http://cosmosdb.com/caig#pyproject_api",
+        "http://cosmosdb.com/caig#diff_cover",
+        "http://cosmosdb.com/caig#detect_test_pollution",
+        "http://cosmosdb.com/caig#wheel",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#tomli",
+        "http://cosmosdb.com/caig#packaging",
+        "http://cosmosdb.com/caig#distlib",
+        "http://cosmosdb.com/caig#filelock"
+      ]
+    },
+    "http://cosmosdb.com/caig#sphinx_inline_tabs": {
+      "uri": "http://cosmosdb.com/caig#sphinx_inline_tabs",
+      "depth": 4,
+      "name": "sphinx_inline_tabs",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#asgiref": {
+      "uri": "http://cosmosdb.com/caig#asgiref",
+      "depth": 1,
+      "name": "asgiref",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#mypy",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#pytest_asyncio",
+        "http://cosmosdb.com/caig#typing_extensions"
+      ]
+    },
+    "http://cosmosdb.com/caig#flask": {
+      "uri": "http://cosmosdb.com/caig#flask",
+      "depth": 0,
+      "name": "flask",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#blinker",
+        "http://cosmosdb.com/caig#werkzeug",
+        "http://cosmosdb.com/caig#click",
+        "http://cosmosdb.com/caig#asgiref",
+        "http://cosmosdb.com/caig#jinja2",
+        "http://cosmosdb.com/caig#itsdangerous",
+        "http://cosmosdb.com/caig#python_dotenv",
+        "http://cosmosdb.com/caig#importlib_metadata"
+      ]
+    },
+    "http://cosmosdb.com/caig#pexpect": {
+      "uri": "http://cosmosdb.com/caig#pexpect",
+      "depth": 4,
+      "name": "pexpect",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#ptyprocess"
+      ]
+    },
+    "http://cosmosdb.com/caig#pygments": {
+      "uri": "http://cosmosdb.com/caig#pygments",
+      "depth": 3,
+      "name": "pygments",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#colorama"
+      ]
+    },
+    "http://cosmosdb.com/caig#incremental": {
+      "uri": "http://cosmosdb.com/caig#incremental",
+      "depth": 5,
+      "name": "incremental",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#setuptools_rust": {
+      "uri": "http://cosmosdb.com/caig#setuptools_rust",
+      "depth": 5,
+      "name": "setuptools_rust",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#fastparquet": {
+      "uri": "http://cosmosdb.com/caig#fastparquet",
+      "depth": 5,
+      "name": "fastparquet",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#rich": {
+      "uri": "http://cosmosdb.com/caig#rich",
+      "depth": 4,
+      "name": "rich",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pygments",
+        "http://cosmosdb.com/caig#ipywidgets",
+        "http://cosmosdb.com/caig#typing_extensions",
+        "http://cosmosdb.com/caig#markdown_it_py"
+      ]
+    },
+    "http://cosmosdb.com/caig#rst.linker": {
+      "uri": "http://cosmosdb.com/caig#rst.linker",
+      "depth": 4,
+      "name": "rst.linker",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pytest_enabler",
+        "http://cosmosdb.com/caig#pytest_mypy",
+        "http://cosmosdb.com/caig#jaraco.packaging",
+        "http://cosmosdb.com/caig#rst.linker",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#flake8",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#python_dateutil",
+        "http://cosmosdb.com/caig#pytest_black",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#sphinx_lint",
+        "http://cosmosdb.com/caig#pytest_flake8",
+        "http://cosmosdb.com/caig#path",
+        "http://cosmosdb.com/caig#types_python_dateutil",
+        "http://cosmosdb.com/caig#pytest_checkdocs",
+        "http://cosmosdb.com/caig#furo"
+      ]
+    },
+    "http://cosmosdb.com/caig#sphinx_favicon": {
+      "uri": "http://cosmosdb.com/caig#sphinx_favicon",
+      "depth": 4,
+      "name": "sphinx_favicon",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#uvloop": {
+      "uri": "http://cosmosdb.com/caig#uvloop",
+      "depth": 5,
+      "name": "uvloop",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#zstandard": {
+      "uri": "http://cosmosdb.com/caig#zstandard",
+      "depth": 5,
+      "name": "zstandard",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#distlib": {
+      "uri": "http://cosmosdb.com/caig#distlib",
+      "depth": 5,
+      "name": "distlib",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_autodoc_typehints!": {
+      "uri": "http://cosmosdb.com/caig#sphinx_autodoc_typehints!",
+      "depth": 5,
+      "name": "sphinx_autodoc_typehints!",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#argon2_cffi": {
+      "uri": "http://cosmosdb.com/caig#argon2_cffi",
+      "depth": 5,
+      "name": "argon2_cffi",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#myst_parser": {
+      "uri": "http://cosmosdb.com/caig#myst_parser",
+      "depth": 4,
+      "name": "myst_parser",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#dpcontracts": {
+      "uri": "http://cosmosdb.com/caig#dpcontracts",
+      "depth": 4,
+      "name": "dpcontracts",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#exceptiongroup": {
+      "uri": "http://cosmosdb.com/caig#exceptiongroup",
+      "depth": 3,
+      "name": "exceptiongroup",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pytest"
+      ]
+    },
+    "http://cosmosdb.com/caig#bottleneck": {
+      "uri": "http://cosmosdb.com/caig#bottleneck",
+      "depth": 5,
+      "name": "bottleneck",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#fixit": {
+      "uri": "http://cosmosdb.com/caig#fixit",
+      "depth": 5,
+      "name": "fixit",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#tabulate": {
+      "uri": "http://cosmosdb.com/caig#tabulate",
+      "depth": 5,
+      "name": "tabulate",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#jaraco.windows": {
+      "uri": "http://cosmosdb.com/caig#jaraco.windows",
+      "depth": 5,
+      "name": "jaraco.windows",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pywin32": {
+      "uri": "http://cosmosdb.com/caig#pywin32",
+      "depth": 4,
+      "name": "pywin32",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#s3fs": {
+      "uri": "http://cosmosdb.com/caig#s3fs",
+      "depth": 5,
+      "name": "s3fs",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_benchmark": {
+      "uri": "http://cosmosdb.com/caig#pytest_benchmark",
+      "depth": 4,
+      "name": "pytest_benchmark",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#xarray": {
+      "uri": "http://cosmosdb.com/caig#xarray",
+      "depth": 5,
+      "name": "xarray",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#jaraco.path": {
+      "uri": "http://cosmosdb.com/caig#jaraco.path",
+      "depth": 4,
+      "name": "jaraco.path",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pytest_checkdocs",
+        "http://cosmosdb.com/caig#pytest_mypy",
+        "http://cosmosdb.com/caig#sphinx_lint",
+        "http://cosmosdb.com/caig#rst.linker",
+        "http://cosmosdb.com/caig#jaraco.windows",
+        "http://cosmosdb.com/caig#pytest_ruff",
+        "http://cosmosdb.com/caig#jaraco.packaging",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pytest_enabler",
+        "http://cosmosdb.com/caig#pytest_black",
+        "http://cosmosdb.com/caig#pyobjc",
+        "http://cosmosdb.com/caig#pytest_cov"
+      ]
+    },
+    "http://cosmosdb.com/caig#bcrypt": {
+      "uri": "http://cosmosdb.com/caig#bcrypt",
+      "depth": 5,
+      "name": "bcrypt",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#ruff": {
+      "uri": "http://cosmosdb.com/caig#ruff",
+      "depth": 4,
+      "name": "ruff",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#colorama": {
+      "uri": "http://cosmosdb.com/caig#colorama",
+      "depth": 2,
+      "name": "colorama",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#platformdirs": {
+      "uri": "http://cosmosdb.com/caig#platformdirs",
+      "depth": 5,
+      "name": "platformdirs",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#js2py": {
+      "uri": "http://cosmosdb.com/caig#js2py",
+      "depth": 5,
+      "name": "js2py",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#numpy": {
+      "uri": "http://cosmosdb.com/caig#numpy",
+      "depth": 4,
+      "name": "numpy",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_rerunfailures": {
+      "uri": "http://cosmosdb.com/caig#pytest_rerunfailures",
+      "depth": 5,
+      "name": "pytest_rerunfailures",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#enum34": {
+      "uri": "http://cosmosdb.com/caig#enum34",
+      "depth": 4,
+      "name": "enum34",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_ruff": {
+      "uri": "http://cosmosdb.com/caig#pytest_ruff",
+      "depth": 4,
+      "name": "pytest_ruff",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#urllib3": {
+      "uri": "http://cosmosdb.com/caig#urllib3",
+      "depth": 4,
+      "name": "urllib3",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#zstandard",
+        "http://cosmosdb.com/caig#brotli",
+        "http://cosmosdb.com/caig#pysocks!",
+        "http://cosmosdb.com/caig#brotlicffi"
+      ]
+    },
+    "http://cosmosdb.com/caig#xmlschema": {
+      "uri": "http://cosmosdb.com/caig#xmlschema",
+      "depth": 3,
+      "name": "xmlschema",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#memory_profiler",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#sphinx_rtd_theme",
+        "http://cosmosdb.com/caig#tox",
+        "http://cosmosdb.com/caig#elementpath",
+        "http://cosmosdb.com/caig#coverage",
+        "http://cosmosdb.com/caig#jinja2",
+        "http://cosmosdb.com/caig#mypy",
+        "http://cosmosdb.com/caig#flake8",
+        "http://cosmosdb.com/caig#lxml",
+        "http://cosmosdb.com/caig#lxml_stubs"
+      ]
+    },
+    "http://cosmosdb.com/caig#coverage": {
+      "uri": "http://cosmosdb.com/caig#coverage",
+      "depth": 4,
+      "name": "coverage",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#tomli"
+      ]
+    },
+    "http://cosmosdb.com/caig#jaraco.develop": {
+      "uri": "http://cosmosdb.com/caig#jaraco.develop",
+      "depth": 4,
+      "name": "jaraco.develop",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#autocommand",
+        "http://cosmosdb.com/caig#jaraco.packaging",
+        "http://cosmosdb.com/caig#jaraco.vcs",
+        "http://cosmosdb.com/caig#jaraco.context",
+        "http://cosmosdb.com/caig#packaging",
+        "http://cosmosdb.com/caig#types_requests",
+        "http://cosmosdb.com/caig#build",
+        "http://cosmosdb.com/caig#pytest_mypy",
+        "http://cosmosdb.com/caig#path",
+        "http://cosmosdb.com/caig#subprocess_tee",
+        "http://cosmosdb.com/caig#requests_toolbelt",
+        "http://cosmosdb.com/caig#jaraco.ui",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#keyring",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#pytest_ruff",
+        "http://cosmosdb.com/caig#pytest_black",
+        "http://cosmosdb.com/caig#pytest_enabler",
+        "http://cosmosdb.com/caig#pynacl",
+        "http://cosmosdb.com/caig#rst.linker",
+        "http://cosmosdb.com/caig#pytest_subprocess",
+        "http://cosmosdb.com/caig#sphinx_lint",
+        "http://cosmosdb.com/caig#pytest_checkdocs",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#setuptools"
+      ]
+    },
+    "http://cosmosdb.com/caig#pytz": {
+      "uri": "http://cosmosdb.com/caig#pytz",
+      "depth": 3,
+      "name": "pytz",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#tomli": {
+      "uri": "http://cosmosdb.com/caig#tomli",
+      "depth": 3,
+      "name": "tomli",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#xlrd": {
+      "uri": "http://cosmosdb.com/caig#xlrd",
+      "depth": 5,
+      "name": "xlrd",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#devpi_process": {
+      "uri": "http://cosmosdb.com/caig#devpi_process",
+      "depth": 5,
+      "name": "devpi_process",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#slotscheck": {
+      "uri": "http://cosmosdb.com/caig#slotscheck",
+      "depth": 5,
+      "name": "slotscheck",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_rtd_theme": {
+      "uri": "http://cosmosdb.com/caig#sphinx_rtd_theme",
+      "depth": 4,
+      "name": "sphinx_rtd_theme",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#tokenize_rt": {
+      "uri": "http://cosmosdb.com/caig#tokenize_rt",
+      "depth": 5,
+      "name": "tokenize_rt",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#hypothesis": {
+      "uri": "http://cosmosdb.com/caig#hypothesis",
+      "depth": 3,
+      "name": "hypothesis",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#numpy",
+        "http://cosmosdb.com/caig#backports.zoneinfo",
+        "http://cosmosdb.com/caig#click",
+        "http://cosmosdb.com/caig#pytz",
+        "http://cosmosdb.com/caig#redis",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#dpcontracts",
+        "http://cosmosdb.com/caig#black",
+        "http://cosmosdb.com/caig#attrs",
+        "http://cosmosdb.com/caig#django",
+        "http://cosmosdb.com/caig#python_dateutil",
+        "http://cosmosdb.com/caig#exceptiongroup",
+        "http://cosmosdb.com/caig#tzdata",
+        "http://cosmosdb.com/caig#libcst",
+        "http://cosmosdb.com/caig#pandas",
+        "http://cosmosdb.com/caig#rich",
+        "http://cosmosdb.com/caig#lark",
+        "http://cosmosdb.com/caig#sortedcontainers"
+      ]
+    },
+    "http://cosmosdb.com/caig#path": {
+      "uri": "http://cosmosdb.com/caig#path",
+      "depth": 5,
+      "name": "path",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#twine": {
+      "uri": "http://cosmosdb.com/caig#twine",
+      "depth": 4,
+      "name": "twine",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#rich",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#keyring",
+        "http://cosmosdb.com/caig#urllib3",
+        "http://cosmosdb.com/caig#readme_renderer",
+        "http://cosmosdb.com/caig#requests",
+        "http://cosmosdb.com/caig#requests_toolbelt",
+        "http://cosmosdb.com/caig#pkginfo",
+        "http://cosmosdb.com/caig#rfc3986"
+      ]
+    },
+    "http://cosmosdb.com/caig#backports.zoneinfo": {
+      "uri": "http://cosmosdb.com/caig#backports.zoneinfo",
+      "depth": 4,
+      "name": "backports.zoneinfo",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#tzdata",
+        "http://cosmosdb.com/caig#importlib_resources"
+      ]
+    },
+    "http://cosmosdb.com/caig#ini2toml": {
+      "uri": "http://cosmosdb.com/caig#ini2toml",
+      "depth": 4,
+      "name": "ini2toml",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#typing_extensions",
+        "http://cosmosdb.com/caig#pytest_cov",
+        "http://cosmosdb.com/caig#packaging",
+        "http://cosmosdb.com/caig#tomlkit",
+        "http://cosmosdb.com/caig#configupdater",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#pytest_randomly",
+        "http://cosmosdb.com/caig#isort",
+        "http://cosmosdb.com/caig#pytest_xdist",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#tomli_w",
+        "http://cosmosdb.com/caig#validate_pyproject",
+        "http://cosmosdb.com/caig#setuptools",
+        "http://cosmosdb.com/caig#tomli",
+        "http://cosmosdb.com/caig#pyproject_fmt"
+      ]
+    },
+    "http://cosmosdb.com/caig#ipython": {
+      "uri": "http://cosmosdb.com/caig#ipython",
+      "depth": 5,
+      "name": "ipython",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#memray": {
+      "uri": "http://cosmosdb.com/caig#memray",
+      "depth": 5,
+      "name": "memray",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#async_timeout": {
+      "uri": "http://cosmosdb.com/caig#async_timeout",
+      "depth": 5,
+      "name": "async_timeout",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#lxml": {
+      "uri": "http://cosmosdb.com/caig#lxml",
+      "depth": 3,
+      "name": "lxml",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#cssselect",
+        "http://cosmosdb.com/caig#cython",
+        "http://cosmosdb.com/caig#html5lib",
+        "http://cosmosdb.com/caig#beautifulsoup4"
+      ]
+    },
+    "http://cosmosdb.com/caig#isort": {
+      "uri": "http://cosmosdb.com/caig#isort",
+      "depth": 5,
+      "name": "isort",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_cov": {
+      "uri": "http://cosmosdb.com/caig#pytest_cov",
+      "depth": 3,
+      "name": "pytest_cov",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#setuptools_scm": {
+      "uri": "http://cosmosdb.com/caig#setuptools_scm",
+      "depth": 5,
+      "name": "setuptools_scm",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#dataframe_api_compat": {
+      "uri": "http://cosmosdb.com/caig#dataframe_api_compat",
+      "depth": 5,
+      "name": "dataframe_api_compat",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_checkdocs": {
+      "uri": "http://cosmosdb.com/caig#pytest_checkdocs",
+      "depth": 4,
+      "name": "pytest_checkdocs",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#coverage_enable_subprocess": {
+      "uri": "http://cosmosdb.com/caig#coverage_enable_subprocess",
+      "depth": 5,
+      "name": "coverage_enable_subprocess",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#towncrier": {
+      "uri": "http://cosmosdb.com/caig#towncrier",
+      "depth": 4,
+      "name": "towncrier",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#click",
+        "http://cosmosdb.com/caig#tomli",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#twisted",
+        "http://cosmosdb.com/caig#furo",
+        "http://cosmosdb.com/caig#jinja2",
+        "http://cosmosdb.com/caig#importlib_resources",
+        "http://cosmosdb.com/caig#packaging",
+        "http://cosmosdb.com/caig#incremental"
+      ]
+    },
+    "http://cosmosdb.com/caig#xlsxwriter": {
+      "uri": "http://cosmosdb.com/caig#xlsxwriter",
+      "depth": 5,
+      "name": "xlsxwriter",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyreadstat": {
+      "uri": "http://cosmosdb.com/caig#pyreadstat",
+      "depth": 5,
+      "name": "pyreadstat",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinxcontrib_htmlhelp": {
+      "uri": "http://cosmosdb.com/caig#sphinxcontrib_htmlhelp",
+      "depth": 5,
+      "name": "sphinxcontrib_htmlhelp",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#cssselect": {
+      "uri": "http://cosmosdb.com/caig#cssselect",
+      "depth": 4,
+      "name": "cssselect",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#cloudpickle": {
+      "uri": "http://cosmosdb.com/caig#cloudpickle",
+      "depth": 4,
+      "name": "cloudpickle",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_mypy_plugins": {
+      "uri": "http://cosmosdb.com/caig#pytest_mypy_plugins",
+      "depth": 4,
+      "name": "pytest_mypy_plugins",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#webencodings": {
+      "uri": "http://cosmosdb.com/caig#webencodings",
+      "depth": 5,
+      "name": "webencodings",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#ptyprocess": {
+      "uri": "http://cosmosdb.com/caig#ptyprocess",
+      "depth": 5,
+      "name": "ptyprocess",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#snowballstemmer": {
+      "uri": "http://cosmosdb.com/caig#snowballstemmer",
+      "depth": 5,
+      "name": "snowballstemmer",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_xdist": {
+      "uri": "http://cosmosdb.com/caig#pytest_xdist",
+      "depth": 4,
+      "name": "pytest_xdist",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#six": {
+      "uri": "http://cosmosdb.com/caig#six",
+      "depth": 5,
+      "name": "six",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_randomly": {
+      "uri": "http://cosmosdb.com/caig#pytest_randomly",
+      "depth": 5,
+      "name": "pytest_randomly",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#click": {
+      "uri": "http://cosmosdb.com/caig#click",
+      "depth": 1,
+      "name": "click",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#colorama"
+      ]
+    },
+    "http://cosmosdb.com/caig#certifi": {
+      "uri": "http://cosmosdb.com/caig#certifi",
+      "depth": 4,
+      "name": "certifi",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyqt5": {
+      "uri": "http://cosmosdb.com/caig#pyqt5",
+      "depth": 5,
+      "name": "pyqt5",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_subprocess": {
+      "uri": "http://cosmosdb.com/caig#pytest_subprocess",
+      "depth": 5,
+      "name": "pytest_subprocess",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#covdefaults": {
+      "uri": "http://cosmosdb.com/caig#covdefaults",
+      "depth": 5,
+      "name": "covdefaults",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_notfound_page": {
+      "uri": "http://cosmosdb.com/caig#sphinx_notfound_page",
+      "depth": 4,
+      "name": "sphinx_notfound_page",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#docutils": {
+      "uri": "http://cosmosdb.com/caig#docutils",
+      "depth": 5,
+      "name": "docutils",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#lark": {
+      "uri": "http://cosmosdb.com/caig#lark",
+      "depth": 4,
+      "name": "lark",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#atomicwrites",
+        "http://cosmosdb.com/caig#regex",
+        "http://cosmosdb.com/caig#interegular",
+        "http://cosmosdb.com/caig#js2py"
+      ]
+    },
+    "http://cosmosdb.com/caig#imagesize": {
+      "uri": "http://cosmosdb.com/caig#imagesize",
+      "depth": 5,
+      "name": "imagesize",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#hiredis": {
+      "uri": "http://cosmosdb.com/caig#hiredis",
+      "depth": 5,
+      "name": "hiredis",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#readme_renderer": {
+      "uri": "http://cosmosdb.com/caig#readme_renderer",
+      "depth": 5,
+      "name": "readme_renderer",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_freezer": {
+      "uri": "http://cosmosdb.com/caig#pytest_freezer",
+      "depth": 5,
+      "name": "pytest_freezer",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinx_argparse": {
+      "uri": "http://cosmosdb.com/caig#sphinx_argparse",
+      "depth": 5,
+      "name": "sphinx_argparse",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#blurb": {
+      "uri": "http://cosmosdb.com/caig#blurb",
+      "depth": 4,
+      "name": "blurb",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#cryptography": {
+      "uri": "http://cosmosdb.com/caig#cryptography",
+      "depth": 5,
+      "name": "cryptography",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#domdf_python_tools": {
+      "uri": "http://cosmosdb.com/caig#domdf_python_tools",
+      "depth": 5,
+      "name": "domdf_python_tools",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#jaraco.context": {
+      "uri": "http://cosmosdb.com/caig#jaraco.context",
+      "depth": 5,
+      "name": "jaraco.context",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pymysql": {
+      "uri": "http://cosmosdb.com/caig#pymysql",
+      "depth": 5,
+      "name": "pymysql",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#hatchling": {
+      "uri": "http://cosmosdb.com/caig#hatchling",
+      "depth": 5,
+      "name": "hatchling",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#flaky": {
+      "uri": "http://cosmosdb.com/caig#flaky",
+      "depth": 5,
+      "name": "flaky",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyproject_hooks": {
+      "uri": "http://cosmosdb.com/caig#pyproject_hooks",
+      "depth": 5,
+      "name": "pyproject_hooks",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#itsdangerous": {
+      "uri": "http://cosmosdb.com/caig#itsdangerous",
+      "depth": 1,
+      "name": "itsdangerous",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_black": {
+      "uri": "http://cosmosdb.com/caig#pytest_black",
+      "depth": 4,
+      "name": "pytest_black",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#cython": {
+      "uri": "http://cosmosdb.com/caig#cython",
+      "depth": 4,
+      "name": "cython",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#python_dateutil": {
+      "uri": "http://cosmosdb.com/caig#python_dateutil",
+      "depth": 4,
+      "name": "python_dateutil",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#scipy": {
+      "uri": "http://cosmosdb.com/caig#scipy",
+      "depth": 5,
+      "name": "scipy",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#nose": {
+      "uri": "http://cosmosdb.com/caig#nose",
+      "depth": 3,
+      "name": "nose",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyproject_fmt": {
+      "uri": "http://cosmosdb.com/caig#pyproject_fmt",
+      "depth": 5,
+      "name": "pyproject_fmt",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#atomicwrites": {
+      "uri": "http://cosmosdb.com/caig#atomicwrites",
+      "depth": 5,
+      "name": "atomicwrites",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#elementpath": {
+      "uri": "http://cosmosdb.com/caig#elementpath",
+      "depth": 4,
+      "name": "elementpath",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#xmlschema",
+        "http://cosmosdb.com/caig#flake8",
+        "http://cosmosdb.com/caig#memory_profiler",
+        "http://cosmosdb.com/caig#mypy",
+        "http://cosmosdb.com/caig#lxml",
+        "http://cosmosdb.com/caig#memray",
+        "http://cosmosdb.com/caig#lxml_stubs",
+        "http://cosmosdb.com/caig#tox",
+        "http://cosmosdb.com/caig#coverage"
+      ]
+    },
+    "http://cosmosdb.com/caig#twisted": {
+      "uri": "http://cosmosdb.com/caig#twisted",
+      "depth": 5,
+      "name": "twisted",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#tables": {
+      "uri": "http://cosmosdb.com/caig#tables",
+      "depth": 5,
+      "name": "tables",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#blinker": {
+      "uri": "http://cosmosdb.com/caig#blinker",
+      "depth": 1,
+      "name": "blinker",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pandas": {
+      "uri": "http://cosmosdb.com/caig#pandas",
+      "depth": 4,
+      "name": "pandas",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#psycopg2",
+        "http://cosmosdb.com/caig#pyarrow",
+        "http://cosmosdb.com/caig#python_dateutil",
+        "http://cosmosdb.com/caig#xlrd",
+        "http://cosmosdb.com/caig#jinja2",
+        "http://cosmosdb.com/caig#tables",
+        "http://cosmosdb.com/caig#odfpy",
+        "http://cosmosdb.com/caig#zstandard",
+        "http://cosmosdb.com/caig#scipy",
+        "http://cosmosdb.com/caig#tabulate",
+        "http://cosmosdb.com/caig#pymysql",
+        "http://cosmosdb.com/caig#tzdata",
+        "http://cosmosdb.com/caig#bottleneck",
+        "http://cosmosdb.com/caig#pyqt5",
+        "http://cosmosdb.com/caig#s3fs",
+        "http://cosmosdb.com/caig#gcsfs",
+        "http://cosmosdb.com/caig#pytz",
+        "http://cosmosdb.com/caig#pyreadstat",
+        "http://cosmosdb.com/caig#beautifulsoup4",
+        "http://cosmosdb.com/caig#openpyxl",
+        "http://cosmosdb.com/caig#pyxlsb",
+        "http://cosmosdb.com/caig#sqlalchemy",
+        "http://cosmosdb.com/caig#xarray",
+        "http://cosmosdb.com/caig#dataframe_api_compat",
+        "http://cosmosdb.com/caig#lxml",
+        "http://cosmosdb.com/caig#numpy",
+        "http://cosmosdb.com/caig#numba",
+        "http://cosmosdb.com/caig#matplotlib",
+        "http://cosmosdb.com/caig#hypothesis",
+        "http://cosmosdb.com/caig#qtpy",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#pandas_gbq",
+        "http://cosmosdb.com/caig#html5lib",
+        "http://cosmosdb.com/caig#numexpr",
+        "http://cosmosdb.com/caig#fsspec",
+        "http://cosmosdb.com/caig#pytest_xdist",
+        "http://cosmosdb.com/caig#fastparquet",
+        "http://cosmosdb.com/caig#xlsxwriter"
+      ]
+    },
+    "http://cosmosdb.com/caig#sphinxcontrib_qthelp": {
+      "uri": "http://cosmosdb.com/caig#sphinxcontrib_qthelp",
+      "depth": 5,
+      "name": "sphinxcontrib_qthelp",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#packaging": {
+      "uri": "http://cosmosdb.com/caig#packaging",
+      "depth": 3,
+      "name": "packaging",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pysocks!": {
+      "uri": "http://cosmosdb.com/caig#pysocks!",
+      "depth": 5,
+      "name": "pysocks!",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinxcontrib_websupport": {
+      "uri": "http://cosmosdb.com/caig#sphinxcontrib_websupport",
+      "depth": 5,
+      "name": "sphinxcontrib_websupport",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#python_dotenv": {
+      "uri": "http://cosmosdb.com/caig#python_dotenv",
+      "depth": 1,
+      "name": "python_dotenv",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sqlparse": {
+      "uri": "http://cosmosdb.com/caig#sqlparse",
+      "depth": 5,
+      "name": "sqlparse",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#requests_toolbelt": {
+      "uri": "http://cosmosdb.com/caig#requests_toolbelt",
+      "depth": 5,
+      "name": "requests_toolbelt",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#autocommand": {
+      "uri": "http://cosmosdb.com/caig#autocommand",
+      "depth": 5,
+      "name": "autocommand",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#typing_extensions": {
+      "uri": "http://cosmosdb.com/caig#typing_extensions",
+      "depth": 2,
+      "name": "typing_extensions",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#maturin": {
+      "uri": "http://cosmosdb.com/caig#maturin",
+      "depth": 5,
+      "name": "maturin",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#sphinxcontrib_jsmath": {
+      "uri": "http://cosmosdb.com/caig#sphinxcontrib_jsmath",
+      "depth": 5,
+      "name": "sphinxcontrib_jsmath",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#mypy_extensions": {
+      "uri": "http://cosmosdb.com/caig#mypy_extensions",
+      "depth": 3,
+      "name": "mypy_extensions",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#watchdog": {
+      "uri": "http://cosmosdb.com/caig#watchdog",
+      "depth": 2,
+      "name": "watchdog",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pyyaml"
+      ]
+    },
+    "http://cosmosdb.com/caig#numba": {
+      "uri": "http://cosmosdb.com/caig#numba",
+      "depth": 5,
+      "name": "numba",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_mock": {
+      "uri": "http://cosmosdb.com/caig#pytest_mock",
+      "depth": 5,
+      "name": "pytest_mock",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyre_check": {
+      "uri": "http://cosmosdb.com/caig#pyre_check",
+      "depth": 5,
+      "name": "pyre_check",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#freezegun": {
+      "uri": "http://cosmosdb.com/caig#freezegun",
+      "depth": 3,
+      "name": "freezegun",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#python_dateutil"
+      ]
+    },
+    "http://cosmosdb.com/caig#wmi": {
+      "uri": "http://cosmosdb.com/caig#wmi",
+      "depth": 4,
+      "name": "wmi",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#twine",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#wheel",
+        "http://cosmosdb.com/caig#sphinx",
+        "http://cosmosdb.com/caig#pywin32"
+      ]
+    },
+    "http://cosmosdb.com/caig#flake8": {
+      "uri": "http://cosmosdb.com/caig#flake8",
+      "depth": 4,
+      "name": "flake8",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#mccabe",
+        "http://cosmosdb.com/caig#pycodestyle",
+        "http://cosmosdb.com/caig#pyflakes"
+      ]
+    },
+    "http://cosmosdb.com/caig#lxml_stubs": {
+      "uri": "http://cosmosdb.com/caig#lxml_stubs",
+      "depth": 4,
+      "name": "lxml_stubs",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#django": {
+      "uri": "http://cosmosdb.com/caig#django",
+      "depth": 4,
+      "name": "django",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#sqlparse",
+        "http://cosmosdb.com/caig#argon2_cffi",
+        "http://cosmosdb.com/caig#tzdata",
+        "http://cosmosdb.com/caig#bcrypt",
+        "http://cosmosdb.com/caig#asgiref"
+      ]
+    },
+    "http://cosmosdb.com/caig#cachetools": {
+      "uri": "http://cosmosdb.com/caig#cachetools",
+      "depth": 5,
+      "name": "cachetools",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#tzdata": {
+      "uri": "http://cosmosdb.com/caig#tzdata",
+      "depth": 4,
+      "name": "tzdata",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pluggy": {
+      "uri": "http://cosmosdb.com/caig#pluggy",
+      "depth": 3,
+      "name": "pluggy",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pytest_benchmark",
+        "http://cosmosdb.com/caig#tox",
+        "http://cosmosdb.com/caig#pre_commit",
+        "http://cosmosdb.com/caig#pytest"
+      ]
+    },
+    "http://cosmosdb.com/caig#idna": {
+      "uri": "http://cosmosdb.com/caig#idna",
+      "depth": 4,
+      "name": "idna",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyproject_api": {
+      "uri": "http://cosmosdb.com/caig#pyproject_api",
+      "depth": 5,
+      "name": "pyproject_api",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#time_machine": {
+      "uri": "http://cosmosdb.com/caig#time_machine",
+      "depth": 5,
+      "name": "time_machine",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pandas_gbq": {
+      "uri": "http://cosmosdb.com/caig#pandas_gbq",
+      "depth": 5,
+      "name": "pandas_gbq",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#html5lib": {
+      "uri": "http://cosmosdb.com/caig#html5lib",
+      "depth": 4,
+      "name": "html5lib",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#six",
+        "http://cosmosdb.com/caig#genshi",
+        "http://cosmosdb.com/caig#chardet",
+        "http://cosmosdb.com/caig#lxml",
+        "http://cosmosdb.com/caig#webencodings"
+      ]
+    },
+    "http://cosmosdb.com/caig#pytest": {
+      "uri": "http://cosmosdb.com/caig#pytest",
+      "depth": 2,
+      "name": "pytest",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#argcomplete",
+        "http://cosmosdb.com/caig#xmlschema",
+        "http://cosmosdb.com/caig#attrs",
+        "http://cosmosdb.com/caig#tomli",
+        "http://cosmosdb.com/caig#colorama",
+        "http://cosmosdb.com/caig#pygments",
+        "http://cosmosdb.com/caig#iniconfig",
+        "http://cosmosdb.com/caig#setuptools",
+        "http://cosmosdb.com/caig#exceptiongroup",
+        "http://cosmosdb.com/caig#mock",
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#hypothesis",
+        "http://cosmosdb.com/caig#pluggy",
+        "http://cosmosdb.com/caig#packaging",
+        "http://cosmosdb.com/caig#nose",
+        "http://cosmosdb.com/caig#requests"
+      ]
+    },
+    "http://cosmosdb.com/caig#regex": {
+      "uri": "http://cosmosdb.com/caig#regex",
+      "depth": 5,
+      "name": "regex",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#docutils_stubs": {
+      "uri": "http://cosmosdb.com/caig#docutils_stubs",
+      "depth": 5,
+      "name": "docutils_stubs",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#requests": {
+      "uri": "http://cosmosdb.com/caig#requests",
+      "depth": 3,
+      "name": "requests",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#charset_normalizer",
+        "http://cosmosdb.com/caig#urllib3",
+        "http://cosmosdb.com/caig#certifi",
+        "http://cosmosdb.com/caig#chardet",
+        "http://cosmosdb.com/caig#pysocks",
+        "http://cosmosdb.com/caig#idna"
+      ]
+    },
+    "http://cosmosdb.com/caig#brotli": {
+      "uri": "http://cosmosdb.com/caig#brotli",
+      "depth": 5,
+      "name": "brotli",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#interegular": {
+      "uri": "http://cosmosdb.com/caig#interegular",
+      "depth": 5,
+      "name": "interegular",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#ufmt": {
+      "uri": "http://cosmosdb.com/caig#ufmt",
+      "depth": 5,
+      "name": "ufmt",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pyyaml": {
+      "uri": "http://cosmosdb.com/caig#pyyaml",
+      "depth": 3,
+      "name": "pyyaml",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#ipaddress": {
+      "uri": "http://cosmosdb.com/caig#ipaddress",
+      "depth": 4,
+      "name": "ipaddress",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#psutil": {
+      "uri": "http://cosmosdb.com/caig#psutil",
+      "depth": 3,
+      "name": "psutil",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#pywin32",
+        "http://cosmosdb.com/caig#ipaddress",
+        "http://cosmosdb.com/caig#enum34",
+        "http://cosmosdb.com/caig#wmi",
+        "http://cosmosdb.com/caig#mock"
+      ]
+    }
+  },
+  "error": null,
+  "elapsed": 304,
+  "requestTime": 1741189809689
+}

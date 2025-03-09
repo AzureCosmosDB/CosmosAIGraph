@@ -1,0 +1,40 @@
+--dax calculations for powerbi direct lake model
+
+Sessions = DISTINCTCOUNT(conversationsview[conversation_id])
+
+Users = DISTINCTCOUNT(conversationsview[userpk])
+
+AverageMessagesPerUser = 
+VAR TotalMessages = COUNTROWS(conversationsview)
+VAR TotalUsers = DISTINCTCOUNT(conversationsview[userpk])
+RETURN
+DIVIDE(TotalMessages, TotalUsers, 0)
+
+
+AverageMessagesPerSession = 
+VAR TotalMessages = COUNTROWS(conversationsview)
+VAR TotalSessions = DISTINCTCOUNT(conversationsview[conversation_id])
+RETURN
+DIVIDE(TotalMessages, TotalSessions, 0)
+
+
+TotalSessionDuration = 
+CALCULATE (
+    DATEDIFF (
+        MIN ( 'YourTable'[created_date] ),  -- earliest created_date for the conversation
+        MAX ( 'YourTable'[completion_created_date] ),  -- latest completion_created_date for the conversation
+        SECOND  -- result in seconds
+    ),
+    ALLEXCEPT ( 'YourTable', 'YourTable'[conversation_id] )  -- removes other filters except for conversation_id
+)
+
+
+AverageTotalSessionDuration = 
+AVERAGEX (
+    VALUES ( 'YourTable'[conversation_id] ),  -- iterate over unique conversation_ids
+    [TotalSessionDuration]  -- calculate the total session duration for each conversation_id
+)
+
+
+
+

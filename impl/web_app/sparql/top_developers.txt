@@ -1,0 +1,9 @@
+PREFIX c: <http://cosmosdb.com/caig#> 
+SELECT ?dev ?libname (COUNT(?dev) as ?lib_count)
+WHERE {
+    ?dev c:developer_of ?lib .
+    ?lib c:lt '{{libtype}}' .
+}
+GROUP BY ?dev
+ORDER BY DESC(?lib_count)
+LIMIT {{limit}}

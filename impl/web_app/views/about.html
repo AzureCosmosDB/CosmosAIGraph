@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block title %} About {% endblock %}
+{% block content %}
+<div class="container">
+
+<pre>
+
+</pre>
+<img src="static/omnirag-pattern-v3.png" class="rounded mx-auto d-block" width="70%" alt="...">
+
+
+<pre>
+
+
+
+   
+    
+
+    
+</pre>
+
+<img src="static/app-architecture-v3.png" class="rounded mx-auto d-block" width="70%" alt="...">
+
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    version:   {{ application_version }}
+    source:    {{ graph_source }}
+    db:        {{ graph_source_db }}
+    container: {{ graph_source_container }}
+</pre>
+
+{% endblock %}
+
+{% block js %}
+<script>
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{
+  "sparql": "SELECT * WHERE { ?s ?p ?o . } LIMIT 3",
+  "results": {
+    "head": {
+      "vars": [
+        "s",
+        "p",
+        "o"
+      ]
+    },
+    "results": {
+      "bindings": [
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#mattermostwrapper"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#used_by_library"
+          },
+          "o": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#rasa"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#mattermostwrapper"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#developed_by"
+          },
+          "o": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#btotharye@gmail.com"
+          }
+        },
+        {
+          "s": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#mattermostwrapper"
+          },
+          "p": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#developed_by"
+          },
+          "o": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#brian_hopkins"
+          }
+        }
+      ]
+    }
+  },
+  "elapsed": 1,
+  "error": "",
+  "start_time": 1741360831448,
+  "finish_time": 1741360831449
+}

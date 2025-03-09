@@ -1,0 +1,8 @@
+PREFIX c: <http://cosmosdb.com/caig#> 
+SELECT ?user ?libname ?libtype
+WHERE {
+    <http://cosmosdb.com/caig/{{id}}> c:used_by_lib ?user .
+    ?user c:ln ?libname .
+    ?user c:lt ?libtype .
+}
+LIMIT {{limit}}

@@ -1,0 +1,152 @@
+{
+  "libname": "flask",
+  "max_depth": 2,
+  "actual_depth": 3,
+  "libs": {
+    "http://cosmosdb.com/caig#click": {
+      "uri": "http://cosmosdb.com/caig#click",
+      "depth": 1,
+      "name": "click",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#importlib_metadata",
+        "http://cosmosdb.com/caig#colorama"
+      ]
+    },
+    "http://cosmosdb.com/caig#asgiref": {
+      "uri": "http://cosmosdb.com/caig#asgiref",
+      "depth": 1,
+      "name": "asgiref",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#mypy",
+        "http://cosmosdb.com/caig#pytest",
+        "http://cosmosdb.com/caig#pytest_asyncio",
+        "http://cosmosdb.com/caig#typing_extensions"
+      ]
+    },
+    "http://cosmosdb.com/caig#importlib_metadata": {
+      "uri": "http://cosmosdb.com/caig#importlib_metadata",
+      "depth": 1,
+      "name": "importlib_metadata",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#flask": {
+      "uri": "http://cosmosdb.com/caig#flask",
+      "depth": 0,
+      "name": "flask",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#blinker",
+        "http://cosmosdb.com/caig#werkzeug",
+        "http://cosmosdb.com/caig#click",
+        "http://cosmosdb.com/caig#asgiref",
+        "http://cosmosdb.com/caig#jinja2",
+        "http://cosmosdb.com/caig#itsdangerous",
+        "http://cosmosdb.com/caig#python_dotenv",
+        "http://cosmosdb.com/caig#importlib_metadata"
+      ]
+    },
+    "http://cosmosdb.com/caig#colorama": {
+      "uri": "http://cosmosdb.com/caig#colorama",
+      "depth": 2,
+      "name": "colorama",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#blinker": {
+      "uri": "http://cosmosdb.com/caig#blinker",
+      "depth": 1,
+      "name": "blinker",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest": {
+      "uri": "http://cosmosdb.com/caig#pytest",
+      "depth": 2,
+      "name": "pytest",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#babel": {
+      "uri": "http://cosmosdb.com/caig#babel",
+      "depth": 2,
+      "name": "babel",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#itsdangerous": {
+      "uri": "http://cosmosdb.com/caig#itsdangerous",
+      "depth": 1,
+      "name": "itsdangerous",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#python_dotenv": {
+      "uri": "http://cosmosdb.com/caig#python_dotenv",
+      "depth": 1,
+      "name": "python_dotenv",
+      "visited": true,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#typing_extensions": {
+      "uri": "http://cosmosdb.com/caig#typing_extensions",
+      "depth": 2,
+      "name": "typing_extensions",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#pytest_asyncio": {
+      "uri": "http://cosmosdb.com/caig#pytest_asyncio",
+      "depth": 2,
+      "name": "pytest_asyncio",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#jinja2": {
+      "uri": "http://cosmosdb.com/caig#jinja2",
+      "depth": 1,
+      "name": "jinja2",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#babel",
+        "http://cosmosdb.com/caig#markupsafe"
+      ]
+    },
+    "http://cosmosdb.com/caig#mypy": {
+      "uri": "http://cosmosdb.com/caig#mypy",
+      "depth": 2,
+      "name": "mypy",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#watchdog": {
+      "uri": "http://cosmosdb.com/caig#watchdog",
+      "depth": 2,
+      "name": "watchdog",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#markupsafe": {
+      "uri": "http://cosmosdb.com/caig#markupsafe",
+      "depth": 2,
+      "name": "markupsafe",
+      "visited": false,
+      "dependencies": []
+    },
+    "http://cosmosdb.com/caig#werkzeug": {
+      "uri": "http://cosmosdb.com/caig#werkzeug",
+      "depth": 1,
+      "name": "werkzeug",
+      "visited": true,
+      "dependencies": [
+        "http://cosmosdb.com/caig#watchdog",
+        "http://cosmosdb.com/caig#markupsafe"
+      ]
+    }
+  },
+  "error": null,
+  "elapsed": 7,
+  "requestTime": 1741191369853
+}

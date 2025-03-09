@@ -1,0 +1,16 @@
+
+**/*.gradle
+**/*.ps1
+**/*.pyc
+**/*.sh
+
+**/readme.md
+**/build.*
+
+**/.idea/
+**/samples/
+**/src/
+**/tmp/
+
+**/.override.properties
+**/example-override.properties

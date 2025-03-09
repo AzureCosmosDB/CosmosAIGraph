@@ -1,0 +1,9 @@
+<http://cosmosdb.com/caig/pypi_m27> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://cosmosdb.com/caig#Lib> .
+<http://cosmosdb.com/caig/pypi_m27> <http://cosmosdb.com/caig#lic> "mit" .
+<http://cosmosdb.com/caig/christopher.joakim@gmail.com> <http://cosmosdb.com/caig#developer_of> <http://cosmosdb.com/caig/pypi_m27> .
+<http://cosmosdb.com/caig/christopher_joakim> <http://cosmosdb.com/caig#developer_of> <http://cosmosdb.com/caig/pypi_m27> .
+<http://cosmosdb.com/caig/pypi_m27> <http://cosmosdb.com/caig#developed_by> <http://cosmosdb.com/caig/christopher.joakim@gmail.com> .
+<http://cosmosdb.com/caig/pypi_m27> <http://cosmosdb.com/caig#ln> "m27" .
+<http://cosmosdb.com/caig/pypi_m27> <http://cosmosdb.com/caig#developed_by> <http://cosmosdb.com/caig/christopher_joakim> .
+<http://cosmosdb.com/caig/pypi_m27> <http://cosmosdb.com/caig#kwds> "pace_per_mile runwalkcalculator seconds_per_mile agecalculator calculates" .
+<http://cosmosdb.com/caig/pypi_m27> <http://cosmosdb.com/caig#lt> "pypi" .

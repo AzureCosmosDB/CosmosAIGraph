@@ -1,0 +1,79 @@
+// Gradle buildfile for this application.
+// See https://gradle.org/
+// See https://docs.gradle.org/current/userguide/build_file_basics.html
+// Chris Joakim, Microsoft, 2025
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.microsoft.cosmosdb'
+version = ''
+
+bootJar {
+    archiveFileName = 'caig_graph_app.jar'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator:3.4.2'
+	implementation 'org.springframework.boot:spring-boot-starter-web:3.4.2'
+	implementation 'org.springframework.session:spring-session-core:3.4.1'
+	compileOnly 'org.projectlombok:lombok:1.18.36'
+	implementation 'com.azure:azure-cosmos:4.65.0'
+	implementation 'org.apache.jena:apache-jena-libs:5.2.0'
+	annotationProcessor 'org.projectlombok:lombok:1.18.36'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:3.4.2'
+
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	//developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+	//testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// gradle consoleAppInvokeGraphBuilder
+task consoleAppInvokeGraphBuilder(type: JavaExec) {
+	classpath = sourceSets.main.runtimeClasspath
+	mainClass = 'com.microsoft.cosmosdb.caig.ConsoleApp'
+	args 'invokeGraphBuilder', 'b', 'c'
+}
+
+// gradle consoleAppGenerateArtifacts
+task consoleAppGenerateArtifacts(type: JavaExec) {
+	classpath = sourceSets.main.runtimeClasspath
+	mainClass = 'com.microsoft.cosmosdb.caig.ConsoleApp'
+	args 'generateArtifacts', 'b', 'c'
+}
+
+// gradle consoleAppPostSparqlAddDocuments
+task consoleAppPostSparqlAddDocuments(type: JavaExec) {
+	classpath = sourceSets.main.runtimeClasspath
+	mainClass = 'com.microsoft.cosmosdb.caig.ConsoleApp'
+	args 'postSparqlAddDocuments', 'rdf/postSparqlAddDocuments.txt', '10'
+}

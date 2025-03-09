@@ -1,0 +1,54 @@
+{
+  "sparql": "\nPREFIX c: <http://cosmosdb.com/caig#>\nSELECT ?used_library \nWHERE {\n    <http://cosmosdb.com/caig#flask> c:uses_library ?used_library .\n}\nLIMIT 6\n",
+  "results": {
+    "head": {
+      "vars": [
+        "used_library"
+      ]
+    },
+    "results": {
+      "bindings": [
+        {
+          "used_library": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#blinker"
+          }
+        },
+        {
+          "used_library": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#werkzeug"
+          }
+        },
+        {
+          "used_library": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#click"
+          }
+        },
+        {
+          "used_library": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#asgiref"
+          }
+        },
+        {
+          "used_library": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#jinja2"
+          }
+        },
+        {
+          "used_library": {
+            "type": "uri",
+            "value": "http://cosmosdb.com/caig#itsdangerous"
+          }
+        }
+      ]
+    }
+  },
+  "elapsed": 1,
+  "error": "",
+  "start_time": 1741360832280,
+  "finish_time": 1741360832281
+}

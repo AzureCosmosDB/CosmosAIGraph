@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<rdf:RDF xmlns = "{{ ns }}#"
+  xml:base   = "{{ ns }}"
+  xmlns:owl  = "http://www.w3.org/2002/07/owl#"
+  xmlns:rdf  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs = "http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:xsd  = "http://www.w3.org/2001/XMLSchema#">
+
+  <owl:Ontology rdf:about="">
+    <rdfs:comment>Custom Ontology File</rdfs:comment>
+    <rdfs:label>Custom Ontology File</rdfs:label>
+  </owl:Ontology>
+
+  <!-- Classes defined below -->
+{{ spacer }}
+
+{%- for c in classes %}
+  <owl:Class rdf:ID="{{ c['id'] }}">
+    <rdfs:label xml:lang="en">{{ c['id'] }}</rdfs:label>
+    <rdfs:comment xml:lang="en"></rdfs:comment>
+  </owl:Class>
+{% endfor %}
+
+  <!-- Class Attributes defined below -->
+{{ spacer }}
+
+{%- for ca in class_attributes %}
+  <owl:ObjectProperty rdf:ID="{{ ca['aname'] }}">
+	<rdfs:label xml:lang="en">{{ ca['aname'] }}</rdfs:label>
+	<rdfs:comment xml:lang="en"></rdfs:comment>
+  {% for c in ca.classes -%}
+    {% if 'http' in c -%}
+  <rdfs:domain rdf:resource="{{ c }}"/>
+    {% else -%}
+  <rdfs:domain rdf:resource="#{{ c }}"/>
+    {% endif -%}
+  {% endfor -%}
+    <rdfs:range  rdf:resource="{{ ca['range'] }}"/>
+  </owl:ObjectProperty>
+{% endfor %}
+
+  <!-- Class Relationships defined below -->
+{{ spacer }}
+
+{%- for cr in class_relationships %}
+  <owl:ObjectProperty rdf:ID="{{ cr['rel_name'] }}">
+	<rdfs:label xml:lang="en">{{ cr['rel_name'] }}</rdfs:label>
+	<rdfs:comment xml:lang="en"></rdfs:comment>
+  {% for d in cr.domain_list -%}
+  <rdfs:domain rdf:resource="#{{ d }}"/>
+  {% endfor -%}
+  {% for r in cr.range_list -%}
+  <rdfs:range rdf:resource="#{{ r }}"/>
+  {% endfor -%}
+  </owl:ObjectProperty>
+{% endfor %}
+</rdf:RDF>

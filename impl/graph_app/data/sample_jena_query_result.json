@@ -1,0 +1,59 @@
+{
+  "head": {
+    "vars": [
+      "used_library"
+    ]
+  },
+  "results": {
+    "bindings": [
+      {
+        "used_library": {
+          "type": "uri",
+          "value": "http://cosmosdb.com/caig#blinker"
+        }
+      },
+      {
+        "used_library": {
+          "type": "uri",
+          "value": "http://cosmosdb.com/caig#werkzeug"
+        }
+      },
+      {
+        "used_library": {
+          "type": "uri",
+          "value": "http://cosmosdb.com/caig#click"
+        }
+      },
+      {
+        "used_library": {
+          "type": "uri",
+          "value": "http://cosmosdb.com/caig#asgiref"
+        }
+      },
+      {
+        "used_library": {
+          "type": "uri",
+          "value": "http://cosmosdb.com/caig#jinja2"
+        }
+      },
+      {
+        "used_library": {
+          "type": "uri",
+          "value": "http://cosmosdb.com/caig#itsdangerous"
+        }
+      },
+      {
+        "used_library": {
+          "type": "uri",
+          "value": "http://cosmosdb.com/caig#python_dotenv"
+        }
+      },
+      {
+        "used_library": {
+          "type": "uri",
+          "value": "http://cosmosdb.com/caig#importlib_metadata"
+        }
+      }
+    ]
+  }
+}

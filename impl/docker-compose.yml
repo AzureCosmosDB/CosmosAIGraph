@@ -1,0 +1,75 @@
+# Docker Compose script to run both microservices (web, graph) locally.
+# Use of this script:
+#   docker compose -f docker/docker-compose.yml up
+#   docker compose -f docker/docker-compose.yml down   (in a second terminal window)
+# Chris Joakim, Microsoft, 2025
+
+services:
+  graph:
+    image: cjoakim/caig_graph_v3:latest
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./tmp:/tmp:rw
+    environment:
+      CAIG_CONFIG_CONTAINER:              $CAIG_CONFIG_CONTAINER
+      CAIG_COSMOSDB_NOSQL_ACCT:           $CAIG_COSMOSDB_NOSQL_ACCT
+      CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM: key
+      CAIG_COSMOSDB_NOSQL_KEY:            $CAIG_COSMOSDB_NOSQL_KEY
+      CAIG_COSMOSDB_NOSQL_URI:            $CAIG_COSMOSDB_NOSQL_URI
+      CAIG_GRAPH_DUMP_OUTFILE:            $CAIG_GRAPH_DUMP_OUTFILE
+      CAIG_GRAPH_DUMP_UPON_BUILD:         $CAIG_GRAPH_DUMP_UPON_BUILD
+      CAIG_GRAPH_NAMESPACE:               $CAIG_GRAPH_NAMESPACE
+      CAIG_GRAPH_SOURCE_CONTAINER:        $CAIG_GRAPH_SOURCE_CONTAINER
+      CAIG_GRAPH_SOURCE_DB:               $CAIG_GRAPH_SOURCE_DB
+      CAIG_GRAPH_SOURCE_OWL_FILENAME:     $CAIG_GRAPH_SOURCE_OWL_FILENAME
+      CAIG_GRAPH_SOURCE_RDF_FILENAME:     $CAIG_GRAPH_SOURCE_RDF_FILENAME
+      CAIG_GRAPH_SOURCE_TYPE:             $CAIG_GRAPH_SOURCE_TYPE
+      CAIG_LOG_LEVEL:                     $CAIG_LOG_LEVEL
+      CAIG_WEBSVC_AUTH_HEADER:            $CAIG_WEBSVC_AUTH_HEADER
+      CAIG_WEBSVC_AUTH_VALUE:             $CAIG_WEBSVC_AUTH_VALUE
+      PORT:                               8001
+
+  web:
+    image: cjoakim/caig_web_v3:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./tmp:/tmp:rw
+    depends_on:
+      graph:
+        condition: service_started
+    environment:
+      CAIG_AZURE_OPENAI_COMPLETIONS_DEP:  $CAIG_AZURE_OPENAI_COMPLETIONS_DEP
+      CAIG_AZURE_OPENAI_EMBEDDINGS_DEP:   $CAIG_AZURE_OPENAI_EMBEDDINGS_DEP
+      CAIG_AZURE_OPENAI_KEY:              $CAIG_AZURE_OPENAI_KEY
+      CAIG_AZURE_OPENAI_URL:              $CAIG_AZURE_OPENAI_URL
+      CAIG_CONFIG_CONTAINER:              $CAIG_CONFIG_CONTAINER
+      CAIG_CONVERSATIONS_CONTAINER:       $CAIG_CONVERSATIONS_CONTAINER
+      CAIG_COSMOSDB_NOSQL_ACCT:           $CAIG_COSMOSDB_NOSQL_ACCT
+      CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM: $CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM
+      CAIG_COSMOSDB_NOSQL_KEY:            $CAIG_COSMOSDB_NOSQL_KEY
+      CAIG_COSMOSDB_NOSQL_URI:            $CAIG_COSMOSDB_NOSQL_URI
+      CAIG_FEEDBACK_CONTAINER:            $CAIG_FEEDBACK_CONTAINER
+      CAIG_GRAPH_SERVICE_PORT:            $CAIG_GRAPH_SERVICE_PORT
+      CAIG_LOG_LEVEL:                     $CAIG_LOG_LEVEL
+      CAIG_WEBSVC_AUTH_HEADER:            $CAIG_WEBSVC_AUTH_HEADER
+      CAIG_WEBSVC_AUTH_VALUE:             $CAIG_WEBSVC_AUTH_VALUE
+      CAIG_WEB_APP_PORT:                  $CAIG_WEB_APP_PORT
+      CAIG_WEB_APP_URL:                   $CAIG_WEB_APP_URL
+      CAIG_GRAPH_SERVICE_URL:             http://graph
+      PORT:                               8000
+      WEB_CONCURRENCY:                    1
+
+
+# WEB_CONCURRENCY relates to uvicorn and the --workers count; see https://www.uvicorn.org
+
+# Local Execution with Compose:
+#   docker compose -f docker-compose.yml up     (in one terminal window, in this directory)
+#   docker compose -f docker-compose.yml down   (in a second terminal window, in this directory)
+
+#  Neither Afterburner nor Blackbird Jackson module loaded.  Consider adding one to your classpath for maximum Jackson performance.
+# graph_service-1  | 12:33:25.215 INFO  Http11Processor - The host [graph_service:8001] is not valid
+
+# POST http://graph_service:8001/sparql_query "HTTP/1.1 400 "
+# graph_service-1  | java.lang.IllegalArgumentException: The character [_] is never valid in a domain name.

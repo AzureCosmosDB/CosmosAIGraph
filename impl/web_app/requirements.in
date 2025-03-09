@@ -1,0 +1,41 @@
+# Python requirements file for this application.
+# The libraries will be downloaded from PyPI: https://pypi.org
+# when the venv.ps1 or venv.sh script is executed.
+# Chris Joakim, Microsoft
+
+Faker
+Jinja2
+azure-cosmos
+azure-identity
+azure-storage-blob
+beautifulsoup4
+black
+
+docopt
+fastapi
+fastapi_msal
+httpie
+httpx
+hypercorn
+itsdangerous
+multidict
+openai
+pandas
+psutil
+pytest-asyncio
+pytest-cov
+pytest
+python-dotenv
+python-multipart
+semantic-kernel
+#semantic-kernel==0.9.1b1
+tiktoken
+uvicorn
+xmlformatter
+
+# Entries per Dependabot warnings
+starlette>=0.37.0
+werkzeug>=3.0.6
+cryptography>=43.0.1
+aiohttp>=3.10.2
+requests>=2.30.0

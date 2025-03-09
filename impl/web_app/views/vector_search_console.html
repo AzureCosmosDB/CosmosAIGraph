@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block title %} Vector Search Console {% endblock %}
+
+{% block content %}
+<div class="container">
+  <h5>Vector Search Console</h5>
+  <p></p>
+
+<form method="post" id="form" name="form" action="/vector_search_console">
+  <div class="row  align-items-center">
+    <div class="col-8">
+      <label for="libname" class="form-label">Enter a library name or 'text:your text...'</label>
+      <input type="text" class="form-control" id="libname" name="libname" value='{{ libname }}'
+        placeholder="Double-click for suggestions."/> 
+    </div>
+    <div class="col-2">
+      <span>
+        <label for="search_button" class="form-label"><pre>
+
+        </pre></label>
+        <button id="search_button" name="search_button" type="submit" class="btn btn-outline-primary">Search</button>
+      </span>
+    </div>
+  </div>
+  <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+</form>
+</div>
+
+<hr>
+
+<div class="container" id="results_div" name="results_div">
+  <h5>{{ results_message }}</h5>
+  <pre>
+  <code>
+{{ results }}
+  </code>
+  </pre>
+</div>
+
+<hr>
+
+<div class="container" id="embedding_div" name="embedding_div">
+  <h5>{{ embedding_message }}</h5>
+  <pre>
+  <code>
+{{ embedding }}
+  </code>
+  </pre>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+const form = document.getElementById("form");
+const search_button = document.getElementById("search_button");
+const libname_form_field = document.getElementById("libname");
+
+var suggestions_index = -1;
+var suggestions = [
+  "flask",
+  "text: web framework async pydantic",
+  "text: calculations for sports like running, cycling, and swimming",
+  "text: gps file trackpoint garmin connect and garmin devices",
+  "pandas"
+];
+
+libname_form_field.addEventListener('dblclick', 
+    function(event) {
+      suggestions_index++;
+      if (suggestions_index >= suggestions.length) {
+        suggestions_index = 0;
+      }
+      $("#libname").val(suggestions[suggestions_index]);
+    }
+);
+
+search_button.addEventListener('click', 
+    function(event) {
+      event.preventDefault();
+      search_button.disabled = true;
+      search_button.textContent = "Processing...";
+      form.submit();
+    }
+);
+</script>
+{% endblock %}
