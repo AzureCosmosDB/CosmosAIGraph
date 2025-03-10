@@ -1,0 +1,649 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.7">
+    
+    
+      
+        <title>CosmosAIGraph : Understanding the Code - CosmosAIGraph</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.8608ea7d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cosmosaigraph-understanding-the-code" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="CosmosAIGraph" class="md-header__button md-logo" aria-label="CosmosAIGraph" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CosmosAIGraph
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CosmosAIGraph : Understanding the Code
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/AzureCosmosDB/CosmosAIGraph" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="CosmosAIGraph" class="md-nav__button md-logo" aria-label="CosmosAIGraph" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CosmosAIGraph
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/AzureCosmosDB/CosmosAIGraph" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Readme
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../faq/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CosmosAIGraph : FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="cosmosaigraph-understanding-the-code">CosmosAIGraph : Understanding the Code</h1>
+<p>This page strives to guide the reader in understanding both
+the structure and implementation of this codebase.  Not every
+python module is described here, only the most important ones.</p>
+<p>Again, this is simply a <strong>reference application</strong> that you may
+wish to refer to as you design and implement your own solutions.
+Please feel free to use any part of this design and implementation,
+or none.</p>
+<h2 id="the-implapp-directory">The impl\app directory</h2>
+<p><strong>This directory contains the Python codebase.</strong></p>
+<p>It contains these directories:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>├── app               Application code and scripts
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── data              Data files, including the set of Python libraries
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── deployment        Bicep-based Azure Container App deployment scripts
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>└── docs              Documentation
+</code></pre></div>
+<h2 id="the-implapp-directory_1">The impl\app directory</h2>
+<p>This is where the Python implementation code and scripts are.
+It contains these directories.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>├── docker              Dockerfiles and docker-compose yml files
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── keys                Future use
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├── ontologies          OWL schema files, with *.owl file suffix
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├── rdf                 RDF graph data files in &quot;triples&quot; format, with *.nt file suffix
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>├── sparql              Sample SPARQL RDF query statements and Jinja2 templates
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>├── src                 Python source code
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│   ├── models
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│   ├── services
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>│   └── util
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>├── static              Static files and images served by the web application
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>├── templates           Jinja2 templates for non-web use
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>├── tests               pytest unit tests
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>├── tmp                 Create this directory manually; it should be git-ignored
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>├── venv                Python virtual environment directory, created by venv.ps1 and venv.sh
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>└── views               Jinja2 templates used to render HTML pages in the web application
+</code></pre></div>
+<p>See the <strong>tests.ps1</strong> and <strong>tests.sh</strong> unit testing scripts.
+Their output looks like the following:</p>
+<p align="center">
+  <img src="img/pytest_unit_tests.png" width="90%">
+</p>
+
+<h3 id="implappsrcmodels-directory">impl\app\src\models directory</h3>
+<p>File <strong>webservice_models.py</strong> contains the several <strong>Pydantic models</strong> 
+that define both the request and response payloads for the web endpoints
+in this application.</p>
+<p>Likewise, <strong>internal_models.py</strong> implements Pydantic Models used to
+describe datastructures passed between classes in the application.</p>
+<p>Pydantic models are somewhat like Java Interfaces in that they define
+what an object should look like, but provide no implementation.
+The FastAPI uses Pydantic models to generate endpoint documentation,
+and IDEs also use them to provide type hints to the Developer.</p>
+<h3 id="implappsrcservices-directory">impl\app\src\services directory</h3>
+<p>The classes here define the <strong>business service</strong> logic used by the application.</p>
+<p><strong>config_service.py</strong> implements class <strong>ConfigService</strong> that is used by
+the application for all configuration values.  "Hard-coding" of these
+values is generally not done in this codebase.  It is a goal of this
+reference implementation to expose as much functionality via configuration
+and <strong>environment variables</strong> as possible.  See this class for the complete
+list of environment variables used by this solution, they all begin with <strong>CAIG_</strong>.</p>
+<p><strong>ConfigService</strong> uses <strong>environment variables</strong> and this is well-suited for
+<strong>Docker</strong> containerized applications that are deployed to environments such as 
+<strong>Azure Container Apps (ACA)</strong> and <strong>Azure Kubernetes Service (AKS)</strong>.</p>
+<p>The <a href="https://pypi.org/project/python-dotenv/">python-dotenv</a> python library
+is used in the codebase to optionally get environment variables via the <strong>.env</strong>
+file.  The <strong>.env</strong> should not be stored in your source-control system, as
+it may contain application secrets.</p>
+<p>See the source code of this module; it lists all of the possible environment
+variables used in the codebase.  They all begin with <strong>CAIG_</strong>.</p>
+<p><strong>logging_level_service.py</strong> defines the logic for returning a standard-library
+logging level such as logging.DEBUG, logging.INFO, etc, per the environment
+variable CAIG_LOG_LEVEL.  This solution uses the <strong>logging</strong> standard library
+rather than print statements.</p>
+<p><strong>ai_service.py</strong> implements class <strong>AiService</strong> for all Azure OpenAI and semantic-kernel
+logic.  You are certainly free to use other orchestrators, such as <strong>LangChain</strong>.
+We chose <strong>semantic-kernel</strong> because the SDK was simpler and more stable.</p>
+<p>The <strong>generate_sparql_from_user_prompt</strong> method in this module is where
+the Azure OpenAI service is invoked to generate a SPARQL query from a
+given OWL ontology and user prompt.</p>
+<p>A primary method of <strong>AiService</strong> is <strong>invoke_kernel</strong> which generates a
+LLM completion and adds it to a user conversation.  These are instances of
+classes <strong>AiCompletion</strong> and <strong>AiConversation</strong>, respectively.</p>
+<p><strong>AiConversation</strong>, in <strong>ai_conversation.py</strong> stores the conversational state
+of a given user conversation and contains the complete set of prompts, completions 
+(with token usage), history, as well as any user feedback.
+These conversations are persisted as JSON in the conversations container in Cosmos DB,
+and thus can be used for analysis of the performance of your AI application.</p>
+<p>The app directory contains file <strong>conversation.py</strong> that can be used
+to execute a conversation, with list of user natural language, directly from
+a terminal command-line rather than from the web application UI.
+Modifying and using conversation.py may accelerated your development process.</p>
+<p><strong>cache_service.py</strong> implements all (optional) caching of results such as SPARQL queries.
+Cosmos DB is used as the implementation of the cache.</p>
+<p><strong>db_service.py</strong> implements class <strong>DBService</strong>, which is a wrapper over classes
+<strong>CosmosNoSQLService</strong> and <strong>CosmosVCoreService</strong>.  These classes implement
+CRUD operations over these databases.
+Class DBService inherits from class BaseDBService.
+Which one is used at runtime is determined by the <strong>CAIG_GRAPH_SOURCE_TYPE</strong> environment variable.
+If the value is "cosmos_nosql" then the Cosmos DB NoSQL API is used.
+If the value is "cosmos_vcore" then the Cosmos DB Mongo vCore API is used.</p>
+<p>Class <strong>EntitiesService</strong> also inherits from BaseDBService, and is used to read
+a configuration document which lists the entity names in your system.  These
+names are used in class StrategyBuilder to determine the intent of user natural-language.</p>
+<p><strong>graph_builder.py</strong> implements class <strong>GraphBuilder</strong> which utilizes the builder
+pattern to create an instance of class <strong>GraphService</strong>, which contains an in-memory
+<strong>rdflib</strong> database.  The source data for building the graph are JSON documents
+in Cosmos DB.  One Cosmos DB document may result in several <strong>triples</strong> being
+loaded into the in-memory graph.</p>
+<p>Alternatively, for dev/test environments, GraphBuilder can instantiate the
+in-memory graph by reading a <strong>RDF *.nt</strong> text file.</p>
+<p>These environment variables are used in building the in-memory rdflib graph:
+- CAIG_GRAPH_SOURCE_TYPE
+- CAIG_GRAPH_SOURCE_OWL_FILENAME
+- CAIG_GRAPH_SOURCE_RDF_FILENAME
+- CAIG_GRAPH_SOURCE_DB
+- CAIG_GRAPH_SOURCE_CONTAINER
+- CAIG_AZURE_MONGO_VCORE_CONN_STR </p>
+<p>Please see the <a href="../environment_variables/">Environment Variables</a> page where
+these are described.</p>
+<p>Please take a close look at graph_builder.py to see how the in-memory
+rdflib graph is populated.  One approach uses an <strong>RDF triples file</strong> (i.e. - <em>.nt)
+while the other loads the graph from </em><em>Cosmos DB</em>* documents.</p>
+<p>Note that <a href="../code_generation/">code generation</a> may be used to generate 
+a separate class named <strong>RdflibTriplesBuilder</strong> that is used by class
+GraphBuilder in <strong>graph_builder.py</strong> to actually load the rdflib graph.</p>
+<p><strong>graph_service.py</strong> implements class <strong>GraphService</strong> which provides an interface
+to all rdflib functionality including SPARQL queries.  The <strong>in-memory rdflib graph</strong>
+is mutable.  Since it resides in-memory, rather than on disk, it results in
+low-latency queries.</p>
+<p><strong>entities_service.py</strong> implements class <strong>EntitiesService</strong> which allows you
+to define the names of the entities in your system, and thus identify them in
+user natural-language.</p>
+<p><strong>strategy_builder.py</strong> implements class <strong>StrategyBuilder</strong> used to determine
+the <strong>strategy</strong> to be used in obtaining RAG data.  The currently identified
+strategies are: <strong>db, graph, and vector</strong>.  This class uses EntitiesService.</p>
+<p><strong>rag_data_service.py</strong> implements class <strong>RAGDataService</strong> which is used to fetch
+the pertinent RAG data given a user utterance or natural-language.
+This class uses StrategyBuilder to determine the appropriate strategy to use
+when fetching the RAG data.  The RAG data can be read directly from 
+Cosmos DB if the stragegy is "db", otherwise either an in-memory RDF graph
+query or a Cosmos DB vector search is used to identify and fetch the RAG data.</p>
+<p><strong>rag_data_result.py</strong> implements class <strong>RAGDataResult</strong>.  Instances of this class
+are returned by the <strong>get_rag_data</strong> method of the above class RAGDataService.</p>
+<h3 id="implappsrcutil-directory">impl\app\src\util directory</h3>
+<p><strong>fs.py</strong> provides methods for accessing the local filesystem.</p>
+<p><strong>owl_formatter.py</strong> is used to return a minimized version of
+a given OWL file content in order to be passed efficiently in an
+AzureOpenAI system prompt.</p>
+<p><strong>prompts.py</strong> is used to define system and user prompts for 
+Azure OpenAI.  This module is expected to evolve as the codebase
+adds more semantic-kernel functionality.</p>
+<p><strong>prompt_optimizer.py</strong> implements class <strong>PromptOptimizer</strong> which is used
+in class <strong>AiService</strong> to optimize/truncate the conversation context
+and history so as to fit within a given Azure OpenAI <strong>max_tokens</strong> value.</p>
+<p>PromptOptimizer also generates a high-fidelity prompt text value that can 
+be stored in the AiConversation and displayed in the UI. Both semantic-kernel
+and LangChain seem to do a poor job of exposing the actual merged prompt text
+used with invoking the LLM.</p>
+<p><strong>sparql_formatter.py</strong> is used to return 'pretty' version of
+a given (AI-generated) SPARQL query.</p>
+<p><strong>sparql_template.py</strong> is used render dynamic SPARQL queries from jinja2
+templates and a dictionary of values.</p>
+<p><strong>owl_sax_handler.py</strong> implements class <strong>OwlSaxHandler</strong> which can be
+used to parse your ontology XML file via the SAX API.  The parsed output
+can be used to produce a visualization of your ontology, such as with D3.js.</p>
+<h3 id="the-fastapi-entry-point-modules">The FastAPI entry-point modules</h3>
+<p>The entry-point for the two microservices are:</p>
+<ul>
+<li>impl/app/webapp.py    This is the Web Application</li>
+<li>impl/app/websvc.py    This is the Graph Microservice</li>
+</ul>
+<p>These two are very similar in that they create the <strong>FastAPI</strong> object,
+load environment variables, configure logging, log the environment variables,
+and define the HTTP endpoints.</p>
+<p>The following is an example from the AI microservice.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a># standard initialization
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>load_dotenv(override=True)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>logging.basicConfig(
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    format=&quot;%(asctime)s - %(message)s&quot;, level=LoggingLevelService.get_level()
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>)
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>ConfigService.log_defined_env_vars()
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>app = FastAPI()
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>ai_svc = AiService()
+</code></pre></div>
+<h4 id="liveness-endpoints">/liveness endpoints</h4>
+<p>Each microservice implements a <strong>/liveness</strong> HTTP GET endpoint that
+can be executed by the container orchestration system (i.e - ACA or AKS)
+to ensure the process is alive, and restart it if not.</p>
+<h4 id="authorization-and-authentication">Authorization and Authentication</h4>
+<p>Since each customer organization is expected to have their own specific
+security requirements, Authorization and Authentication is <strong>not</strong>
+implemented in this reference application.</p>
+<p><a href="https://learn.microsoft.com/en-us/entra/msal/python/">msal</a> is one
+library you may wish to use to implement authorization and authencication
+with <a href="https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id">Microsoft Entra (AAD)</a>.</p>
+<p>On a networking level, however, the <strong>Azure Container App</strong> will user
+use its' own, or an injected, Virtual network.  So the back-end microservices
+can be defined as "internal" and not receive external network requests.</p>
+<p>Additionally, <strong>middleware</strong> can be used in the Graph Microservice
+such that a known HTTP header must be populated with a known value before
+the HTTP request is accepted and processed.  Otherwise, a HTTP 401
+return code is returned.  See "@app.middleware("http")" in file <strong>app\websvc.py</strong>.</p>
+<hr />
+<h2 id="code-formatting-with-the-black-library">Code formatting with the black library</h2>
+<p>The <a href="https://pypi.org/project/black/">black</a> library is used to reformat
+all python source code (i.e - the <em>.py files) into a standard and </em><em>pythonic</em>*
+style.  This can eliminate friction in Development teams by eliminating
+personal coding style preferences.  In addition to reformatting the source
+code, black can also identify some problems/errors in the code.</p>
+<p>See the <strong>code-reformat.ps1</strong> and <strong>code-reformat.sh</strong> scripts in the impl directory.</p>
+<hr />
+<h2 id="the-impljava_jena_graph_websvc-directory">The impl\java_jena_graph_websvc directory</h2>
+<p>This directory contains the newer Graph Microservice implemented
+with Java, Spring Boot, and Apache Jena.  Gradle is used as the
+build tool.</p>
+<p>Please see the readme.md file in this directory regarding
+building and executing this version of the Graph Microservice.</p>
+<p>It contains these directories:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>├── build                Output of the Gradle-based compilation and packaging process
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>├── data
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>├── data/cosmosdb_documents.json   
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>├── ontologies
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>├── rdf                  RDF files optionally used to load the graph
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>├── src                  Standard Java source code directory structure
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>│   ├── main
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>│   └── test
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>└── tmp                  Create this directory if it doesn&#39;t already exist
+</code></pre></div>
+<h3 id="key-classes-in-the-javajena-implementation">Key Classes in the Java/Jena implementation</h3>
+<p>This section describes the primary Java classes in the Java/Jena implementation.</p>
+<h4 id="commicrosoftcosmosdbcaigwebapp">com.microsoft.cosmosdb.caig.WebApp</h4>
+<p>This is the Spring Boot entry point for the application, per the 
+@SpringBootApplication annotation.</p>
+<h4 id="commicrosoftcosmosdbcaigwebgraphrestcontroller">com.microsoft.cosmosdb.caig.web.GraphRestController</h4>
+<p>Spring @RestController that implements the <strong>/sparql_query</strong> HTTP endpoint.
+This endpoint is invoked by the Python-based Web UI when
+executing graph queries.</p>
+<h4 id="commicrosoftcosmosdbcaigwebhealthrestcontroller">com.microsoft.cosmosdb.caig.web.HealthRestController</h4>
+<p>Spring @RestController that implements the <strong>/health</strong> HTTP endpoint.
+This endpoint that can optionally be invoked by your container
+orchestrator runtime environment - such as Azure Container Apps (ACA)
+or Azure Kubernetes Service (AKS).</p>
+<h4 id="commicrosoftcosmosdbcaigwebpingrestcontroller">com.microsoft.cosmosdb.caig.web.PingRestController</h4>
+<p>Spring @RestController that implements the <strong>/</strong> and <strong>/ping</strong> HTTP endpoints.
+The / endpoint simply returns the epoch time, while /ping returns
+uptime and JVM memory information.</p>
+<h4 id="commicrosoftcosmosdbcaigwebappstartup">com.microsoft.cosmosdb.caig.web.AppStartup</h4>
+<p>This contains the application startup logic per the Spring
+ApplicationListener interface.  It contains this logic which 
+loads the in-memory graph in class AppGraph.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>  AppGraph g = AppGraphBuilder.build(null);
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  AppGraph.setSingleton(g);```
+</code></pre></div>
+<h4 id="commicrosoftcosmosdbcaigutilappconfig">com.microsoft.cosmosdb.caig.util.AppConfig</h4>
+<p>This static class returns almost all configuration values for the 
+application, such as from <strong>environment variables</strong>.</p>
+<p>The environment variables begin with the <strong>CAIG_</strong> prefix and are described
+in the <a href="../environment_variables/">Environment Variables</a> page</p>
+<p>The Spring Boot framework also uses the src/main/resources/application.properties
+file for some configuration values.  But all <strong>application coniguration</strong>
+is done with environment variables and class AppConfig.  This approach 
+is typically used by Docker containerized applications.</p>
+<h4 id="commicrosoftcosmosdbcaiggraphappgraphbuilder">com.microsoft.cosmosdb.caig.graph.AppGraphBuilder</h4>
+<p>This class creates and populates the in-memory graph object
+which is an instance of class <strong>org.apache.jena.rdf.model.Model</strong>.</p>
+<p>AppGraphBuilder can populate the graph from one of several 
+sources per the CAIG_GRAPH_SOURCE_TYPE environment variable.
+CAIG_GRAPH_SOURCE_TYPE may have one of the following values:</p>
+<ul>
+<li>json_docs_file - the graph is sourced from ile cosmosdb_documents.json in the repo</li>
+<li>rdf_file - the graph is sourced from the file specified in CAIG_GRAPH_SOURCE_RDF_FILENAME</li>
+<li>cosmos_nosql - the graph is sourced from your Cosmos DB NoSQL account</li>
+<li>cosmos_vcore - the graph is sourced from your Cosmos DB Mongo vCore account</li>
+</ul>
+<p>After the Jena graph is populated, you can optionally dump that
+graph to a file per the CAIG_GRAPH_DUMP_UPON_BUILD and CAIG_GRAPH_DUMP_OUTFILE
+environment variables.</p>
+<h4 id="commicrosoftcosmosdbcaiggraphappgraph">com.microsoft.cosmosdb.caig.graph.AppGraph</h4>
+<p>This class contains the singleton instance of class
+org.apache.jena.rdf.model.Model in the Apache Jena SDK.</p>
+<p>It implements this primary message signature:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>    public synchronized SparqlQueryResponse query(SparqlQueryRequest request) {
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    }
+</code></pre></div>
+<p>The method is <strong>synchronized</strong> so as to be thread safe.  Each HTTP request 
+to the Spring Boot application runs in its' own Thread.</p>
+<p>Classes SparqlQueryRequest and SparqlQueryResponse are simple
+JSON serializable classes used to receive the HTTP POSTed query
+and to return the JSON response to the query. </p>
+<h4 id="commicrosoftcosmosdbcaiggraphlibrariesgraphtriplesbuilder">com.microsoft.cosmosdb.caig.graph.LibrariesGraphTriplesBuilder</h4>
+<p>For the cases where AppGraphBuilder sources the graph from Cosmos DB,
+instances of LibrariesGraphTriplesBuilder are uses to populate the
+graph from each appropriate Cosmos DB document.</p>
+<p>Customers should implement their own GraphTriplesBuilder class for
+their needs and implement as necessary per the shape of your Cosmos DB
+documents and graph schema.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        &#169; Microsoft 2025
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.expand", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
