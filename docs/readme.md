@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="img/app-architecture-v3.png" width="90%">
+  <img src="img/deployment-architecture.png" width="100%">
 </p>
 
 
@@ -8,10 +8,10 @@
 
 The **CosmosAIGraph (caig)** application is deployed as these two microservices:
 
-| Name   | Functionality                                                          |
-| ------ | ---------------------------------------------------------------------- |
-| web    |  Web Application microservice, user-facing, HTML oriented              |
-| graph  |  Graph Microservice, JSON microservices over an in-memory rdflib graph |
+| Name   | Functionality                                                               |
+| ------ | --------------------------------------------------------------------------- |
+| web    |  Web Application microservice, user-facing, HTML oriented                   |
+| graph  |  Graph Microservice, JSON microservices over an in-memory Apache Jena graph |
 
 These are located in the **app_web**, and **app_graph** directories
 of this repository.
@@ -37,8 +37,8 @@ names will be **caig_web**, and **caig_graph**.
   - See https://learn.microsoft.com/en-us/azure/ai-services/openai/
 - **semantic-kernel** is use for AI and LLM orchestration
   - See https://learn.microsoft.com/en-us/semantic-kernel/overview/
-- **rdflib** is used as the high-performance in-memory graph
-  - See https://rdflib.readthedocs.io/en/stable/
+- **Apache Jena** is used as the high-performance in-memory graph
+  - See https://jena.apache.org/
 - **SPARQL 1.1** is the graph query language
   - See https://www.w3.org/TR/sparql11-query/
 - **Web Ontology Language (OWL)** is the graph schema/ontology definition language
@@ -58,7 +58,7 @@ If you don't have **git** installed on your system, please see the
 [Developer Workstation Setup](developer_workstation.md) page.
 
 ```
-> git clone https://github.com/cjoakim/CosmosAIGraph.git
+> git clone https://github.com/alekseys/CosmosAIGraph.git
 
 > cd CosmosAIGraph
 
@@ -79,14 +79,13 @@ You will need to restart your Terminal for the above command to take effect.
 You'll see in a section below that this CosmosAIGraph reference application
 uses several environment variables, and they all begin with **CAIG_**.
 
-### Provision Azure Cosmos DB and Azure OpenAI 
+### Provision Azure Cosmos DB and Azure OpenAI
 
 - See [Initial PaaS Provisioning](initial_paas_provisioning.md)
 
 ### Developer Workstation Setup
 
 - See [Developer Workstation Setup](developer_workstation.md)
-
 - See [Environment Variables](environment_variables.md)
 
 ### Load Cosmos DB with Library and Config Documents
@@ -98,9 +97,7 @@ uses several environment variables, and they all begin with **CAIG_**.
 ### Run the Application on your Workstation
 
 - See [Local Execution](local_execution.md)
-
 - See [Explore the FastAPI Framework and Endpoint Documentation](fastapi_endpoint_docs.md)
-
 - See [Understanding the Code](understanding_the_code.md)
 
 ### Azure Container App Deployment
@@ -116,15 +113,13 @@ uses several environment variables, and they all begin with **CAIG_**.
 ## Next Steps: Customizing this Solution for Your Application
 
 It is recommended that CosmosAIGraph Proof-of-Concept (POC) team
-has the following skillsets:
+has the following skill sets:
 
 - A data analyst who is familiar with your input graph data
 - A data engineer who can wrangle/transform the raw data into JSON documents for Cosmos DB
 - A Python developer with UI skills
+- A Java developer with graph (SPARQL/TTL) skills
 
 - See [Customizing this Solution](customizing_this_solution.md)
-
 - See [Code Generation](code_generation.md)
-
 - See the [FAQ Page](faq.md) to clarify your understanding of the CosmosAIGraph solution.
-

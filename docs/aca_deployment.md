@@ -6,7 +6,7 @@ The **recommended solution** for this reference application is to deploy to
 [Azure Container Apps (ACA)](https://learn.microsoft.com/en-us/azure/container-apps/).
 
 ACA offers a very mature and easy to use runtime environment for your applications
-that are packaged and deployed as Docker Containers.  Several interesting features
+that are packaged and deployed as Docker containers. Several interesting features
 include the following:
 
 - [Environments](https://learn.microsoft.com/en-us/azure/container-apps/environment)
@@ -17,13 +17,11 @@ include the following:
 
 ### Deployment with Bicep
 
-See the **impl/deployment/** directory for working deployment scripts which use the 
-[Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview)
-deployment syntax.
+See the **/deployment** folder for working deployment scripts which use the [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) deployment syntax.
 
-You can execute the **az_bicep_deploy.ps1** script which uses the
+You can execute the **az_bicep_deploy.ps1** script which uses the 
 [az CLI](https://learn.microsoft.com/en-us/cli/azure/) to deploy
-the ACA application. 
+the ACA application.
 
 The Bicep file is named **caig.bicep** and it uses the **caig.bicepparam**
 parameters file.
