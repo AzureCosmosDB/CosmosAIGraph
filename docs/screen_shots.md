@@ -70,7 +70,7 @@ to the vector search.
 
 ---
 
-## Azure Container App in Azure Portal 
+## Azure Container Apps in Azure Portal
 
 <p align="center">
   <img src="img/screen-shot-azure-portal-aca-deployment.png" width="100%">

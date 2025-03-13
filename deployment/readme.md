@@ -1,6 +1,6 @@
 # CosmosAIGraph: deployment
 
-Azure Container App deployment scripts
+Azure Container Apps deployment scripts
 
 ## Links
 

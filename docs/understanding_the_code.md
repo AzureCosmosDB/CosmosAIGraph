@@ -13,7 +13,7 @@ It contains these directories:
 ```
 ├── app               Application code and scripts
 ├── data              Data files, including the set of Python libraries
-├── deployment        Bicep-based Azure Container App deployment scripts
+├── deployment        Bicep-based Azure Container Apps deployment scripts
 └── docs              Documentation
 ```
 
@@ -219,7 +219,7 @@ implemented in this reference application.
 library you may wish to use to implement authorization and authentication
 with [Microsoft Entra (AAD)](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id).
 
-On a networking level, however, the **Azure Container App** will user
+On a networking level, however, the **Azure Container Apps** will user
 use its' own, or an injected, Virtual network.  So the back-end microservices
 can be defined as "internal" and not receive external network requests.
 

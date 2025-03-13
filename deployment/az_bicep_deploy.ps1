@@ -1,4 +1,4 @@
-# Deploy the Azure Container App (ACA) using Bicep.
+# Deploy the Azure Container Apps (ACA) using Bicep.
 # Replace the values of the variables with your own values.
 
 $RESOURCE_GROUP="ttt"

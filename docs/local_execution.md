@@ -3,7 +3,18 @@
 These are the instructions for those who want to explore and
 execute CosmosAIGraph on their workstation.
 
-Other users may simply wish to deploy the pre-built Docker containers to an Azure Container App as described [here](aca_deployment.md).
+Other users may simply wish to deploy the pre-built Docker containers to an Azure Container Apps as described [here](aca_deployment.md).
+
+## Compile Graph microservice
+
+Before launching the solution, be sure that the Graph microservice, which is implemented in Java, is compiled. To do so, execute the provided Gradle script in your environment of choice.
+
+For example, in IntelliJ IDEA, you'd need to open a folder **impl/graph_app**, navigate to Gradle sidebar and double-click build task:
+
+<p align="center">
+  <img src="img/gradle-build.png" width="80%">
+</p>
+
 
 ## [Optional] Unzip file libraries-graph.zip
 
@@ -38,7 +49,7 @@ To launch the terminals, simply run **impl/run.ps1** script.
 
 ## Docker Compose
 
-This is the closest method to running your application to Azure.
+This is the closest method to running your solution to Azure.
 This approach executes the application packaged as **Docker Containers** rather than as local files.
 
 Start your **Docker Desktop** application if it's not already running.
@@ -91,7 +102,7 @@ These three pre-built Docker containers exist on **DockerHub**:
 - cjoakim/caig_graph_java_jena_v1:latest
 
 These are used by default by the above **docker-compose** scripts
-and also by the **Azure Container App** deployment process.
+and also by the **Azure Container Apps** deployment process.
 
 If you wish to rebuild these containers and deploy them to your own
 Container Registry, please see the following Dockerfiles in this repo.

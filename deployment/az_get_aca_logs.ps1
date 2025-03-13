@@ -1,4 +1,4 @@
-# Fetch the Azure Container App (ACA) log files.
+# Fetch the Azure Container Apps (ACA) log files.
 # Replace the values of the variables with your own values.
 
 $RESOURCE_GROUP="<RESOURCE_GROUP_NAME>"

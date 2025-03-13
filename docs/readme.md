@@ -6,18 +6,17 @@
 
 ---
 
-The **CosmosAIGraph (caig)** application is deployed as these two microservices:
+The **CosmosAIGraph (caig)** solution is deployed as two microservices:
 
 | Name   | Functionality                                                               |
 | ------ | --------------------------------------------------------------------------- |
-| web    |  Web Application microservice, user-facing, HTML oriented                   |
-| graph  |  Graph Microservice, JSON microservices over an in-memory Apache Jena graph |
+| web    |  Web microservice, user-facing, HTML-based UI and RESTful API                   |
+| graph  |  Graph microservice with an in-memory Apache Jena graph |
 
-These are located in the **app_web**, and **app_graph** directories
+These are located in the **web_app**, and **graph_app** folders
 of this repository.
 
-These are Docker-containerized with the **caig_** prefix.  Therefore, the container
-names will be **caig_web**, and **caig_graph**.
+They are also packaged as Docker containers named as **caig_web**, and **caig_graph**, respectively.
 
 ## Implementation Summary
 
@@ -25,17 +24,14 @@ names will be **caig_web**, and **caig_graph**.
   - See https://www.python.org
 - **FastAPI** is used exclusively as the framework for the web and http services
   - See https://fastapi.tiangolo.com
-- **Azure Cosmos DB** is used as the persistent datastore for source data and session history as well as a vector database
-  - One or more Cosmos DB APIs may be part of your solution
+- **Azure Cosmos DB for NoSQL** is used as the persistent datastore for source data and session history as well as a vector database
   - See https://learn.microsoft.com/en-us/azure/cosmos-db/
-  - You can use either the **Cosmos DB for MongoDB vCore or Cosmos DB for NoSQL**
-    - https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/vcore/
   - Your domain data, with embeddings, are stored here
-  - AI sessions, prompt history, feedback, and completion history is persisted here
-  - This Cosmos DB data can optionally be mirrored to OneLake in Microsoft Fabric
-- **Azure OpenAI** is used for AI and LLM functionality
+  - AI sessions - prompts/completions history and feedback - are persisted here as well
+  - This Cosmos DB data can optionally be mirrored to OneLake in Microsoft Fabric for analytics, semantic cache and other capabilities
+- **Azure OpenAI** is used for AI models
   - See https://learn.microsoft.com/en-us/azure/ai-services/openai/
-- **semantic-kernel** is use for AI and LLM orchestration
+- **semantic-kernel** is used for AI and LLM orchestration
   - See https://learn.microsoft.com/en-us/semantic-kernel/overview/
 - **Apache Jena** is used as the high-performance in-memory graph
   - See https://jena.apache.org/
