@@ -12,15 +12,15 @@ These are required to simply execute the solution on your workstation:
   - Enables you to **git clone** this GitHub repository
 - [Python3](https://www.python.org/downloads/)
   - This solution uses Python command-line and web application programs, not Jupyter Notebooks
-  - Python version 3.12.x is recommended
+  - Python version 3.12.x or later is recommended
   - Conda is not recommended for this solution
-- **OpenJDK Java 21**
+- **OpenJDK Java 21 or later**
   - The new graph microservice is implemented in Java 21, Spring Boot, and Apache Jena
   - Download from: https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-21
   - See [Understanding the Code](understanding_the_code.md)
 - A **Java IDE**, such as:
   - [Eclipse](https://eclipseide.org/)
-  - [Jetbrains Intellij](https://www.jetbrains.com/idea/)
+  - [IntelliJ IDEA](https://www.jetbrains.com/idea/)
   - [Visual Studio Code (VSC)](https://code.visualstudio.com/)
 - **Gradle Build Tool**, version 8.12
   - Used to compile and package the Java code
@@ -28,14 +28,6 @@ These are required to simply execute the solution on your workstation:
   - See the build.gradle file in the repo
   - Alternately use the Maven build tool
     - Create your pom.xml file per the build.gradle contents.
-- **A Mongo Shell Program**, such as:
-  - [Azure Data Studio](https://azure.microsoft.com/en-us/products/data-studio)
-    - This is the recommended mongosh program for the CosmosAIGraph solution
-    - See the configuration instructions here:
-      - https://learn.microsoft.com/en-us/azure-data-studio/quickstart-azure-cosmos-db-mongodb?tabs=mongodb-vcore
-  - [mongosh](https://www.mongodb.com/docs/mongodb-shell/install/)
-    - The MSI installer option is recommended if you choose to use this program
-  - [Studio3T](https://studio3t.com/)
 
 Also, a working knowledge of **pip and Python Virtual Environments** is necessary.
 See https://realpython.com/python-virtual-environments-a-primer/.

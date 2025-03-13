@@ -57,6 +57,4 @@ is in file 'impl/app/wrangle.py' in the repo.
 
 ## Next Steps: Load Cosmos DB with Library Documents
 
-Depending on the Cosmos DB API you chose:
-- See [Load Azure Cosmos DB vCore](load_cosmos_vcore.md)
 - See [Load Azure Cosmos DB NoSQL](load_cosmos_nosql.md)
