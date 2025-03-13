@@ -1,8 +1,6 @@
-# CosmosAIGraph : Deploying the Azure Container App
+# CosmosAIGraph : Deploying the Azure Container Apps
 
-## Azure Container Apps
-
-The **recommended solution** for this reference application is to deploy to
+The **recommended deployment** for this reference application is in 
 [Azure Container Apps (ACA)](https://learn.microsoft.com/en-us/azure/container-apps/).
 
 ACA offers a very mature and easy to use runtime environment for your applications
@@ -26,11 +24,8 @@ the ACA application.
 The Bicep file is named **caig.bicep** and it uses the **caig.bicepparam**
 parameters file.
 
-There is functionality in this repo to generate the **caig.bicepparam** file,
-and the top of your **caig.bicep** file, per the **CAIG_xxx** environment variables
-that you have set on your workstation.
-
-In the impl\app directory you can execute the following script.
+If you add/delete some of your environment variables, there is a script to generate the **caig.bicepparam** file
+and the top of your **caig.bicep** file, per the **CAIG_xxx** environment variables that you have set on your workstation. To use it, run the following command in the **impl\web_app** folder:
 
 ```
 (venv) PS ...\app> python main_common.py gen_all
@@ -43,13 +38,3 @@ LoggingService initialized to level: 20
 2024-03-01 16:03:21,463 - file written: ../deployment/generated.bicepparam          <--- this
 2024-03-01 16:03:21,464 - file written: ../docs/environment_variables.md
 ```
-
----
-
-## Azure Kubernetes Service (AKS)
-
-Some customers may wish to deploy their CosmosAIGraph applications to alternative solutions,
-such as [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/products/kubernetes-service).
-
-Since CosmosAIGraph is packaged as **Docker Containers** the use of AKS is certainly
-possible, but is out-of-scope for this reference application.

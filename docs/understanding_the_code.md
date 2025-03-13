@@ -1,13 +1,8 @@
 # CosmosAIGraph : Understanding the Code
 
-This page strives to guide the reader in understanding both
-the structure and implementation of this codebase.  Not every
-python module is described here, only the most important ones.
-
-Again, this is simply a **reference application** that you may
-wish to refer to as you design and implement your own solutions.
-Please feel free to use any part of this design and implementation,
-or none.
+This page strives to guide the users in understanding both
+the structure and implementation of this project.  Not every
+code module is described here, only the most important ones.
 
 ## The impl\app directory
 
@@ -49,7 +44,7 @@ See the **tests.ps1** and **tests.sh** unit testing scripts.
 Their output looks like the following:
 
 <p align="center">
-  <img src="img/pytest_unit_tests.png" width="90%">
+  <img src="img/pytest_unit_tests.png" width="100%">
 </p>
 
 ### impl\app\src\models directory
@@ -126,7 +121,6 @@ CRUD operations over these databases.
 Class DBService inherits from class BaseDBService.
 Which one is used at runtime is determined by the **CAIG_GRAPH_SOURCE_TYPE** environment variable.
 If the value is "cosmos_nosql" then the Cosmos DB NoSQL API is used.
-If the value is "cosmos_vcore" then the Cosmos DB Mongo vCore API is used.
 
 Class **EntitiesService** also inherits from BaseDBService, and is used to read
 a configuration document which lists the entity names in your system.  These
@@ -134,54 +128,23 @@ names are used in class StrategyBuilder to determine the intent of user natural-
 
 **graph_builder.py** implements class **GraphBuilder** which utilizes the builder
 pattern to create an instance of class **GraphService**, which contains an in-memory
-**rdflib** database.  The source data for building the graph are JSON documents
+**Apache Jena** database.  The source data for building the graph are JSON documents
 in Cosmos DB.  One Cosmos DB document may result in several **triples** being
 loaded into the in-memory graph.
 
 Alternatively, for dev/test environments, GraphBuilder can instantiate the
 in-memory graph by reading a **RDF *.nt** text file.
 
-These environment variables are used in building the in-memory rdflib graph:
+These environment variables are used in building the in-memory graph:
 - CAIG_GRAPH_SOURCE_TYPE
 - CAIG_GRAPH_SOURCE_OWL_FILENAME
 - CAIG_GRAPH_SOURCE_RDF_FILENAME
 - CAIG_GRAPH_SOURCE_DB
 - CAIG_GRAPH_SOURCE_CONTAINER
-- CAIG_AZURE_MONGO_VCORE_CONN_STR 
 
 Please see the [Environment Variables](environment_variables.md) page where
 these are described.
 
-Please take a close look at graph_builder.py to see how the in-memory
-rdflib graph is populated.  One approach uses an **RDF triples file** (i.e. - *.nt)
-while the other loads the graph from **Cosmos DB** documents.
-
-Note that [code generation](code_generation.md) may be used to generate 
-a separate class named **RdflibTriplesBuilder** that is used by class
-GraphBuilder in **graph_builder.py** to actually load the rdflib graph.
-
-**graph_service.py** implements class **GraphService** which provides an interface
-to all rdflib functionality including SPARQL queries.  The **in-memory rdflib graph**
-is mutable.  Since it resides in-memory, rather than on disk, it results in
-low-latency queries.
-
-**entities_service.py** implements class **EntitiesService** which allows you
-to define the names of the entities in your system, and thus identify them in
-user natural-language.
-
-**strategy_builder.py** implements class **StrategyBuilder** used to determine
-the **strategy** to be used in obtaining RAG data.  The currently identified
-strategies are: **db, graph, and vector**.  This class uses EntitiesService.
-
-**rag_data_service.py** implements class **RAGDataService** which is used to fetch
-the pertinent RAG data given a user utterance or natural-language.
-This class uses StrategyBuilder to determine the appropriate strategy to use
-when fetching the RAG data.  The RAG data can be read directly from 
-Cosmos DB if the stragegy is "db", otherwise either an in-memory RDF graph
-query or a Cosmos DB vector search is used to identify and fetch the RAG data.
-
-**rag_data_result.py** implements class **RAGDataResult**.  Instances of this class
-are returned by the **get_rag_data** method of the above class RAGDataService.
 
 ### impl\app\src\util directory
 
@@ -218,8 +181,8 @@ can be used to produce a visualization of your ontology, such as with D3.js.
 
 The entry-point for the two microservices are:
 
-- impl/app/webapp.py    This is the Web Application
-- impl/app/websvc.py    This is the Graph Microservice
+- impl/web_app/web_app.py    This is the Web Application
+- impl/graph_app/graph_app.ps1    This is the Graph Microservice
 
 These two are very similar in that they create the **FastAPI** object,
 load environment variables, configure logging, log the environment variables,
@@ -253,7 +216,7 @@ security requirements, Authorization and Authentication is **not**
 implemented in this reference application.
 
 [msal](https://learn.microsoft.com/en-us/entra/msal/python/) is one
-library you may wish to use to implement authorization and authencication
+library you may wish to use to implement authorization and authentication
 with [Microsoft Entra (AAD)](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id).
 
 On a networking level, however, the **Azure Container App** will user
@@ -350,7 +313,7 @@ The environment variables begin with the **CAIG_** prefix and are described
 in the [Environment Variables](environment_variables.md) page
 
 The Spring Boot framework also uses the src/main/resources/application.properties
-file for some configuration values.  But all **application coniguration**
+file for some configuration values.  But all **application configuration**
 is done with environment variables and class AppConfig.  This approach 
 is typically used by Docker containerized applications.
 
@@ -366,7 +329,6 @@ CAIG_GRAPH_SOURCE_TYPE may have one of the following values:
 - json_docs_file - the graph is sourced from ile cosmosdb_documents.json in the repo
 - rdf_file - the graph is sourced from the file specified in CAIG_GRAPH_SOURCE_RDF_FILENAME
 - cosmos_nosql - the graph is sourced from your Cosmos DB NoSQL account
-- cosmos_vcore - the graph is sourced from your Cosmos DB Mongo vCore account
 
 After the Jena graph is populated, you can optionally dump that
 graph to a file per the CAIG_GRAPH_DUMP_UPON_BUILD and CAIG_GRAPH_DUMP_OUTFILE

@@ -17,7 +17,7 @@ Once it is provisioned, navigate to the Resource Management -> Keys and Endpoint
 page within the account as shown below.
 
 <p align="center">
-  <img src="img/azure-open-ai-keys-and-endpoint.png" width="70%">
+  <img src="img/azure-open-ai-keys-and-endpoint.png" width="100%">
 </p>
 
 Capture the values of the endpoint URL and Key 1.  You will later
@@ -29,16 +29,12 @@ It is expected that, over time, the names of these models will change,
 so use the current version of each.
 
 <p align="center">
-  <img src="img/azure-openai-deployments.png" width="70%">
+  <img src="img/azure-openai-deployments.png" width="100%">
 </p>
 
 You should set your **CAIG_AZURE_OPENAI_COMPLETIONS_DEP** and 
 **CAIG_AZURE_OPENAI_EMBEDDINGS_DEP** environment variables to the
 deployment names of these two models in your Azure OpenAI account.
-
-<pre>
-
-</pre>
 
 ## Azure Container Registry (ACR)
 
@@ -51,10 +47,6 @@ The example Bicep deployment scripts in this repository use
 **DockerHub** for this public reference implementation.
 However, you should use your private and secure Azure Container Registry instead.
 
-<pre>
-
-</pre>
-
 ## Azure Cosmos DB for NoSQL
 
 In Azure Portal, go to Marketplace and search for "Azure Cosmos DB".
@@ -63,7 +55,7 @@ Select "Azure Cosmos DB" on the first page.
 Then select "Azure Cosmos DB for NoSQL" on the second page as shown below:
 
 <p align="center">
-  <img src="img/cosmosdb-create.png" width="70%">
+  <img src="img/cosmosdb-create.png" width="100%">
 </p>
 
 ### Obtain/Set the Connection Parameters
@@ -76,7 +68,7 @@ Also, set the environment variable called **CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM**
 Then, navigate to this account in your Azure Portal and open "Settings -> Keys" blade as shown below.  
 
 <p align="center">
-  <img src="img/cosmosdb-conn.png" width="70%">
+  <img src="img/cosmosdb-conn.png" width="100%">
 </p>
 
 Copy the **PRIMARY KEY** value into a the environment variable called **CAIG_COSMOSDB_NOSQL_KEY**.

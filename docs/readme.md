@@ -91,7 +91,6 @@ uses several environment variables, and they all begin with **CAIG_**.
 ### Load Cosmos DB with Library and Config Documents
 
 - See [Cosmos DB Document Design and Modeling](cosmos_design_modeling.md)
-- See [Load Azure Cosmos DB for MongoDB vCore](load_cosmos_vcore.md)
 - See [Load Azure Cosmos DB for NoSQL](load_cosmos_nosql.md)
 
 ### Run the Application on your Workstation
