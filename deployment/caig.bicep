@@ -18,7 +18,7 @@ param cosmosdbNosqlKey string
 param cosmosdbNosqlRg string
 param cosmosdbNosqlUri string
 param definedAuthUsers string
-param encryptionSymmetricKey string
+//param encryptionSymmetricKey string
 param feedbackContainer string
 param graphNamespace string
 param graphServiceName string
@@ -142,10 +142,10 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
               name: 'CAIG_DEFINED_AUTH_USERS'
               value: definedAuthUsers
             }
-            {
-              name: 'CAIG_ENCRYPTION_SYMMETRIC_KEY'
-              value: encryptionSymmetricKey
-            }
+            // {
+            //   name: 'CAIG_ENCRYPTION_SYMMETRIC_KEY'
+            //   value: encryptionSymmetricKey
+            // }
             {
               name: 'CAIG_FEEDBACK_CONTAINER'
               value: feedbackContainer
@@ -314,10 +314,10 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
               name: 'CAIG_DEFINED_AUTH_USERS'
               value: definedAuthUsers
             }
-            {
-              name: 'CAIG_ENCRYPTION_SYMMETRIC_KEY'
-              value: encryptionSymmetricKey
-            }
+            // {
+            //   name: 'CAIG_ENCRYPTION_SYMMETRIC_KEY'
+            //   value: encryptionSymmetricKey
+            // }
             {
               name: 'CAIG_FEEDBACK_CONTAINER'
               value: feedbackContainer
