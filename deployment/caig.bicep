@@ -5,7 +5,6 @@
 // Cosmos DB and OpenAI deployment is NOT handled by this script, only ACA.
 
 param acaEnvironmentName string
-param azureMongoVcoreConnStr string
 param azureOpenaiCompletionsDep string
 param azureOpenaiEmbeddingsDep string
 param azureOpenaiKey string
@@ -15,7 +14,7 @@ param configContainer string
 param conversationsContainer string
 param cosmosdbNosqlAcct string
 param cosmosdbNosqlAuthMechanism string
-param cosmosdbNosqlKey1 string
+param cosmosdbNosqlKey string
 param cosmosdbNosqlRg string
 param cosmosdbNosqlUri string
 param definedAuthUsers string
@@ -92,10 +91,6 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
               value: acaEnvironmentName
             }
             {
-              name: 'CAIG_AZURE_MONGO_VCORE_CONN_STR'
-              value: azureMongoVcoreConnStr
-            }
-            {
               name: 'CAIG_AZURE_OPENAI_COMPLETIONS_DEP'
               value: azureOpenaiCompletionsDep
             }
@@ -132,8 +127,8 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
               value: cosmosdbNosqlAuthMechanism
             }
             {
-              name: 'CAIG_COSMOSDB_NOSQL_KEY1'
-              value: cosmosdbNosqlKey1
+              name: 'CAIG_COSMOSDB_NOSQL_KEY'
+              value: cosmosdbNosqlKey
             }
             {
               name: 'CAIG_COSMOSDB_NOSQL_RG'
@@ -268,10 +263,6 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
               value: acaEnvironmentName
             }
             {
-              name: 'CAIG_AZURE_MONGO_VCORE_CONN_STR'
-              value: azureMongoVcoreConnStr
-            }
-            {
               name: 'CAIG_AZURE_OPENAI_COMPLETIONS_DEP'
               value: azureOpenaiCompletionsDep
             }
@@ -308,8 +299,8 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
               value: cosmosdbNosqlAuthMechanism
             }
             {
-              name: 'CAIG_COSMOSDB_NOSQL_KEY1'
-              value: cosmosdbNosqlKey1
+              name: 'CAIG_COSMOSDB_NOSQL_KEY'
+              value: cosmosdbNosqlKey
             }
             {
               name: 'CAIG_COSMOSDB_NOSQL_RG'

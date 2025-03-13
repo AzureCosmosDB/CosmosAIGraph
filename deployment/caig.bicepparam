@@ -2,7 +2,6 @@
 using './caig.bicep'
 
 param acaEnvironmentName = readEnvironmentVariable('CAIG_ACA_ENVIRONMENT_NAME')
-param azureMongoVcoreConnStr = readEnvironmentVariable('CAIG_AZURE_MONGO_VCORE_CONN_STR')
 param azureOpenaiCompletionsDep = readEnvironmentVariable('CAIG_AZURE_OPENAI_COMPLETIONS_DEP')
 param azureOpenaiEmbeddingsDep = readEnvironmentVariable('CAIG_AZURE_OPENAI_EMBEDDINGS_DEP')
 param azureOpenaiKey = readEnvironmentVariable('CAIG_AZURE_OPENAI_KEY')
@@ -12,7 +11,7 @@ param configContainer = readEnvironmentVariable('CAIG_CONFIG_CONTAINER')
 param conversationsContainer = readEnvironmentVariable('CAIG_CONVERSATIONS_CONTAINER')
 param cosmosdbNosqlAcct = readEnvironmentVariable('CAIG_COSMOSDB_NOSQL_ACCT')
 param cosmosdbNosqlAuthMechanism = readEnvironmentVariable('CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM')
-param cosmosdbNosqlKey1 = readEnvironmentVariable('CAIG_COSMOSDB_NOSQL_KEY1')
+param cosmosdbNosqlKey = readEnvironmentVariable('CAIG_COSMOSDB_NOSQL_KEY')
 param cosmosdbNosqlRg = readEnvironmentVariable('CAIG_COSMOSDB_NOSQL_RG')
 param cosmosdbNosqlUri = readEnvironmentVariable('CAIG_COSMOSDB_NOSQL_URI')
 param definedAuthUsers = readEnvironmentVariable('CAIG_DEFINED_AUTH_USERS')
