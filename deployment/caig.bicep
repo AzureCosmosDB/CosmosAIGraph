@@ -84,7 +84,7 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
     template: {
       containers: [
         {
-          image: 'cjoakim/caig_graph_v2:latest'
+          image: 'cjoakim/caig_graph_v3:latest'
           name: graphServiceName
           env: [
             {
@@ -251,7 +251,7 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
     template: {
       containers: [
         {
-          image: 'cjoakim/caig_web_v2:latest'
+          image: 'cjoakim/caig_web_v3:latest'
           name: webAppName
           env: [
             {

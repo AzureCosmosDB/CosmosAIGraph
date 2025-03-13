@@ -1,7 +1,7 @@
 # Deploy the Azure Container App (ACA) using Bicep.
 # Replace the values of the variables with your own values.
 
-$RESOURCE_GROUP="<RESOUCRCE_GROUP_NAME>"
+$RESOURCE_GROUP="<RESOURCE_GROUP_NAME>"
 $REGION="<AZURE_REGION>"
 
 Write-Host "az group create ..."

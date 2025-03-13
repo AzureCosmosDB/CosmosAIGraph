@@ -90,8 +90,8 @@ You should see similar verbose output that includes the following:
 
 These three pre-built Docker containers exist on **DockerHub**:
 
-- cjoakim/caig_web_v2:latest
-- cjoakim/caig_graph_v2:latest
+- cjoakim/caig_web_v3:latest
+- cjoakim/caig_graph_v3:latest
 - cjoakim/caig_graph_java_jena_v1:latest
 
 These are used by default by the above **docker-compose** scripts

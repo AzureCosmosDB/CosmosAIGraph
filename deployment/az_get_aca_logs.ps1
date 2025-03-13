@@ -1,7 +1,7 @@
 # Fetch the Azure Container App (ACA) log files.
 # Replace the values of the variables with your own values.
 
-$RESOURCE_GROUP="<RESOUCRCE_GROUP_NAME>"
+$RESOURCE_GROUP="<RESOURCE_GROUP_NAME>"
 $REGION="<AZURE_REGION>"
 
 Write-Host "fetching caig-web logs ..."
