@@ -1,17 +1,17 @@
 # CosmosAIGraph : Application Architecture
 
 <p align="center">
-  <img src="img/app-architecture-v3.png" width="90%">
+  <img src="img/deployment-architecture.png" width="100%">
 </p>
 
 ---
 
 ## Application Components
 
-- Microservices
-  - web microervice - UI front end with AI functionality
-  - graph microservice - Contains the in-memory graph
+- Microservices:
+  - Web app - UI front end with AI functionality
+  - Graph app - Contains the in-memory graph
 - Azure Container App - Runtime orchestrator for the above two microservices
-- Cosmos DB NoSQL or Mongo vCore API - Domain data and conversational AI documents, embeddings
-- Azure OpenAI - completions and embeddings service
+- Azure Cosmos DB for NoSQL - Domain data and conversational AI documents, embeddings
+- Azure OpenAI - completion and embedding models
 

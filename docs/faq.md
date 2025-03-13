@@ -67,10 +67,10 @@ so that all customers can access it.
 
 <a name="why_python"></a>
 
-**Q: Do I have to use the Python programming language?**
+**Q: Do I have to use the Java programming language?**
 
 **A:** For the Graph Microservice, yes, since the implementation
-uses the [rdflib](https://pypi.org/project/rdflib/) Python library.
+uses the [Apache Jena](https://jena.apache.org/).
 
 However, for the Web Application you can use any programming language
 you'd like (i.e. - Java, C#, Node.js, etc.) as long as it can make
@@ -94,7 +94,7 @@ but much larger graphs are possible.
 
 Azure Container Apps (ACA) workload profiles support up to 880 GB of memory, see https://learn.microsoft.com/en-us/azure/container-apps/workload-profiles-overview.  This enables huge in-memory graphs.  
 
-Also, we recommend at least two instances of the graph service in ACA for high-availibility.  Example Bicep configuration shown below.
+Also, we recommend at least two instances of the graph service in ACA for high-availability.  Example Bicep configuration shown below.
 
 ```
       scale: {
@@ -111,12 +111,9 @@ Also, we recommend at least two instances of the graph service in ACA for high-a
 
 **A:** Yes, though the reference implementation doesn't demonstrate this.
 
-One way to implement this is to use the Cosmos DB NoSQL API Change Feed
+One way to implement this is to use the Azure Cosmos DB for NoSQL Change Feed
 functionality to observe changes to the database, enqueue these, and
 have the Graph Microservice(s) process these queued changes.
-
-Alternatively, the Cosmos DB vCore API offers change-stream functionality
-(currently in preview mode).
 
 ---
 
@@ -124,7 +121,7 @@ Alternatively, the Cosmos DB vCore API offers change-stream functionality
 
 **Q: Do I have to use Azure Container Apps (ACA)?**
 
-**A:** No.  [Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/) is also recommended.
+**A:** No.  [Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/) can also be used, however this project doesn't provide deployment scripts for it.
 
 ---
 
@@ -139,10 +136,8 @@ that you may wish to use in your application.
 It is expected that each customer will significantly modify the codebase
 for their particular needs.
 
-We recommend that customer skillsets include application programming
-with Python, Web UI skills, and AI/LLM/Prompt skills.
-While PySpark experience is useful, this solution is not based on Spark.
-
+We recommend that customer skill sets include application programming
+with Java, Python, Web UI skills, and AI/LLM/Prompt skills.
 ---
 
 <a name="how_to_create_owl"></a>
@@ -161,7 +156,7 @@ vertices and edges here conceptually, but not for implementation.
 
 Another way is to write a Python or other program to read and scan your input data,
 usually before loading it into Cosmos DB.  The program identifies all of the entity
-types, their attribute names and datatypes, and the relationships to other
+types, their attribute names and data types, and the relationships to other
 entities.  This extracted "metadata" of your data can then be used to generate
 your OWL file.  This approach has been successfully used with several customers.
 As an additional bonus, the metadata can also be used to generate Python code,
@@ -202,7 +197,7 @@ The RDF graph is then able to infer the relationship, or edge, between
 Chris and Aleksey.  In our experience, this is a significant advantage 
 of RDF over LPG, as **you don't need to explicitly create the edges**
 in your graph.  We have seen many LPG graph project with sub-optimal
-datasets as, over time, vertices get programatically deleted but their
+datasets as, over time, vertices get programmatically deleted but their
 corresponding edges often do not.  This leads to **orphan edges**
 that can greatly reduce database performance.
 

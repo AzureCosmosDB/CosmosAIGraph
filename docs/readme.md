@@ -99,9 +99,9 @@ uses several environment variables, and they all begin with **CAIG_**.
 - See [Explore the FastAPI Framework and Endpoint Documentation](fastapi_endpoint_docs.md)
 - See [Understanding the Code](understanding_the_code.md)
 
-### Azure Container App Deployment
+### Azure Container Apps Deployment
 
-- See [Deploying the Azure Container App](aca_deployment.md)
+- See [Deploying the Azure Container Apps](aca_deployment.md)
 
 ### Screen Shots of the Current Implementation
 
@@ -120,5 +120,4 @@ has the following skill sets:
 - A Java developer with graph (SPARQL/TTL) skills
 
 - See [Customizing this Solution](customizing_this_solution.md)
-- See [Code Generation](code_generation.md)
 - See the [FAQ Page](faq.md) to clarify your understanding of the CosmosAIGraph solution.

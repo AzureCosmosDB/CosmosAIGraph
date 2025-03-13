@@ -7,7 +7,7 @@ for your JSON documents in Cosmos DB.  They can be structured as if
 it is a non-graph application, per general NoSQL/Mongo design best practices.
 
 This is because **the graph**, in the CosmosAIGraph solution, only
-exists in-memory within the Python rdflib process.
+exists in-memory within the Apache Jena process.
 
 However, one suggestion is to use an **edges attribute** in your
 documents, and populate it with the list of **outgoing** relationships

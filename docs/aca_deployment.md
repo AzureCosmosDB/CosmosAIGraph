@@ -28,7 +28,7 @@ If you add/delete some of your environment variables, there is a script to gener
 and the top of your **caig.bicep** file, per the **CAIG_xxx** environment variables that you have set on your workstation. To use it, run the following command in the **impl\web_app** folder:
 
 ```
-(venv) PS ...\app> python main_common.py gen_all
+(venv) PS ...\web_app> python main_common.py gen_all
 
 LoggingService config level name: info
 LoggingService initialized to level: 20
