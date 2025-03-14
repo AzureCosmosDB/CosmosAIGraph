@@ -36,7 +36,7 @@ User-Agent: VSC-REST-Client
 content-type: application/json
 
 {
-    "sparql": "PREFIX c: <http://cosmosdb.com/caig#> SELECT ?used_lib WHERE { <http://cosmosdb.com/caig/pypi_flask> c:uses_lib ?used_lib . } LIMIT 10"
+    "sparql": "PREFIX c: <http://cosmosdb.com/caig#> SELECT ?used_library WHERE { <http://cosmosdb.com/caig/pypi_flask> c:uses_library ?used_library . } LIMIT 10"
 }
 
 ###
@@ -63,3 +63,14 @@ GET http://127.0.0.1:8000/liveness
 ###
 
 GET http://127.0.0.1:8000/sparql_console
+
+
+###
+
+POST http://127.0.0.1:8001/sparql_query
+User-Agent: VSC-REST-Client
+content-type: application/json
+
+{
+    "sparql": "PREFIX caig: <http://cosmosdb.com/caig#> SELECT ?library (COUNT(?dependency) AS ?dependencyCount) WHERE {     ?library a caig:Library .     ?library caig:uses_library ?dependency . } GROUP BY ?library ORDER BY DESC(?dependencyCount) LIMIT 5"
+}

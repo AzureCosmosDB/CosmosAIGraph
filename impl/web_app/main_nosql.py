@@ -10,7 +10,6 @@ Usage:
     python main_nosql.py vector_search_words asynchronous web framework with pydantic
     python main_nosql.py ad_hoc dev
     python main_nosql.py test_db_service cosmos_nosql caig
-    python main_nosql.py test_db_service cosmos_vcore caig
 Options:
   -h --help     Show this screen.
   --version     Show version.

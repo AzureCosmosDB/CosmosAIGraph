@@ -7,7 +7,7 @@ This page assumes that you have set the following environment variables:
 ```
 CAIG_GRAPH_SOURCE_TYPE              <-- must be set to 'cosmos_nosql'
 CAIG_COSMOSDB_NOSQL_URI             <-- this value is unique to your Azure deployment
-CAIG_COSMOSDB_NOSQL_KEY1            <-- Read/Write key value
+CAIG_COSMOSDB_NOSQL_KEY             <-- Read/Write key value
 CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM  <-- Authentication mechanism - key or RBAC (Entra ID)
 
 CAIG_GRAPH_SOURCE_DB                <-- defaults to 'caig'
@@ -17,23 +17,22 @@ CAIG_CONVERSATIONS_CONTAINER        <-- defaults to 'conversations'
 CAIG_FEEDBACK_CONTAINER             <-- defaults to 'feedback'
 ```
 
-## Create the Cosmos DB NoSQL Containers
+## Create containers in Azure Cosmos DB for NoSQL
 
 Use Azure Portal to create the **caig** database and the several
-containers within it, listed below.  This can later be automated
-with your provisioning toolset of choice - Bicep, ARM, Terraform, etc..
+containers within it, listed below.
 
 ### The Libraries Container
 
-First create the **libraries** container, with a **diskANN vector index**,
+First, create the **libraries** container, with a **DiskANN vector index**,
 as shown in this screen shot.  This is an example of a **domain data**
-container that contains your vectorized "business data".
+container that contains data embeddings.
 
 <p align="center">
   <img src="img/new-container-diskann-vector-embedding.png" width="50%">
 </p>
 
-### The Other Containers 
+### Other Containers
 
 Also manually create these three containers in the **caig** database.
 
@@ -66,16 +65,14 @@ the following commands:
 
 ---
 
-
 ## Load the entities document into the config container
 
 This step will load one document into the **config** container.
 The document contains a list of the known entities in the system.
 
 ```
-> python main_nosql.py load_entities caig config
+python main_nosql.py load_entities caig config
 ```
-
 
 The input file/document is **impl/data/entities/entities_doc.json**, 
 which looks like the following:
@@ -98,12 +95,12 @@ which looks like the following:
   }
 }
 
-This list of entities is used in class EntitiesService and StrategyBuilder.
+This list of entities is used in Graph Java app to construct the graph in Apache Jena during its initialization.
 For your CosmosAIGraph implementation, create and upload a similar file.
 
-## Load the Library data into Cosmos DB NoSQL
+## Load the "Libraries" dataset into Azure Cosmos DB for NoSQL
 
-This step will load the main dataset into a libraries container :
+This step will load the main dataset into a libraries container:
 
 ```
 

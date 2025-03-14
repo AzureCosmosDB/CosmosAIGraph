@@ -1,19 +1,18 @@
 # CosmosAIGraph
 
-**AI-Powered Graph and Knowledge Graph Solutions with Azure Cosmos DB and the OmniRAG pattern**
+**AI-Powered Graph and RAG implementation of OmniRAG pattern, utilizing Azure Cosmos DB and other sources**
 
-- [Azure Cosmos DB TV, Episode 95 Video](https://www.youtube.com/watch?v=0alvRmEgIpQ)
 - [Presentations](presentations/)
 - [Reference Application Documentation](docs/readme.md)
-- [Reference Dataset of Python libraries, pre-vectorized](data/pypi/wrangled_libs)
 - [Frequently Asked Questions (FAQ)](docs/faq.md)
+- [Reference Dataset of Python libraries, pre-vectorized](data/pypi/wrangled_libs)
 
 <pre>
 
 </pre>
 
 <p align="center">
-  <img src="presentations/app-architecture-v3.png" width="90%">
+  <img src="docs/img/deployment-architecture.png" width="100%">
 </p>
 
 ---
@@ -21,13 +20,13 @@
 ## Change Log
 
 - March 2025
-  - "Version 3" codebase
-  - Now focused on Cosmos DB NoSQL API
+  - Version 3.0 codebase
+  - Now focused on Azure Cosmos DB for NoSQL
     - Eliminated vCore support
-  - Now focused on Java and Apache Jena for the in-memory RDF graph
+  - Now focused on Apache Jena implementation (Java) for the in-memory RDF graph
     - Eliminated rdflib support
   - New DockerHub images created
-  - Presentatons updated - see the v3 files
+  - Presentations updated - see the v3 files
   - Docs are being updated, target completion date 3/31/2025
 
 - January 2025
@@ -35,14 +34,13 @@
   - See https://jena.apache.org/index.html
 
 - September 2024
-  - Added support for the **Cosmos DB NoSql API** in addition to Cosmos DB Mongo vCore
-  - Migrated to this public repo https://github.com/AzureCosmosDB/CosmosAIGraph
+  - Added support for the **Azure Cosmos DB for NoSQL** in addition to Azure Cosmos DB for MongoDB vCore
 
 ## Roadmap
 
-- Add RBAC and Microsoft Entra ID/AAD authentication support for the **Cosmos DB NoSql API**
-- Update Azure OpenAI model from gpt-4
-- Generic Graph Examples
+- Add RBAC and Microsoft Entra ID/AAD authentication support for the **Azure Cosmos DB for NoSQL**
+- Update AI model to gpt-4.5
+- Generic graph examples with graph generation solution
 
 ## Contributing
 

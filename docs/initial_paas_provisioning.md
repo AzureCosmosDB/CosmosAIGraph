@@ -17,7 +17,7 @@ Once it is provisioned, navigate to the Resource Management -> Keys and Endpoint
 page within the account as shown below.
 
 <p align="center">
-  <img src="img/azure-open-ai-keys-and-endpoint.png" width="70%">
+  <img src="img/azure-open-ai-keys-and-endpoint.png" width="100%">
 </p>
 
 Capture the values of the endpoint URL and Key 1.  You will later
@@ -29,16 +29,12 @@ It is expected that, over time, the names of these models will change,
 so use the current version of each.
 
 <p align="center">
-  <img src="img/azure-openai-deployments.png" width="70%">
+  <img src="img/azure-openai-deployments.png" width="100%">
 </p>
 
 You should set your **CAIG_AZURE_OPENAI_COMPLETIONS_DEP** and 
 **CAIG_AZURE_OPENAI_EMBEDDINGS_DEP** environment variables to the
 deployment names of these two models in your Azure OpenAI account.
-
-<pre>
-
-</pre>
 
 ## Azure Container Registry (ACR)
 
@@ -51,61 +47,28 @@ The example Bicep deployment scripts in this repository use
 **DockerHub** for this public reference implementation.
 However, you should use your private and secure Azure Container Registry instead.
 
-<pre>
-
-</pre>
-
-## Azure Cosmos DB Mongo vCore
+## Azure Cosmos DB for NoSQL
 
 In Azure Portal, go to Marketplace and search for "Azure Cosmos DB".
-Select "Azure Cosmos DB for Mongo DB" on the first page:
+Select "Azure Cosmos DB" on the first page.
+
+Then select "Azure Cosmos DB for NoSQL" on the second page as shown below:
 
 <p align="center">
-  <img src="img/vcore-provision-1.png" width="70%">
+  <img src="img/cosmosdb-create.png" width="100%">
 </p>
 
-<pre>
-</pre>
+### Obtain/Set the Connection Parameters
 
-Then select "vCore Cluster" on the second page as shown below.
+After the Azure Cosmos DB for NoSQL account has been created, 
+save the name you chose for that account in the environment variable called **CAIG_COSMOSDB_NOSQL_ACCT**.
+
+Also, set the environment variable called **CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM** to "key".
+
+Then, navigate to this account in your Azure Portal and open "Settings -> Keys" blade as shown below.  
 
 <p align="center">
-  <img src="img/vcore-provision-2.png" width="70%">
+  <img src="img/cosmosdb-conn.png" width="100%">
 </p>
 
-Choose the Cluster Tier of your choice.  The Free Tier or M25 Tier will be adequate
-for this reference application.
-
-Be sure to record the **Admin Username** and **Password** values that you provide.
-These values will be needed to form the connection string.
-
-### Obtain/Set the Connection String
-
-After the Azure Cosmos DB Mongo vCore account has been created, navigate to
-it in your Azure Portal and navigate to the "Settings -> Connection Strings"
-page as shown below.  
-
-<p align="center">
-  <img src="img/vcore-connection-string.png" width="70%">
-</p>
-
-Copy the "Connection string" value on that page into a text editor; 
-it should look like the following.  Edit the part of the connection
-string with the content "user:password" and substitute the 
-**Admin Username** and **Password** that you specified above when
-creating the account.
-
-#### Raw Connection String from Azure Portal
-
-```
-mongodb+srv://<user>:<password>@<your-account-name>.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000
-```
-
-#### Sample Edited Connection String from Azure Portal
-
-```
-mongodb+srv://chris:secret@<your-account-name>.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000
-```
-
-Save this edited connection string value.  You will later
-set your **CAIG_AZURE_MONGO_VCORE_CONN_STR** environment variable with this value.
+Copy the **PRIMARY KEY** value into a the environment variable called **CAIG_COSMOSDB_NOSQL_KEY**.

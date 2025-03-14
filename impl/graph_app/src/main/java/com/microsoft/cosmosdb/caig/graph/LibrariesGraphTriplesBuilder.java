@@ -106,11 +106,10 @@ public class LibrariesGraphTriplesBuilder {
                 // Create the libraryResource if it doesn't already exist
                 String libUri = this.namespace + libName;
                 Resource libraryResource = lookupResource(libUri);
-                if (libraryResource == null) {
-                    libraryResource = model.createResource(libUri);
-                    model.add(libraryResource, RDF.type, TYPE_LIBRARY_URI);
-                    logger.warn("create libraryResource: " + libUri);
-                }
+
+                libraryResource = model.createResource(libUri);
+                model.add(libraryResource, RDF.type, model.createResource(TYPE_LIBRARY_URI));
+                logger.warn("create libraryResource: " + libUri);
 
                 // Add properties/attributes of the Lib
                 if (doc.containsKey("name")) {
@@ -156,11 +155,11 @@ public class LibrariesGraphTriplesBuilder {
                         String dev = developers.get(i).toString().strip().toLowerCase();
                         String devUri = this.namespace + dev;
                         Resource devResource = lookupResource(devUri);
-                        if (devResource == null) {
-                            devResource = model.createResource(devUri);
-                            model.add(devResource, RDF.type, TYPE_DEVELOPER_URI);
-                            logger.warn("create devResource: " + devUri);
-                        }
+
+                        devResource = model.createResource(devUri);
+                        model.add(devResource, RDF.type, model.createResource(TYPE_DEVELOPER_URI));
+                        logger.warn("create devResource: " + devUri);
+
                         model.add(libraryResource, this.developedByProperty, devResource);
                         model.add(devResource, this.developerOfProperty, libraryResource);
                     }

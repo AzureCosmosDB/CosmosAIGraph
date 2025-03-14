@@ -25,25 +25,24 @@ If so, proceed.  If not, revisit the requirements and/or data sources.
 ### What do we mean by scanning?
 
 By **"scanning"** we mean writing a program to read your input data
-to indentify its structure, attributes and their datatypes, and the
-relationships between the entities.  Python is an excellent choice
-for this scanning process, but you can use the programming language(s)
-of your choice.
+to identify its structure, attributes and their data types, and the
+relationships between the entities.
 
 There are several purposes of scanning:
+
 - To ensure that it is readable and parsable
 - To ensure that it contains the relationships, or connections, that you expect
   - The entities are linkable by specific attribute values
 
-- To capture the **metadata** of your data
-  - Its' structure
+- To capture the **metadata** of your data:
+
+  - Its structure
   - Attribute names and their datatypes
   - Names of the classes and the relationships between them
   - **Accurate metadata like this can greatly accelerate your development process.**
-    - See [Code Generation](code_generation.md)
 
 
-## Step 3: Understand RDF graph technology, Ontologies, and SPARQL
+## Step 3: Understand RDF graph technology, ontologies, and SPARQL
 
 RDF technology uses the beautifully simple concept of **triples**.
 Each triple consists of a subject, predicate, and object.
@@ -69,10 +68,10 @@ See file **impl/app/ontologies/libraries.owl** as a reference.
 
 The owl file development process should be iterative.
 
-## Step 5: Create a Data-Wrangling process to populate a Jena graph
+## Step 5: Create a Data Wrangling process to populate a Jena graph
 
 Given your datasets, and your evolving OWL file, populate 
-an in-memory rdflib graph, then serialize it to a *.nt file.
+an in-memory graph, then serialize it to a *.ttl file.
 
 Write a console application to load your graph from the OWL and nt
 file, and craft SPARQL queries that seek to answer the queries you
@@ -82,7 +81,7 @@ You may need to implement programming logic to execute multiple SPARQL
 queries to satisfy an individual use-case requirement.
 
 Expect steps 4 and 5 to be iterative.  Modify your OWL, refactor
-your data-wrangling process, and recreate your rdflib graph and nt file.
+your data-wrangling process, and recreate your graph and nt file.
 
 ## Step 6: Create a minimal "SPARQL QUERY" web interface
 
@@ -100,4 +99,3 @@ Once your OWL and graph design is stabilized, implement your desired UI.
 This may include graph visualizations.  This reference application
 uses the [D3.js](https://d3js.org/) JavaScript library for visualizations, but of course
 you may use any libraries you prefer.
-
