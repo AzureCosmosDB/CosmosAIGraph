@@ -111,7 +111,7 @@ public class AppGraphBuilder {
             if (AppConfig.dumpGraphUponBuild()) {
                 String outfile = AppConfig.getGraphDumpOutfile();
                 if (outfile != null) {
-                    appGraph.writeModelToFile(outfile, Lang.NT);
+                    appGraph.writeModelToFile(outfile, Lang.TTL);
                     //appGraph.writeModelToFile(outfile, Lang.JSONLD);
                 }
             }

@@ -88,6 +88,7 @@ public class AppGraph {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ResultSetFormatter.outputAsJSON(outputStream, results);
             String json = new String(outputStream.toByteArray()).replaceAll("\\n","");
+            //System.out.println("query - json: " + json);
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> map
                     = objectMapper.readValue(json, new TypeReference<Map<String,Object>>(){});
