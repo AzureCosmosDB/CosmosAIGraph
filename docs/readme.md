@@ -54,7 +54,7 @@ If you don't have **git** installed on your system, please see the
 [Developer Workstation Setup](developer_workstation.md) page.
 
 ```
-> git clone https://github.com/alekseys/CosmosAIGraph.git
+> git clone https://github.com/AzureCosmosDB/CosmosAIGraph/CosmosAIGraph.git
 
 > cd CosmosAIGraph
 
