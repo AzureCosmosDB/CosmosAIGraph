@@ -12,6 +12,9 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFWriter;
 import org.apache.jena.riot.RIOT;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.update.UpdateExecution;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
@@ -368,6 +371,35 @@ public class AppGraph {
         finally {
             logger.warn("writeModelToFile completed");
         }
+    }
+
+    /**
+     * Read the graph from an RDF file with the given filename,
+     * in one of several formats, defaulting to Lang.TTL (i.e. - TURTLE).
+     * See https://jena.apache.org/documentation/io/rdf-output.html
+     */
+    public Model readGraphFromFile(String filename, Lang lang) {
+        try {
+            if (lang == null) {
+                lang = Lang.TTL;
+            }
+            logger.warn("readGraphFromFile: " + filename + ", lang: " + lang);
+
+            // Create an empty model
+            Model model = ModelFactory.createDefaultModel();
+
+            // Read the RDF data from a TTL file
+            RDFDataMgr.read(model, filename, lang);
+
+            this.model = model;
+        }
+        catch (Throwable t) {
+            t.printStackTrace();
+        }
+        finally {
+            logger.warn("readGraphFromFile completed");
+        }
+        return model;
     }
 
     private String nodeType(RDFNode node) {

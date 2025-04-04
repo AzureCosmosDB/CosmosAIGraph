@@ -90,6 +90,8 @@ public class AppGraphBuilder {
                     populateFromCosmosDbNoSQL(appGraph);
                     break;
                 case GRAPH_SOURCE_RDF_FILE:
+                    model = initialzeModel(true);
+                    appGraph.setModel(model);
                     populateFromRdfFile(appGraph);
                     break;
 
@@ -250,17 +252,16 @@ public class AppGraphBuilder {
     }
 
     /**
-     * This method is used for initial development, using a previously captured *.nt
+     * This method is used for initial development, using a previously captured *.ttl
      * triples file.
      */
     private static void populateFromRdfFile(AppGraph g) throws Exception {
-        //throw new Exception("RDF file graph source not currently implemented");
         try {
             String infile = AppConfig.getGraphRdfFilename();
             logger.warn("populateFromRdfFile - " + infile);
-            Model model = FileManager.get().loadModel(infile);
-            logger.warn("model class:" + model.getClass().getName()); // class:org.apache.jena.rdf.model.impl.ModelCom
-            logger.warn("empty: " + model.isEmpty()); // false
+            Model model = g.readGraphFromFile(infile, Lang.TTL);
+            logger.warn("model class:" + model.getClass().getName());
+            logger.warn("empty: " + model.isEmpty());
             g.setModel(model);
 
         }

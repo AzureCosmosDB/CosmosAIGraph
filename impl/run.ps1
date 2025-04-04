@@ -1,5 +1,5 @@
 Set-Location .\graph_app
-$GraphArgList = ".\graph_app.ps1"
+$GraphArgList = "-NoExit .\graph_app.ps1"
 Start-Process -FilePath PowerShell -ArgumentList $GraphArgList
 
 Set-Location ..\web_app

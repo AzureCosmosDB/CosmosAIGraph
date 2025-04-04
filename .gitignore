@@ -192,3 +192,9 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 impl/web_app/requirements.txt
+data/graphml/summarized_graph.graphml
+impl/graph_app/gradlew
+impl/graph_app/gradlew
+impl/graph_app/rdf/summarized_graph.ttl
+impl/graph_app/gradlew
+impl/graph_app/gradlew
