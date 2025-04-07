@@ -10,7 +10,6 @@ azure-identity
 azure-storage-blob
 beautifulsoup4
 black
-
 docopt
 fastapi
 fastapi_msal
@@ -39,3 +38,7 @@ werkzeug>=3.0.6
 cryptography>=43.0.1
 aiohttp>=3.10.2
 requests>=2.30.0
+
+#for utils only
+networkx
+rdflib
