@@ -157,15 +157,11 @@ class AiService:
                 )
                 # completion is an instance of <class 'openai.types.chat.chat_completion.ChatCompletion'>
                 # https://platform.openai.com/docs/api-reference/chat/object
-                sparql = json.loads(completion.choices[0].message.content).get("query")
+                sparql = json.loads(completion.choices[0].message.content).get("sparql")
                 if sparql == "":
-                    sparql = json.loads(completion.choices[0].message.content).get(
-                        "sparql"
-                    )
+                    sparql = json.loads(completion.choices[0].message.content).get("query")
                 if sparql == "":
-                    sparql = json.loads(completion.choices[0].message.content).get(
-                        "SPARQL"
-                    )
+                    sparql = json.loads(completion.choices[0].message.content).get("SPARQL")
                 resp_obj["completion_id"] = completion.id
                 resp_obj["completion_model"] = completion.model
                 resp_obj["prompt_tokens"] = completion.usage.prompt_tokens

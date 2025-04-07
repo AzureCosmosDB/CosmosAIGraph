@@ -21,11 +21,11 @@ G = nx.read_graphml(input_file)
 rdf_graph = Graph()
 
 # Define namespaces
-EX = Namespace("http://example.org/ontology#")
+NS1 = Namespace("http://graphml.graphdrawing.org/")
 RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#")
 OWL = Namespace("http://www.w3.org/2002/07/owl#")
 
-rdf_graph.bind("ex", EX)
+rdf_graph.bind("ns1", NS1)
 rdf_graph.bind("rdfs", RDFS)
 rdf_graph.bind("owl", OWL)
 
@@ -34,7 +34,7 @@ for node, data in G.nodes(data=True):
     node_label = data.get('label', node)  # Use 'label' attribute if available
     node_type = data.get('type', 'Class')  # Default type is 'Class'
 
-    node_uri = URIRef(urllib.parse.quote(EX[node], safe=':/#?&=@'))  # Create a URI for the node
+    node_uri = URIRef(urllib.parse.quote(NS1[node], safe=':/#?&=@'))  # Create a URI for the node
 
     if node_type.lower() == 'class':  # If the node represents a class
         rdf_graph.add((node_uri, RDFS.subClassOf, OWL.Thing))  # Add as subclass of owl:Thing
@@ -48,11 +48,11 @@ for source, target, data in G.edges(data=True):
     edge_label = data.get('label', 'relatedTo')  # Use 'label' attribute if available
     edge_type = data.get('type', 'ObjectProperty')  # Default type is 'ObjectProperty'
 
-    source_uri = URIRef(urllib.parse.quote(EX[source], safe=':/#?&=@'))
-    target_uri = URIRef(urllib.parse.quote(EX[target], safe=':/#?&=@'))
+    source_uri = URIRef(urllib.parse.quote(NS1[source], safe=':/#?&=@'))
+    target_uri = URIRef(urllib.parse.quote(NS1[target], safe=':/#?&=@'))
 
     if edge_type.lower() == 'objectproperty':  # If the edge represents an object property
-        property_uri = URIRef(urllib.parse.quote(EX[edge_label], safe=':/#?&=@'))  # Create a URI for the property
+        property_uri = URIRef(urllib.parse.quote(NS1[edge_label], safe=':/#?&=@'))  # Create a URI for the property
         rdf_graph.add((property_uri, RDF.type, OWL.ObjectProperty))  # Mark as ObjectProperty
         rdf_graph.add((property_uri, RDFS.label, Literal(edge_label)))  # Add label
         rdf_graph.add((source_uri, property_uri, target_uri))  # Link source to target via property
