@@ -1,4 +1,4 @@
-Set-Location .\graph_app
+Set-Location .\impl\graph_app
 $GraphArgList = "-NoExit .\graph_app.ps1"
 Start-Process -FilePath PowerShell -ArgumentList $GraphArgList
 

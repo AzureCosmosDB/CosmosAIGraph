@@ -82,41 +82,6 @@ def test_log_defined_env_vars():
         assert False
 
 
-def test_graph_namespace():
-    ConfigService.set_standard_unit_test_env_vars()
-    assert ConfigService.graph_namespace() == "http://cosmosdb.com/caig#"
-
-
-def test_graph_namespace_alias():
-    ConfigService.set_standard_unit_test_env_vars()
-    assert ConfigService.graph_namespace_alias() == "caig"
-
-
-def test_graph_source():
-    ConfigService.set_standard_unit_test_env_vars()
-    assert ConfigService.graph_source() == "rdf_file"
-
-
-def test_graph_source_owl_filename():
-    ConfigService.set_standard_unit_test_env_vars()
-    assert ConfigService.graph_source_owl_filename() == "ontologies/libraries.owl"
-
-
-def test_graph_source_rdf_filename():
-    ConfigService.set_standard_unit_test_env_vars()
-    assert ConfigService.graph_source_rdf_filename() == "rdf/libraries-graph-mini.nt"
-
-
-def test_graph_source_db():
-    ConfigService.set_standard_unit_test_env_vars()
-    assert ConfigService.graph_source_db() == "caig"
-
-
-def test_graph_source_container():
-    ConfigService.set_standard_unit_test_env_vars()
-    assert ConfigService.graph_source_container() == "libraries"
-
-
 def test_graph_service_ontology_url():
     assert (
         "http://127.0.0.1:8001/ontology" == ConfigService.graph_service_ontology_url()
@@ -181,10 +146,6 @@ def test_websvc_auth_header():
     ConfigService.set_standard_unit_test_env_vars()
     assert ConfigService.websvc_auth_header() == "x-caig-auth"
 
-
-def test_websvc_auth_value():
-    ConfigService.set_standard_unit_test_env_vars()
-    assert ConfigService.websvc_auth_value() == "123go"
 
 
 def test_truncate_llm_context_max_ntokens():

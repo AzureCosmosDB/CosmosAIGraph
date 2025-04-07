@@ -73,6 +73,6 @@ def convert_graphml_to_ttl(input_folder, output_folder):
 
             g.serialize(output_file, format='turtle')
 
-input_folder = 'graphml'
-output_folder = 'ttl'
+input_folder = '../data/graphml'
+output_folder = '../data/ttl'
 convert_graphml_to_ttl(input_folder, output_folder)

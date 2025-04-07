@@ -16,14 +16,18 @@
             height: 700;
             border: 1px solid lightgray;
         }
+        .lighten-svg {
+            filter: brightness(3); 
+        }
+
     </style>
 </head>
-<body>
+<body class="bg-dark text-light">
 <header>
     <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-dark mx-right bg-dark text-light">
             <div class="container-fluid">
-                <img class="mx-auto d-block" src="static/CAIGLogoGrey.svg" width="3%" alt="CosmosAIGraph logo">
+                <img class="mx-auto d-block lighten-svg" src="static/CAIGLogoGrey.svg" width="3%" alt="CosmosAIGraph">&nbsp;&nbsp;
                 <h4 class="collapse navbar-collapse fw-bold">CosmosAIGraph</h4>
                 <div class="navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
@@ -31,22 +35,19 @@
                         <a class="nav-link" href="#"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-bolder" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-bolder" href="/about">About</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link fw-bolder" href="/sparql_console">SPARQL</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-bolder" href="/gen_sparql_console">Gen SPARQL</a>
+                        <a class="nav-link fw-bolder" href="/gen_sparql_console">Generate SPARQL</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link fw-bolder" href="/vector_search_console">Vector Search</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link fw-bolder" href="/conv_ai_console">Conversational AI</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-bolder" href="/about">About</a>
                     </li>
                 </ul>
                 </div>

@@ -198,3 +198,6 @@ impl/graph_app/gradlew
 impl/graph_app/rdf/summarized_graph.ttl
 impl/graph_app/gradlew
 impl/graph_app/gradlew
+data/ontologies/extracted_ontology.ttl
+impl/graph_app/ontologies/extracted_ontology.ttl
+impl/web_app/ontologies/extracted_ontology.ttl

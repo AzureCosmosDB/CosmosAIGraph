@@ -192,10 +192,12 @@ async def post_sparql_console(req: Request):
     form_data = await req.form()  # <class 'starlette.datastructures.FormData'>
     logging.info("/sparql_console form_data: {}".format(form_data))
     view_data = post_libraries_sparql_console(form_data)
-    try:
-        FS.write_json(view_data, "tmp/sparql_console_view_data.json")
-    except Exception as e:
-        pass
+    
+    if (LoggingLevelService.get_level() == logging.DEBUG):
+        try:
+            FS.write_json(view_data, "tmp/sparql_console_view_data.json")
+        except Exception as e:
+            pass
     return views.TemplateResponse(
         request=req, name="sparql_console.html", context=view_data
     )
@@ -388,7 +390,8 @@ async def conv_ai_console(req: Request):
         prompt_text = ai_svc.generic_prompt_template()
 
         rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 3)
-        FS.write_json(rdr.get_data(), "tmp/ai_conv_rdr.json")
+        if (LoggingLevelService.get_level() == logging.DEBUG):
+            FS.write_json(rdr.get_data(), "tmp/ai_conv_rdr.json")
 
         if rdr.has_db_rag_docs() == True:
             completion: AiCompletion = AiCompletion(conv.conversation_id, None)
@@ -447,8 +450,9 @@ async def conv_ai_console(req: Request):
                     await nosql_svc.save_conversation(conv)
 
     textformat_conversation(conv)
-    FS.write_json(conv.get_data(), "tmp/ai_conv_{}.json".format(
-        conv.get_message_count()))
+    if (LoggingLevelService.get_level() == logging.DEBUG):
+        FS.write_json(conv.get_data(), "tmp/ai_conv_{}.json".format(
+            conv.get_message_count()))
 
     view_data = dict()
     view_data["conv"] = conv
@@ -505,14 +509,7 @@ def graph_microsvc_bom_query_url():
 
 def get_sparql_console_view_data() -> dict:
     """Return the view data for the libraries SPARQL console"""
-    sparql = """
-PREFIX c: <http://cosmosdb.com/caig#>
-SELECT ?used_library 
-WHERE {
-    <http://cosmosdb.com/caig#flask> c:uses_library ?used_library .
-}
-LIMIT 10
-"""
+    sparql = """SELECT * WHERE { ?s ?p ?o . } LIMIT 10"""
     view_data = dict()
     view_data["method"] = "get"
     view_data["sparql"] = sparql
@@ -573,12 +570,13 @@ def post_libraries_sparql_console(form_data):
                 view_data["results"] = json.dumps(bom_obj, sort_keys=False, indent=2)
                 view_data["inline_bom_json"] = view_data["results"]
                 view_data["visualization_message"] = "D3.js Graph Visualization"
-                try:
-                    FS.write_json(
-                        json.loads(view_data["inline_bom_json"]), "tmp/inline_bom.json"
-                    )
-                except Exception as e:
-                    pass
+                if (LoggingLevelService.get_level() == logging.DEBUG):
+                    try:
+                        FS.write_json(
+                            json.loads(view_data["inline_bom_json"]), "tmp/inline_bom.json"
+                        )
+                    except Exception as e:
+                        pass
             else:
                 view_data["results"] = "Invalid BOM query: {}".format(bom_query)
         else:

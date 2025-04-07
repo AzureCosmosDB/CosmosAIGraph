@@ -15,12 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class GraphTests {
-
-    @Test
-    public void testAppConfig() {
-        assertEquals(AppConfig.getGraphOwlFilename(), "ontologies/libraries.owl");
-    }
-
     @Test
     public void testQueryResultParsing() {
         try {

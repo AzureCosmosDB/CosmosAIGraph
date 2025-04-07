@@ -166,15 +166,15 @@ public class AppConfig {
     }
 
     public static String getGraphOwlFilename() {
-        return getEnvVar(CAIG_GRAPH_SOURCE_OWL_FILENAME, "./ontologies/libraries.owl");
+        return getEnvVar(CAIG_GRAPH_SOURCE_OWL_FILENAME, "");
     }
 
     public static String getGraphRdfFilename() {
-        return getEnvVar(CAIG_GRAPH_SOURCE_RDF_FILENAME, "./rdf/libraries-graph.nt");
+        return getEnvVar(CAIG_GRAPH_SOURCE_RDF_FILENAME, "");
     }
 
     public static String getGraphNamespace() {
-        return getEnvVar(CAIG_GRAPH_NAMESPACE, "http://cosmosdb.com/caig#");
+        return getEnvVar(CAIG_GRAPH_NAMESPACE, "");
     }
 
     public static boolean dumpGraphUponBuild() {
@@ -186,6 +186,6 @@ public class AppConfig {
     }
 
     public static String getGraphDumpOutfile() {
-        return getEnvVar(CAIG_GRAPH_DUMP_OUTFILE, "tmp/graph_dump.nt");
+        return getEnvVar(CAIG_GRAPH_DUMP_OUTFILE, null);
     }
 }

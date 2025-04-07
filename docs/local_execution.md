@@ -45,7 +45,7 @@ Before you run them, be sure to set your local environment variables, either by 
 
 Then be sure you have created Python virtual environment in the web app, by running **impl/web_app/venv.ps1** script.
 
-To launch the terminals, simply run **impl/run.ps1** script.
+To launch the terminals, simply run **run.ps1** script in the root folder of the repo.
 
 ## Docker Compose
 

@@ -11,8 +11,8 @@ import networkx as nx
 from rdflib import RDF, Graph, Namespace, URIRef, Literal
 import urllib.parse
 
-input_file = "summarized_graph.graphml"  # Path to the input GraphML file
-output_file = "extracted_ontology.ttl"  # Path to the output OWL file
+input_file = "../data/graphml/summarized_graph.graphml"  # Path to the input GraphML file
+output_file = "../data/ontologies/extracted_ontology.ttl"  # Path to the output OWL file
 
 # Load the GraphML file
 G = nx.read_graphml(input_file)

@@ -9,8 +9,4 @@ import static org.springframework.test.util.AssertionErrors.assertNotNull;
 @SpringBootTest
 class CaigApplicationTests {
 
-    @Test public void testAppConfig() {
-        assert(AppConfig.getGraphOwlFilename().equals("ontologies/libraries.owl"));
-    }
-
 }

@@ -80,17 +80,17 @@ public class AppGraphBuilder {
             switch(source) {
                 case GRAPH_SOURCE_JSON_DOCS_FILE:
                     // Same data as GRAPH_SOURCE_COSMOSDB_NOSQL, but with previously captured data in a JSON file
-                    model = initialzeModel(true);
+                    model = initializeModel(true);
                     appGraph.setModel(model);
                     populateFromJsonDocsFile(appGraph);
                     break;
                 case GRAPH_SOURCE_COSMOSDB_NOSQL:
-                    model = initialzeModel(true);
+                    model = initializeModel(true);
                     appGraph.setModel(model);
                     populateFromCosmosDbNoSQL(appGraph);
                     break;
                 case GRAPH_SOURCE_RDF_FILE:
-                    model = initialzeModel(true);
+                    model = initializeModel(true);
                     appGraph.setModel(model);
                     populateFromRdfFile(appGraph);
                     break;
@@ -128,7 +128,7 @@ public class AppGraphBuilder {
     /**
      * Create and return the Jena Model object which represents the graph.
      */
-    private static Model initialzeModel(boolean readOntology) {
+    private static Model initializeModel(boolean readOntology) {
 
         // See https://jena.apache.org/documentation/ontology/
 

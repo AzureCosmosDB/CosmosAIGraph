@@ -12,7 +12,7 @@ class SparqlFormatter:
         self.opts = opts
 
     def default_prefix(self) -> str:
-        return "PREFIX caig: <http://cosmosdb.com/caig#>"
+        return ""
 
     def pretty(self, sparql: str) -> str:
         try:

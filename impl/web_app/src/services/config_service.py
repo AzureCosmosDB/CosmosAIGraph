@@ -189,14 +189,14 @@ class ConfigService:
         d = dict()
         d["CAIG_HOME"] = ""
         d["CAIG_AZURE_REGION"] = "eastus"
-        d["CAIG_GRAPH_NAMESPACE"] = "http://cosmosdb.com/caig#"
+        d["CAIG_GRAPH_NAMESPACE"] = ""
         d["CAIG_GRAPH_SOURCE_TYPE"] = "cosmos_nosql"
-        d["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "ontologies/libraries.owl"
-        d["CAIG_GRAPH_SOURCE_RDF_FILENAME"] = "rdf/libraries-graph.nt"
+        d["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "ontologies/extracted_ontology.ttl"
+        d["CAIG_GRAPH_SOURCE_RDF_FILENAME"] = ""
         d["CAIG_GRAPH_SOURCE_DB"] = "caig"
         d["CAIG_GRAPH_SOURCE_CONTAINER"] = "libraries"
         d["CAIG_GRAPH_DUMP_UPON_BUILD"] = "false"
-        d["CAIG_GRAPH_DUMP_OUTFILE"] = "tmp/model_dump.nt"
+        d["CAIG_GRAPH_DUMP_OUTFILE"] = ""
         d["CAIG_CONFIG_CONTAINER"] = "config"
         d["CAIG_CONVERSATIONS_CONTAINER"] = "conversations"
         d["CAIG_COSMOSDB_NOSQL_ACCT"] = "mycosmosdbnosqlacct"
@@ -206,7 +206,7 @@ class ConfigService:
         d["CAIG_COSMOSDB_NOSQL_KEY"] = ""
         d["CAIG_AZURE_OPENAI_URL"] = ""
         d["CAIG_AZURE_OPENAI_KEY"] = ""
-        d["CAIG_AZURE_OPENAI_COMPLETIONS_DEP"] = "gpt4"
+        d["CAIG_AZURE_OPENAI_COMPLETIONS_DEP"] = "gpt4o"
         d["CAIG_AZURE_OPENAI_EMBEDDINGS_DEP"] = "embeddings"
         d["CAIG_WEB_APP_NAME"] = "caig-web"
         d["CAIG_WEB_APP_URL"] = "http://127.0.0.1"
@@ -265,11 +265,11 @@ class ConfigService:
 
     @classmethod
     def graph_source_owl_filename(cls) -> str:
-        return cls.envvar("CAIG_GRAPH_SOURCE_OWL_FILENAME", "ontologies/libraries.owl")
+        return cls.envvar("CAIG_GRAPH_SOURCE_OWL_FILENAME", "ontologies/extracted_ontology.ttl")
 
     @classmethod
     def graph_source_rdf_filename(cls) -> str:
-        return cls.envvar("CAIG_GRAPH_SOURCE_RDF_FILENAME", "rdf/libraries-graph.nt")
+        return cls.envvar("CAIG_GRAPH_SOURCE_RDF_FILENAME", "")
 
     @classmethod
     def graph_source_db(cls) -> str:
@@ -398,8 +398,8 @@ class ConfigService:
     def set_standard_unit_test_env_vars(cls):
         """Set environment variables for use in unit tests"""
         os.environ["CAIG_GRAPH_SOURCE_TYPE"] = "rdf_file"
-        os.environ["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "ontologies/libraries.owl"
-        os.environ["CAIG_GRAPH_SOURCE_RDF_FILENAME"] = "rdf/libraries-graph-mini.nt"
+        os.environ["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "ontologies/extracted_ontology.ttl"
+        os.environ["CAIG_GRAPH_SOURCE_RDF_FILENAME"] = ""
         os.environ["CAIG_WEBSVC_AUTH_VALUE"] = "123go"
         os.environ["SAMPLE_INT_VAR"] = "98"
         os.environ["SAMPLE_FLOAT_VAR"] = "98.6"

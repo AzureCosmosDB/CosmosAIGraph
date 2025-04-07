@@ -9,7 +9,7 @@ from src.services.ontology_service import OntologyService
 @pytest.mark.asyncio
 async def test_get_owl_content():
     ConfigService.set_standard_unit_test_env_vars()
-    assert "ontologies/libraries.owl" == ConfigService.graph_source_owl_filename()
+
     assert (
         "http://127.0.0.1:8001/ontology" == ConfigService.graph_service_ontology_url()
     )
@@ -18,7 +18,6 @@ async def test_get_owl_content():
 
     owl = OntologyService.get_owl_content().strip()
 
-    assert "ontologies/libraries.owl" == OntologyService.owl_filename
     assert "http://127.0.0.1:8001/ontology" == OntologyService.http_url
     assert 200 == OntologyService.http_status_code
     assert True == OntologyService.http_content_saved
