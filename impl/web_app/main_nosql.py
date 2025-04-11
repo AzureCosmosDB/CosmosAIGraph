@@ -203,7 +203,7 @@ async def test_cosmos_service(dbname):
         cname = "libraries_v1"
         ctrproxy = nosql_svc.set_container(cname)
         print("ctrproxy: {}".format(ctrproxy))
-        flask_doc = FS.read_json("../data/pypi/wrangled_libs/flask.json")
+        flask_doc = FS.read_json("../../data/pypi/wrangled_libs/flask.json")
         embedding = flask_doc["embedding"]
         sql_parameters = [dict(name="@embedding", value=embedding)]
         sql_template = """
@@ -222,7 +222,7 @@ ORDER BY VectorDistance(c.embedding, {})""".strip().format(
         cname = "libraries_v1"
         ctrproxy = nosql_svc.set_container(cname)
         print("ctrproxy: {}".format(ctrproxy))
-        flask_doc = FS.read_json("../data/pypi/wrangled_libs/flask.json")
+        flask_doc = FS.read_json("../../data/pypi/wrangled_libs/flask.json")
         embedding = flask_doc["embedding"]
         sql_parameters = [dict(name="@embedding", value=embedding)]
         sql_template = """
@@ -257,7 +257,7 @@ async def load_entities(dbname, cname):
         await nosql_svc.initialize()
         nosql_svc.set_db(dbname)
         nosql_svc.set_container(cname)
-        doc = FS.read_json("../data/entities/entities_doc.json")
+        doc = FS.read_json("../../data/entities/entities_doc.json")
         print(doc)
         resp = await nosql_svc.upsert_item(doc)
         print(resp)
@@ -285,7 +285,7 @@ async def load_libraries(dbname, cname, max_docs):
         nosql_svc.set_db(dbname)
         nosql_svc.set_container(cname)
         await load_docs_from_directory(
-            nosql_svc, "../data/pypi/wrangled_libs", max_docs
+            nosql_svc, "../../data/pypi/wrangled_libs", max_docs
         )
     except Exception as e:
         logging.info(str(e))

@@ -202,9 +202,9 @@ if __name__ == "__main__":
         try:
             func = sys.argv[1].lower()
             relationships_csv_file = (
-                "../data/graph_input_metadata/GraphRelationships.csv"
+                "../../data/graph_input_metadata/GraphRelationships.csv"
             )
-            attributes_csv_file = "../data/graph_input_metadata/GraphAttributes.csv"
+            attributes_csv_file = "../../data/graph_input_metadata/GraphAttributes.csv"
             if func == "generate":
                 namespace = sys.argv[2]
                 generate(relationships_csv_file, attributes_csv_file, namespace)
