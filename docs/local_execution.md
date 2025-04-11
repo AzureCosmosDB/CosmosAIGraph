@@ -59,7 +59,7 @@ Be sure to modify your environment variables in the appropriate
 
 The following docker-compose YAML file is provided:
 
-- docker-compose-with-jena.yml 
+- docker-compose.yml 
   - This also uses the Python-based web application
   - This uses the Java-based graph microservice using Apache Jena
 
@@ -68,7 +68,7 @@ Create two PowerShell Terminal windows, and navigate to the **impl/app/** direct
 In the first terminal window, execute the following command to start the application (both microservices).
 
 ```
-docker compose -f docker/docker-compose-with-jena.yml up
+docker compose -f docker/docker-compose.yml up
 ```
 
 You should see similar verbose output that includes the following:
@@ -82,7 +82,7 @@ You should see similar verbose output that includes the following:
 In the second terminal window, execute the following command to terminate the application.
 
 ```
-docker compose -f docker/docker-compose-with-jena.yml down
+docker compose -f docker/docker-compose.yml down
 ```
 
 You should see similar verbose output that includes the following:
