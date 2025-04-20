@@ -159,7 +159,7 @@ public class ConsoleApp {
             ObjectMapper mapper = new ObjectMapper();
 
             for (int i = 0; i < triples.size(); i++) {
-                String sparql = "PREFIX c: <http://cosmosdb.com/caig#> INSERT DATA { " + triples.get(i).strip() + " }";
+                String sparql = "PREFIX c: <" + AppConfig.getGraphNamespace() + "> INSERT DATA { " + triples.get(i).strip() + " }";
                 logger.warn("POSTing request number: " + (i + 1) + ", sparql: " + sparql);
                 SparqlQueryRequest sparqlQueryRequest = new SparqlQueryRequest();
                 sparqlQueryRequest.setSparql(sparql);

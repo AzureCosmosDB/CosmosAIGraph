@@ -150,7 +150,11 @@ public class AppGraphBuilder {
                 OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
                 model.read(byteStream, "");
 
+                model.setNsPrefix("default", AppConfig.getGraphNamespace());
+
+                // set sample namespaces in case sample datasets are used
                 model.setNsPrefix("caig", "http://cosmosdb.com/caig#");
+                model.setNsPrefix("ns1", AppConfig.getGraphNamespace());
                 return model;
 
                 // Reasoner reasoner = ReasonerRegistry.getOWLReasoner().bindSchema(model.getGraph());

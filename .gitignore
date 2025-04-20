@@ -201,3 +201,10 @@ impl/graph_app/gradlew
 data/ontologies/extracted_ontology.ttl
 impl/graph_app/ontologies/extracted_ontology.ttl
 impl/web_app/ontologies/extracted_ontology.ttl
+data/ontologies/clustered_graph_ontology.ttl
+data/graphml/create_clustered_graph.graphml
+data/ttl/clustered_graph.ttl
+data/ttl/create_clustered_graph.ttl
+impl/graph_app/ontologies/clustered_graph_ontology.ttl
+impl/graph_app/rdf/create_clustered_graph.ttl
+impl/web_app/ontologies/clustered_graph_ontology.ttl
