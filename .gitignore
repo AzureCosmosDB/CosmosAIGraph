@@ -191,13 +191,9 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
-impl/web_app/requirements.txt
 data/graphml/summarized_graph.graphml
 impl/graph_app/gradlew
-impl/graph_app/gradlew
 impl/graph_app/rdf/summarized_graph.ttl
-impl/graph_app/gradlew
-impl/graph_app/gradlew
 data/ontologies/extracted_ontology.ttl
 impl/graph_app/ontologies/extracted_ontology.ttl
 impl/web_app/ontologies/extracted_ontology.ttl
@@ -208,3 +204,5 @@ data/ttl/create_clustered_graph.ttl
 impl/graph_app/ontologies/clustered_graph_ontology.ttl
 impl/graph_app/rdf/create_clustered_graph.ttl
 impl/web_app/ontologies/clustered_graph_ontology.ttl
+impl/graph_app/rdf/clustered_graph.ttl
+impl/web_app/requirements.txt

@@ -187,6 +187,8 @@ mypy-extensions==1.0.0
     # via black
 nest-asyncio==1.6.0
     # via semantic-kernel
+networkx==3.4.2
+    # via -r .\requirements.in
 numpy==2.2.3
     # via
     #   pandas
@@ -270,6 +272,8 @@ pyjwt[crypto]==2.10.1
     #   pyjwt
 pymeta3==0.5.1
     # via pybars4
+pyparsing==3.2.3
+    # via rdflib
 pysocks==1.7.1
     # via requests
 pytest==8.3.4
@@ -295,6 +299,8 @@ pywin32==308
     # via portalocker
 pyyaml==6.0.2
     # via jsonschema-path
+rdflib==7.1.4
+    # via -r .\requirements.in
 referencing==0.36.2
     # via
     #   jsonschema

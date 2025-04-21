@@ -40,5 +40,4 @@ aiohttp>=3.10.2
 requests>=2.30.0
 
 #for utils only
-networkx
 rdflib
