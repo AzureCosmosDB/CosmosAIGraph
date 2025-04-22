@@ -308,7 +308,6 @@ def gen_all():
 
 
 def owl_visualizer(infile):
-    """This functionality is EXPERIMENTAL at this time."""
     owl_viz = OwlVisualizer(infile)
     content = owl_viz.generate_visjs_content()
     print(content)

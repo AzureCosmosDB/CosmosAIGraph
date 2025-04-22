@@ -206,3 +206,6 @@ impl/graph_app/rdf/create_clustered_graph.ttl
 impl/web_app/ontologies/clustered_graph_ontology.ttl
 impl/graph_app/rdf/clustered_graph.ttl
 impl/web_app/requirements.txt
+data/ontologies/clustered_graph_ontology.owl
+data/ontologies/clustered_graph_ontology.ttl.owl
+impl/web_app/ontologies/clustered_graph_ontology.owl
