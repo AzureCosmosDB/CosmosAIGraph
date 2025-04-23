@@ -1,39 +1,72 @@
 """
 Usage:
 
-python graphml2ttl.py
+python graphml2ttlx.py
 Note: pre-define input_graphml, ontology_ttl and instances_ttl variables
 
 """
 
-# A graphml ontology extractor
+# A GraphML+JSON graph+ontology extractor
 # Aleksey Savateyev, Microsoft, 2025
 
 from rdflib import Graph, URIRef, Literal, Namespace, BNode
 from rdflib.namespace import RDF, RDFS, OWL, XSD
 import xml.etree.ElementTree as ET
 import re
+import json
 
-input_graphml = "../data/graphml/create_clustered_graph.graphml" # Path to the input GraphML file
-instances_ttl = "../data/ttl/clustered_graph.ttl" # Path to the output RDF Turtle file
-ontology_ttl = "../data/ontologies/clustered_graph_ontology.ttl" # Path to the output ontology TTL file
+input_graphml = "../data/graphml/create_clustered_graph.graphml"
+instances_ttl = "../data/ttl/clustered_graph.ttl" 
+ontology_ttl = "../data/ontologies/clustered_graph_ontology.ttl"
+text_units_json = "../data/graphml/create_final_text_units.parquet.as.json"
 
 def sanitize_uri(value):
-    """Convert strings to URI-safe format"""
     return re.sub(r'[^a-zA-Z0-9-]', '_', str(value).strip())
 
+def extract_title(text):
+    """Extract title from text field using regex"""
+    match = re.search(r'title:\s*(.*?)(\.\n|\n|$)', text)
+    return match.group(1).strip() if match else None
+
+def load_text_units(json_path):
+    id_to_text = {}
+    with open(json_path, 'r') as f:
+        for line in f:
+            try:
+                unit = json.loads(line)
+                if 'id' in unit and 'text' in unit:
+                    id_to_text[unit['id']] = unit['text']
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
+                continue
+    return id_to_text
+
 def graphml_to_ttl_with_ontology(graphml_path, instance_path, ontology_path):
-    # Initialize graphs
+    # Load text units data
+    id_to_title = {}
+    text_units = load_text_units(text_units_json)
+    for id,text in text_units.items():
+        title = extract_title(text)
+        if title:
+            id_to_title[id] = title
+
+    # Initialize graphs and namespaces
     instance_g = Graph()
     ontology_g = Graph()
-    # Define namespaces
     BASE = Namespace("http://example.org/ontology/")
     INST = Namespace("http://example.org/instances/")
+
+    # Add sourceFiles to ontology
+    ontology_g.add((BASE.sourceFiles, RDF.type, OWL.DatatypeProperty))
+    ontology_g.add((BASE.sourceFiles, RDFS.range, XSD.string))
+    
+    # Existing namespace bindings and ontology setup...
     ontology_g.bind("base", BASE)
     ontology_g.bind("owl", OWL)
     ontology_g.bind("inst", INST)
     instance_g.bind("inst", INST)
     instance_g.bind("base", BASE)
+
     # Parse GraphML
     tree = ET.parse(graphml_path)
     root = tree.getroot()
@@ -71,6 +104,13 @@ def graphml_to_ttl_with_ontology(graphml_path, instance_path, ontology_path):
     ontology_g.add((BASE.relatedBy, OWL.inverseOf, BASE.relatesTo))
     ontology_g.add((BASE.relatedBy, RDFS.domain, BASE.Node))
     ontology_g.add((BASE.relatedBy, RDFS.range, BASE.Node))
+    
+    ontology_g.add((BASE.sourceFiles, RDF.type, OWL.DatatypeProperty))
+    ontology_g.add((BASE.sourceFiles, RDFS.domain, BASE.Node))
+    ontology_g.add((BASE.sourceFiles, RDFS.domain, BASE.relatesTo))
+    ontology_g.add((BASE.sourceFiles, RDFS.domain, BASE.relatedBy))
+    ontology_g.add((BASE.sourceFiles, RDFS.range, XSD.string))
+
     # Node ID to URI mapping (using both XML IDs and data IDs)
     node_map = {} # Maps GraphML node IDs to URIs
     id_map = {} # Maps data IDs (d0) to URIs
@@ -106,8 +146,13 @@ def graphml_to_ttl_with_ontology(graphml_path, instance_path, ontology_path):
             if value is not None and attr != 'description' and attr != 'title':
                 pred = BASE[attr]
                 if attr == 'text_unit_ids':
+                    titles = []
                     for item in value.split(', '):
                         instance_g.add((node_uri, pred, Literal(item.strip())))
+                        if item.strip() in id_to_title:
+                            titles.append(id_to_title[item.strip()])
+                    if titles:
+                        instance_g.add((node_uri, BASE.sourceFiles, Literal(', '.join(titles))))
                 else:
                     instance_g.add((node_uri, pred, Literal(value, datatype=get_xsd_type(keys[next(k for k,v in keys.items() if v['name'] == attr)]['type']))))
     # Process edges with comprehensive node mapping
@@ -129,8 +174,15 @@ def graphml_to_ttl_with_ontology(graphml_path, instance_path, ontology_path):
             key = d.attrib['key']
             prop_name = keys[key]['name']
             value = convert_value(d.text, keys[key]['type'])
-            
             instance_g.add((statement, BASE[prop_name], Literal(value)))
+            
+            if prop_name == 'text_unit_ids':
+                titles = []
+                for tid in d.text.split(', '):
+                    if tid.strip() in id_to_title:
+                        titles.append(id_to_title[tid.strip()])
+                if titles:
+                    instance_g.add((statement, BASE.sourceFiles, Literal(', '.join(titles))))
 
         # Add direct relationships
         instance_g.add((source, BASE.relatesTo, target))

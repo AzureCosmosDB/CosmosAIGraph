@@ -5,10 +5,4 @@ The following ontology describes the entities and relationships in the knowledge
 
 Generate the simplest possible SPARQL query that would return the relevant results.
 
-The SPARQL should contain the least amount of WHERE clause filters, fewer is better. 
-
-All library names should be lowercased.
-
 Return a JSON document with the SPARQL query.
-
-Include only the caig ontology prefix.

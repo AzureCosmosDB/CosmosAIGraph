@@ -209,3 +209,9 @@ impl/web_app/requirements.txt
 data/ontologies/clustered_graph_ontology.owl
 data/ontologies/clustered_graph_ontology.ttl.owl
 impl/web_app/ontologies/clustered_graph_ontology.owl
+data/graphml/create_clustered_graph_pod.graphml
+data/graphml/create_final_text_units.json
+data/graphml/create_final_text_units.parquet.as.json
+data/ontologies/clustered_graph_ontology_pod.owl
+data/ontologies/clustered_graph_ontology_pod.ttl
+impl/web_app/ontologies/clustered_graph_ontology.ttl.owl
