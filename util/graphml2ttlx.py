@@ -1,13 +1,8 @@
 """
 Usage:
-
 python graphml2ttlx.py
 Note: pre-define input_graphml, ontology_ttl and instances_ttl variables
-
 """
-
-# A GraphML+JSON graph+ontology extractor
-# Aleksey Savateyev, Microsoft, 2025
 
 from rdflib import Graph, URIRef, Literal, Namespace, BNode
 from rdflib.namespace import RDF, RDFS, OWL, XSD
@@ -16,7 +11,7 @@ import re
 import json
 
 input_graphml = "../data/graphml/create_clustered_graph.graphml"
-instances_ttl = "../data/ttl/clustered_graph.ttl" 
+instances_ttl = "../data/ttl/clustered_graph.ttl"
 ontology_ttl = "../data/ontologies/clustered_graph_ontology.ttl"
 text_units_json = "../data/graphml/create_final_text_units.parquet.as.json"
 
@@ -49,21 +44,17 @@ def graphml_to_ttl_with_ontology(graphml_path, instance_path, ontology_path):
         title = extract_title(text)
         if title:
             id_to_title[id] = title
-
-    # Initialize graphs and namespaces
+            
+    # Initialize graphs
     instance_g = Graph()
     ontology_g = Graph()
+
+    # Define namespaces
     BASE = Namespace("http://example.org/ontology/")
     INST = Namespace("http://example.org/instances/")
 
-    # Add sourceFiles to ontology
-    ontology_g.add((BASE.sourceFiles, RDF.type, OWL.DatatypeProperty))
-    ontology_g.add((BASE.sourceFiles, RDFS.range, XSD.string))
-    
-    # Existing namespace bindings and ontology setup...
     ontology_g.bind("base", BASE)
     ontology_g.bind("owl", OWL)
-    ontology_g.bind("inst", INST)
     instance_g.bind("inst", INST)
     instance_g.bind("base", BASE)
 
@@ -71,91 +62,74 @@ def graphml_to_ttl_with_ontology(graphml_path, instance_path, ontology_path):
     tree = ET.parse(graphml_path)
     root = tree.getroot()
     ns = {'graphml': 'http://graphml.graphdrawing.org/xmlns'}
+
     # Extract attribute keys and build ontology
     keys = {}
     for key in root.findall('.//graphml:key', ns):
-        if key.attrib['attr.name'] == 'description':
-            continue
         key_id = key.attrib['id']
         keys[key_id] = {
             'for': key.attrib['for'],
             'name': key.attrib['attr.name'],
             'type': key.attrib['attr.type']
         }
-        # Create datatype properties in ontology with correct types
-        prop_uri = BASE[key.attrib['attr.name']]
-        if key.attrib['for'] == 'node':
-            ontology_g.add((prop_uri, RDF.type, OWL.DatatypeProperty))
-            ontology_g.add((prop_uri, RDFS.domain, BASE.Node))
-        else:
-            ontology_g.add((prop_uri, RDF.type, OWL.DatatypeProperty))
-            ontology_g.add((prop_uri, RDFS.domain, BASE.relatesTo))
-        # Add range based on GraphML type
-        xsd_type = get_xsd_type(key.attrib['attr.type'])
-        ontology_g.add((prop_uri, RDFS.range, xsd_type))
-    # Create ontology classes and single relationship
-    ontology_g.add((BASE.Node, RDF.type, OWL.Class))
 
+        # Create datatype properties in ontology
+        prop_uri = BASE[key.attrib['attr.name']]
+        xsd_type = get_xsd_type(key.attrib['attr.type'])
+        
+        ontology_g.add((prop_uri, RDF.type, OWL.DatatypeProperty))
+        ontology_g.add((prop_uri, RDFS.domain, BASE.Node))
+        ontology_g.add((prop_uri, RDFS.range, xsd_type))
+
+    # Manually add title property if not defined in GraphML
+    if not any(v['name'] == 'title' for v in keys.values()):
+        ontology_g.add((BASE.title, RDF.type, OWL.DatatypeProperty))
+        ontology_g.add((BASE.title, RDFS.domain, BASE.Node))
+        ontology_g.add((BASE.title, RDFS.range, XSD.string))
+
+    # Existing ontology setup...
+    ontology_g.add((BASE.Node, RDF.type, OWL.Class))
     ontology_g.add((BASE.relatesTo, RDF.type, OWL.ObjectProperty))
     ontology_g.add((BASE.relatesTo, RDFS.domain, BASE.Node))
     ontology_g.add((BASE.relatesTo, RDFS.range, BASE.Node))
-    # Add relatedBy as the inverse of relatesTo
     ontology_g.add((BASE.relatedBy, RDF.type, OWL.ObjectProperty))
     ontology_g.add((BASE.relatedBy, OWL.inverseOf, BASE.relatesTo))
-    ontology_g.add((BASE.relatedBy, RDFS.domain, BASE.Node))
-    ontology_g.add((BASE.relatedBy, RDFS.range, BASE.Node))
-    
-    ontology_g.add((BASE.sourceFiles, RDF.type, OWL.DatatypeProperty))
-    ontology_g.add((BASE.sourceFiles, RDFS.domain, BASE.Node))
-    ontology_g.add((BASE.sourceFiles, RDFS.domain, BASE.relatesTo))
-    ontology_g.add((BASE.sourceFiles, RDFS.domain, BASE.relatedBy))
-    ontology_g.add((BASE.sourceFiles, RDFS.range, XSD.string))
 
-    # Node ID to URI mapping (using both XML IDs and data IDs)
-    node_map = {} # Maps GraphML node IDs to URIs
-    id_map = {} # Maps data IDs (d0) to URIs
-    # Process nodes with strict type enforcement
+    # Process nodes
+    node_map = {}
     for node in root.findall('.//graphml:node', ns):
         data = {}
         for d in node.findall('graphml:data', ns):
-            if d.attrib['key'] == 'd5':
-                continue
             key = keys[d.attrib['key']]
             value = convert_value(d.text, key['type'])
             data[key['name']] = value
-        # Create URI using title if available, otherwise use human_readable_id or data ID
-        title = data.get('title')
+
+        # URI generation
         human_id = data.get('human_readable_id')
-        node_id = data.get('id')
-        # Priority: title > human_readable_id > node ID > XML ID
-        if title:
-            node_uri = INST[sanitize_uri(title)]
-        elif human_id:
-            node_uri = INST[f"id_{sanitize_uri(human_id)}"]
-        elif node_id:
-            node_uri = INST[f"id_{sanitize_uri(node_id)}"]
+        xml_id = node.attrib['id']
+        
+        if human_id:
+            node_uri = INST[sanitize_uri(human_id)]
         else:
-            node_uri = INST[f"xmlid_{sanitize_uri(node.attrib['id'])}"]
-        # Map all possible identifiers
-        node_map[node.attrib['id']] = node_uri
-        if node_id:
-            id_map[node_id] = node_uri
+            node_uri = INST[f"xmlid_{sanitize_uri(xml_id)}"]
+            
+        if 'title' in data:
+            node_id = data.get('title')
+            node_uri = INST[sanitize_uri(node_id)]
+
+        node_map[xml_id] = node_uri
         instance_g.add((node_uri, RDF.type, BASE.Node))
-        ontology_g.add((node_uri, RDF.type, BASE.Node))
+
+        # Add title as property if present
+        if 'title' in data:
+            instance_g.add((node_uri, BASE.title, Literal(data['title'])))
+
+        # Add other properties
         for attr, value in data.items():
-            if value is not None and attr != 'description' and attr != 'title':
+            if attr != 'title' and value is not None:
                 pred = BASE[attr]
-                if attr == 'text_unit_ids':
-                    titles = []
-                    for item in value.split(', '):
-                        instance_g.add((node_uri, pred, Literal(item.strip())))
-                        if item.strip() in id_to_title:
-                            titles.append(id_to_title[item.strip()])
-                    if titles:
-                        instance_g.add((node_uri, BASE.sourceFiles, Literal(', '.join(titles))))
-                else:
-                    instance_g.add((node_uri, pred, Literal(value, datatype=get_xsd_type(keys[next(k for k,v in keys.items() if v['name'] == attr)]['type']))))
-    # Process edges with comprehensive node mapping
+                instance_g.add((node_uri, pred, Literal(value)))
+# Process edges with comprehensive node mapping
     for edge in root.findall('.//graphml:edge', ns):
         source_id = edge.attrib['source']
         target_id = edge.attrib['target']
