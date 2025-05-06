@@ -41,3 +41,5 @@ requests>=2.30.0
 
 #for utils only
 rdflib
+
+debugpy

@@ -84,7 +84,7 @@ async def test_get_documents_by_and_names():
         await nosql_svc.initialize()
         names = "flask,pydantic,m26,DoesNotExist".split(",")
         assert len(names) == 4
-        docs = await nosql_svc.get_documents_by_names(names)
+        docs = await nosql_svc.get_documents_by_name(names)
         assert len(docs) == 3
         result_names = dict()
         for doc in docs:

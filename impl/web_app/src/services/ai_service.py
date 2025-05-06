@@ -126,15 +126,15 @@ class AiService:
         try:
             user_prompt = resp_obj["natural_language"]
             raw_owl = resp_obj["owl"]
-            owl = OwlFormatter().minimize(raw_owl)
+            #owl = OwlFormatter().minimize(raw_owl)
             logging.info(
                 "AiService#generate_sparql_from_user_prompt - user_prompt: {}".format(
                     user_prompt
                 )
             )
-            if self.validate_sparql_gen_input(user_prompt, owl):
+            if self.validate_sparql_gen_input(user_prompt, raw_owl):
                 t1 = time.perf_counter()
-                system_prompt = Prompts().generate_sparql_system_prompt(owl)
+                system_prompt = Prompts().generate_sparql_system_prompt(raw_owl)
                 logging.info(
                     "AiService#generate_sparql_from_user_prompt - system_prompt: {}".format(
                         system_prompt

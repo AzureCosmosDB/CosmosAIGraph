@@ -405,3 +405,7 @@ class ConfigService:
         os.environ["SAMPLE_FLOAT_VAR"] = "98.6"
         os.environ["SAMPLE_BOOLEAN_TRUE_VAR"] = "TRue"
         os.environ["SAMPLE_BOOLEAN_FALSE_VAR"] = "F"
+
+    @classmethod
+    def get_strategy_bypass(cls) -> str:
+        return cls.envvar("CAIG_STRATEGY_BYPASS", "false")

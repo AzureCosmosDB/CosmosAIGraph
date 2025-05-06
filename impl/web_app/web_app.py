@@ -50,6 +50,19 @@ from src.util.sparql_formatter import SparqlFormatter
 from src.util.sparql_query_response import SparqlQueryResponse
 
 
+import debugpy
+import os
+
+# Allow other computers to attach to debugpy at this IP address and port.
+debugpy.listen(("0.0.0.0", 5678))
+logging.info("CAIG_WAIT_FOR_DEBUGGER: " + os.getenv("CAIG_WAIT_FOR_DEBUGGER"))
+# This will ensure that the debugger waits for you to attach before running the code.
+if os.getenv("CAIG_WAIT_FOR_DEBUGGER").lower() == "true":
+    print("Waiting for debugger attach...")
+    debugpy.wait_for_client()
+    print("Debugger attached, starting FastAPI app...")
+
+
 # standard initialization
 load_dotenv(override=True)
 logging.basicConfig(
@@ -313,7 +326,7 @@ async def post_vector_search_console(req: Request):
     else:
         nosql_svc.set_db(ConfigService.graph_source_db())
         nosql_svc.set_container(ConfigService.graph_source_container())
-        docs = await nosql_svc.get_documents_by_names([libname])
+        docs = await nosql_svc.get_documents_by_name([libname])
         logging.debug("vector_search_console - docs count: {}".format(len(docs)))
         #logging.debug("vector_search_console - docs: {}".format(json.dumps(docs)))
 
@@ -389,18 +402,20 @@ async def conv_ai_console(req: Request):
         conv.add_user_message(user_text)
         prompt_text = ai_svc.generic_prompt_template()
 
-        rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 3)
+        rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 20)
         if (LoggingLevelService.get_level() == logging.DEBUG):
             FS.write_json(rdr.get_data(), "tmp/ai_conv_rdr.json")
 
+        completion: AiCompletion = AiCompletion(conv.conversation_id, None)
+        completion.set_user_text(user_text)
+        completion.set_rag_strategy(rdr.get_strategy())
+        content_lines = list()
+        
         if rdr.has_db_rag_docs() == True:
-            completion: AiCompletion = AiCompletion(conv.conversation_id, None)
-            completion.set_user_text(user_text)
-            completion.set_rag_strategy(rdr.get_strategy())
-            content_lines = list()
             for doc in rdr.get_rag_docs():
+                logging.debug("doc: {}".format(doc))
                 line_parts = list()
-                for attr in ["name", "summary", "documentation_summary"]:
+                for attr in ["id", "fileName", "text"]:
                     if attr in doc.keys():
                         value = doc[attr].strip()
                         if len(value) > 0:
@@ -412,10 +427,6 @@ async def conv_ai_console(req: Request):
             await nosql_svc.save_conversation(conv)
         else:
             if rdr.has_graph_rag_docs() == True:
-                completion: AiCompletion = AiCompletion(conv.conversation_id, None)
-                completion.set_user_text(user_text)
-                completion.set_rag_strategy(rdr.get_strategy())
-                content_lines = list()
                 for doc in rdr.get_rag_docs():
                     content_lines.append(json.dumps(doc))
                 completion.set_content(", ".join(content_lines))
@@ -423,33 +434,35 @@ async def conv_ai_console(req: Request):
                 conv.add_diagnostic_message("sparql: {}".format(rdr.get_sparql()))
                 await nosql_svc.save_conversation(conv)
             else:
-                completion_context = conv.last_completion_content()
-                rag_data = rdr.as_system_prompt_text()
-                context = ""
-                if conv.has_context():
-                    context = "The current library is: {}\n{}\n{}".format(
-                        conv.get_context(), completion_context, rag_data
-                    )
-                else:
-                    context = "{}\n{}".format(completion_context, rag_data)
+                # completion_context = conv.last_completion_content()
+                # rag_data = rdr.as_system_prompt_text()
+                # context = ""
+                # if conv.has_context():
+                #     context = "The current library is: {}\n{}\n{}".format(
+                #         conv.get_context(), completion_context, rag_data
+                #     )
+                # else:
+                #     context = "{}\n{}".format(completion_context, rag_data)
 
-                max_tokens = ConfigService.invoke_kernel_max_tokens()
-                temperature = ConfigService.invoke_kernel_temperature()
-                top_p = ConfigService.invoke_kernel_top_p()
-                completion: AiCompletion = await ai_svc.invoke_kernel(
-                    conv,
-                    prompt_text,
-                    user_text,
-                    context=context,
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                    top_p=top_p,
-                )
-                if completion is not None:
-                    completion.set_rag_strategy(rdr.get_strategy())
+                # max_tokens = ConfigService.invoke_kernel_max_tokens()
+                # temperature = ConfigService.invoke_kernel_temperature()
+                # top_p = ConfigService.invoke_kernel_top_p()
+                # completion: AiCompletion = await ai_svc.invoke_kernel(
+                #     conv,
+                #     prompt_text,
+                #     user_text,
+                #     context=context,
+                #     max_tokens=max_tokens,
+                #     temperature=temperature,
+                #     top_p=top_p,
+                # )
+                # if completion is not None:
+                #    completion.set_rag_strategy(rdr.get_strategy())
+                    completion.set_content("No results found")
+                    conv.add_completion(completion)
                     await nosql_svc.save_conversation(conv)
 
-    textformat_conversation(conv)
+    #textformat_conversation(conv)
     if (LoggingLevelService.get_level() == logging.DEBUG):
         FS.write_json(conv.get_data(), "tmp/ai_conv_{}.json".format(
             conv.get_message_count()))
@@ -486,7 +499,7 @@ async def post_sparql_query(
 
 def gen_sparql_console_view_data():
     view_data = dict()
-    view_data["natural_language"] = "What are the dependencies of the flask library?"
+    view_data["natural_language"] = "What is the total count of nodes?"
     view_data["sparql"] = ""
     view_data["owl"] = OntologyService.get_owl_content()
     view_data["results_message"] = ""
@@ -622,13 +635,13 @@ def post_sparql_query_to_graph_microsvc(sparql: str) -> SparqlQueryResponse:
 
 def textformat_conversation(conv: AiConversation) -> None:
     """
-    do an in-place reformatting of the conversaton text, such as completion content
+    do an in-place reformatting of the conversation text, such as completion content
     """
     try:
         for comp in conv.completions:
             if "content" in comp.keys():
                 content = comp["content"]
-                if content is not None:
+                if content is not None and len(content) > 0:
                     stripped = content.strip()
                     if stripped.startswith("{") and stripped.endswith("}"):
                         obj = json.loads(stripped)

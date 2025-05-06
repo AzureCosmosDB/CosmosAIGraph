@@ -46,7 +46,11 @@ class EntitiesService:
             await nosql_svc.initialize()
             nosql_svc.set_db(ConfigService.graph_source_db())
             nosql_svc.set_container(ConfigService.config_container())
-            result_doc = await nosql_svc.point_read("entities", "entities")
+            result_doc = None
+            try:
+                result_doc = await nosql_svc.point_read("entities", "entities")
+            except Exception as x:
+                logging.critical("No entities description found in config container")
             docs_found = 0
             if result_doc is not None:
                 docs_found = docs_found + 1

@@ -29,7 +29,7 @@ async def test_get_database_rag_data():
 
     ai_svc = AiService()
     sb = StrategyBuilder(ai_svc)
-    user_text = "lookup Flask"
+    user_text = "look up Flask"
     strategy_obj = sb.determine(user_text)
     assert strategy_obj["strategy"] == "db"
 
@@ -37,7 +37,7 @@ async def test_get_database_rag_data():
     await nosql_svc.close()
     assert rdr.get_context() == "flask"
 
-    FS.write_json(rdr.get_data(), "tmp/test_get_database_rag_data.json")
+    FS.write_json(rdr.get_data(), "tmp/test_get_database_context.json")
     text = rdr.as_system_prompt_text()
     FS.write("tmp/test_get_database_rag_system_prompt.txt", text)
 
@@ -48,7 +48,7 @@ async def test_get_database_rag_data():
 
 # @pytest.mark.skip(reason="This test is currently disabled.")
 @pytest.mark.asyncio
-async def test_get_vector_rag_data():
+async def test_get_vector_context():
     ConfigService.set_standard_unit_test_env_vars()
     await EntitiesService.initialize()
     ai_svc = AiService()
@@ -67,14 +67,14 @@ async def test_get_vector_rag_data():
     rdr: RAGDataResult = await rds.get_rag_data(user_text, 5)
     await nosql_svc.close()
 
-    FS.write_json(rdr.get_data(), "tmp/test_get_vector_rag_data.json")
+    FS.write_json(rdr.get_data(), "tmp/test_get_vector_context.json")
     text = rdr.as_system_prompt_text()
     FS.write("tmp/test_get_vector_rag_system_prompt.txt", text)
     assert len(rdr.get_rag_docs()) > 0
 
 
 @pytest.mark.asyncio
-async def test_get_graph_rag_data():
+async def test_get_graph_context():
     ConfigService.set_standard_unit_test_env_vars()
     await EntitiesService.initialize()
     ai_svc = AiService()
@@ -96,7 +96,7 @@ async def test_get_graph_rag_data():
     rdr: RAGDataResult = await rds.get_rag_data(user_text, 5)
     await nosql_svc.close()
 
-    FS.write_json(rdr.get_data(), "tmp/test_get_graph_rag_data.json")
+    FS.write_json(rdr.get_data(), "tmp/test_get_graph_context.json")
     text = rdr.as_system_prompt_text()
     FS.write("tmp/test_get_graph_rag_system_prompt.txt", text)
     assert len(rdr.get_rag_docs()) > 0

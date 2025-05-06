@@ -2,7 +2,7 @@ import json
 import logging
 import traceback
 import uuid
-
+import asyncio
 from azure.cosmos.aio import CosmosClient
 
 # from azure.cosmos import CosmosClient
@@ -13,6 +13,8 @@ from src.services.ai_conversation import AiConversation
 from src.services.config_service import ConfigService
 
 from src.util.cosmos_doc_filter import CosmosDocFilter
+from src.util.book_doc_filter import BookDocFilter
+from azure.identity import DefaultAzureCredential
 
 
 # Instances of this class are used to access a Cosmos DB NoSQL
@@ -132,7 +134,7 @@ class CosmosNoSQLService:
             batch_operations=item_operations, partition_key=pk
         )
 
-    async def query_items(self, sql, cross_partition=False, pk=None, max_items=100):
+    async def query_items(self, sql, cross_partition=True, pk=None, max_items=10):
         parameters_list, results_list = list(), list()
         parameters_list.append(
             {"name": "@enable_cross_partition_query", "value": cross_partition}
@@ -144,8 +146,55 @@ class CosmosNoSQLService:
             query=sql, parameters=parameters_list
         )
         async for item in query_results:
-            results_list.append(item)
+                cdf = BookDocFilter(item)
+                doc = cdf.filter()
+                results_list.append(doc)
         return results_list
+
+    async def get_vector_search_results(self, search_query_embedded, top_k=5, threshold=0.7):
+        results_list = list()
+        async def run_query():
+            items = self._ctrproxy.query_items(
+                query="""
+                SELECT top @top_k c.fileName, VectorDistance(c.textVector, @embedding) AS textSimilarityScore
+                FROM c
+                WHERE VectorDistance(c.textVector, @embedding) > @threshold
+                ORDER BY VectorDistance(c.textVector, @embedding)
+                """,
+                parameters=[
+                    {"name": "@embedding", "value": search_query_embedded},
+                    {"name": "@top_k", "value": top_k},
+                    {"name": "@threshold", "value": threshold}
+                ])#,
+                #enable_cross_partition_query=True)
+            return [item async for item in items]
+
+        return await run_query()
+    
+    
+    async def get_fulltext_search_results(self, search_query, top_k=5):
+        async def run_query():
+            search_query_arr = search_query.split(" ")
+            #print(search_query_arr)
+            query_string = f"""
+            SELECT TOP @top_k c.fileName
+            FROM c
+            ORDER BY RANK FullTextScore(c.text, {search_query_arr})
+            """
+    
+            items = self._ctrproxy.query_items(
+                query=query_string,
+                parameters=[
+                    {"name": "@top_k", "value": top_k},
+                ])#,
+                #enable_cross_partition_query=True)
+            item_files = [item async for item in items]
+            return item_files
+
+        return await run_query()
+
+
+
 
     async def parameterized_query(
         self,
@@ -172,7 +221,7 @@ class CosmosNoSQLService:
             results_list.append(item)
         return results_list
 
-    async def get_documents_by_names(self, libnames: list, additional_attrs: list = list()):
+    async def get_documents_by_name(self, libnames: list, additional_attrs: list = list()):
         quoted_names, docs = list(), list()
         for libname in libnames:
             quoted_names.append("'{}'".format(libname))

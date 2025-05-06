@@ -1,6 +1,6 @@
 """
 Usage:
-python graphml2ttlx.py
+python graphml2ontology.py
 Note: pre-define input_graphml, ontology_ttl and instances_ttl variables
 """
 
@@ -13,7 +13,7 @@ import json
 input_graphml = "../data/graphml/create_clustered_graph.graphml"
 instances_ttl = "../data/ttl/clustered_graph.ttl"
 ontology_ttl = "../data/ontologies/clustered_graph_ontology.ttl"
-text_units_json = "../data/graphml/create_base_text_units.parquet.as.json"
+#text_units_json = "../data/graphml/create_base_text_units.parquet.as.json"
 
 def sanitize_uri(value):
     return re.sub(r'[^a-zA-Z0-9-]', '_', str(value).strip())
@@ -23,30 +23,30 @@ def extract_title(text):
     match = re.search(r'title:\s*(.*?)(\.\n|\n|$)', text)
     return match.group(1).strip() if match else None
 
-def load_text_units(json_path):
-    id_to_text = {}
-    with open(json_path, 'r') as f:
-        for line in f:
-            try:
-                unit = json.loads(line)
-                if 'id' in unit and 'text' in unit:
-                    id_to_text[unit['id']] = unit['text']
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-                continue
-    return id_to_text
+# def load_text_units(json_path):
+#     id_to_text = {}
+#     with open(json_path, 'r') as f:
+#         for line in f:
+#             try:
+#                 unit = json.loads(line)
+#                 if 'id' in unit and 'text' in unit:
+#                     id_to_text[unit['id']] = unit['text']
+#             except json.JSONDecodeError as e:
+#                 print(f"Error decoding JSON: {e}")
+#                 continue
+#     return id_to_text
 
 def graphml_to_ttl_with_ontology(graphml_path, instance_path, ontology_path):
     # Load text units data
-    id_to_title = {}
-    text_units = load_text_units(text_units_json)
-    for id,text in text_units.items():
-        title = extract_title(text)
-        if title:
-            id_to_title[id] = title
+    # id_to_title = {}
+    # text_units = load_text_units(text_units_json)
+    # for id,text in text_units.items():
+    #     title = extract_title(text)
+    #     if title:
+    #         id_to_title[id] = title
             
     # Initialize graphs
-    instance_g = Graph()
+    #instance_g = Graph()
     ontology_g = Graph()
 
     # Define namespaces
@@ -55,8 +55,9 @@ def graphml_to_ttl_with_ontology(graphml_path, instance_path, ontology_path):
 
     ontology_g.bind("base", BASE)
     ontology_g.bind("owl", OWL)
-    instance_g.bind("inst", INST)
-    instance_g.bind("base", BASE)
+    ontology_g.bind("inst", INST)    
+    #instance_g.bind("inst", INST)
+    #instance_g.bind("base", BASE)
 
     # Parse GraphML
     tree = ET.parse(graphml_path)
@@ -118,52 +119,55 @@ def graphml_to_ttl_with_ontology(graphml_path, instance_path, ontology_path):
             node_uri = INST[sanitize_uri(node_id)]
 
         node_map[xml_id] = node_uri
-        instance_g.add((node_uri, RDF.type, BASE.Node))
+        #instance_g.add((node_uri, RDF.type, BASE.Node))
+        has_non_alphanumeric = any(not char.isalnum() for char in node_id)
+        if not has_non_alphanumeric and not any(char.isdigit() for char in node_id) and not node_id.startswith("_") and not node_id.startswith("-"):
+            ontology_g.add((node_uri, RDF.type, BASE.Node))
 
         # Add title as property if present
-        if 'title' in data:
-            instance_g.add((node_uri, BASE.title, Literal(data['title'])))
+        # if 'title' in data:
+        #     instance_g.add((node_uri, BASE.title, Literal(data['title'])))
 
         # Add other properties
-        for attr, value in data.items():
-            if attr != 'title' and value is not None:
-                pred = BASE[attr]
-                instance_g.add((node_uri, pred, Literal(value)))
+        #for attr, value in data.items():
+            # if attr != 'title' and value is not None:
+            #     pred = BASE[attr]
+            #     instance_g.add((node_uri, pred, Literal(value)))
     # Process edges with comprehensive node mapping
-    for edge in root.findall('.//graphml:edge', ns):
-        source_id = edge.attrib['source']
-        target_id = edge.attrib['target']
-        source = node_map.get(source_id)
-        target = node_map.get(target_id)
+    # for edge in root.findall('.//graphml:edge', ns):
+    #     source_id = edge.attrib['source']
+    #     target_id = edge.attrib['target']
+    #     source = node_map.get(source_id)
+    #     target = node_map.get(target_id)
 
-        # Create reified statement for edge properties
-        statement = BNode()
-        instance_g.add((statement, RDF.type, RDF.Statement))
-        instance_g.add((statement, RDF.subject, source))
-        instance_g.add((statement, RDF.predicate, BASE.relatesTo))
-        instance_g.add((statement, RDF.object, target))
+    #     # Create reified statement for edge properties
+    #     statement = BNode()
+    #     instance_g.add((statement, RDF.type, RDF.Statement))
+    #     instance_g.add((statement, RDF.subject, source))
+    #     instance_g.add((statement, RDF.predicate, BASE.relatesTo))
+    #     instance_g.add((statement, RDF.object, target))
 
-        # Add edge properties to the statement
-        for d in edge.findall('graphml:data', ns):
-            key = d.attrib['key']
-            prop_name = keys[key]['name']
-            value = convert_value(d.text, keys[key]['type'])
-            instance_g.add((statement, BASE[prop_name], Literal(value)))
+    #     # Add edge properties to the statement
+    #     for d in edge.findall('graphml:data', ns):
+    #         key = d.attrib['key']
+    #         prop_name = keys[key]['name']
+    #         value = convert_value(d.text, keys[key]['type'])
+    #         instance_g.add((statement, BASE[prop_name], Literal(value)))
             
-            if prop_name == 'text_unit_ids':
-                titles = []
-                for tid in d.text.split(', '):
-                    if tid.strip() in id_to_title:
-                        titles.append(id_to_title[tid.strip()])
-                if titles:
-                    instance_g.add((statement, BASE.sourceFiles, Literal(', '.join(titles))))
+    #         if prop_name == 'text_unit_ids':
+    #             titles = []
+    #             for tid in d.text.split(', '):
+    #                 if tid.strip() in id_to_title:
+    #                     titles.append(id_to_title[tid.strip()])
+    #             if titles:
+    #                 instance_g.add((statement, BASE.sourceFiles, Literal(', '.join(titles))))
 
-        # Add direct relationships
-        instance_g.add((source, BASE.relatesTo, target))
-        instance_g.add((target, BASE.relatedBy, source))
+    #     # Add direct relationships
+    #     instance_g.add((source, BASE.relatesTo, target))
+    #     instance_g.add((target, BASE.relatedBy, source))
         
-    # Serialize
-    instance_g.serialize(destination=instance_path, format="turtle")
+    # # Serialize
+    # instance_g.serialize(destination=instance_path, format="turtle")
     ontology_g.serialize(destination=ontology_path, format="turtle")
     ontology_g.serialize(destination=ontology_path+".owl", format="xml")
 

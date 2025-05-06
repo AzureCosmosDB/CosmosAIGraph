@@ -75,7 +75,7 @@ public class AppGraphBuilder {
             if (overridePostLoadquery != null) {
                 postLoadQuery = overridePostLoadquery;
             }
-            logger.error("build() - source: " + source);
+            logger.info("build() - source: " + source);
 
             switch(source) {
                 case GRAPH_SOURCE_JSON_DOCS_FILE:

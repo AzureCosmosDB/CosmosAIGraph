@@ -265,7 +265,7 @@ class AiConversation:
             return json.dumps(self.get_data(), sort_keys=False, indent=2)
         except Exception as e:
             raise ContentSerializationError(
-                f"Unable to serialize ChatHistory to JSON: {e}"
+                f"Unable to serialize chat history to JSON: {e}"
             )
 
     def last_completion(self) -> dict:

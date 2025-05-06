@@ -52,14 +52,14 @@ class RAGDataResult:
 
     def has_db_rag_docs(self):
         """return true if the strategy is 'db' and length of rag_docs > 0"""
-        if self.get_strategy() == "db":
+        if "db" in self.get_strategy():
             if len(self.get_rag_docs()) > 0:
                 return True
         return False
 
     def has_graph_rag_docs(self):
         """return true if the strategy is 'graph' and length of rag_docs > 0"""
-        if self.get_strategy() == "graph":
+        if "graph" in self.get_strategy():
             if len(self.get_rag_docs()) > 0:
                 return True
         return False
