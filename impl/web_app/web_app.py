@@ -53,14 +53,16 @@ from src.util.sparql_query_response import SparqlQueryResponse
 import debugpy
 import os
 
-# Allow other computers to attach to debugpy at this IP address and port.
-debugpy.listen(("0.0.0.0", 5678))
-logging.info("CAIG_WAIT_FOR_DEBUGGER: " + os.getenv("CAIG_WAIT_FOR_DEBUGGER"))
-# This will ensure that the debugger waits for you to attach before running the code.
-if os.getenv("CAIG_WAIT_FOR_DEBUGGER").lower() == "true":
-    print("Waiting for debugger attach...")
-    debugpy.wait_for_client()
-    print("Debugger attached, starting FastAPI app...")
+if os.getenv("CAIG_WAIT_FOR_DEBUGGER") is not None:
+    # Allow other computers to attach to debugpy at this IP address and port.
+    debugpy.listen(("0.0.0.0", 5678))
+
+    logging.info("CAIG_WAIT_FOR_DEBUGGER: " + os.getenv("CAIG_WAIT_FOR_DEBUGGER"))
+    # This will ensure that the debugger waits for you to attach before running the code.
+    if os.getenv("CAIG_WAIT_FOR_DEBUGGER").lower() == "true":
+        print("Waiting for debugger attach...")
+        debugpy.wait_for_client()
+        print("Debugger attached, starting FastAPI app...")
 
 
 # standard initialization
@@ -98,11 +100,11 @@ async def lifespan(app: FastAPI):
             )
         )
         await OntologyService.initialize()
-        logging.error(
-            "FastAPI lifespan - OntologyService initialized, owl length: {}".format(
-                len(OntologyService.get_owl_content())
+        logging.info(
+            "FastAPI lifespan - OntologyService initialized, ontology length: {}".format(
+                len(OntologyService.get_owl_content()) if OntologyService.get_owl_content() is not None else 0)
             )
-        )
+        
         # logging.error("owl:\n{}".format(OntologyService.get_owl_content()))
         await ai_svc.initialize()
         logging.error("FastAPI lifespan - AiService initialized")

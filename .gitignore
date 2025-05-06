@@ -217,3 +217,7 @@ data/ontologies/clustered_graph_ontology_pod.ttl
 impl/web_app/ontologies/clustered_graph_ontology.ttl.owl
 data/graphml/create_base_text_units.parquet
 data/graphml/create_base_text_units.parquet.as.json
+impl/web_app/ontologies/hexagon/ontologyx.ttl
+impl/graph_app/rdf/hexagon/combined_graph.ttl
+impl/graph_app/rdf/hexagon/bkp/combined_graph.ttl
+impl/graph_app/ontologies/hexagon/ontologyx.ttl
