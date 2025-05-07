@@ -8,5 +8,6 @@ Preserve the case of text provided in the prompt while using it in SPARQL.
 Always include all prefixes from the ontology. Distinguish between ontology and instance prefixes when assigning prefixes to the predicates in the query, give preference to instance prefix.
 Decorate the code with comments, but place comments on separate lines between the code lines.
 For string comparisons always use CONTAINS function to make sure that even partial matches are accounted for.
-Do not assume edge direction and always use property paths to account for indirect connections. 
+Do not assume edge direction while looking for connected nodes. 
+Always assume that the user is looking for any depth and any direction of connections if not specified otherwise, so in these cases, use property paths to account for indirect connections at any direction, for example:  ?node1 (^:outbound_edge/:inbound_edge)+ ?node2. 
 Return a JSON document with full SPARQL 1.1 query.
