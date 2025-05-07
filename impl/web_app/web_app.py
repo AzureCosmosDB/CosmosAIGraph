@@ -232,7 +232,7 @@ async def get_ai_console(req: Request):
 async def ai_post_gen_sparql(req: Request):
     form_data = await req.form()
     logging.info("/gen_sparql_console_generate_sparql form_data: {}".format(form_data))
-    natural_language = form_data.get("natural_language").lower().strip()
+    natural_language = form_data.get("natural_language").strip()
     view_data = gen_sparql_console_view_data()
     view_data["natural_language"] = natural_language
     view_data["generating_nl"] = natural_language
@@ -384,7 +384,7 @@ async def conv_ai_console(req: Request):
     form_data = await req.form()
     logging.info("/conv_ai_console form_data: {}".format(form_data))
     conversation_id = form_data.get("conversation_id").strip()
-    user_text = form_data.get("user_text").strip().lower()
+    user_text = form_data.get("user_text").strip()
     logging.info(
         "conversation_id: {}, user_text: {}".format(conversation_id, user_text)
     )

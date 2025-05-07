@@ -195,9 +195,9 @@ class AiService:
                 return False
             if owl == None:
                 return False
-            if len(user_prompt.strip()) < 10:
+            if len(user_prompt.strip()) < 2:
                 return False
-            if len(owl.strip()) < 10:
+            if len(owl.strip()) < 2:
                 return False
             # Note: optionally implement content moderation for profanity, etc
             return True
