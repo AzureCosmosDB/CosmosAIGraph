@@ -9,7 +9,7 @@
   <form method="post" id="generate_form" name="generate_form" action="/gen_sparql_console_generate_sparql">
     <div class="mb-3">
       <label for="sparql" class="form-label">Enter a Natural Language Query:</label>
-      <textarea rows='1' class="form-control" id="natural_language" name="natural_language" value="{{ natural_language }}" 
+      <textarea rows="1" class="form-control" id="natural_language" name="natural_language" value="{{ natural_language }}" 
         placeholder="Double-click for suggestions.">{{ natural_language }}</textarea>
     </div>
     <div class="mb-6">
@@ -24,7 +24,7 @@
     <form method="post" id="execute_form" name="execute_form" action="/gen_sparql_console_execute_sparql">
         <div class="mb-3">
             <label for="sparql" class="form-label">SPARQL query:</label>
-            <textarea rows='8' class="form-control" id="sparql" name="sparql" value="{{ sparql }}">{{ sparql }}</textarea>
+            <textarea rows="8" class="form-control" id="sparql" name="sparql" oninput="autoResize(this)" onload="autoResize(this)" onloadeddata="autoResize(this)" onchange="autoResize(this)" value="{{ sparql }}">{{ sparql }}</textarea>
         </div>
         <div class="mb-6">
             <button type="submit" id="execute_button" name="execute_button" class="btn btn-outline-primary mb-3">Execute SPARQL Query</button>
@@ -108,6 +108,18 @@ execute_button.addEventListener('click',
       execute_form.submit();
     }
 );
+
+
+function autoResize(textarea) {
+  textarea.style.height = 'auto'; // Reset height
+  textarea.style.height = textarea.scrollHeight + 'px'; // Set to scroll height
+}
+
+// Optional: auto-resize on page load
+window.addEventListener('DOMContentLoaded', function () {
+  const textarea = document.getElementById('sparql');
+  if (textarea) autoResize(textarea);
+});
 
 </script>
 <!--
