@@ -54,7 +54,7 @@ solution.
 
 ---
 
-Navigate to the **impl\app** directory of this repo and execute
+Navigate to the **impl\web_app** directory of this repo and execute
 the following commands:
 
 ```
