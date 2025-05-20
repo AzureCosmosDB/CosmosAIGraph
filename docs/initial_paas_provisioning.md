@@ -1,7 +1,7 @@
 # CosmosAIGraph : Initial PaaS Provisioning
 
 Though the provisioning of Azure PaaS services can be fully automated,
-it is recommended that you deploy **Azure OpenAI** and **Azure Cosmos DB Mongo vCore**
+it is recommended that you deploy **Azure OpenAI** and **Azure Cosmos DB for NoSQL**
 manually in your subscription for this reference application.
 
 The reason for this is that you may already have these resources deployed (i.e - Azure OpenAI)
