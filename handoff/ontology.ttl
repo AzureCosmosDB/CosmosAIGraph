@@ -1,0 +1,169 @@
+@prefix : <http://example.org/cpg-ontology#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+#################################################################
+# Classes
+#################################################################
+
+:Product a owl:Class .
+:HeadClaim a owl:Class .
+:HeadClaimGroup a owl:Class .
+:HeadIngredient a owl:Class .
+:HeadIngredientGroup a owl:Class .
+:HeadNutrient a owl:Class .
+:ProductNutrient a owl:Class .
+:Category a owl:Class .
+:Relevancy a owl:Class .
+:Attribute a owl:Class .
+:NullValue a owl:Class .
+
+#################################################################
+# Object Properties
+#################################################################
+
+:hasHeadClaim a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :HeadClaim .
+
+:hasHeadIngredient a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :HeadIngredient .
+
+:hasProductNutrient a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :ProductNutrient .
+
+:belongsToCategory a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :Category .
+
+:belongsToRelevancy a owl:ObjectProperty ;
+    rdfs:domain :Category ;
+    rdfs:range :Relevancy .
+
+:qualifiesForAttribute a owl:ObjectProperty ;
+    rdfs:domain :Product ;
+    rdfs:range :Attribute .
+
+:belongsToHeadClaimGroup a owl:ObjectProperty ;
+    rdfs:domain :HeadClaim ;
+    rdfs:range :HeadClaimGroup .
+
+:belongsToHeadIngredientGroup a owl:ObjectProperty ;
+    rdfs:domain :HeadIngredient ;
+    rdfs:range :HeadIngredientGroup .
+
+:hasHeadNutrient a owl:ObjectProperty ;
+    rdfs:domain :ProductNutrient ;
+    rdfs:range :HeadNutrient .
+
+:attributeBasedOnClaimGroup a owl:ObjectProperty ;
+    rdfs:domain :Attribute ;
+    rdfs:range :HeadClaimGroup .
+
+:attributeBasedOnIngredientGroup a owl:ObjectProperty ;
+    rdfs:domain :Attribute ;
+    rdfs:range :HeadIngredientGroup .
+
+:attributeBasedOnNutrient a owl:ObjectProperty ;
+    rdfs:domain :Attribute ;
+    rdfs:range :HeadNutrient .
+
+:attributeBasedOnRelevancy a owl:ObjectProperty ;
+    rdfs:domain :Attribute ;
+    rdfs:range :Relevancy .
+
+:attributeBasedOnAttribute a owl:ObjectProperty ;
+    rdfs:domain :Attribute ;
+    rdfs:range :Attribute .
+
+#################################################################
+# Data Properties
+#################################################################
+
+:productId a owl:DatatypeProperty ;
+    rdfs:domain :Product ;
+    rdfs:range xsd:integer .
+
+:headClaimId a owl:DatatypeProperty ;
+    rdfs:domain :HeadClaim ;
+    rdfs:range xsd:integer .
+
+:headClaimName a owl:DatatypeProperty ;
+    rdfs:domain :HeadClaim ;
+    rdfs:range xsd:string .
+
+:headClaimGroupName a owl:DatatypeProperty ;
+    rdfs:domain :HeadClaimGroup ;
+    rdfs:range xsd:string .
+
+:headIngredientId a owl:DatatypeProperty ;
+    rdfs:domain :HeadIngredient ;
+    rdfs:range xsd:integer .
+
+:headIngredientName a owl:DatatypeProperty ;
+    rdfs:domain :HeadIngredient ;
+    rdfs:range xsd:string .
+
+:headIngredientGroupName a owl:DatatypeProperty ;
+    rdfs:domain :HeadIngredientGroup ;
+    rdfs:range xsd:string .
+
+:headNutrientId a owl:DatatypeProperty ;
+    rdfs:domain :HeadNutrient ;
+    rdfs:range xsd:integer .
+
+:headNutrientName a owl:DatatypeProperty ;
+    rdfs:domain :HeadNutrient ;
+    rdfs:range xsd:string .
+
+:categoryName a owl:DatatypeProperty ;
+    rdfs:domain :Category ;
+    rdfs:range xsd:string .
+
+:relevancyName a owl:DatatypeProperty ;
+    rdfs:domain :Relevancy ;
+    rdfs:range xsd:string .
+
+:attributeName a owl:DatatypeProperty ;
+    rdfs:domain :Attribute ;
+    rdfs:range xsd:string .
+
+#################################################################
+# ProductNutrient Value Properties (object properties to allow NullValue)
+#################################################################
+
+:per100gValue a owl:ObjectProperty ;
+    rdfs:domain :ProductNutrient ;
+    rdfs:range [ owl:unionOf (xsd:float :NullValue) ] .
+
+:per100gDvp a owl:ObjectProperty ;
+    rdfs:domain :ProductNutrient ;
+    rdfs:range [ owl:unionOf (xsd:float :NullValue) ] .
+
+:per100mlValue a owl:ObjectProperty ;
+    rdfs:domain :ProductNutrient ;
+    rdfs:range [ owl:unionOf (xsd:float :NullValue) ] .
+
+:per100mlDvp a owl:ObjectProperty ;
+    rdfs:domain :ProductNutrient ;
+    rdfs:range [ owl:unionOf (xsd:float :NullValue) ] .
+
+:perRaccValue a owl:ObjectProperty ;
+    rdfs:domain :ProductNutrient ;
+    rdfs:range [ owl:unionOf (xsd:float :NullValue) ] .
+
+:perRaccDvp a owl:ObjectProperty ;
+    rdfs:domain :ProductNutrient ;
+    rdfs:range [ owl:unionOf (xsd:float :NullValue) ] .
+
+:per100CaloriesValue a owl:ObjectProperty ;
+    rdfs:domain :ProductNutrient ;
+    rdfs:range [ owl:unionOf (xsd:float :NullValue) ] .
+
+:per100CaloriesDvp a owl:ObjectProperty ;
+    rdfs:domain :ProductNutrient ;
+    rdfs:range [ owl:unionOf (xsd:float :NullValue) ] .

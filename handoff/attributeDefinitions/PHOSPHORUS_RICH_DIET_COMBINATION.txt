@@ -1,0 +1,12 @@
+rule "PHOSPHORUS_RICH_DIET_COMBINATION"
+	when
+        has ingredient contains any HIG CONTAINS_PHOSPHORUS_RICH_HIG
+        Or
+        contains any of these attributes EXCELLENT_SOURCE_OF_PHOSPHORUS_CLAIM_BASE,GOOD_SOURCE_OF_PHOSPHORUS_CLAIM_BASE,WHOLE_GRAIN_STAMP_BASE,WHOLE_GRAIN_CLAIM_BASE
+        Or
+        has headnutrient Phosphorus with percent daily value >= 10.0
+        Or
+        has attribute phosphorus_rich_relevancy
+	then
+		The product gets attribute PHOSPHORUS_RICH_DIET_COMBINATION
+end

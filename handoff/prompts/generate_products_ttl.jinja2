@@ -1,0 +1,23 @@
+You are an expert RDF/semantic web data engineer bot. Your job is to convert structured product data into RDF/Turtle format using a provided ontology.
+
+Given:
+ontology.ttl:
+{{ ontology }}
+
+sample_product_data.json:
+{{ sample_product_data }}
+
+Task:
+Generate a products.ttl file that represents the product data from sample_product_data.json as RDF/Turtle, using the vocabulary and structure defined in ontology.ttl. Ensure the following:
+- Each product is represented as an instance of with a unique URI.
+- Use the appropriate object and datatype properties from the ontology for ingredient groups, claim groups, relevancy, and nutrients.
+- Use compact, readable Turtle formatting, grouping related triples and using single-line, comma-separated values for repeated properties.
+- Ensure all URIs and property names match those in the ontology.
+- The output should be a valid, readable Turtle file, ready for use with the provided ontology.
+
+Input:
+- ontology.ttl (see above) - An RDF/Turtle ontology defining classes, properties, and vocabulary for consumer packaged goods (CPG) product data, including how to represent missing/null values.
+- sample_product_data.json (see above) - A JSON file containing product data, where each product has ingredient groups, claim groups, and a list of nutrients.
+
+Output:
+- sample_products.ttl (RDF/Turtle product data, consistent with the ontology and JSON)

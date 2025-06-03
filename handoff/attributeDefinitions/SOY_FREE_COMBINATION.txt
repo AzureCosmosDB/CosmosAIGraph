@@ -1,0 +1,12 @@
+rule "SOY_FREE_COMBINATION"
+	when
+		has none of these attributes SHARED_FACILITY_SOY_CLAIM_BASE, SHARED_EQUIPMENT_SOY_CLAIM_BASE, MAY_CONTAIN_SOY_CLAIM_BASE, CONTAINS_SOY_CLAIM_BASE
+		And
+		Start_Parentheses
+			has ingredient with does not contain any HIG CONTAINS_SOYBEAN_ALLERGEN_HIG,MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG
+			Or
+			has attribute NO_SOY_CLAIM_BASE
+		End_Parentheses
+	then
+		The product gets attribute SOY_FREE_COMBINATION
+end

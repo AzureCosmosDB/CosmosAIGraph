@@ -1,0 +1,379 @@
+[
+    {
+        "product_id": 12265434,
+        "relevancy_data": [
+            {
+                "category": "Yogurt - Greek Fat Free",
+                "relevancy": "phosphorus_rich_relevancy"
+            },
+            {
+                "category": "Yogurt - Greek Fat Free",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 6.67,
+                "per_100g_dvp": 13.33,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 11.33,
+                "per_racc_dvp": 22.67,
+                "per_100_calories_value": 8.333333333333334,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 190.0,
+                "per_100g_dvp": 13.33,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 323.0,
+                "per_racc_dvp": 22.67,
+                "per_100_calories_value": 237.5,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 135255,
+                "head_ingredient_name": "Yogurt (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135255,
+                "head_ingredient_name": "Yogurt (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135255,
+                "head_ingredient_name": "Yogurt (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267715,
+        "relevancy_data": [
+            {
+                "category": "Ice Cream - Multiple Flavors in One Container",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 11.02,
+                "per_100ml_dvp": 22.03,
+                "per_racc_value": 11.02,
+                "per_racc_dvp": 22.03,
+                "per_100_calories_value": 10.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": null,
+                "per_100ml_dvp": 8.47,
+                "per_racc_value": null,
+                "per_racc_dvp": 8.47,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": null,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": null,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_DAIRY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233477,
+                "head_claim_name": "Made in a Shared Facility-Soy",
+                "head_claim_group": "SHARED_FACILITY_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233480,
+                "head_claim_name": "Made in a Shared Facility-Milk",
+                "head_claim_group": "MAY_CONTAIN_CASEIN_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 861,
+                "head_ingredient_name": "Starch",
+                "head_ingredient_group": "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265856,
+        "relevancy_data": [
+            {
+                "category": "Yogurt - Other",
+                "relevancy": "phosphorus_rich_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": 0.0,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 164.71,
+                "per_100g_dvp": 11.76,
+                "per_100ml_value": 118.35,
+                "per_100ml_dvp": 8.45,
+                "per_racc_value": 370.59,
+                "per_racc_dvp": 26.47,
+                "per_100_calories_value": 400.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": 0.0,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_DAIRY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 14127,
+                "head_ingredient_name": "Milk Protein Isolate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 14127,
+                "head_ingredient_name": "Milk Protein Isolate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 14127,
+                "head_ingredient_name": "Milk Protein Isolate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 6781,
+                "head_ingredient_name": "Acesulphame Potassium (950)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7727,
+                "head_ingredient_name": "Sucralose (955)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    }
+]

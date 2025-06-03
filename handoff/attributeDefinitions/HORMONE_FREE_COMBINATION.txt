@@ -1,0 +1,12 @@
+rule "HORMONE_FREE_COMBINATION"
+	when
+		Start_Parentheses
+			contains any of these attributes HORMONE_FREE_CLAIM_BASE,GROWTH_HORMONE_FREE_CLAIM_BASE,SYNTHETIC_HORMONE_FREE_CLAIM_BASE,hormone_free_meats_relevancy
+			Or
+			does not have attribute HORMONE_ING_HIG
+		End_Parentheses
+		And
+		does not have attribute CONTAINS_HORMONE_RBST_RBGH_CLAIM_BASE
+	then
+		The product gets attribute HORMONE_FREE_COMBINATION
+end

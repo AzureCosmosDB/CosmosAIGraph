@@ -1,0 +1,8 @@
+rule "GOOD_IRON"
+	when
+		has headnutrient Iron with perRacc DVP >= 10.0 and < 20.0
+		Or
+		has attribute GOOD_IRON_CLAIM_BASE
+	then
+		The product gets attribute GOOD_IRON
+end

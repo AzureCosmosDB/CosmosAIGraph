@@ -1,0 +1,12 @@
+rule "ARTIFICIAL_SWEETENER_FREE_ALL"
+	when
+		Start_Parentheses
+			has ingredient with does not contain any HIG CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG,MAY_CONTAIN_ARTIFICIAL_SWEETENER_ADDITIVE_HIG
+			Or
+			contains any of these attributes NO_ART_SWEET_CLAIM_BASE,NO_SWEET_CLAIM_BASE
+		End_Parentheses
+		And
+		has none of these attributes MAY_CONTAIN_ARTIFICIAL_SWEETENER_CLAIM_BASE,CONTAINS_ARTIFICIAL_SWEETENER_CLAIM_BASE
+	then
+		The product gets attribute ARTIFICIAL_SWEETENER_FREE_ALL
+end

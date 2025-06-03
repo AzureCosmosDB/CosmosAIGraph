@@ -1,0 +1,14 @@
+rule "CONTAINS_ADDED_SUGAR_COMBINATION"
+	when
+		Start_Parentheses
+			has ingredient with contains any HIG CONTAINS_ADDED_SUGAR_ADDITIVE_HIG
+			Or
+			has attribute CONTAINS_ADDED_SUGAR_CLAIM_BASE
+			Or
+			has headnutrient Added Sugars with per serve > 0.0
+		End_Parentheses
+		And
+		has none of these attributes 100_FRUIT_JUICE_CLAIM_BASE, 100_JUICE_BASE, NO_ADDED_SUGAR_CLAIM_BASE
+	then
+		The product gets attribute CONTAINS_ADDED_SUGAR_COMBINATION
+end

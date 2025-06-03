@@ -1,0 +1,175 @@
+You are an expert in knowledge graph and ontology design. I want you to generate an ontology in Turtle (.ttl) format for a CPG product taxonomy and attribute system. The ontology should capture all the elements and relationships described below, starting from:
+
+- Head Claim and up
+- Head Ingredient and up
+- Head Nutrient and up
+- Category and up
+
+**Do NOT include raw data (raw claim, raw ingredient, raw nutrient).**
+
+## Taxonomy Elements and Relationships
+
+### Head Claim
+A standardized version of a claim made on a product package.
+
+**Examples:**
+- "Free of Milk"
+- "Lactose Free Equipment"
+- "No Added Sugar"
+
+### Head Claim Group (Claim Base)
+A group of similar head claims.
+
+**Examples:**
+- "NO_LACTOSE_CLAIM_BASE"
+- "NO_ADDED_SUGAR_CLAIM_BASE"
+- "NO_GLUTEN_CLAIM_BASE"
+
+### Head Ingredient
+A standardized version of a parsed ingredient.
+
+**Examples:**
+- "Tomato"
+- "Mustard"
+- "Sugar"
+
+### Head Ingredient Group (HIG)
+A group of similar head ingredients.
+
+**Examples:**
+- "MUSTARD_HIG"
+- "TOMATO_HIG"
+- "SUGAR_HIG"
+
+### Head Nutrient
+A standardized nutrient, with the following possible values (can be null/missing):
+- per_100g_value
+- per_100g_dvp
+- per_100ml_value
+- per_100ml_dvp
+- per_racc_value
+- per_racc_dvp
+- per_100_calories_value
+- per_100_calories_dvp
+
+**Examples:**
+- "Added Sugars"
+- "Protein"
+- "Sodium"
+
+### Category
+A standardized grouping of products.
+
+**Examples:**
+- "Yogurt"
+- "Cheese"
+- "Biscuit"
+
+### Relevancy
+A group of categories, often for customer or analytical purposes.
+
+**Examples:**
+- "target_med_diet_grains"
+- "hormone_free_meats_relevancy"
+- "gluten_free_bakery_relevancy"
+
+### Attribute
+A derived characteristic or property assigned to a product, based on rules using Head Claim Group, Head Ingredient Group, Head Nutrient, Relevancy, or other Attributes.
+
+**Examples:**
+- "CONTAINS_ADDED_SUGAR_COMBINATION"
+- "HORMONE_FREE_COMBINATION"
+- "GLUTEN_FREE_COMBINATION"
+
+**Attribute Rule Example 1:**
+```
+rule "CONTAINS_ADDED_SUGAR_COMBINATION"
+    when
+        (has ingredient with HIG CONTAINS_ADDED_SUGAR_ADDITIVE_HIG
+         or has attribute CONTAINS_ADDED_SUGAR_CLAIM_BASE
+         or has headnutrient Added Sugars with per serve > 0.0)
+    and
+        has none of these attributes 100_FRUIT_JUICE_CLAIM_BASE, 100_JUICE_BASE, NO_ADDED_SUGAR_CLAIM_BASE
+    then
+        The product gets attribute CONTAINS_ADDED_SUGAR_COMBINATION
+end
+```
+
+**Attribute Rule Example 2:**
+```
+rule "HORMONE_FREE_COMBINATION"
+    when
+        (contains any of these attributes HORMONE_FREE_CLAIM_BASE, GROWTH_HORMONE_FREE_CLAIM_BASE, SYNTHETIC_HORMONE_FREE_CLAIM_BASE, hormone_free_meats_relevancy
+         or does not have attribute HORMONE_ING_HIG)
+    and
+        does not have attribute CONTAINS_HORMONE_RBST_RBGH_CLAIM_BASE
+    then
+        The product gets attribute HORMONE_FREE_COMBINATION
+end
+```
+
+**Attribute Rule Example 3:**
+```
+rule "GLUTEN_FREE_COMBINATION"
+    when
+        (has attribute NO_GLUTEN_CLAIM_BASE
+         or has ingredient with HIG GLUTEN_FREE_GRAINS_HIG
+         or has relevancy gluten_free_bakery_relevancy)
+    then
+        The product gets attribute GLUTEN_FREE_COMBINATION
+end
+```
+
+## Classes
+
+- Product has the following fields:
+    productId (integer)
+- Head Claim has the following fields:
+    headClaimId (integer)
+    headClaimName (string)
+- Head Claim Group has the following fields:
+    headClaimGroup (string)
+- Head Ingredient has the following fields:
+    headIngredientId (integer)
+    headIngredientName (string)
+- Head Ingredient Group has the following fields:
+    headIngredientGroup (string)
+- Category has the following fields:
+    categoryName (string)
+- Relevancy has the following fields:
+    relevancyName (string)
+- Head Nutrient has the following fields:
+    headNutrientId (integer)
+    headNutrientName (string)
+- Product Nutrient has the following fields (all float or NullValue):
+    per100gValue
+    per100gDvp
+    per100mlValue
+    per100mlDvp
+    perRaccValue
+    perRaccDvp
+    per100CaloriesValue
+    per100CaloriesDvp
+
+## Relationships
+
+- Product has Head Claims (many-to-many)
+- Head Claim belongs to Head Claim Groups (many-to-many)
+- Product has Head Ingredients (many-to-many)
+- Head Ingredient belongs to Head Ingredient Groups (many-to-many)
+- Product has Head Nutrients (many-to-many)
+- Product belongs to Category (many-to-one)
+- Category belongs to Relevancies (many-to-many)
+- Product has Attributes (many-to-many)
+- Attribute can be defined based on Head Claim Group, Head Ingredient Group, Head Nutrient, Relevancy, or other Attributes
+
+## Instructions
+
+- Define all classes, properties, and relationships needed to represent the above taxonomy and relationships.
+- Use clear, descriptive names for classes and properties.
+- Include at least three example individuals for each class where examples are provided.
+- Ensure the ontology is suitable for building a knowledge graph that can answer complex queries about products, their claims, ingredients, nutrients, categories, relevancies, and attributes.
+- Create a class ProductNutrient which has all the product related nutrient values. A product links to the ProductNutrient which then links to HeadNutrient.
+- Define a single individual of the :NullValue class. In example individuals, when a nutrient value is missing/null, use :NullValue as the value for that property (e.g., :per100mlDvp :NullValue). Ensure all nutrient value properties are defined as owl:ObjectProperty with a range that allows both xsd:float and :NullValue.
+
+**Output only the ontology in Turtle (.ttl) format.**

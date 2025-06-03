@@ -1,0 +1,8 @@
+rule "EXCELLENT_CALCIUM"
+	when
+		has headnutrient Calcium with perRacc DVP >= 20.0
+		Or
+		has attribute EXCELLENT_CALCIUM_CLAIM_BASE
+	then
+		The product gets attribute EXCELLENT_CALCIUM
+end

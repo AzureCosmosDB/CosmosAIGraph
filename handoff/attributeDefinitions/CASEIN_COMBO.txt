@@ -1,0 +1,16 @@
+rule "CASEIN_COMBO"
+	when
+		Start_Parentheses
+			Start_Parentheses
+				has ingredient with contains any HIG CONTAINS_DAIRY_HIG
+				Or
+				has ingredient with contains any HIG CONTAINS_MILK_ALLERGEN_HIG
+			End_Parentheses
+			Or
+			contains any of these attributes CONTAINS_CASEIN_CLAIM_BASE,CONTAINS_DAIRY_CLAIM_BASE,CONTAINS_MILK_CLAIM_BASE,CASEIN_HIG,SODIUM_CASEINATE_HIG,nls_wta_casein_relevancy
+		End_Parentheses
+		And
+		has none of these attributes CASEIN_FREE_CLAIM_BASE, CASEIN_FREE_FACILITY_CLAIM_BASE, CASEIN_FREE_EQUIPMENT_CLAIM_BASE, MAY_CONTAIN_CASEIN_CLAIM_BASE
+	then
+		The product gets attribute CASEIN_COMBO
+end

@@ -1,0 +1,275 @@
+@prefix : <http://example.org/cpg-ontology#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+#################################################################
+# Product 12265434
+#################################################################
+
+:Product_12265434 a :Product ;
+    :productId 12265434 ;
+    :belongsToCategory :Category_Yogurt_Greek_Fat_Free ;
+    :hasHeadClaim :HeadClaim_322 ;
+    :hasHeadIngredient :HeadIngredient_135233_Milk_Fat_Free, :HeadIngredient_8433_Milk_Protein_Concentrate, :HeadIngredient_135255_Yogurt_Fat_Free, :HeadIngredient_263_Sugars ;
+    :hasProductNutrient :ProductNutrient_12265434_33295, :ProductNutrient_12265434_37, :ProductNutrient_12265434_39 .
+
+:Category_Yogurt_Greek_Fat_Free a :Category ;
+    :categoryName "Yogurt - Greek Fat Free" ;
+    :belongsToRelevancy :Relevancy_phosphorus_rich_relevancy, :Relevancy_nls_wta_casein_relevancy .
+
+:Relevancy_phosphorus_rich_relevancy a :Relevancy ;
+    :relevancyName "phosphorus_rich_relevancy" .
+
+:Relevancy_nls_wta_casein_relevancy a :Relevancy ;
+    :relevancyName "nls_wta_casein_relevancy" .
+
+:HeadClaim_322 a :HeadClaim ;
+    :headClaimId 322 ;
+    :headClaimName "Contains Milk" ;
+    :belongsToHeadClaimGroup :HeadClaimGroup_CONTAINS_MILK_CLAIM_BASE .
+
+:HeadClaimGroup_CONTAINS_MILK_CLAIM_BASE a :HeadClaimGroup ;
+    :headClaimGroupName "CONTAINS_MILK_CLAIM_BASE" .
+
+:HeadIngredient_135233_Milk_Fat_Free a :HeadIngredient ;
+    :headIngredientId 135233 ;
+    :headIngredientName "Milk (Fat Free)" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_CASEIN_HIG, :HeadIngredientGroup_CONTAINS_DAIRY_HIG, :HeadIngredientGroup_CONTAINS_MILK_ALLERGEN_HIG .
+
+:HeadIngredient_8433_Milk_Protein_Concentrate a :HeadIngredient ;
+    :headIngredientId 8433 ;
+    :headIngredientName "Milk Protein Concentrate" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_CASEIN_HIG, :HeadIngredientGroup_CONTAINS_DAIRY_HIG, :HeadIngredientGroup_CONTAINS_MILK_ALLERGEN_HIG .
+
+:HeadIngredient_135255_Yogurt_Fat_Free a :HeadIngredient ;
+    :headIngredientId 135255 ;
+    :headIngredientName "Yogurt (Fat Free)" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_CASEIN_HIG, :HeadIngredientGroup_CONTAINS_DAIRY_HIG, :HeadIngredientGroup_CONTAINS_MILK_ALLERGEN_HIG .
+
+:HeadIngredient_263_Sugars a :HeadIngredient ;
+    :headIngredientId 263 ;
+    :headIngredientName "Sugars" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_CONTAINS_ADDED_SUGAR_ADDITIVE_HIG .
+
+:HeadIngredientGroup_CASEIN_HIG a :HeadIngredientGroup ;
+    :headIngredientGroupName "CASEIN_HIG" .
+
+:HeadIngredientGroup_CONTAINS_DAIRY_HIG a :HeadIngredientGroup ;
+    :headIngredientGroupName "CONTAINS_DAIRY_HIG" .
+
+:HeadIngredientGroup_CONTAINS_MILK_ALLERGEN_HIG a :HeadIngredientGroup ;
+    :headIngredientGroupName "CONTAINS_MILK_ALLERGEN_HIG" .
+
+:HeadIngredientGroup_CONTAINS_ADDED_SUGAR_ADDITIVE_HIG a :HeadIngredientGroup ;
+    :headIngredientGroupName "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG" .
+
+:ProductNutrient_12265434_33295 a :ProductNutrient ;
+    :hasHeadNutrient :HeadNutrient_33295 ;
+    :per100gValue 6.67 ;
+    :per100gDvp 13.33 ;
+    :per100mlValue :NullValue ;
+    :per100mlDvp :NullValue ;
+    :perRaccValue 11.33 ;
+    :perRaccDvp 22.67 ;
+    :per100CaloriesValue 8.333333333333334 ;
+    :per100CaloriesDvp :NullValue .
+
+:ProductNutrient_12265434_37 a :ProductNutrient ;
+    :hasHeadNutrient :HeadNutrient_37 ;
+    :per100gValue 190.0 ;
+    :per100gDvp 13.33 ;
+    :per100mlValue :NullValue ;
+    :per100mlDvp :NullValue ;
+    :perRaccValue 323.0 ;
+    :perRaccDvp 22.67 ;
+    :per100CaloriesValue 237.5 ;
+    :per100CaloriesDvp :NullValue .
+
+:ProductNutrient_12265434_39 a :ProductNutrient ;
+    :hasHeadNutrient :HeadNutrient_39 ;
+    :per100gValue 0.0 ;
+    :per100gDvp 0.0 ;
+    :per100mlValue :NullValue ;
+    :per100mlDvp :NullValue ;
+    :perRaccValue 0.0 ;
+    :perRaccDvp 0.0 ;
+    :per100CaloriesValue 0.0 ;
+    :per100CaloriesDvp :NullValue .
+
+:HeadNutrient_33295 a :HeadNutrient ;
+    :headNutrientId 33295 ;
+    :headNutrientName "Added Sugars" .
+
+:HeadNutrient_37 a :HeadNutrient ;
+    :headNutrientId 37 ;
+    :headNutrientName "Calcium" .
+
+:HeadNutrient_39 a :HeadNutrient ;
+    :headNutrientId 39 ;
+    :headNutrientName "Iron" .
+
+#################################################################
+# Product 12267715
+#################################################################
+
+:Product_12267715 a :Product ;
+    :productId 12267715 ;
+    :belongsToCategory :Category_Ice_Cream_Multiple_Flavors ;
+    :hasHeadClaim :HeadClaim_1415, :HeadClaim_322, :HeadClaim_233477, :HeadClaim_233480 ;
+    :hasHeadIngredient :HeadIngredient_135233_Milk_Fat_Free, :HeadIngredient_861_Starch, :HeadIngredient_263_Sugars, :HeadIngredient_435_Cream, :HeadIngredient_290_Milk ;
+    :hasProductNutrient :ProductNutrient_12267715_33295, :ProductNutrient_12267715_37, :ProductNutrient_12267715_39 .
+
+:Category_Ice_Cream_Multiple_Flavors a :Category ;
+    :categoryName "Ice Cream - Multiple Flavors in One Container" ;
+    :belongsToRelevancy :Relevancy_nls_wta_casein_relevancy .
+
+:HeadClaim_1415 a :HeadClaim ;
+    :headClaimId 1415 ;
+    :headClaimName "Contains Dairy" ;
+    :belongsToHeadClaimGroup :HeadClaimGroup_CONTAINS_DAIRY_CLAIM_BASE, :HeadClaimGroup_CONTAINS_MILK_CLAIM_BASE .
+
+:HeadClaim_322 a :HeadClaim ;
+    :headClaimId 322 ;
+    :headClaimName "Contains Milk" ;
+    :belongsToHeadClaimGroup :HeadClaimGroup_CONTAINS_MILK_CLAIM_BASE .
+
+:HeadClaim_233477 a :HeadClaim ;
+    :headClaimId 233477 ;
+    :headClaimName "Made in a Shared Facility-Soy" ;
+    :belongsToHeadClaimGroup :HeadClaimGroup_SHARED_FACILITY_SOY_CLAIM_BASE .
+
+:HeadClaim_233480 a :HeadClaim ;
+    :headClaimId 233480 ;
+    :headClaimName "Made in a Shared Facility-Milk" ;
+    :belongsToHeadClaimGroup :HeadClaimGroup_MAY_CONTAIN_CASEIN_CLAIM_BASE .
+
+:HeadClaimGroup_CONTAINS_DAIRY_CLAIM_BASE a :HeadClaimGroup ;
+    :headClaimGroupName "CONTAINS_DAIRY_CLAIM_BASE" .
+
+:HeadClaimGroup_SHARED_FACILITY_SOY_CLAIM_BASE a :HeadClaimGroup ;
+    :headClaimGroupName "SHARED_FACILITY_SOY_CLAIM_BASE" .
+
+:HeadClaimGroup_MAY_CONTAIN_CASEIN_CLAIM_BASE a :HeadClaimGroup ;
+    :headClaimGroupName "MAY_CONTAIN_CASEIN_CLAIM_BASE" .
+
+:HeadIngredient_861_Starch a :HeadIngredient ;
+    :headIngredientId 861 ;
+    :headIngredientName "Starch" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG .
+
+:HeadIngredient_435_Cream a :HeadIngredient ;
+    :headIngredientId 435 ;
+    :headIngredientName "Cream" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_CASEIN_HIG, :HeadIngredientGroup_CONTAINS_DAIRY_HIG, :HeadIngredientGroup_CONTAINS_MILK_ALLERGEN_HIG .
+
+:HeadIngredient_290_Milk a :HeadIngredient ;
+    :headIngredientId 290 ;
+    :headIngredientName "Milk" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_CASEIN_HIG, :HeadIngredientGroup_CONTAINS_DAIRY_HIG, :HeadIngredientGroup_CONTAINS_MILK_ALLERGEN_HIG .
+
+:HeadIngredientGroup_MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG a :HeadIngredientGroup ;
+    :headIngredientGroupName "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG" .
+
+:ProductNutrient_12267715_33295 a :ProductNutrient ;
+    :hasHeadNutrient :HeadNutrient_33295 ;
+    :per100gValue :NullValue ;
+    :per100gDvp :NullValue ;
+    :per100mlValue 11.02 ;
+    :per100mlDvp 22.03 ;
+    :perRaccValue 11.02 ;
+    :perRaccDvp 22.03 ;
+    :per100CaloriesValue 10.0 ;
+    :per100CaloriesDvp :NullValue .
+
+:ProductNutrient_12267715_37 a :ProductNutrient ;
+    :hasHeadNutrient :HeadNutrient_37 ;
+    :per100gValue :NullValue ;
+    :per100gDvp :NullValue ;
+    :per100mlValue :NullValue ;
+    :per100mlDvp 8.47 ;
+    :perRaccValue :NullValue ;
+    :perRaccDvp 8.47 ;
+    :per100CaloriesValue :NullValue ;
+    :per100CaloriesDvp :NullValue .
+
+:ProductNutrient_12267715_39 a :ProductNutrient ;
+    :hasHeadNutrient :HeadNutrient_39 ;
+    :per100gValue :NullValue ;
+    :per100gDvp :NullValue ;
+    :per100mlValue :NullValue ;
+    :per100mlDvp 0.0 ;
+    :perRaccValue :NullValue ;
+    :perRaccDvp 0.0 ;
+    :per100CaloriesValue :NullValue ;
+    :per100CaloriesDvp :NullValue .
+
+#################################################################
+# Product 12265856
+#################################################################
+
+:Product_12265856 a :Product ;
+    :productId 12265856 ;
+    :belongsToCategory :Category_Yogurt_Other ;
+    :hasHeadClaim :HeadClaim_1415, :HeadClaim_322 ;
+    :hasHeadIngredient :HeadIngredient_8433_Milk_Protein_Concentrate, :HeadIngredient_14127_Milk_Protein_Isolate, :HeadIngredient_6781_Acesulphame_Potassium, :HeadIngredient_135233_Milk_Fat_Free, :HeadIngredient_7727_Sucralose, :HeadIngredient_435_Cream ;
+    :hasProductNutrient :ProductNutrient_12265856_33295, :ProductNutrient_12265856_37, :ProductNutrient_12265856_39 .
+
+:Category_Yogurt_Other a :Category ;
+    :categoryName "Yogurt - Other" ;
+    :belongsToRelevancy :Relevancy_phosphorus_rich_relevancy .
+
+:HeadIngredient_14127_Milk_Protein_Isolate a :HeadIngredient ;
+    :headIngredientId 14127 ;
+    :headIngredientName "Milk Protein Isolate" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_CASEIN_HIG, :HeadIngredientGroup_CONTAINS_DAIRY_HIG, :HeadIngredientGroup_CONTAINS_MILK_ALLERGEN_HIG .
+
+:HeadIngredient_6781_Acesulphame_Potassium a :HeadIngredient ;
+    :headIngredientId 6781 ;
+    :headIngredientName "Acesulphame Potassium (950)" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG .
+
+:HeadIngredient_7727_Sucralose a :HeadIngredient ;
+    :headIngredientId 7727 ;
+    :headIngredientName "Sucralose (955)" ;
+    :belongsToHeadIngredientGroup :HeadIngredientGroup_CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG .
+
+:HeadIngredientGroup_CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG a :HeadIngredientGroup ;
+    :headIngredientGroupName "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG" .
+
+:ProductNutrient_12265856_33295 a :ProductNutrient ;
+    :hasHeadNutrient :HeadNutrient_33295 ;
+    :per100gValue 0.0 ;
+    :per100gDvp 0.0 ;
+    :per100mlValue 0.0 ;
+    :per100mlDvp 0.0 ;
+    :perRaccValue 0.0 ;
+    :perRaccDvp 0.0 ;
+    :per100CaloriesValue 0.0 ;
+    :per100CaloriesDvp :NullValue .
+
+:ProductNutrient_12265856_37 a :ProductNutrient ;
+    :hasHeadNutrient :HeadNutrient_37 ;
+    :per100gValue 164.71 ;
+    :per100gDvp 11.76 ;
+    :per100mlValue 118.35 ;
+    :per100mlDvp 8.45 ;
+    :perRaccValue 370.59 ;
+    :perRaccDvp 26.47 ;
+    :per100CaloriesValue 400.0 ;
+    :per100CaloriesDvp :NullValue .
+
+:ProductNutrient_12265856_39 a :ProductNutrient ;
+    :hasHeadNutrient :HeadNutrient_39 ;
+    :per100gValue 0.0 ;
+    :per100gDvp 0.0 ;
+    :per100mlValue 0.0 ;
+    :per100mlDvp 0.0 ;
+    :perRaccValue 0.0 ;
+    :perRaccDvp 0.0 ;
+    :per100CaloriesValue 0.0 ;
+    :per100CaloriesDvp :NullValue .
+
+#################################################################
+# Null Value Instance
+#################################################################
+
+:NullValue a :NullValue .

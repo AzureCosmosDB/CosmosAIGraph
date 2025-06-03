@@ -1,0 +1,4727 @@
+[
+    {
+        "product_id": 18797459,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 170629,
+                "head_ingredient_name": "Decyl Glucoside",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 80051,
+                "head_ingredient_name": "Cocamide MEA",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 303898,
+                "head_ingredient_name": "Coconut Acid",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7792,
+                "head_ingredient_name": "Glycerine or Glycerol (422)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 18844743,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 5.26,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 12.89,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 7.89,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 19.34,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 834,
+                "head_ingredient_name": "Soybean Oil",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 272,
+                "head_ingredient_name": "Dextrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 384,
+                "head_ingredient_name": "Honey",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267389,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 7.3,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 10.22,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 6.08,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 8.52,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 6897,
+                "head_ingredient_name": "Cheese (Parmesan)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 6897,
+                "head_ingredient_name": "Cheese (Parmesan)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 6897,
+                "head_ingredient_name": "Cheese (Parmesan)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 5170,
+                "head_ingredient_name": "Worcestershire Sauce",
+                "head_ingredient_group": "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 195444,
+                "head_ingredient_name": "Chicken (Breast)",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            },
+            {
+                "head_ingredient_id": 1225,
+                "head_ingredient_name": "Soy Protein Isolate",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 5207,
+                "head_ingredient_name": "Sausages",
+                "head_ingredient_group": "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1784,
+                "head_ingredient_name": "Corn Syrup Solids",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 69523,
+                "head_ingredient_name": "Fish (Anchovy)",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            },
+            {
+                "head_ingredient_id": 365,
+                "head_ingredient_name": "Molasses",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 272,
+                "head_ingredient_name": "Dextrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267242,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 33.33,
+                "per_100g_dvp": 66.67,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 16.67,
+                "per_racc_dvp": 33.33,
+                "per_100_calories_value": 6.25,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 433.33,
+                "per_100g_dvp": 6.67,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 216.67,
+                "per_racc_dvp": 3.33,
+                "per_100_calories_value": 81.25,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 1.33,
+                "per_100g_dvp": 6.67,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.67,
+                "per_racc_dvp": 3.33,
+                "per_100_calories_value": 0.25,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 661,
+                "head_claim_name": "Contains Almonds",
+                "head_claim_group": "CONTAINS_ALMOND_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 661,
+                "head_claim_name": "Contains Almonds",
+                "head_claim_group": "CONTAINS_TREE_NUTS_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233903,
+                "head_claim_name": "Contains Shea Nut",
+                "head_claim_group": "CONTAINS_SHEA_NUT_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233903,
+                "head_claim_name": "Contains Shea Nut",
+                "head_claim_group": "CONTAINS_TREE_NUTS_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1399,
+                "head_ingredient_name": "Brown Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 640,
+                "head_ingredient_name": "Hazelnuts",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            },
+            {
+                "head_ingredient_id": 640,
+                "head_ingredient_name": "Hazelnuts",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 272,
+                "head_ingredient_name": "Dextrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 1054,
+                "head_ingredient_name": "Coconut",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 592,
+                "head_ingredient_name": "Almond",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            },
+            {
+                "head_ingredient_id": 592,
+                "head_ingredient_name": "Almond",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 75151,
+                "head_ingredient_name": "Shea Nut",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265716,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 1.25,
+                "per_100g_dvp": 2.5,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 2.44,
+                "per_racc_dvp": 4.88,
+                "per_100_calories_value": 1.1904761904761905,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 27.5,
+                "per_100g_dvp": 2.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 53.63,
+                "per_racc_dvp": 3.9,
+                "per_100_calories_value": 26.19047619047619,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.47,
+                "per_100g_dvp": 2.5,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.93,
+                "per_racc_dvp": 4.88,
+                "per_100_calories_value": 0.4523809523809523,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1524,
+                "head_claim_name": "Contains Coconut",
+                "head_claim_group": "CONTAINS_COCONUT_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1524,
+                "head_claim_name": "Contains Coconut",
+                "head_claim_group": "CONTAINS_TREE_NUTS_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 585627,
+                "head_ingredient_name": "Coconut (Dessicated)",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1399,
+                "head_ingredient_name": "Brown Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 513,
+                "head_ingredient_name": "Soybean",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1054,
+                "head_ingredient_name": "Coconut",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1776,
+                "head_ingredient_name": "Tofu",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267308,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 6.76,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 6.76,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 2.7,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 2.7,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 137,
+                "head_ingredient_name": "High Fructose Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 137,
+                "head_ingredient_name": "High Fructose Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 159875,
+                "head_ingredient_name": "Milk Powder (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 159875,
+                "head_ingredient_name": "Milk Powder (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 159875,
+                "head_ingredient_name": "Milk Powder (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265434,
+        "relevancy_data": [
+            {
+                "category": "Yogurt - Greek Fat Free",
+                "relevancy": "phosphorus_rich_relevancy"
+            },
+            {
+                "category": "Yogurt - Greek Fat Free",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 6.67,
+                "per_100g_dvp": 13.33,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 11.33,
+                "per_racc_dvp": 22.67,
+                "per_100_calories_value": 8.333333333333334,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 190.0,
+                "per_100g_dvp": 13.33,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 323.0,
+                "per_racc_dvp": 22.67,
+                "per_100_calories_value": 237.5,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 135255,
+                "head_ingredient_name": "Yogurt (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135255,
+                "head_ingredient_name": "Yogurt (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135255,
+                "head_ingredient_name": "Yogurt (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12256405,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 112.68,
+                "per_100g_dvp": 8.45,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 95.77,
+                "per_racc_dvp": 7.18,
+                "per_100_calories_value": 53.333333333333336,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.99,
+                "per_100g_dvp": 5.63,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.84,
+                "per_racc_dvp": 4.79,
+                "per_100_calories_value": 0.4666666666666666,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 603701,
+                "head_ingredient_name": "Milk (Cultured) (Fat Free) (Pasteurized)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 603701,
+                "head_ingredient_name": "Milk (Cultured) (Fat Free) (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 603701,
+                "head_ingredient_name": "Milk (Cultured) (Fat Free) (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 195382,
+                "head_ingredient_name": "Cheese (Mozzarella)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 195382,
+                "head_ingredient_name": "Cheese (Mozzarella)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 195382,
+                "head_ingredient_name": "Cheese (Mozzarella)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 195373,
+                "head_ingredient_name": "Cheese (Cheddar)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 195373,
+                "head_ingredient_name": "Cheese (Cheddar)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 195373,
+                "head_ingredient_name": "Cheese (Cheddar)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1934,
+                "head_ingredient_name": "Tamari",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 513,
+                "head_ingredient_name": "Soybean",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 861,
+                "head_ingredient_name": "Starch",
+                "head_ingredient_group": "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12256894,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 3.48,
+                "per_100g_dvp": 17.39,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 1.74,
+                "per_racc_dvp": 8.7,
+                "per_100_calories_value": 0.888888888888889,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 31543,
+                "head_ingredient_name": "Soybean Oil (Partially Hydrogenated)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 834,
+                "head_ingredient_name": "Soybean Oil",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267715,
+        "relevancy_data": [
+            {
+                "category": "Ice Cream - Multiple Flavors in One Container",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 11.02,
+                "per_100ml_dvp": 22.03,
+                "per_racc_value": 11.02,
+                "per_racc_dvp": 22.03,
+                "per_100_calories_value": 10.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": null,
+                "per_100ml_dvp": 8.47,
+                "per_racc_value": null,
+                "per_racc_dvp": 8.47,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": null,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": null,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_DAIRY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233477,
+                "head_claim_name": "Made in a Shared Facility-Soy",
+                "head_claim_group": "SHARED_FACILITY_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233480,
+                "head_claim_name": "Made in a Shared Facility-Milk",
+                "head_claim_group": "MAY_CONTAIN_CASEIN_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 861,
+                "head_ingredient_name": "Starch",
+                "head_ingredient_group": "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265440,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 58.97,
+                "per_100g_dvp": 120.51,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 29.49,
+                "per_racc_dvp": 60.26,
+                "per_100_calories_value": 15.333333333333334,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 102.56,
+                "per_100g_dvp": 10.26,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 51.28,
+                "per_racc_dvp": 5.13,
+                "per_100_calories_value": 26.666666666666668,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 2.05,
+                "per_100g_dvp": 10.26,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 1.03,
+                "per_racc_dvp": 5.13,
+                "per_100_calories_value": 0.5333333333333333,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1301,
+                "head_claim_name": "Artificial Sweetener Free",
+                "head_claim_group": "NO_ART_SWEET_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 585639,
+                "head_ingredient_name": "Coconut Oil (Hydrogenated)",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1784,
+                "head_ingredient_name": "Corn Syrup Solids",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 521,
+                "head_ingredient_name": "Sodium Caseinate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 521,
+                "head_ingredient_name": "Sodium Caseinate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 521,
+                "head_ingredient_name": "Sodium Caseinate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 521,
+                "head_ingredient_name": "Sodium Caseinate",
+                "head_ingredient_group": "SODIUM_CASEINATE_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267425,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 75.0,
+                "per_100g_dvp": 10.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 37.5,
+                "per_racc_dvp": 5.0,
+                "per_100_calories_value": 13.636363636363637,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 5.0,
+                "per_100g_dvp": 30.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 2.5,
+                "per_racc_dvp": 15.0,
+                "per_100_calories_value": 0.9090909090909092,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 15,
+                "head_claim_name": "No Added Sugar/Without Added Sugar/No Sugar Added",
+                "head_claim_group": "NO_ADDED_SUGAR_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 436,
+                "head_claim_name": "Soy/Soybean Free",
+                "head_claim_group": "NO_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 661,
+                "head_claim_name": "Contains Almonds",
+                "head_claim_group": "CONTAINS_ALMOND_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 661,
+                "head_claim_name": "Contains Almonds",
+                "head_claim_group": "CONTAINS_TREE_NUTS_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 585421,
+                "head_ingredient_name": "Cashew Nut (Organic)",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            },
+            {
+                "head_ingredient_id": 585421,
+                "head_ingredient_name": "Cashew Nut (Organic)",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 585050,
+                "head_ingredient_name": "Almond (Organic)",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            },
+            {
+                "head_ingredient_id": 585050,
+                "head_ingredient_name": "Almond (Organic)",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12419365,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 8.33,
+                "per_100g_dvp": 16.67,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 4.17,
+                "per_racc_dvp": 8.33,
+                "per_100_calories_value": 2.5,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 7727,
+                "head_ingredient_name": "Sucralose (955)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 272,
+                "head_ingredient_name": "Dextrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12244378,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 32.74,
+                "per_100g_dvp": 1.77,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 27.83,
+                "per_racc_dvp": 1.5,
+                "per_100_calories_value": 16.086956521739133,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 1.77,
+                "per_100g_dvp": 8.85,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 1.5,
+                "per_racc_dvp": 7.52,
+                "per_100_calories_value": 0.8695652173913044,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [],
+        "head_ingredient_data": []
+    },
+    {
+        "product_id": 12265176,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 7792,
+                "head_ingredient_name": "Glycerine or Glycerol (422)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267735,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 714,
+                "head_ingredient_name": "Coconut Oil",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7792,
+                "head_ingredient_name": "Glycerine or Glycerol (422)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12263895,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 585639,
+                "head_ingredient_name": "Coconut Oil (Hydrogenated)",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267751,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 597742,
+                "head_ingredient_name": "Honey (Raw)",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12245533,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 20.29,
+                "per_100ml_dvp": 43.04,
+                "per_racc_value": 24.35,
+                "per_racc_dvp": 51.64,
+                "per_100_calories_value": 6.346153846153846,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 71.32,
+                "per_100ml_dvp": 4.92,
+                "per_racc_value": 85.58,
+                "per_racc_dvp": 5.9,
+                "per_100_calories_value": 22.307692307692307,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 1.84,
+                "per_100ml_dvp": 9.22,
+                "per_racc_value": 2.21,
+                "per_racc_dvp": 11.07,
+                "per_100_calories_value": 0.5769230769230769,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 229369,
+                "head_claim_name": "Synthetic Hormone Free",
+                "head_claim_group": "SYNTHETIC_HORMONE_FREE_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233956,
+                "head_claim_name": "Growth Hormone Free",
+                "head_claim_group": "GROWTH_HORMONE_FREE_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 606063,
+                "head_ingredient_name": "Soybean Oil (Interesterified)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 562,
+                "head_ingredient_name": "Whey Powder",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 562,
+                "head_ingredient_name": "Whey Powder",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 562,
+                "head_ingredient_name": "Whey Powder",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 1340,
+                "head_ingredient_name": "Margarine",
+                "head_ingredient_group": "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 365,
+                "head_ingredient_name": "Molasses",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 771,
+                "head_ingredient_name": "Milk Fat",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 771,
+                "head_ingredient_name": "Milk Fat",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 771,
+                "head_ingredient_name": "Milk Fat",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267477,
+        "relevancy_data": [
+            {
+                "category": "Ice Cream - Sandwiches",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 23.94,
+                "per_100g_dvp": 47.89,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 28.73,
+                "per_racc_dvp": 57.46,
+                "per_100_calories_value": 7.555555555555555,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 4.23,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 5.07,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 7.04,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 8.45,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267421,
+        "relevancy_data": [
+            {
+                "category": "Ice Cream - Bars",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 20.0,
+                "per_100g_dvp": 40.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 24.0,
+                "per_racc_dvp": 48.0,
+                "per_100_calories_value": 8.571428571428571,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1524,
+                "head_claim_name": "Contains Coconut",
+                "head_claim_group": "CONTAINS_COCONUT_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1524,
+                "head_claim_name": "Contains Coconut",
+                "head_claim_group": "CONTAINS_TREE_NUTS_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233014,
+                "head_claim_name": "Made On Shared Equipment-Soy",
+                "head_claim_group": "SHARED_EQUIPMENT_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233017,
+                "head_claim_name": "Made On Shared Equipment-Milk",
+                "head_claim_group": "MAY_CONTAIN_CASEIN_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 330995,
+                "head_ingredient_name": "Coconut Nectar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 330995,
+                "head_ingredient_name": "Coconut Nectar",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 714,
+                "head_ingredient_name": "Coconut Oil",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 68,
+                "head_ingredient_name": "Cane Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 1054,
+                "head_ingredient_name": "Coconut",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267070,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 59.26,
+                "per_100g_dvp": 118.52,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 23.7,
+                "per_racc_dvp": 47.41,
+                "per_100_calories_value": 17.77777777777778,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 632,
+                "head_claim_name": "May Contain Milk",
+                "head_claim_group": "MAY_CONTAIN_CASEIN_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 633,
+                "head_claim_name": "May Contain Soy",
+                "head_claim_group": "MAY_CONTAIN_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 272,
+                "head_ingredient_name": "Dextrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12228950,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 5.42,
+                "per_100ml_dvp": 10.83,
+                "per_racc_value": 13.0,
+                "per_racc_dvp": 26.0,
+                "per_100_calories_value": 16.25,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 187.5,
+                "per_100ml_dvp": 14.58,
+                "per_racc_value": 450.0,
+                "per_racc_dvp": 35.0,
+                "per_100_calories_value": 562.5,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 0.21,
+                "per_100ml_dvp": 0.83,
+                "per_racc_value": 0.5,
+                "per_racc_dvp": 2.0,
+                "per_100_calories_value": 0.625,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 661,
+                "head_claim_name": "Contains Almonds",
+                "head_claim_group": "CONTAINS_ALMOND_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 661,
+                "head_claim_name": "Contains Almonds",
+                "head_claim_group": "CONTAINS_TREE_NUTS_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 6833,
+                "head_ingredient_name": "Alpha - Tocopherol (307)",
+                "head_ingredient_group": "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 169139,
+                "head_ingredient_name": "Almond Milk",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 68,
+                "head_ingredient_name": "Cane Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 592,
+                "head_ingredient_name": "Almond",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            },
+            {
+                "head_ingredient_id": 592,
+                "head_ingredient_name": "Almond",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267646,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 6781,
+                "head_ingredient_name": "Acesulphame Potassium (950)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 834,
+                "head_ingredient_name": "Soybean Oil",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 5901,
+                "head_ingredient_name": "Aspartame",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 8769,
+                "head_ingredient_name": "Mannitol (421)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12235427,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 391,
+                "head_ingredient_name": "Glucose Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 684,
+                "head_ingredient_name": "Sucrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265484,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 7792,
+                "head_ingredient_name": "Glycerine or Glycerol (422)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 684,
+                "head_ingredient_name": "Sucrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12259744,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 195903,
+                "head_ingredient_name": "Coconut Oil (Organic)",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12231921,
+        "relevancy_data": [
+            {
+                "category": "Ice Cream - Sandwiches",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 23.65,
+                "per_100g_dvp": 47.3,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 28.38,
+                "per_racc_dvp": 56.76,
+                "per_100_calories_value": 7.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 108.11,
+                "per_100g_dvp": 6.76,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 129.73,
+                "per_racc_dvp": 8.11,
+                "per_100_calories_value": 32.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 1.96,
+                "per_100g_dvp": 10.14,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 2.35,
+                "per_racc_dvp": 12.16,
+                "per_100_calories_value": 0.58,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 229369,
+                "head_claim_name": "Synthetic Hormone Free",
+                "head_claim_group": "SYNTHETIC_HORMONE_FREE_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233956,
+                "head_claim_name": "Growth Hormone Free",
+                "head_claim_group": "GROWTH_HORMONE_FREE_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 584038,
+                "head_ingredient_name": "Milk (Dried) (Rbst-Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 584038,
+                "head_ingredient_name": "Milk (Dried) (Rbst-Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 584038,
+                "head_ingredient_name": "Milk (Dried) (Rbst-Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 416347,
+                "head_ingredient_name": "Cream (Hormone Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 416347,
+                "head_ingredient_name": "Cream (Hormone Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 416347,
+                "head_ingredient_name": "Cream (Hormone Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1399,
+                "head_ingredient_name": "Brown Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267024,
+        "relevancy_data": [
+            {
+                "category": "Ice Cream - Sandwiches",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 18.18,
+                "per_100g_dvp": 36.36,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 21.82,
+                "per_racc_dvp": 43.64,
+                "per_100_calories_value": 7.142857142857143,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 90.91,
+                "per_100g_dvp": 7.27,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 109.09,
+                "per_racc_dvp": 8.73,
+                "per_100_calories_value": 35.714285714285715,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 137,
+                "head_ingredient_name": "High Fructose Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 137,
+                "head_ingredient_name": "High Fructose Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 476,
+                "head_ingredient_name": "Buttermilk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 476,
+                "head_ingredient_name": "Buttermilk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 476,
+                "head_ingredient_name": "Buttermilk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 272,
+                "head_ingredient_name": "Dextrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12266981,
+        "relevancy_data": [
+            {
+                "category": "Ice Cream - With Multiple Types of Desserts, Candies, Nuts, and Other Treats",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 25.81,
+                "per_100g_dvp": 51.61,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 25.81,
+                "per_racc_dvp": 51.61,
+                "per_100_calories_value": 10.909090909090908,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 86.02,
+                "per_100g_dvp": 6.45,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 86.02,
+                "per_racc_dvp": 6.45,
+                "per_100_calories_value": 36.36363636363636,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.43,
+                "per_100g_dvp": 2.15,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.43,
+                "per_racc_dvp": 2.15,
+                "per_100_calories_value": 0.1818181818181818,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 229369,
+                "head_claim_name": "Synthetic Hormone Free",
+                "head_claim_group": "SYNTHETIC_HORMONE_FREE_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233956,
+                "head_claim_name": "Growth Hormone Free",
+                "head_claim_group": "GROWTH_HORMONE_FREE_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 1357,
+                "head_ingredient_name": "Liquid Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1399,
+                "head_ingredient_name": "Brown Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 714,
+                "head_ingredient_name": "Coconut Oil",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 476,
+                "head_ingredient_name": "Buttermilk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 476,
+                "head_ingredient_name": "Buttermilk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 476,
+                "head_ingredient_name": "Buttermilk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 272,
+                "head_ingredient_name": "Dextrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265856,
+        "relevancy_data": [
+            {
+                "category": "Yogurt - Other",
+                "relevancy": "phosphorus_rich_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": 0.0,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 164.71,
+                "per_100g_dvp": 11.76,
+                "per_100ml_value": 118.35,
+                "per_100ml_dvp": 8.45,
+                "per_racc_value": 370.59,
+                "per_racc_dvp": 26.47,
+                "per_100_calories_value": 400.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": 0.0,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_DAIRY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 14127,
+                "head_ingredient_name": "Milk Protein Isolate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 14127,
+                "head_ingredient_name": "Milk Protein Isolate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 14127,
+                "head_ingredient_name": "Milk Protein Isolate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 6781,
+                "head_ingredient_name": "Acesulphame Potassium (950)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7727,
+                "head_ingredient_name": "Sucralose (955)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265498,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 40.0,
+                "per_100g_dvp": 80.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 20.0,
+                "per_racc_dvp": 40.0,
+                "per_100_calories_value": 8.571428571428571,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 53.33,
+                "per_100g_dvp": 6.67,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 26.67,
+                "per_racc_dvp": 3.33,
+                "per_100_calories_value": 11.428571428571429,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 3.33,
+                "per_100g_dvp": 20.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 1.67,
+                "per_racc_dvp": 10.0,
+                "per_100_calories_value": 0.7142857142857143,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233014,
+                "head_claim_name": "Made On Shared Equipment-Soy",
+                "head_claim_group": "SHARED_EQUIPMENT_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233017,
+                "head_claim_name": "Made On Shared Equipment-Milk",
+                "head_claim_group": "MAY_CONTAIN_CASEIN_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 606907,
+                "head_ingredient_name": "Yogurt (Dried) (Cultured) (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 606907,
+                "head_ingredient_name": "Yogurt (Dried) (Cultured) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 606907,
+                "head_ingredient_name": "Yogurt (Dried) (Cultured) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 834,
+                "head_ingredient_name": "Soybean Oil",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1240,
+                "head_ingredient_name": "Whey Powder (Milk)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 1240,
+                "head_ingredient_name": "Whey Powder (Milk)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 1240,
+                "head_ingredient_name": "Whey Powder (Milk)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 13689,
+                "head_ingredient_name": "Pretzels",
+                "head_ingredient_group": "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 23059,
+                "head_ingredient_name": "Yogurt",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 23059,
+                "head_ingredient_name": "Yogurt",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 23059,
+                "head_ingredient_name": "Yogurt",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12264042,
+        "relevancy_data": [
+            {
+                "category": "Ice Cream - Sandwiches",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 21.18,
+                "per_100g_dvp": 42.35,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 25.41,
+                "per_racc_dvp": 50.82,
+                "per_100_calories_value": 6.428571428571429,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 84.71,
+                "per_100g_dvp": 7.06,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 101.65,
+                "per_racc_dvp": 8.47,
+                "per_100_calories_value": 25.714285714285715,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 1.18,
+                "per_100g_dvp": 7.06,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 1.41,
+                "per_racc_dvp": 8.47,
+                "per_100_calories_value": 0.3571428571428571,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233014,
+                "head_claim_name": "Made On Shared Equipment-Soy",
+                "head_claim_group": "SHARED_EQUIPMENT_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 1359,
+                "head_ingredient_name": "Ice Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 1399,
+                "head_ingredient_name": "Brown Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 272,
+                "head_ingredient_name": "Dextrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12426601,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 2851,
+                "head_ingredient_name": "Sorbitol (420)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12263732,
+        "relevancy_data": [
+            {
+                "category": "Poultry - Ground Turkey",
+                "relevancy": "phosphorus_rich_relevancy"
+            },
+            {
+                "category": "Poultry - Ground Turkey",
+                "relevancy": "hormone_free_meats_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 1.79,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 1.52,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 5.36,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 4.55,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1629,
+                "head_claim_name": "Added Hormone Free",
+                "head_claim_group": "HORMONE_FREE_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 2251,
+                "head_ingredient_name": "Turkey",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12263638,
+        "relevancy_data": [
+            {
+                "category": "Poultry - Ground Turkey",
+                "relevancy": "phosphorus_rich_relevancy"
+            },
+            {
+                "category": "Poultry - Ground Turkey",
+                "relevancy": "hormone_free_meats_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 1.79,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 1.52,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 7.14,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 6.07,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1629,
+                "head_claim_name": "Added Hormone Free",
+                "head_claim_group": "HORMONE_FREE_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233956,
+                "head_claim_name": "Growth Hormone Free",
+                "head_claim_group": "GROWTH_HORMONE_FREE_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 2251,
+                "head_ingredient_name": "Turkey",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12256532,
+        "relevancy_data": [
+            {
+                "category": "Milk Additives - Liquid Flavored Creamers",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 20.0,
+                "per_100ml_dvp": 40.0,
+                "per_racc_value": 10.0,
+                "per_racc_dvp": 20.0,
+                "per_100_calories_value": 10.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 73.33,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": 36.67,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 36.66666666666667,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 0.0,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_DAIRY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 229343,
+                "head_claim_name": "Real Dairy",
+                "head_claim_group": "CONTAINS_DAIRY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 195388,
+                "head_ingredient_name": "Cream (Heavy Cream)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 195388,
+                "head_ingredient_name": "Cream (Heavy Cream)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 195388,
+                "head_ingredient_name": "Cream (Heavy Cream)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 68,
+                "head_ingredient_name": "Cane Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12246834,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 197971,
+                "head_ingredient_name": "Lecithin (322) (Soy) (Non GMO)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267343,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 364,
+                "head_ingredient_name": "Lactose",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 364,
+                "head_ingredient_name": "Lactose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 364,
+                "head_ingredient_name": "Lactose",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12242386,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 38.33,
+                "per_100g_dvp": 76.67,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 19.17,
+                "per_racc_dvp": 38.33,
+                "per_100_calories_value": 8.518518518518517,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 33.33,
+                "per_100g_dvp": 3.33,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 16.67,
+                "per_racc_dvp": 1.67,
+                "per_100_calories_value": 7.4074074074074066,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 462,
+                "head_ingredient_name": "Invert Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265464,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 27.91,
+                "per_100g_dvp": 53.49,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 15.35,
+                "per_racc_dvp": 29.42,
+                "per_100_calories_value": 7.5,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 348.84,
+                "per_100g_dvp": 23.26,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 191.86,
+                "per_racc_dvp": 12.79,
+                "per_100_calories_value": 93.75,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 8.37,
+                "per_100g_dvp": 46.51,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 4.6,
+                "per_racc_dvp": 25.58,
+                "per_100_calories_value": 2.25,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 91,
+                "head_nutrient_name": "Phosphorus",
+                "per_100g_value": null,
+                "per_100g_dvp": 23.26,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 12.79,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 233049,
+                "head_claim_name": "100% Whole Grain",
+                "head_claim_group": "WHOLE_GRAIN_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 87,
+                "head_claim_name": "Whole Grain",
+                "head_claim_group": "WHOLE_GRAIN_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12231910,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 39.29,
+                "per_100g_dvp": 78.57,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 19.64,
+                "per_racc_dvp": 39.29,
+                "per_100_calories_value": 9.166666666666668,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 7.14,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 3.57,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 436,
+                "head_claim_name": "Soy/Soybean Free",
+                "head_claim_group": "NO_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 68,
+                "head_ingredient_name": "Cane Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267711,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 6.25,
+                "per_100g_dvp": 12.5,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 3.12,
+                "per_racc_dvp": 6.25,
+                "per_100_calories_value": 1.25,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 62.5,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 31.25,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 12.5,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 3.75,
+                "per_100g_dvp": 25.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 1.88,
+                "per_racc_dvp": 12.5,
+                "per_100_calories_value": 0.7499999999999999,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 561564,
+                "head_ingredient_name": "Soybean Oil (High Oleic)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 137,
+                "head_ingredient_name": "High Fructose Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 137,
+                "head_ingredient_name": "High Fructose Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12256527,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 10.56,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 26.41,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 8.333333333333334,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 91,
+                "head_nutrient_name": "Phosphorus",
+                "per_100g_value": null,
+                "per_100g_dvp": 14.08,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 35.21,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.49,
+                "per_100g_dvp": null,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 1.23,
+                "per_racc_dvp": null,
+                "per_100_calories_value": 0.3888888888888888,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 436,
+                "head_claim_name": "Soy/Soybean Free",
+                "head_claim_group": "NO_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1629,
+                "head_claim_name": "Added Hormone Free",
+                "head_claim_group": "HORMONE_FREE_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 434,
+                "head_ingredient_name": "Chicken",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267230,
+        "relevancy_data": [
+            {
+                "category": "Ice Cream - Other Ice Cream Novelties",
+                "relevancy": "nls_wta_casein_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 19.12,
+                "per_100g_dvp": 38.24,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 19.12,
+                "per_racc_dvp": 38.24,
+                "per_100_calories_value": 21.666666666666668,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 8437,
+                "head_ingredient_name": "Sucrose Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 8437,
+                "head_ingredient_name": "Sucrose Syrup",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 20,
+                "head_ingredient_name": "Corn Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12242194,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 78.57,
+                "per_100g_dvp": 157.14,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 31.43,
+                "per_racc_dvp": 62.86,
+                "per_100_calories_value": 22.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 19059,
+                "head_ingredient_name": "Malt Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12246846,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 170629,
+                "head_ingredient_name": "Decyl Glucoside",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265741,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 1.69,
+                "per_100g_dvp": 3.39,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.85,
+                "per_racc_dvp": 1.69,
+                "per_100_calories_value": 0.5555555555555556,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 67.8,
+                "per_100g_dvp": 6.78,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 33.9,
+                "per_racc_dvp": 3.39,
+                "per_100_calories_value": 22.22222222222222,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 2.03,
+                "per_100g_dvp": 10.17,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 1.02,
+                "per_racc_dvp": 5.08,
+                "per_100_calories_value": 0.6666666666666666,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 521,
+                "head_ingredient_name": "Sodium Caseinate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 521,
+                "head_ingredient_name": "Sodium Caseinate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 521,
+                "head_ingredient_name": "Sodium Caseinate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 521,
+                "head_ingredient_name": "Sodium Caseinate",
+                "head_ingredient_group": "SODIUM_CASEINATE_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 604445,
+                "head_ingredient_name": "Milk (Dried) (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 500,
+                "head_ingredient_name": "Whey",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267598,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 690,
+                "head_claim_name": "Contains Soy",
+                "head_claim_group": "CONTAINS_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 195429,
+                "head_ingredient_name": "Fish (Smoked Salmon)",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            },
+            {
+                "head_ingredient_id": 195376,
+                "head_ingredient_name": "Cheese (Cream Cheese)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 195376,
+                "head_ingredient_name": "Cheese (Cream Cheese)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 195376,
+                "head_ingredient_name": "Cheese (Cream Cheese)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 834,
+                "head_ingredient_name": "Soybean Oil",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 22289,
+                "head_ingredient_name": "Fish (Salmon)",
+                "head_ingredient_group": "CONTAINS_PHOSPHORUS_RICH_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 384,
+                "head_ingredient_name": "Honey",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12256733,
+        "relevancy_data": [
+            {
+                "category": "Canned Beans - Other Beans",
+                "relevancy": "phosphorus_rich_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.77,
+                "per_100g_dvp": 1.54,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 1.0,
+                "per_racc_dvp": 2.0,
+                "per_100_calories_value": 0.7692307692307692,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 30.77,
+                "per_100g_dvp": 3.08,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 40.0,
+                "per_racc_dvp": 4.0,
+                "per_100_calories_value": 30.769230769230766,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 2.31,
+                "per_100g_dvp": 11.54,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 3.0,
+                "per_racc_dvp": 15.0,
+                "per_100_calories_value": 2.3076923076923075,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12258651,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 179639,
+                "head_ingredient_name": "Sodium Lauryl Glucose Carboxylate",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 276012,
+                "head_ingredient_name": "Sodium Cocoamphoacetate",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 170629,
+                "head_ingredient_name": "Decyl Glucoside",
+                "head_ingredient_group": "CONTAINS_TREE_NUTS_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 7792,
+                "head_ingredient_name": "Glycerine or Glycerol (422)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12267193,
+        "relevancy_data": [
+            {
+                "category": "Dehydrated Vegetables - Lentils",
+                "relevancy": "phosphorus_rich_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 6.86,
+                "per_100g_dvp": 42.86,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 2.4,
+                "per_racc_dvp": 15.0,
+                "per_100_calories_value": 2.4,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [],
+        "head_ingredient_data": []
+    },
+    {
+        "product_id": 12406143,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": null,
+                "per_100g_dvp": null,
+                "per_100ml_value": 8.89,
+                "per_100ml_dvp": 17.5,
+                "per_racc_value": 21.33,
+                "per_racc_dvp": 42.0,
+                "per_100_calories_value": 26.666666666666668,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 68,
+                "head_ingredient_name": "Cane Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12432739,
+        "relevancy_data": [
+            {
+                "category": "Cheese Cut for Crackers",
+                "relevancy": "nls_wta_casein_relevancy"
+            },
+            {
+                "category": "Cheese Cut for Crackers",
+                "relevancy": "phosphorus_rich_relevancy"
+            }
+        ],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 710.71,
+                "per_100g_dvp": 53.57,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 355.36,
+                "per_racc_dvp": 26.79,
+                "per_100_calories_value": 180.9090909090909,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 12587,
+                "head_ingredient_name": "Milk (Pasteurized)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12678487,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 50.0,
+                "per_100g_dvp": 108.33,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 25.0,
+                "per_racc_dvp": 54.17,
+                "per_100_calories_value": 20.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1301,
+                "head_claim_name": "Artificial Sweetener Free",
+                "head_claim_group": "NO_ART_SWEET_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 272,
+                "head_ingredient_name": "Dextrose",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12689619,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 14.16,
+                "per_100g_dvp": 1.77,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 19.82,
+                "per_racc_dvp": 2.48,
+                "per_100_calories_value": 5.714285714285714,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 15,
+                "head_claim_name": "No Added Sugar/Without Added Sugar/No Sugar Added",
+                "head_claim_group": "NO_ADDED_SUGAR_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 6781,
+                "head_ingredient_name": "Acesulphame Potassium (950)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 7727,
+                "head_ingredient_name": "Sucralose (955)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 8763,
+                "head_ingredient_name": "Maltitol (965)",
+                "head_ingredient_group": "CONTAINS_ARTIFICIAL_SWEETENER_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12677555,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 75.0,
+                "per_100g_dvp": 150.0,
+                "per_100ml_value": 60.87,
+                "per_100ml_dvp": 121.73,
+                "per_racc_value": 30.43,
+                "per_racc_dvp": 60.87,
+                "per_100_calories_value": 20.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": 0.0,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": 0.0,
+                "per_100g_dvp": 0.0,
+                "per_100ml_value": 0.0,
+                "per_100ml_dvp": 0.0,
+                "per_racc_value": 0.0,
+                "per_racc_dvp": 0.0,
+                "per_100_calories_value": 0.0,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 632,
+                "head_claim_name": "May Contain Milk",
+                "head_claim_group": "MAY_CONTAIN_CASEIN_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 633,
+                "head_claim_name": "May Contain Soy",
+                "head_claim_group": "MAY_CONTAIN_SOY_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 15829,
+                "head_ingredient_name": "Confectioner's Glaze",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 15829,
+                "head_ingredient_name": "Confectioner's Glaze",
+                "head_ingredient_group": "MAY_CONTAIN_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 708,
+                "head_ingredient_name": "Icing Sugar",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12739639,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 43.86,
+                "per_100g_dvp": 89.47,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 21.93,
+                "per_racc_dvp": 44.74,
+                "per_100_calories_value": 8.333333333333334,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 37,
+                "head_nutrient_name": "Calcium",
+                "per_100g_value": null,
+                "per_100g_dvp": 14.04,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 7.02,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            },
+            {
+                "head_nutrient_id": 39,
+                "head_nutrient_name": "Iron",
+                "per_100g_value": null,
+                "per_100g_dvp": 14.04,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": null,
+                "per_racc_dvp": 7.02,
+                "per_100_calories_value": null,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [
+            {
+                "head_claim_id": 322,
+                "head_claim_name": "Contains Milk",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 632,
+                "head_claim_name": "May Contain Milk",
+                "head_claim_group": "MAY_CONTAIN_CASEIN_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 633,
+                "head_claim_name": "May Contain Soy",
+                "head_claim_group": "MAY_CONTAIN_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233014,
+                "head_claim_name": "Made On Shared Equipment-Soy",
+                "head_claim_group": "SHARED_EQUIPMENT_SOY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 233017,
+                "head_claim_name": "Made On Shared Equipment-Milk",
+                "head_claim_group": "MAY_CONTAIN_CASEIN_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 7790,
+                "head_ingredient_name": "Lecithin (322) (Soy)",
+                "head_ingredient_group": "CONTAINS_SOYBEAN_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 8433,
+                "head_ingredient_name": "Milk Protein Concentrate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 159875,
+                "head_ingredient_name": "Milk Powder (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 159875,
+                "head_ingredient_name": "Milk Powder (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 159875,
+                "head_ingredient_name": "Milk Powder (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 5171,
+                "head_ingredient_name": "Butter Fat",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 5171,
+                "head_ingredient_name": "Butter Fat",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 5171,
+                "head_ingredient_name": "Butter Fat",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 417,
+                "head_ingredient_name": "Milk Chocolate",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 417,
+                "head_ingredient_name": "Milk Chocolate",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 417,
+                "head_ingredient_name": "Milk Chocolate",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 3700,
+                "head_ingredient_name": "Lactose From Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 3700,
+                "head_ingredient_name": "Lactose From Milk",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 3700,
+                "head_ingredient_name": "Lactose From Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 3700,
+                "head_ingredient_name": "Lactose From Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 391,
+                "head_ingredient_name": "Glucose Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 435,
+                "head_ingredient_name": "Cream",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 135233,
+                "head_ingredient_name": "Milk (Fat Free)",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 720,
+                "head_ingredient_name": "Butter",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 52939,
+                "head_ingredient_name": "Toffee",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 52939,
+                "head_ingredient_name": "Toffee",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 52939,
+                "head_ingredient_name": "Toffee",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 52939,
+                "head_ingredient_name": "Toffee",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CASEIN_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_DAIRY_HIG"
+            },
+            {
+                "head_ingredient_id": 290,
+                "head_ingredient_name": "Milk",
+                "head_ingredient_group": "CONTAINS_MILK_ALLERGEN_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12677530,
+        "relevancy_data": [],
+        "head_nutrient_data": [
+            {
+                "head_nutrient_id": 33295,
+                "head_nutrient_name": "Added Sugars",
+                "per_100g_value": 46.43,
+                "per_100g_dvp": 92.86,
+                "per_100ml_value": null,
+                "per_100ml_dvp": null,
+                "per_racc_value": 18.57,
+                "per_racc_dvp": 37.14,
+                "per_100_calories_value": 14.444444444444445,
+                "per_100_calories_dvp": null
+            }
+        ],
+        "head_claim_data": [],
+        "head_ingredient_data": [
+            {
+                "head_ingredient_id": 391,
+                "head_ingredient_name": "Glucose Syrup",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            },
+            {
+                "head_ingredient_id": 263,
+                "head_ingredient_name": "Sugars",
+                "head_ingredient_group": "CONTAINS_ADDED_SUGAR_ADDITIVE_HIG"
+            }
+        ]
+    },
+    {
+        "product_id": 12265501,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1301,
+                "head_claim_name": "Artificial Sweetener Free",
+                "head_claim_group": "NO_ART_SWEET_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": []
+    },
+    {
+        "product_id": 12267309,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_DAIRY_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1415,
+                "head_claim_name": "Contains Dairy",
+                "head_claim_group": "CONTAINS_MILK_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": []
+    },
+    {
+        "product_id": 12235132,
+        "relevancy_data": [],
+        "head_nutrient_data": [],
+        "head_claim_data": [
+            {
+                "head_claim_id": 1524,
+                "head_claim_name": "Contains Coconut",
+                "head_claim_group": "CONTAINS_COCONUT_CLAIM_BASE"
+            },
+            {
+                "head_claim_id": 1524,
+                "head_claim_name": "Contains Coconut",
+                "head_claim_group": "CONTAINS_TREE_NUTS_CLAIM_BASE"
+            }
+        ],
+        "head_ingredient_data": []
+    }
+]
