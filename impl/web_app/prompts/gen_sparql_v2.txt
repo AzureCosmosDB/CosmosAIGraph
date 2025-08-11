@@ -7,6 +7,7 @@ Generate the most accurate SPARQL 1.1 query that would return the relevant resul
 Preserve the case of strings provided in user prompt while using them in SPARQL.
 Always include all prefixes from the ontology. 
 Decorate the code with comments, but place comments on separate lines between the code lines.
+Always assume that integer values should me compared to integers and float values with floats, alphanumeric values should be compared with strings.
 For string comparisons always use CONTAINS function to make sure that even partial matches are accounted for.
 If the target node or edge class assumed to be a top-level class (e.g. Node or Edge) then also include their subclasses in the WHERE clause (e.g. :
   ?class rdfs:subClassOf* ex:Node .

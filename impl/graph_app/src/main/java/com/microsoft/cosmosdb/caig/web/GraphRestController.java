@@ -20,8 +20,8 @@ import java.util.Locale;
 /**
  * This class implements the Graph functionality HTTP endpoints of this Spring application
  * per the @RestController annotation.
- *
  * Chris Joakim, Microsoft, 2025
+ * Aleksey Savateyev, Microsoft, 2025
  */
 
 @RestController
@@ -32,8 +32,7 @@ public class GraphRestController {
     private static boolean reloadInProgress = false;
 
     /**
-     * Return the "single source of truth" ontology/OWL/XML used by the graph app,
-     * to the web app, for the SPARQL generative-AI logic in the web application.
+     * Return the "single source of truth" ontology/OWL/XML used by the graph app
      */
     @GetMapping(value="/ontology", produces=MediaType.APPLICATION_XML_VALUE)
     public String ontology() {
@@ -43,6 +42,9 @@ public class GraphRestController {
         return xml;
     }
 
+    /**
+     * This is main endpoint for querying the graph with SPARQL
+     */
     @PostMapping("/sparql_query")
     SparqlQueryResponse postSparqlQuery(@RequestBody SparqlQueryRequest request) {
         logger.warn("/sparql_query");
@@ -51,11 +53,9 @@ public class GraphRestController {
     }
 
     /**
-     * This endpoint is for ad-hoc use such as in a development environment.
-     * For production apps, the graph should be sourced from Cosmos DB data
-     * rather than triples.
+     * This endpoint is for selective graph updates
      * See the /add_documents endpoint, below, to mutate the graph from
-     * Cosmos DB documents.
+     * database records
      */
     @PostMapping("/sparql_update")
     SparqlQueryResponse postSparqlUpdate(@RequestBody SparqlQueryRequest request) {
@@ -74,14 +74,17 @@ public class GraphRestController {
     SparqlBomQueryResponse postSparqlBomQuery(@RequestBody SparqlBomQueryRequest request) {
         logger.warn("/sparql_bom_query");
         //SparqlBomQueryResponse response = new SparqlBomQueryResponse(request);
-        // TODO - implement this endpoint for the D3.js UI visualizations
-
+        //TODO: implement this endpoint for the D3.js UI visualizations
 
         SparqlBomQueryResponse response =
                 AppGraph.getSingleton().bomQuery(request);
         return response;
     }
 
+    /**
+     * This endpoint is for populating the graph from
+     * database records
+     */
     @PostMapping("/add_documents")
     AddDocumentsResponse postSparqlBomQuery(@RequestBody AddDocumentsRequest request) {
         logger.warn("/add_documents");
@@ -90,7 +93,7 @@ public class GraphRestController {
     }
 
     /**
-     * This is a dev-environment convenience feature.
+     * This is a dev-environment convenience feature
      * @return
      */
     @GetMapping("/reload_graph")
