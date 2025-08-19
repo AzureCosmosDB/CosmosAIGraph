@@ -39,15 +39,16 @@ Also manually create these three containers in the **caig** database.
 | Container      | Partition Key Attribute | Request Units   |
 | -------------- | ----------------------- | --------------- |
 | config         | /pk                     | 4000 autoscale  |
-| conversations  | /pk                     | 10000 autoscale |
+| conversations  | /pk                     | 4000 autoscale  |
 | feedback       | /conversation_id        | 4000 autoscale  |
+| libraries      | /pk                     | 10000 autoscale |
 
 The **config** container will contain one document which identifies
 the entities in this system.  This is used by classes **EntitiesService**
 and **StrategyBuilder** to analyze user-specified natural-language queries.
 
 The **conversations** and **feedback** containers record the evolving
-state of AIConversations.  These containers will be useful for 
+state of AI Conversations.  These containers will be useful for 
 performing analysis and optimization of your AI logic - models, prompts, etc..
 Mirroring this data to OneLake in Microsoft Fabric may be a cost-effective
 solution.
@@ -58,8 +59,8 @@ Navigate to the **impl\app** directory of this repo and execute
 the following commands:
 
 ```
+> cd .\impl\web_app\
 > .\venv.ps1                      <-- create the python virtual environment
-
 > .\venv\Scripts\Activate.ps1     <-- activate the python virtual environment
 ```
 
