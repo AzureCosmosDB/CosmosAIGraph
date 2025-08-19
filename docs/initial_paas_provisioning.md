@@ -1,7 +1,7 @@
 # CosmosAIGraph : Initial PaaS Provisioning
 
 Though the provisioning of Azure PaaS services can be fully automated,
-it is recommended that you deploy **Azure OpenAI** and **Azure Cosmos DB Mongo vCore**
+it is recommended that you deploy **Azure OpenAI**,  **Azure Cosmos DB for NoSQL** and (optionally) **Azure Container Registry**
 manually in your subscription for this reference application.
 
 The reason for this is that you may already have these resources deployed (i.e - Azure OpenAI)
@@ -36,16 +36,6 @@ You should set your **CAIG_AZURE_OPENAI_COMPLETIONS_DEP** and
 **CAIG_AZURE_OPENAI_EMBEDDINGS_DEP** environment variables to the
 deployment names of these two models in your Azure OpenAI account.
 
-## Azure Container Registry (ACR)
-
-See https://learn.microsoft.com/en-us/azure/container-registry/.
-
-When you build the Docker images for your application they should
-be pushed to your ACR.
-
-The example Bicep deployment scripts in this repository use
-**DockerHub** for this public reference implementation.
-However, you should use your private and secure Azure Container Registry instead.
 
 ## Azure Cosmos DB for NoSQL
 
@@ -72,3 +62,14 @@ Then, navigate to this account in your Azure Portal and open "Settings -> Keys" 
 </p>
 
 Copy the **PRIMARY KEY** value into a the environment variable called **CAIG_COSMOSDB_NOSQL_KEY**.
+
+## Azure Container Registry (ACR)
+
+See https://learn.microsoft.com/en-us/azure/container-registry/.
+
+When you build the Docker images for your application they should
+be pushed to your ACR.
+
+The example Bicep deployment scripts in this repository use
+**DockerHub** for this public reference implementation.
+However, you should use your private and secure Azure Container Registry instead.

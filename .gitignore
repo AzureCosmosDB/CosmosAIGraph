@@ -1,5 +1,3 @@
-# cj
-
 **/.DS_Store
 **/.env
 **/.gradle/
@@ -225,3 +223,4 @@ impl/graph_app/rdf/hexagon/bkp2/combined_graph.ttl
 impl/web_app/rdf/hexagon/combined_graph.ttl
 impl/web_app/requirements.txt
 impl/web_app/requirements.txt
+data/Explorer

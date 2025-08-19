@@ -5,16 +5,19 @@
 echo "Setting CAIG environment variables"
 
 echo 'setting CAIG_AZURE_OPENAI_COMPLETIONS_DEP'
-[Environment]::SetEnvironmentVariable("CAIG_AZURE_OPENAI_COMPLETIONS_DEP", "gpt4", "User")
+[Environment]::SetEnvironmentVariable("CAIG_AZURE_OPENAI_COMPLETIONS_DEP", "gpt-4.1", "User")
 
 echo 'setting CAIG_AZURE_OPENAI_EMBEDDINGS_DEP'
-[Environment]::SetEnvironmentVariable("CAIG_AZURE_OPENAI_EMBEDDINGS_DEP", "embeddings", "User")
+[Environment]::SetEnvironmentVariable("CAIG_AZURE_OPENAI_EMBEDDINGS_DEP", "text-embedding-3-small", "User")
 
 echo 'setting CAIG_AZURE_OPENAI_KEY'
-[Environment]::SetEnvironmentVariable("CAIG_AZURE_OPENAI_KEY", "", "User")
+[Environment]::SetEnvironmentVariable("CAIG_AZURE_OPENAI_KEY", "xxx", "User")
 
 echo 'setting CAIG_AZURE_OPENAI_URL'
-[Environment]::SetEnvironmentVariable("CAIG_AZURE_OPENAI_URL", "", "User")
+[Environment]::SetEnvironmentVariable("CAIG_AZURE_OPENAI_URL", "xxx", "User")
+
+echo 'setting CAIG_AZURE_OPENAI_VERSION'
+[Environment]::SetEnvironmentVariable("CAIG_AZURE_OPENAI_VERSION", "2025-01-01-preview", "User")
 
 echo 'setting CAIG_CONFIG_CONTAINER'
 [Environment]::SetEnvironmentVariable("CAIG_CONFIG_CONTAINER", "config", "User")
@@ -23,13 +26,13 @@ echo 'setting CAIG_CONVERSATIONS_CONTAINER'
 [Environment]::SetEnvironmentVariable("CAIG_CONVERSATIONS_CONTAINER", "conversations", "User")
 
 echo 'setting CAIG_COSMOSDB_NOSQL_ACCT'
-[Environment]::SetEnvironmentVariable("CAIG_COSMOSDB_NOSQL_ACCT", "mycosmosdbnosqlacct", "User")
+[Environment]::SetEnvironmentVariable("CAIG_COSMOSDB_NOSQL_ACCT", "xxx", "User")
 
 echo 'setting CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM'
 [Environment]::SetEnvironmentVariable("CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM", "key", "User")
 
 echo 'setting CAIG_COSMOSDB_NOSQL_KEY'
-[Environment]::SetEnvironmentVariable("CAIG_COSMOSDB_NOSQL_KEY", "", "User")
+[Environment]::SetEnvironmentVariable("CAIG_COSMOSDB_NOSQL_KEY", "xxx", "User")
 
 echo 'setting CAIG_COSMOSDB_NOSQL_RG'
 [Environment]::SetEnvironmentVariable("CAIG_COSMOSDB_NOSQL_RG", "myresourcegroup", "User")
@@ -74,7 +77,7 @@ echo 'setting CAIG_GRAPH_SOURCE_TYPE'
 [Environment]::SetEnvironmentVariable("CAIG_GRAPH_SOURCE_TYPE", "cosmos_nosql", "User")
 
 echo 'setting CAIG_HOME'
-[Environment]::SetEnvironmentVariable("CAIG_HOME", "", "User")
+[Environment]::SetEnvironmentVariable("CAIG_HOME", "xxx", "User")
 
 echo 'setting CAIG_LOG_LEVEL'
 [Environment]::SetEnvironmentVariable("CAIG_LOG_LEVEL", "info", "User")
