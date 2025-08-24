@@ -284,6 +284,7 @@ async def gen_sparql_console_execute_sparql(req: Request):
         view_data["results_message"] = "SPARQL Query Error"
     else:
         view_data["results"] = json.dumps(sqr.response_obj, sort_keys=False, indent=2)
+        view_data["count"] = sqr.count
         view_data["results_message"] = "SPARQL Query Results"
     return views.TemplateResponse(
         request=req, name="gen_sparql_console.html", context=view_data
@@ -507,6 +508,7 @@ def gen_sparql_console_view_data():
     view_data["results_message"] = ""
     view_data["results"] = ""
     view_data["generating_nl"] = ""
+    view_data["count"] = ""
     return view_data
 
 

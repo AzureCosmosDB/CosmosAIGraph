@@ -62,21 +62,21 @@ class RAGDataService:
         sb = StrategyBuilder(self.ai_svc)
         strategy_obj = sb.determine(user_text)
         strategy = strategy_obj["strategy"]
-        rdr.add_strategy(strategy)
+        #rdr.add_strategy(strategy)
         #rdr.set_context(strategy_obj["name"])
     
-        # if strategy == "graph" or ConfigService.get_strategy_bypass() == "true":
-        #     rdr.add_strategy("graph")
+        if strategy == "graph" or ConfigService.get_strategy_bypass() == "true":
+            rdr.add_strategy("graph")
             
-        #     await self.get_graph_context(user_text, rdr, max_doc_count)
-        #     # if rdr.has_no_docs():
-        #     #     rdr.add_strategy("vector")
-        #     #     await self.get_vector_context(user_text, rdr, max_doc_count)
+            await self.get_graph_context(user_text, rdr, max_doc_count)
+            # # fall back to vector in case graph doesn't have context
+            # if rdr.has_no_docs():
+            #     rdr.add_strategy("vector")
+            #     await self.get_vector_context(user_text, rdr, max_doc_count)
             
         
         if strategy == "db" or ConfigService.get_strategy_bypass() == "true":
             rdr.add_strategy("db")
-        
             
             await self.get_database_context(user_text, rdr, max_doc_count)
             

@@ -2,6 +2,7 @@ import time
 
 # Instances of this class represent the result of a generic RDF SPARQL query.
 # Chris Joakim, Microsoft, 2025
+# Aleksey Savateyev, Microsoft, 2025
 
 
 class RdfQueryResult:

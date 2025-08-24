@@ -15,6 +15,7 @@ from typing import Any
 # See https://fastapi.tiangolo.com/tutorial/body/
 #
 # Chris Joakim, Microsoft, 2025
+# Aleksey Savateyev, Microsoft, 2025
 
 
 class PingModel(BaseModel):
@@ -45,6 +46,7 @@ class SparqlQueryResponseModel(BaseModel):
     sparql: str
     results: Any = None
     elapsed: int
+    row_count: int
     error: str | None
     start_time: int
     finish_time: int
@@ -133,3 +135,4 @@ class VectorizeResponseModel(BaseModel):
     embeddings: list
     elapsed: float
     error: str | None
+

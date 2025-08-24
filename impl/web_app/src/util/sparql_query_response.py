@@ -9,7 +9,7 @@ import logging
 # See impl/web_app/tests/test_sparql_query_response.py
 #
 # Chris Joakim, Microsoft, 2025
-
+# Aleksey Savateyev, Microsoft, 2025
 
 class SparqlQueryResponse:
 
@@ -21,10 +21,15 @@ class SparqlQueryResponse:
         self.parse_exception = None
         self.response_obj = None
         self.results_obj = None
+        self.count = 0
+
         try:
             self.text = self.r.text
             self.response_obj = json.loads(self.text)
-            self.query_results_obj = self.response_obj["results"]
+
+            self.query_results_obj = self.response_obj.get("results")
+            self.count = len(self.results_bindings())
+
         except Exception as e:
             print(str(e))
             self.parse_error = True
@@ -35,11 +40,11 @@ class SparqlQueryResponse:
     def has_errors(self) -> bool:
         return self.parse_error
 
-    def elapsedMs(self) -> float:
-        try:
-            return float(self.response_obj["elapsed"])
-        except:
-            return -1.0
+    # def elapsedMs(self) -> float:
+    #     try:
+    #         return float(self.response_obj["elapsed"])
+    #     except:
+    #         return -1.0
 
     def result_variables(self):
         # The 'outputAsJSON(...)' method in class org.apache.jena.query.ResultSetFormatter
@@ -64,7 +69,7 @@ class SparqlQueryResponse:
             for binding in self.query_results_obj["results"]["bindings"]:
                 row_values = dict()
                 for var_name in binding_var_names:
-                    row_values[var_name] = binding[var_name]["value"]
+                    row_values[var_name] = binding.get(var_name, {}).get("value")
                 values.append(row_values)
         except Exception as e:
             logging.critical((str(e)))
