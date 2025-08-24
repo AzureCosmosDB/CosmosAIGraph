@@ -324,27 +324,27 @@ class ConfigService:
         return cls.envvar("CAIG_AZURE_OPENAI_EMBEDDINGS_DEP", "embeddings")
 
     @classmethod
-    def optimize_context_and_history_max_tokens(cls) -> str:
+    def optimize_context_and_history_max_tokens(cls) -> int:
         return cls.int_envvar("CAIG_OPTIMIZE_CONTEXT_AND_HISTORY_MAX_TOKENS", 10000)
 
     @classmethod
-    def invoke_kernel_max_tokens(cls) -> str:
+    def invoke_kernel_max_tokens(cls) -> int:
         return cls.int_envvar("CAIG_INVOKE_KERNEL_MAX_TOKENS", 4096)
 
     @classmethod
-    def invoke_kernel_temperature(cls) -> str:
+    def invoke_kernel_temperature(cls) -> float:
         return cls.float_envvar("CAIG_INVOKE_KERNEL_TEMPERATURE", 0.4)
 
     @classmethod
-    def moderate_sparql_temperature(cls) -> str:
+    def moderate_sparql_temperature(cls) -> float:
         return cls.float_envvar("CAIG_MODERATE_SPARQL_TEMPERATURE", 0.0)
 
     @classmethod
-    def get_completion_temperature(cls) -> str:
+    def get_completion_temperature(cls) -> float:
         return cls.float_envvar("CAIG_GET_COMPLETION_TEMPERATURE", 0.1)
 
     @classmethod
-    def invoke_kernel_top_p(cls) -> str:
+    def invoke_kernel_top_p(cls) -> float:
         return cls.float_envvar("CAIG_INVOKE_KERNEL_TOP_P", 0.5)
 
     @classmethod

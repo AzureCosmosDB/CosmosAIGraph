@@ -96,9 +96,10 @@ class RAGDataService:
             self.nosql_svc.set_db(ConfigService.graph_source_db())
             self.nosql_svc.set_container(ConfigService.graph_source_container())
             rag_docs_list = await self.nosql_svc.get_documents_by_names([name])
-            pertinent_attributes = "libtype,name, summary, documentation_summary"
+            #pertinent_attributes = "libtype,name, summary, documentation_summary"
             for doc in rag_docs_list:
-                rdr.add_doc(self.filtered_cosmosdb_lib_doc(doc))
+                #rdr.add_doc(self.filtered_cosmosdb_lib_doc(doc))
+                rdr.add_doc(doc)
 
         except Exception as e:
             logging.critical(

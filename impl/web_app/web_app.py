@@ -6,7 +6,8 @@
 # and debugging purposes.
 #
 # Chris Joakim, Microsoft, 2025
-
+# Aleksey Savateyev, 2025
+ 
 import asyncio
 import json
 import logging
@@ -48,7 +49,7 @@ from src.services.rag_data_result import RAGDataResult
 from src.util.fs import FS
 from src.util.sparql_formatter import SparqlFormatter
 from src.util.sparql_query_response import SparqlQueryResponse
-
+from typing import Optional
 
 import debugpy
 import os
@@ -409,7 +410,7 @@ async def conv_ai_console(req: Request):
         if (LoggingLevelService.get_level() == logging.DEBUG):
             FS.write_json(rdr.get_data(), "tmp/ai_conv_rdr.json")
 
-        completion: AiCompletion = AiCompletion(conv.conversation_id, None)
+        completion: Optional[AiCompletion] = AiCompletion(conv.conversation_id, None)
         completion.set_user_text(user_text)
         completion.set_rag_strategy(rdr.get_strategy())
         content_lines = list()
@@ -429,41 +430,45 @@ async def conv_ai_console(req: Request):
             conv.set_context(rdr.get_context())
             await nosql_svc.save_conversation(conv)
         else:
+            context = ""
             if rdr.has_graph_rag_docs() == True:
                 for doc in rdr.get_rag_docs():
                     content_lines.append(json.dumps(doc))
                 completion.set_content(", ".join(content_lines))
                 conv.add_completion(completion)
                 conv.add_diagnostic_message("sparql: {}".format(rdr.get_sparql()))
-                await nosql_svc.save_conversation(conv)
+                #await nosql_svc.save_conversation(conv)
             else:
-                # completion_context = conv.last_completion_content()
-                # rag_data = rdr.as_system_prompt_text()
-                # context = ""
-                # if conv.has_context():
-                #     context = "The current library is: {}\n{}\n{}".format(
-                #         conv.get_context(), completion_context, rag_data
-                #     )
-                # else:
-                #     context = "{}\n{}".format(completion_context, rag_data)
+                completion_context = conv.last_completion_content()
+                rag_data = rdr.as_system_prompt_text()
 
-                # max_tokens = ConfigService.invoke_kernel_max_tokens()
-                # temperature = ConfigService.invoke_kernel_temperature()
-                # top_p = ConfigService.invoke_kernel_top_p()
-                # completion: AiCompletion = await ai_svc.invoke_kernel(
-                #     conv,
-                #     prompt_text,
-                #     user_text,
-                #     context=context,
-                #     max_tokens=max_tokens,
-                #     temperature=temperature,
-                #     top_p=top_p,
-                # )
-                # if completion is not None:
-                #    completion.set_rag_strategy(rdr.get_strategy())
-                    completion.set_content("No results found")
-                    conv.add_completion(completion)
-                    await nosql_svc.save_conversation(conv)
+                if conv.has_context():
+                    context = "The current library is: {}\n{}\n{}".format(
+                        conv.get_context(), completion_context, rag_data
+                    )
+                else:
+                    context = "{}\n{}".format(completion_context, rag_data)
+
+            max_tokens = ConfigService.invoke_kernel_max_tokens()
+            temperature = ConfigService.invoke_kernel_temperature()
+            top_p = ConfigService.invoke_kernel_top_p()
+            comp_result = await ai_svc.invoke_kernel(
+                conv,
+                prompt_text,
+                user_text,
+                context=context,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                top_p=top_p,
+            )
+            if comp_result is not None: 
+                completion = comp_result 
+                completion.set_rag_strategy(rdr.get_strategy())
+            else: 
+                completion.set_content("No results found")
+
+            conv.add_completion(completion)
+            await nosql_svc.save_conversation(conv)
 
     #textformat_conversation(conv)
     if (LoggingLevelService.get_level() == logging.DEBUG):

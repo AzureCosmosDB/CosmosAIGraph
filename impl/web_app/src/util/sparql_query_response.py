@@ -66,7 +66,7 @@ class SparqlQueryResponse:
     def binding_values_for(self, binding_var_names: list):
         values = list()
         try:
-            for binding in self.query_results_obj["results"]["bindings"]:
+            for binding in self.query_results_obj.get("results", {}).get("bindings", []):
                 row_values = dict()
                 for var_name in binding_var_names:
                     row_values[var_name] = binding.get(var_name, {}).get("value")
