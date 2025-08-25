@@ -95,11 +95,13 @@ class RAGDataService:
             )
             self.nosql_svc.set_db(ConfigService.graph_source_db())
             self.nosql_svc.set_container(ConfigService.graph_source_container())
-            rag_docs_list = await self.nosql_svc.get_documents_by_names([name])
+            rag_docs_list = await self.nosql_svc.get_documents_by_name([name])
             #pertinent_attributes = "libtype,name, summary, documentation_summary"
             for doc in rag_docs_list:
                 #rdr.add_doc(self.filtered_cosmosdb_lib_doc(doc))
-                rdr.add_doc(doc)
+                doc_copy = dict(doc)  # shallow copy
+                doc_copy.pop("embedding", None)
+                rdr.add_doc(doc_copy)
 
         except Exception as e:
             logging.critical(
@@ -130,7 +132,9 @@ class RAGDataService:
                 embedding, embedding_attr="embedding", limit=max_doc_count
             )
             for vs_doc in vs_result:
-                rdr.add_doc(vs_doc)
+                doc_copy = dict(vs_doc)  # shallow copy
+                doc_copy.pop("embedding", None)
+                rdr.add_doc(doc_copy)
         except Exception as e:
             logging.critical(
                 "Exception in RagDataService#get_vector_rag_data: {}".format(str(e))
@@ -159,7 +163,9 @@ class RAGDataService:
                 "tmp/get_graph_rag_data_get_graph_rag_data_response_obj.json",
             )
             for doc in sqr.binding_values():
-                rdr.add_doc(doc)
+                doc_copy = dict(doc)  # shallow copy
+                doc_copy.pop("embedding", None)
+                rdr.add_doc(doc_copy)
             FS.write_json(rdr.get_data(), "tmp/rdr.json")
         except Exception as e:
             logging.critical(

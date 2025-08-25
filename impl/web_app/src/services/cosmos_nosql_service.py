@@ -172,7 +172,7 @@ class CosmosNoSQLService:
             results_list.append(item)
         return results_list
 
-    async def get_documents_by_names(self, libnames: list, additional_attrs: list = list()):
+    async def get_documents_by_name(self, libnames: list, additional_attrs: list = list()):
         quoted_names, docs = list(), list()
         for libname in libnames:
             quoted_names.append("'{}'".format(libname))

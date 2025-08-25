@@ -403,7 +403,7 @@ async def conv_ai_console(req: Request):
         )
 
     if len(user_text) > 0:
-        conv.add_user_message(user_text)
+        
         prompt_text = ai_svc.generic_prompt_template()
 
         rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 20)
@@ -416,6 +416,7 @@ async def conv_ai_console(req: Request):
         content_lines = list()
         
         if rdr.has_db_rag_docs() == True:
+            conv.add_user_message(user_text)
             for doc in rdr.get_rag_docs():
                 logging.debug("doc: {}".format(doc))
                 line_parts = list()
@@ -431,19 +432,28 @@ async def conv_ai_console(req: Request):
             await nosql_svc.save_conversation(conv)
         else:
             context = ""
+            completion_context = conv.last_completion_content()
             if rdr.has_graph_rag_docs() == True:
                 for doc in rdr.get_rag_docs():
                     content_lines.append(json.dumps(doc))
                 completion.set_content(", ".join(content_lines))
-                conv.add_completion(completion)
+                #conv.add_completion(completion)
+                conv.set_context(completion.get_content())
                 conv.add_diagnostic_message("sparql: {}".format(rdr.get_sparql()))
+
+                if conv.has_context():
+                    context = "Found context: {}\n{}\n".format(
+                        conv.get_context(), completion_context
+                    )
+                else:
+                    context = "{}\n".format(completion_context)
+                    
                 #await nosql_svc.save_conversation(conv)
             else:
-                completion_context = conv.last_completion_content()
                 rag_data = rdr.as_system_prompt_text()
 
                 if conv.has_context():
-                    context = "The current library is: {}\n{}\n{}".format(
+                    context = "Found context: {}\n{}\n{}".format(
                         conv.get_context(), completion_context, rag_data
                     )
                 else:
@@ -464,11 +474,11 @@ async def conv_ai_console(req: Request):
             if comp_result is not None: 
                 completion = comp_result 
                 completion.set_rag_strategy(rdr.get_strategy())
+                #conv.add_completion(completion)         
             else: 
                 completion.set_content("No results found")
-
-            conv.add_completion(completion)
-            await nosql_svc.save_conversation(conv)
+                
+            #await nosql_svc.save_conversation(conv)
 
     #textformat_conversation(conv)
     if (LoggingLevelService.get_level() == logging.DEBUG):

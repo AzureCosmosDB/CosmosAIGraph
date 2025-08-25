@@ -341,7 +341,7 @@ class AiService:
             return None
 
     def generic_prompt_template(self) -> str:
-        ptxt = """You can have a conversation on any topic.
+        ptxt = """You can respond to any user queries. If there's anything in the context below, use it in favor of any general knowledge.
 Context:
 {{$context}}
 
