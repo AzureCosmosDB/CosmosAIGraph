@@ -180,9 +180,9 @@ class CosmosNoSQLService:
         sql = "select * from c where c.name in ({})".format(",".join(quoted_names))
         items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
         async for item in items_paged:
-            # cdf = CosmosDocFilter(item)
-            # docs.append(cdf.filter_library(additional_attrs))
-            docs.append(item)
+            cdf = CosmosDocFilter(item)
+            docs.append(cdf.filter_library(additional_attrs))
+            #docs.append(item)
         return docs
 
     async def save_conversation(self, conv: AiConversation | None):
@@ -221,18 +221,19 @@ class CosmosNoSQLService:
         docs = list()
         items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
         async for item in items_paged:
-            # cdf = CosmosDocFilter(item)
-            # docs.append(cdf.filter_for_vector_search())
-            docs.append(item)
+            cdf = CosmosDocFilter(item)
+            docs.append(cdf.filter_out_embedding(embedding_attr))
+            #docs.append(item)
         return docs
 
     def vector_search_sql(self, embedding_value, embedding_attr="embedding", limit=4):
         parts = list()
         parts.append("SELECT TOP {}".format(limit))
         parts.append(
-            "c, VectorDistance(c.{}, {}) AS score".format(
-                embedding_attr, str(embedding_value)
-            )
+            #"c, VectorDistance(c.{}, {}) AS score".format(
+            #    embedding_attr, str(embedding_value)
+            #)
+            "*"
         )
         parts.append(
             "FROM c ORDER BY VectorDistance(c.{}, {})".format(
