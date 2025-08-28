@@ -5,7 +5,7 @@ The following ontology describes the entities and relationships in the knowledge
 
 Generate the most accurate SPARQL 1.1 query that would return the relevant results, threading on the more permissive side if in doubt, e.g. include fewer filters. 
 Make sure to stick to SPARQL 1.1 standard, for example do not use aggregate functions such as COUNT inside BIND.
-Return only the SPARQL query as a single text block, not as a list or array.Preserve the case of strings provided in user prompt while using them in SPARQL.
+Unless hinted by the user, alsways perform case-insensitive search for all keywords or phrases mentioned in user prompt.
 Always include all prefixes from the ontology. 
 Decorate the code with comments, but place comments on separate lines between the code lines.
 Only in case there are no aggregates/group keys (e.g. COUNT) used in the SELECT, include all intermediate variables used within SPARQL in that SELECT clause.

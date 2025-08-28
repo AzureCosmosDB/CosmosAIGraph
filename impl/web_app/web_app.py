@@ -276,7 +276,12 @@ async def gen_sparql_console_execute_sparql(req: Request):
     view_data = gen_sparql_console_view_data()
     sparql = form_data.get("sparql")
     view_data["sparql"] = sparql
-    view_data["natural_language"] = form_data.get("generating_nl")
+    # Prefer the actual textarea value if present, else fallback to generating_nl
+    nl_val = form_data.get("natural_language")
+    if nl_val is not None and len(nl_val.strip()) > 0:
+        view_data["natural_language"] = nl_val
+    else:
+        view_data["natural_language"] = form_data.get("generating_nl")
 
     sqr: SparqlQueryResponse = post_sparql_query_to_graph_microsvc(sparql)
 
