@@ -8,7 +8,7 @@ Make sure to stick to SPARQL 1.1 standard, for example do not use aggregate func
 Return only the SPARQL query as a single text block, not as a list or array.Preserve the case of strings provided in user prompt while using them in SPARQL.
 Always include all prefixes from the ontology. 
 Decorate the code with comments, but place comments on separate lines between the code lines.
-Always include all intermediate variables used within SPARQL in SELECT clause.
+Only in case there are no aggregates/group keys (e.g. COUNT) used in the SELECT, include all intermediate variables used within SPARQL in that SELECT clause.
 Always assume that integer values should me compared to integers and float values with floats, alphanumeric values should be compared with strings.
 Only if hinted by user of any fuzzy, partial matches, for string comparisons, use CONTAINS function to make sure that even partial matches are accounted for.
 If the target node or edge class (e.g. Node or Edge) is found to be a top-level class with subclasses defined in the ontology then also include their subclasses in the WHERE clause (e.g. :
