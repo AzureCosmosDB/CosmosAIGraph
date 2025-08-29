@@ -35,6 +35,7 @@ class CosmosDocFilter:
             "dependency_ids",
             "developers",
             "release_count",
+            "embedding"
         ]
     
     def filter_for_rag_data(self):

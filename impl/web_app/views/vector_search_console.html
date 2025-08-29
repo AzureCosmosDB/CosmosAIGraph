@@ -2,6 +2,22 @@
 {% block title %} Vector Search Console {% endblock %}
 
 {% block content %}
+<style>
+  pre, code.language-json {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  /* Remove Prism.js code shadows for all tokens */
+  code[class*="language-"], pre[class*="language-"] {
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+  /* Remove background from Prism.js operator tokens */
+  span.token.operator {
+    background: transparent !important;
+  }
+</style>
 <div class="container">
   <h5>Vector Search Console</h5>
   <p></p>
@@ -30,11 +46,12 @@
 
 <div class="container" id="results_div" name="results_div">
   <h5>{{ results_message }}</h5>
-  <pre>
-  <code>
-{{ results }}
-  </code>
-  </pre>
+  <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
+      <!-- Prism.js for JSON syntax highlighting -->
+      <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
 </div>
 
 <hr>

@@ -5,8 +5,7 @@
 # to write out JSON files to the 'tmp' directory for understanding
 # and debugging purposes.
 #
-# Chris Joakim, Microsoft, 2025
-# Aleksey Savateyev, 2025
+# Chris Joakim, Aleksey Savateyev
  
 import asyncio
 import json
@@ -25,6 +24,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response, Form, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from markdown import markdown
+from jinja2 import Environment
 
 # next three lines for authentication with MSAL
 from fastapi import Depends
@@ -130,10 +131,17 @@ async def lifespan(app: FastAPI):
     await nosql_svc.close()
     logging.info("FastAPI lifespan, pool closed")
 
+def markdown_filter(text):
+    return markdown(text)
+
+def tojson_pretty(value):
+    return json.dumps(value, indent=2, ensure_ascii=False)
 
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 views = Jinja2Templates(directory="views")
+views.env.filters['markdown'] = markdown_filter
+views.env.filters['tojson'] = tojson_pretty
 
 # web service authentication with shared secrets
 websvc_auth_header = ConfigService.websvc_auth_header()
@@ -262,7 +270,7 @@ async def ai_post_gen_sparql(req: Request):
         logging.critical((str(e)))
         logging.exception(e, stack_info=True, exc_info=True)
 
-    view_data["results"] = json.dumps(resp_obj, sort_keys=False, indent=2)
+    view_data["results"] = resp_obj#json.dumps(resp_obj, sort_keys=False, indent=2)
     view_data["results_message"] = "Generative AI Response"
     return views.TemplateResponse(
         request=req, name="gen_sparql_console.html", context=view_data
@@ -289,7 +297,7 @@ async def gen_sparql_console_execute_sparql(req: Request):
         view_data["results"] = dict()
         view_data["results_message"] = "SPARQL Query Error"
     else:
-        view_data["results"] = json.dumps(sqr.response_obj, sort_keys=False, indent=2)
+        view_data["results"] = sqr.response_obj#json.dumps(sqr.response_obj, sort_keys=False, indent=2)
         view_data["count"] = sqr.count
         view_data["results_message"] = "SPARQL Query Results"
     return views.TemplateResponse(
@@ -348,7 +356,7 @@ async def post_vector_search_console(req: Request):
             results_obj = list()
 
     view_data["results_message"] = "Vector Search Results"
-    view_data["results"] = json.dumps(results_obj, sort_keys=False, indent=2)
+    view_data["results"] = results_obj#json.dumps(results_obj, sort_keys=False, indent=2)
     return views.TemplateResponse(
         request=req, name="vector_search_console.html", context=view_data
     )
@@ -604,7 +612,7 @@ def post_libraries_sparql_console(form_data):
                     timeout=120.0,
                 )
                 bom_obj = json.loads(r.text)
-                view_data["results"] = json.dumps(bom_obj, sort_keys=False, indent=2)
+                view_data["results"] = bom_obj#json.dumps(bom_obj, sort_keys=False, indent=2)
                 view_data["inline_bom_json"] = view_data["results"]
                 view_data["visualization_message"] = "D3.js Graph Visualization"
                 if (LoggingLevelService.get_level() == logging.DEBUG):
@@ -622,9 +630,9 @@ def post_libraries_sparql_console(form_data):
                 view_data["results"] = dict()
                 view_data["results_message"] = "SPARQL Query Error"
             else:
-                view_data["results"] = json.dumps(
-                    sqr.response_obj, sort_keys=False, indent=2
-                )
+                view_data["results"] = sqr.response_obj# json.dumps(
+                #     sqr.response_obj, sort_keys=False, indent=2
+                # )
                 view_data["results_message"] = "SPARQL Query Results"
     return view_data
 

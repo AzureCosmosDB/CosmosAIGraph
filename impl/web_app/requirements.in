@@ -1,10 +1,11 @@
 # Python requirements file for this application.
 # The libraries will be downloaded from PyPI: https://pypi.org
 # when the venv.ps1 or venv.sh script is executed.
-# Chris Joakim, Microsoft
+# Chris Joakim, Aleksey Savateyev
 
 Faker
 Jinja2
+markdown
 azure-cosmos
 azure-identity
 azure-storage-blob

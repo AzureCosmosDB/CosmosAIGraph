@@ -162,6 +162,8 @@ jsonschema-specifications==2024.10.1
     #   openapi-schema-validator
 lazy-object-proxy==1.10.0
     # via openapi-spec-validator
+markdown==3.8.2
+    # via -r requirements.in
 markdown-it-py==3.0.0
     # via rich
 markupsafe==3.0.2

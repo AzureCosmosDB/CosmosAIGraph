@@ -21,11 +21,9 @@
           <p class="text-start fw-bold fs-6" style="border-radius: 15px; background-color: rgba(119, 119, 119, 0.2);">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ comp["user_text"] }}
           </p>
-          <p class="text-start fs-6" style="border-radius: 15px; background-color: #fbfbfb;">
-            {% for line in content_lines %}
-             {{ line }}<br/>
-            {% endfor %}
-          </p>
+          <div class="text-start fs-6" style="border-radius: 15px; background-color: #fbfbfb;">
+            {{ comp["content"] | markdown | safe }}
+          </div>
           <p class="text-start fw-light fs-6">
             Prompt tokens: {{ comp["usage"]["prompt_tokens"] }},
             Completion tokens: {{ comp["usage"]["completion_tokens"] }},

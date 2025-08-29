@@ -2,6 +2,27 @@
 {% block title %} SPARQL Console {% endblock %}
 
 {% block content %}
+<style>
+  pre, code.language-json {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  /* Remove Prism.js code shadows for all tokens */
+  code[class*="language-"], pre[class*="language-"] {
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+  /* Remove background from Prism.js operator tokens */
+  span.token.operator {
+    background: transparent !important;
+  }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sparql/sparql.min.js"></script>
+
 <div class="container">
   <h5>SPARQL Console</h5>
   <p></p>
@@ -9,6 +30,13 @@
     <div class="mb-3">
       <label for="sparql" class="form-label">Enter a SPARQL query:</label>
       <textarea rows='8' class="form-control" id="sparql" name="sparql" value="{{ sparql }}">{{ sparql }}</textarea>
+      <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
+          mode: "sparql",
+          lineNumbers: true,
+          theme: "default"
+        });
+      </script>
     </div>
     <div class="mb-3">
       <label for="bom_query" class="form-label">Enter a name of the node, and a dependency depth number, for a graph visualization:</label>
@@ -23,12 +51,13 @@
 </div>
 
 <div class="container" id="results_div" name="results_div">
-  <h5>{{ results_message }}</h5>
-  <pre>
-  <code>
-{{ results }}
-  </code>
-  </pre>
+  <h5>{{ results_message}}</h5>
+  <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
+      <!-- Prism.js for JSON syntax highlighting -->
+      <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
   <br>
   <br>
 </div>

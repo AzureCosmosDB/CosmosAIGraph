@@ -2,6 +2,27 @@
 {% block title %} Generate SPARQL Console {% endblock %}
 
 {% block content %}
+<style>
+  pre, code.language-json {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  /* Remove Prism.js code shadows for all tokens */
+  code[class*="language-"], pre[class*="language-"] {
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+  /* Remove background from Prism.js operator tokens */
+  span.token.operator, span.token.punctuation, span.token.url {
+    background: transparent !important;
+  }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sparql/sparql.min.js"></script>
+
 <div class="container">
   <h5>Generate SPARQL Console</h5>
   <p></p>
@@ -24,7 +45,24 @@
     <form method="post" id="execute_form" name="execute_form" action="/gen_sparql_console_execute_sparql">
         <div class="mb-3">
             <label for="sparql" class="form-label">SPARQL query:</label>
-            <textarea rows="8" class="form-control" id="sparql" name="sparql" oninput="autoResize(this)" onload="autoResize(this)" onloadeddata="autoResize(this)" onchange="autoResize(this)" value="{{ sparql }}">{{ sparql }}</textarea>
+            <textarea id="sparql" name="sparql">{{ sparql }}</textarea>
+            <script>
+              var editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
+                mode: "sparql",
+                lineNumbers: true,
+                theme: "default"
+              });
+              function resizeCodeMirrorToContent(cm) {
+                var doc = cm.getDoc();
+                var lineCount = doc.lineCount();
+                var newHeight = (lineCount + 1) * 24; // 24px is the default line height
+                cm.setSize(null, newHeight + "px");
+              }
+              resizeCodeMirrorToContent(editor);
+              editor.on("change", function(cm) {
+                resizeCodeMirrorToContent(cm);
+              });
+            </script>
         </div>
 
     <div class="mb-6">
@@ -39,11 +77,13 @@
 
 <div class="container" id="results_div" name="results_div">
   <h5>{{ results_message }}</h5>
-  <pre>
-  <code>
-{{ results }}
-  </code>
-  </pre>
+  <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
+  <!-- Prism.js for JSON syntax highlighting -->
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+  <br>
+  <br>
 </div>
 
 <div class="container" id="count_div" name="count_div">
@@ -53,12 +93,10 @@
 <p></p>
 
 <div class="container" id="owl_div" name="owl_div">
-  <h5>Web Ontology (OWL)</h5>
-  <pre>
-  <code>
-{{ owl }}
-  </code>
-  </pre>
+  <h5>Ontology (OWL/Turtle)</h5>
+  <pre><code class="language-turtle">{{ owl }}</code></pre>
+  <!-- Prism.js for Turtle syntax highlighting -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
 </div>
 
 <!-- see  https://github.com/visjs/vis-network -->
@@ -135,16 +173,7 @@ execute_button.addEventListener('click',
 );
 
 
-function autoResize(textarea) {
-  textarea.style.height = 'auto'; // Reset height
-  textarea.style.height = textarea.scrollHeight + 'px'; // Set to scroll height
-}
 
-// Optional: auto-resize on page load
-window.addEventListener('DOMContentLoaded', function () {
-  const textarea = document.getElementById('sparql');
-  if (textarea) autoResize(textarea);
-});
 
 </script>
 <!--
