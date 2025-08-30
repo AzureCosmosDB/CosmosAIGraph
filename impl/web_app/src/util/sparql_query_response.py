@@ -24,6 +24,8 @@ class SparqlQueryResponse:
         self.count = 0
 
         try:
+            if self.r is None:
+                return
             self.text = self.r.text
             self.response_obj = json.loads(self.text)
 

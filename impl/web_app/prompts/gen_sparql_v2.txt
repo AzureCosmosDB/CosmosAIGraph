@@ -6,17 +6,23 @@ The following ontology describes the entities and relationships in the knowledge
 Generate the most accurate SPARQL 1.1 query that would return the relevant results, threading on the more permissive side if in doubt, e.g. include fewer filters. 
 Make sure to stick to SPARQL 1.1 standard, for example do not use aggregate functions such as COUNT inside BIND.
 Unless hinted by the user, alsways perform case-insensitive search for all keywords or phrases mentioned in user prompt.
+Only if hinted by user of any fuzzy, partial matches, for string comparisons, use CONTAINS function to make sure that even partial matches are accounted for.
+Always assume that integer values should me compared to integers and float values with floats, alphanumeric values should be compared with strings.
 Always include all prefixes from the ontology. 
 Decorate the code with comments, but place comments on separate lines between the code lines.
 Only in case there are no aggregates/group keys (e.g. COUNT) used in the SELECT, include all intermediate variables used within SPARQL in that SELECT clause.
-Always assume that integer values should me compared to integers and float values with floats, alphanumeric values should be compared with strings.
-Only if hinted by user of any fuzzy, partial matches, for string comparisons, use CONTAINS function to make sure that even partial matches are accounted for.
-If the target node or edge class (e.g. Node or Edge) is found to be a top-level class with subclasses defined in the ontology then also include their subclasses in the WHERE clause (e.g. :
-  ?class rdfs:subClassOf* ex:Node .
-  ?individual rdf:type ?class .
-)
+If the target node or edge class (e.g. Node or Edge) is found to be a top-level class with subclasses defined in the ontology, then use class hierarchy expansion - include their subclasses in the WHERE clause, but avoid unbounded rdfs:subClassOf* in queries if possible.
+Filter with more specific types or restrict the depth of subclass expansion.
+if you use class hierarchy expansion, then also use DISTINCT keyword in corresponding SELECT clause to avoid multiple similar entries to be returned.
 If user refers to specific entities, assume all possible identity properties of the nodes (type, subtype, id, name, etc.).
-If user is hinting at direction of the connections (using words upstream, inbound, onward, incoming or outgoing, downstream, outbound, reverse, backward) use only corresponding direction while looking for connections.
-If no direction is hinted, try to assume the forward direction of the connection. If user hints to a broad scope of matching, assume both directions while finding connections.
-If user hints at depth or indirectness of relationships (using words multi-hop, indirect, arbitrary, deep, etc.), use property paths to account for indirect connections, otherwise assume only direct relationships. 
+If user hints at direction of the connections (using words upstream, inbound, onward, incoming or outgoing, downstream, outbound, reverse, backward) use only corresponding direction while looking for connections.
+If no direction is hinted, always assume the forward direction of the connections, for example:
+  ?start (^:StartNode/:EndNode) ?end .
+If user hints to a broad scope of direction, assume both directions while finding connections, in this case also pay attention to ontology definition for edges and if needed, use node→edge then edge→node alternation, such as:
+  ?start ( ( ^:StartNode | ^:EndNode ) / ( :StartNode | :EndNode ) ) ?end .
+If user doesn't mention depth or indirectness of connections, or if user hints at depth or indirectness of connections (using words multi-hop, indirect, arbitrary, deep, any depth, etc.), always assume indirect connections at any depth and use property paths to account for these connections, for example, for forward directions use something like this:
+  ?start (^:StartNode/:EndNode)+ ?end .
+... and for any connections in any direction use something like this: 
+  ?start ( ( ^:StartNode | ^:EndNode ) / ( :StartNode | :EndNode ) )+ ?end .
+Only if user refers to direct connections in any way, assume direct connections.
 Return only the SPARQL query as a single JSON block, not as a list or array.

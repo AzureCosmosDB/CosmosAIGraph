@@ -14,8 +14,11 @@ import com.microsoft.cosmosdb.caig.util.AppConfig;
 import com.microsoft.cosmosdb.caig.util.FileUtil;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.reasoner.Reasoner;
+import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.util.FileManager;
 import org.slf4j.Logger;
@@ -37,7 +40,7 @@ import java.util.stream.Collectors;
  * The graph can be loaded from one of three sources - cosmos_nosql, rdf_file,
  * or json_docs_file.  The latter two are for dev-environment only.
  *
- * Chris Joakim, Microsoft, 2025
+ * Chris Joakim, Aleksey Savateyev
  */
 
 public class AppGraphBuilder {
@@ -147,6 +150,7 @@ public class AppGraphBuilder {
                 logger.warn("owlFile:  " + owlFile);
                 logger.warn("ontology: " + ontology);
 
+                
                 OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
                 model.read(byteStream, "");
 
@@ -160,6 +164,20 @@ public class AppGraphBuilder {
                 // Reasoner reasoner = ReasonerRegistry.getOWLReasoner().bindSchema(model.getGraph());
                 // InfModel infModel = ModelFactory.createInfModel(reasoner, model);
                 // return infModel;
+
+                 
+/*
+                // Load ontology as schema
+                Model schema = ModelFactory.createDefaultModel();
+                schema.read(byteStream, "", "TTL");
+
+                // Create base data model
+                Model dataModel = ModelFactory.createDefaultModel();
+
+                // After loading data into dataModel, wrap with RDFS reasoner:
+                InfModel infModel = ModelFactory.createRDFSModel(schema, dataModel);
+                return infModel;
+*/
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -263,10 +281,20 @@ public class AppGraphBuilder {
         try {
             String infile = AppConfig.getGraphRdfFilename();
             logger.warn("populateFromRdfFile - " + infile);
+            Model ontology = g.getModel();
             Model model = g.readGraphFromFile(infile, Lang.TTL);
             logger.warn("model class:" + model.getClass().getName());
             logger.warn("empty: " + model.isEmpty());
-            g.setModel(model);
+            //g.setModel(model);
+            // Create reasoner and materialize inferences
+
+            Reasoner reasoner = ReasonerRegistry.getRDFSReasoner().bindSchema(ontology);
+            InfModel infModel = ModelFactory.createInfModel(reasoner, model);
+
+            // Materialize all inferred triples into a new model
+            Model materialized = ModelFactory.createDefaultModel().add(infModel);
+            //InfModel inf = ModelFactory.createRDFSModel(ontology, model);
+            g.setModel(materialized);
 
         }
         catch (Throwable t) {
