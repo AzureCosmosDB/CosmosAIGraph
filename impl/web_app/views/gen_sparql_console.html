@@ -94,11 +94,10 @@
 
 <!-- Ontology header and controls (label always visible) -->
 <div class="container" id="ontology_header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-  <div style="display:flex;align-items:center;gap:12px;">
+    <div style="display:flex;align-items:center;gap:12px;">
     <h5 style="margin:0;">Ontology (OWL/Turtle)</h5>
     <div id="ontology_action_controls" style="display:flex;gap:8px;align-items:center;">
       <button type="button" id="edit_owl_button" class="btn btn-sm btn-outline-secondary">Edit OWL</button>
-      <button type="button" id="re_render_owl_button" class="btn btn-sm btn-outline-primary">Re-render Visualization</button>
       <span class="text-muted small">(Edit the OWL/Turtle then click Re-render)</span>
     </div>
   </div>
@@ -117,7 +116,12 @@
 
 <!-- see  https://github.com/visjs/vis-network -->
 <div class="container" id="ontology_div" name="ontology_div">
-  <h5>Ontology Visualization</h5>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+    <h5 style="margin:0;">Ontology Visualization</h5>
+    <div id="ontology_viz_controls" style="display:flex;gap:8px;align-items:center;">
+      <button type="button" id="re_render_owl_button" class="btn btn-sm btn-outline-primary">Re-render Visualization</button>
+    </div>
+  </div>
   <div class="container" id="ontology_viz" style="width:1024px;height:768px;border: 0px solid lightgray"></div>
 </div>
 {% endblock %}

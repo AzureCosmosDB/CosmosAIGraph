@@ -19,6 +19,17 @@
         .lighten-svg {
             filter: brightness(3); 
         }
+        /* responsive brand sizing: logo and title scale with viewport until collapse */
+        .brand-group .brand-logo {
+            width: clamp(28px, 3.2vw, 44px);
+            height: auto;
+            display: block;
+        }
+        .brand-group .brand-title {
+            font-size: clamp(1rem, 1.6vw, 1.25rem);
+            margin: 0 0 0 0.5rem;
+            line-height: 1;
+        }
 
     </style>
 </head>
@@ -27,29 +38,20 @@
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-dark mx-right bg-dark text-light">
             <div class="container-fluid">
-                <img class="mx-auto d-block lighten-svg" src="static/CAIGLogoGrey.svg" width="3%" alt="CosmosAIGraph">&nbsp;&nbsp;
-                <h4 class="collapse navbar-collapse fw-bold">CosmosAIGraph</h4>
-                <div class="navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-bolder" href="/sparql_console">SPARQL</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-bolder" href="/gen_sparql_console">Generate SPARQL</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-bolder" href="/vector_search_console">Vector Search</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-bolder" href="/conv_ai_console">Conversational AI</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-bolder" href="/about">About</a>
-                    </li>
-                </ul>
+                <div class="navbar-collapse d-flex" id="navbarNav">
+                    <div class="brand-group d-flex align-items-center">
+                        <img class="brand-logo lighten-svg" src="static/CAIGLogoGrey.svg" alt="CosmosAIGraph">
+                        <h4 class="brand-title fw-bold mb-0">CosmosAIGraph</h4>
+                    </div>
+                    <div class="ms-auto">
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Main navigation">
+                            <a class="btn btn-outline-primary small" href="/sparql_console">SPARQL</a>
+                            <a class="btn btn-outline-primary small" href="/gen_sparql_console">Generate SPARQL</a>
+                            <a class="btn btn-outline-primary small" href="/vector_search_console">Vector Search</a>
+                            <a class="btn btn-outline-primary small" href="/conv_ai_console">Conversational AI</a>
+                            <a class="btn btn-outline-primary small" href="/about">About</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
