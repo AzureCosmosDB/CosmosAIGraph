@@ -94,9 +94,16 @@
 
 <div class="container" id="owl_div" name="owl_div">
   <h5>Ontology (OWL/Turtle)</h5>
-  <pre><code class="language-turtle">{{ owl }}</code></pre>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+    <button type="button" id="edit_owl_button" class="btn btn-sm btn-outline-secondary">Edit OWL</button>
+    <button type="button" id="re_render_owl_button" class="btn btn-sm btn-outline-primary">Re-render Visualization</button>
+    <span class="text-muted small">(Edit the OWL/Turtle then click Re-render)</span>
+  </div>
+  <pre><code class="language-turtle" id="owl_code">{{ owl }}</code></pre>
   <!-- Prism.js for Turtle syntax highlighting -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
+  <!-- rdflib for robust Turtle/OWL parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/rdflib/dist/rdflib.min.js"></script>
 </div>
 
 <!-- see  https://github.com/visjs/vis-network -->
@@ -181,52 +188,246 @@ This <script> section was generated from an OWL file using this command:
 python main_common.py owl_visualizer ontologies/libraries.owl
 -->
 <script type="text/javascript">
+  // Dynamically build the vis.js graph from the OWL/Turtle text rendered in
+  // the page under #owl_div <code> block. This keeps the view Jinja2-friendly
+  // and generates nodes/edges on page load without hardcoding the graph.
 
-  // create an array with the nodes (i.e. - "entities")
-  var nodes = new vis.DataSet([
-    { id: "Dev", label: "Dev" },
-    { id: "Doc", label: "Doc" },
-    { id: "Lib", label: "Lib" }
-  ]);
+  function simpleTurtleToGraph(turtleText) {
+    // Very small heuristic parser: extract triples of the form
+    // subject predicate object .  Handles multiple objects separated by commas.
+    const nodesSet = new Map(); // id -> {id,label}
+    const edges = [];
 
-  // create an array with the edges (i.e. - "relationships")
-  var edges = new vis.DataSet([
-    { from: "Dev", to: "Lib", title: "developer_of" },
-    { from: "Lib", to: "Dev", title: "developed_by" },
-    { from: "Lib", to: "Lib", title: "used_by_lib, uses_lib" }
-  ]);
+    const lines = turtleText.split(/\r?\n/);
+    for (let raw of lines) {
+      let line = raw.replace(/#.*$/, '').trim();
+      if (!line) continue;
+      // Only handle simple triple lines ending with a dot
+      if (!line.endsWith('.')) continue;
+      // remove trailing dot
+      line = line.slice(0, -1).trim();
 
-  var html_container = document.getElementById("ontology_viz");
-  var graph_data = { nodes: nodes, edges: edges };
-var graph_options = {
-    edges: {
-      arrows: {
-        to: {
-          enabled: true,
-          scaleFactor: 0.2,
-          type: "arrow"
+      // split subject, predicate, objects (objects may include commas or ';')
+      const m = line.match(/^([^\s]+)\s+([^\s]+)\s+(.+)$/);
+      if (!m) continue;
+      let subj = m[1];
+      let pred = m[2];
+      let objs = m[3];
+
+      // split objects on comma (ignore language tags / nested constructs)
+      objs = objs.split(',').map(s => s.trim());
+
+      // normalize token function: strip prefixes and angle brackets
+      const norm = (token) => {
+        if (!token) return token;
+        // literal string
+        if (token.startsWith('"') || token.startsWith("'")) return null;
+        // remove trailing punctuation
+        token = token.replace(/^<|>$/g, '');
+        // if contains ':' return local part after ':' else return token
+        if (token.indexOf(':') >= 0) {
+          return token.split(':').pop();
         }
-      },
-      color: '#A9A9A9',
-      font: '12px arial #A9A9A9',
-      scaling: {
-        label: true,
-      },
-      shadow: false,
-      smooth: true,
-    },
-    physics:{
-      enabled: true,
-      repulsion: {
-        centralGravity: 0.2,
-        springLength: 200,
-        springConstant: 0.05,
-        nodeDistance: 200,
-        damping: 0.09
+        return token;
+      };
+
+      const sId = norm(subj);
+      if (sId) nodesSet.set(sId, { id: sId, label: sId });
+
+      for (let objRaw of objs) {
+        // remove predicate modifiers like ; ... (we only handle commas already split)
+        // also chop off trailing whitespace or comments
+        let obj = objRaw.replace(/;.*$/, '').trim();
+        const oId = norm(obj);
+        if (!oId) continue; // skip literals
+        nodesSet.set(oId, { id: oId, label: oId });
+
+        // derive predicate label
+        const pLabel = norm(pred) || pred;
+        if (!pLabel) continue;
+
+        edges.push({ from: sId, to: oId, title: pLabel, label: pLabel });
       }
     }
-  };
-  var network = new vis.Network(html_container, graph_data, graph_options);
+
+    // Convert nodesSet to array
+    const nodes = Array.from(nodesSet.values());
+    return { nodes, edges };
+  }
+
+  async function renderOntologyGraph() {
+    try {
+      // get turtle text from the owl_div code block
+      const codeEl = document.querySelector('#owl_div code');
+      const turtleText = codeEl ? codeEl.innerText || codeEl.textContent : '';
+      let graph = { nodes: [], edges: [] };
+      if (turtleText && turtleText.trim().length > 0) {
+        // Prefer rdflib.js parsing for correctness; fallback to heuristic parser
+        try {
+          // rdflibToGraph returns a Promise
+          graph = await rdflibToGraph(turtleText);
+          // If rdflib produced no nodes, fall back
+          if (!graph || !graph.nodes || graph.nodes.length === 0) {
+            graph = simpleTurtleToGraph(turtleText);
+          }
+        } catch (e) {
+          console.warn('rdflib parsing failed, falling back to heuristic parser:', e);
+          graph = simpleTurtleToGraph(turtleText);
+        }
+      }
+
+      // fallback if parse produced no nodes
+      if (!graph.nodes.length) {
+        graph = {
+          nodes: [ { id: 'Dev', label: 'Dev' }, { id: 'Doc', label: 'Doc' }, { id: 'Lib', label: 'Lib' } ],
+          edges: [ { from: 'Dev', to: 'Lib', title: 'developer_of' }, { from: 'Lib', to: 'Dev', title: 'developed_by' }, { from: 'Lib', to: 'Lib', title: 'used_by_lib, uses_lib' } ]
+        };
+      }
+
+      // create vis DataSets
+      const nodes = new vis.DataSet(graph.nodes.map(n => ({ id: n.id, label: n.label })));
+      const edges = new vis.DataSet(graph.edges.map(e => ({ from: e.from, to: e.to, label: e.label, title: e.title })));
+
+      const html_container = document.getElementById('ontology_viz');
+      const graph_data = { nodes: nodes, edges: edges };
+      const graph_options = {
+        edges: {
+          arrows: { to: { enabled: true, scaleFactor: 0.2, type: 'arrow' } },
+          color: '#A9A9A9',
+          font: '12px arial #A9A9A9',
+          scaling: { label: true },
+          shadow: false,
+          smooth: true,
+        },
+        physics: { enabled: true, repulsion: { centralGravity: 0.2, springLength: 200, springConstant: 0.05, nodeDistance: 200, damping: 0.09 } }
+      };
+
+      // clear previous network if present
+      if (window.__ontology_network) {
+        try { window.__ontology_network.destroy(); } catch (e) {}
+      }
+      window.__ontology_network = new vis.Network(html_container, graph_data, graph_options);
+    } catch (e) {
+      console.error('Error rendering ontology graph:', e);
+    }
+  }
+
+  // rdflib-based parser: returns {nodes:[], edges:[]} using basic heuristics
+  function rdflibToGraph(turtleText) {
+    if (typeof $rdf === 'undefined') {
+      throw new Error('rdflib not loaded');
+    }
+    const store = $rdf.graph();
+    const mime = 'text/turtle';
+    // base URI for relative IRIs
+    const base = 'http://example.org/base#';
+    return new Promise((resolve, reject) => {
+      try {
+        $rdf.parse(turtleText, store, base, mime, function(err, kb) {
+          if (err) {
+            // rdflib uses callback with err
+            reject(err);
+            return;
+          }
+          // collect nodes and edges
+          const nodesMap = new Map();
+          const edges = [];
+          const statements = store.statementsMatching(undefined, undefined, undefined, undefined);
+          statements.forEach(st => {
+            const s = termToId(st.subject);
+            const p = termToId(st.predicate);
+            const o = termToId(st.object);
+            if (s) nodesMap.set(s, { id: s, label: s });
+            if (o) nodesMap.set(o, { id: o, label: o });
+            if (s && o) {
+              edges.push({ from: s, to: o, title: p, label: p });
+            }
+          });
+          resolve({ nodes: Array.from(nodesMap.values()), edges: edges });
+        });
+      } catch (ex) {
+        reject(ex);
+      }
+    });
+
+    function termToId(term) {
+      if (!term) return null;
+      if (term.termType === 'Literal') return null;
+      if (term.termType === 'BlankNode') return '_:' + term.value;
+      // URIRef: try to shorten by last fragment or path
+      let v = term.value;
+      // if contains '#', use substring after
+      if (v.indexOf('#') >= 0) return v.split('#').pop();
+      // else use last path segment
+      const parts = v.split('/');
+      return parts[parts.length - 1] || v;
+    }
+  }
+
+  // Run on DOMContentLoaded to ensure code block is present
+      if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { renderOntologyGraph().catch(e => console.error(e)); });
+  } else {
+    renderOntologyGraph().catch(e => console.error(e));
+  }
+  // Edit / Re-render UI wiring
+  (function() {
+    const editBtn = document.getElementById('edit_owl_button');
+    const rerenderBtn = document.getElementById('re_render_owl_button');
+    const codeBlock = document.getElementById('owl_code');
+    let textarea = null;
+
+    function enterEditMode() {
+      if (textarea) return;
+      textarea = document.createElement('textarea');
+      textarea.id = 'owl_edit_textarea';
+      textarea.style.width = '100%';
+      textarea.style.minHeight = '240px';
+      textarea.value = codeBlock ? codeBlock.innerText : '';
+      codeBlock.parentNode.replaceChild(textarea, codeBlock);
+      editBtn.textContent = 'Done Editing';
+    }
+
+    function exitEditMode() {
+      if (!textarea) return;
+      const newCode = document.createElement('code');
+      newCode.id = 'owl_code';
+      newCode.className = 'language-turtle';
+      newCode.textContent = textarea.value;
+      textarea.parentNode.replaceChild(newCode, textarea);
+      // re-run Prism highlight (if available)
+      try { if (window.Prism) Prism.highlightElement(newCode); } catch (e) {}
+      textarea = null;
+      editBtn.textContent = 'Edit OWL';
+    }
+
+    editBtn.addEventListener('click', function() {
+      if (textarea) {
+        exitEditMode();
+      } else {
+        enterEditMode();
+      }
+    });
+
+  rerenderBtn.addEventListener('click', function() {
+      // if in edit mode, update the code block from textarea first
+      if (textarea) {
+        // replace textarea with code block temporarily so renderer finds it
+        const tempCode = document.createElement('code');
+        tempCode.id = 'owl_code';
+        tempCode.className = 'language-turtle';
+        tempCode.textContent = textarea.value;
+        textarea.parentNode.replaceChild(tempCode, textarea);
+        try { if (window.Prism) Prism.highlightElement(tempCode); } catch (e) {}
+        // set textarea back (so user can keep editing) after render
+        setTimeout(() => {
+          if (tempCode.parentNode) tempCode.parentNode.replaceChild(textarea, tempCode);
+        }, 10);
+      }
+  // call the existing render function (async)
+  try { renderOntologyGraph().catch(e => console.error('Re-render failed:', e)); } catch (e) { console.error('Re-render failed:', e); }
+    });
+  })();
 </script>
 
 {% endblock %}
