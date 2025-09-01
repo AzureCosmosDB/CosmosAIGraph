@@ -92,13 +92,22 @@
 <p></p>
 <p></p>
 
-<div class="container" id="owl_div" name="owl_div">
-  <h5>Ontology (OWL/Turtle)</h5>
-  <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-    <button type="button" id="edit_owl_button" class="btn btn-sm btn-outline-secondary">Edit OWL</button>
-    <button type="button" id="re_render_owl_button" class="btn btn-sm btn-outline-primary">Re-render Visualization</button>
-    <span class="text-muted small">(Edit the OWL/Turtle then click Re-render)</span>
+<!-- Ontology header and controls (label always visible) -->
+<div class="container" id="ontology_header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <h5 style="margin:0;">Ontology (OWL/Turtle)</h5>
+    <div id="ontology_action_controls" style="display:flex;gap:8px;align-items:center;">
+      <button type="button" id="edit_owl_button" class="btn btn-sm btn-outline-secondary">Edit OWL</button>
+      <button type="button" id="re_render_owl_button" class="btn btn-sm btn-outline-primary">Re-render Visualization</button>
+      <span class="text-muted small">(Edit the OWL/Turtle then click Re-render)</span>
+    </div>
   </div>
+  <div>
+  <button type="button" id="toggle_ontology_button_ctrl" class="btn btn-sm btn-outline-secondary">Hide Ontology &#9650;</button>
+  </div>
+</div>
+
+<div class="container" id="owl_div" name="owl_div">
   <pre><code class="language-turtle" id="owl_code">{{ owl }}</code></pre>
   <!-- Prism.js for Turtle syntax highlighting -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
@@ -365,17 +374,63 @@ python main_common.py owl_visualizer ontologies/libraries.owl
   }
 
   // Run on DOMContentLoaded to ensure code block is present
-      if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() { renderOntologyGraph().catch(e => console.error(e)); });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        // read stored visibility state (session) - default: hidden
+        const stored = sessionStorage.getItem('ontologyVisible');
+        const visible = stored === null ? false : stored === 'true';
+        const owlDiv = document.getElementById('owl_div');
+        const ontDiv = document.getElementById('ontology_div');
+        const actionControls = document.getElementById('ontology_action_controls');
+        const toggleBtn = document.getElementById('toggle_ontology_button_ctrl');
+        if (owlDiv) owlDiv.style.display = visible ? '' : 'none';
+        if (ontDiv) ontDiv.style.display = visible ? '' : 'none';
+        if (actionControls) actionControls.style.display = visible ? 'flex' : 'none';
+        if (toggleBtn) toggleBtn.innerHTML = visible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
+        // render only when visible
+        if (visible) renderOntologyGraph().catch(e => console.error(e));
+      } catch (e) {
+        console.error('Init error:', e);
+        renderOntologyGraph().catch(e2 => console.error(e2));
+      }
+    });
   } else {
-    renderOntologyGraph().catch(e => console.error(e));
+    try {
+      const stored = sessionStorage.getItem('ontologyVisible');
+      const visible = stored === null ? false : stored === 'true';
+      const owlDiv = document.getElementById('owl_div');
+      const ontDiv = document.getElementById('ontology_div');
+      const actionControls = document.getElementById('ontology_action_controls');
+      const toggleBtn = document.getElementById('toggle_ontology_button_ctrl');
+      if (owlDiv) owlDiv.style.display = visible ? '' : 'none';
+      if (ontDiv) ontDiv.style.display = visible ? '' : 'none';
+      if (actionControls) actionControls.style.display = visible ? 'flex' : 'none';
+      if (toggleBtn) toggleBtn.innerHTML = visible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
+      if (visible) renderOntologyGraph().catch(e => console.error(e));
+    } catch (e) {
+      console.error('Init error:', e);
+      renderOntologyGraph().catch(e2 => console.error(e2));
+    }
   }
   // Edit / Re-render UI wiring
   (function() {
-    const editBtn = document.getElementById('edit_owl_button');
-    const rerenderBtn = document.getElementById('re_render_owl_button');
+  const editBtn = document.getElementById('edit_owl_button');
+  const rerenderBtn = document.getElementById('re_render_owl_button');
+  const toggleBtn = document.getElementById('toggle_ontology_button_ctrl');
     const codeBlock = document.getElementById('owl_code');
     let textarea = null;
+
+  // initialize visibility from sessionStorage or current DOM (default: hidden)
+  let ontologyVisible = (function() {
+    try {
+      const stored = sessionStorage.getItem('ontologyVisible');
+      if (stored !== null) return stored === 'true';
+    } catch (e) {}
+    const owlDivInit = document.getElementById('owl_div');
+    if (owlDivInit) return owlDivInit.style.display !== 'none';
+    return false;
+  })();
 
     function enterEditMode() {
       if (textarea) return;
@@ -427,6 +482,23 @@ python main_common.py owl_visualizer ontologies/libraries.owl
   // call the existing render function (async)
   try { renderOntologyGraph().catch(e => console.error('Re-render failed:', e)); } catch (e) { console.error('Re-render failed:', e); }
     });
+
+      toggleBtn.addEventListener('click', function() {
+        ontologyVisible = !ontologyVisible;
+        const owlDiv = document.getElementById('owl_div');
+        const ontDiv = document.getElementById('ontology_div');
+        const actionControls = document.getElementById('ontology_action_controls');
+        // hide only the content, visualization, and action buttons; keep header and toggle visible
+        if (owlDiv) owlDiv.style.display = ontologyVisible ? '' : 'none';
+        if (ontDiv) ontDiv.style.display = ontologyVisible ? '' : 'none';
+        if (actionControls) actionControls.style.display = ontologyVisible ? 'flex' : 'none';
+        toggleBtn.innerHTML = ontologyVisible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
+        try { sessionStorage.setItem('ontologyVisible', ontologyVisible ? 'true' : 'false'); } catch (e) {}
+        // when showing, ensure visualization is (re)rendered
+        if (ontologyVisible) {
+          try { renderOntologyGraph().catch(e => console.error('Render after show failed:', e)); } catch (e) { console.error(e); }
+        }
+      });
   })();
 </script>
 
