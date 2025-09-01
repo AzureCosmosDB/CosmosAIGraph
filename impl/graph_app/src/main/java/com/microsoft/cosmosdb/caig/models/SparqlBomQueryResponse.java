@@ -10,25 +10,25 @@ import java.util.Map;
 
 /**
  * The WebApp responds with instance of this JSON-serialized class in response
- * to a HTTP POST request to the /sparql_query endpoint.
+ * to an HTTP POST request to the /sparql_query endpoint.
  * The HTTP request is invoked by the CosmosAIGraph web application.
  *
- * Chris Joakim, Microsoft, 2025
+ * Chris Joakim, Aleksey Savateyev
  */
 
 @Data
 public class SparqlBomQueryResponse {
 
-    private String libname;
+    private String entrypoint;
     private int max_depth;
     private int actual_depth;
-    private HashMap<String, TraversedLib> libs;
+    private HashMap<String, TraversedLib> nodes;
     private String error;
     private long elapsed;
     private long request_time;
 
     public SparqlBomQueryResponse(SparqlBomQueryRequest request) {
-        this.libname = request.getLibname();
+        this.entrypoint = request.getEntrypoint();
         this.max_depth = request.getMax_depth();
         this.actual_depth = 0;
         this.request_time = System.currentTimeMillis();

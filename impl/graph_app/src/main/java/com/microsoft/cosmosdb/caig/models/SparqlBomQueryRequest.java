@@ -7,12 +7,12 @@ import lombok.Data;
  * a given SPARQL in a POST request to the /sparql_bom_query endpoint.
  * The HTTP request is invoked by the CosmosAIGraph web application.
  *
- * Chris Joakim, Microsoft, 2025
+ * Chris Joakim, Aleksey Savateyev
  */
 
 @Data
 public class SparqlBomQueryRequest {
 
-    private String libname;
+    private String entrypoint;
     private int max_depth;
 }

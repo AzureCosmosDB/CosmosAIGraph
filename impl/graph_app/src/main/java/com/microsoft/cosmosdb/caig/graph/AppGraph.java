@@ -1,11 +1,9 @@
 package com.microsoft.cosmosdb.caig.graph;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.cosmosdb.caig.models.*;
 import com.microsoft.cosmosdb.caig.util.AppConfig;
-import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
@@ -13,8 +11,8 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFWriter;
 import org.apache.jena.riot.RIOT;
 import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.Lang;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.update.UpdateExecution;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
@@ -26,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,7 +31,7 @@ import java.util.Map;
  * The name "AppGraph" was chosen so as not to collide with a similarly named class in the
  * Apache Jena codebase.
  *
- * Chris Joakim, Microsoft, 2025
+ * Chris Joakim, Aleksey Savateyev
  */
 public class AppGraph {
 
@@ -45,13 +42,14 @@ public class AppGraph {
     // Instance variables
     private long docsRead = 0;
     private Model model;
-    private String namespace;
+    final private String namespace;
     private long successfulQueries;
     private long unsuccessfulQueries;
     private long lastSuccessfulQueryTime;
     private long successfulUpdates;
     private long unsuccessfulUpdates;
     private long lastSuccessfulUpdateTime;
+
     public AppGraph() {
 
         super();
@@ -90,22 +88,21 @@ public class AppGraph {
             ResultSet results = qexec.execSelect();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ResultSetFormatter.outputAsJSON(outputStream, results);
-            String json = new String(outputStream.toByteArray()).replaceAll("\\n","");
+            String json = new String(outputStream.toByteArray()).replaceAll("\\n", "");
             //System.out.println("query - json: " + json);
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> map
-                    = objectMapper.readValue(json, new TypeReference<Map<String,Object>>(){});
+                    = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
+            });
             response.setResults(map);
             successfulQueries++;
             lastSuccessfulQueryTime = System.currentTimeMillis();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             unsuccessfulQueries++;
             logger.error("query - Exception on sparql: " + request.getSparql());
             logger.error(e.getMessage());
             response.setError(e.getMessage());
-        }
-        finally {
+        } finally {
             if (qexec != null) {
                 qexec.close();
             }
@@ -116,56 +113,52 @@ public class AppGraph {
 
 
     public synchronized SparqlBomQueryResponse bomQuery(SparqlBomQueryRequest request) {
-        logger.warn("bomQuery - libname: " + request.getLibname());
+        logger.warn("bomQuery - entry point: " + request.getEntrypoint());
         SparqlBomQueryResponse response = new SparqlBomQueryResponse(request);
-        HashMap<String, TraversedLib> tLibs = new HashMap<String, TraversedLib>();
-        response.setLibs(tLibs);
+        HashMap<String, TraversedLib> nodes = new HashMap<String, TraversedLib>();
+        response.setNodes(nodes);
         QueryExecution qexec = null;
         try {
             boolean continueToProcess = true;
             int maxDepth = request.getMax_depth();
             int loopDepth = 0;
-            int loopStartLibCount = 0;
-            int loopFinishLibCount = 0;
-            String libUri = "http://cosmosdb.com/caig#" + response.getLibname();
-            tLibs.put(libUri, new TraversedLib(libUri, 0));
+            int loopStartCount = 0;
+            int loopFinishCount = 0;
+            String nodeUri = namespaceWithSeparator() + response.getEntrypoint();
+            nodes.put(nodeUri, new TraversedLib(nodeUri, 0));
 
             while (continueToProcess) {
                 loopDepth++;
-                loopStartLibCount = tLibs.size();
+                loopStartCount = nodes.size();
                 response.setActualDepth(loopDepth);
 
                 if (loopDepth > maxDepth) {
                     continueToProcess = false;
-                }
-                else {
-                    Object[] tlibUris = tLibs.keySet().toArray();
-                    logger.warn("loop: " + loopDepth + " count " + tlibUris.length);
-                    for (int i = 0; i < tlibUris.length; i++) {
-                        String tlibUri = (String) tlibUris[i];
-                        logger.debug("tlibUri: " + tlibUri + " idx " + i);
-                        TraversedLib tLib = tLibs.get(tlibUri);
+                } else {
+                    Object[] nodeUris = nodes.keySet().toArray();
+                    logger.warn("loop: " + loopDepth + " count " + nodeUris.length);
+                    for (int i = 0; i < nodeUris.length; i++) {
+                        nodeUri = (String) nodeUris[i];
+                        logger.debug("nodeUri: " + nodeUri + " idx " + i);
+                        TraversedLib tLib = nodes.get(nodeUri);
                         if (tLib.isVisited()) {
-                            logger.debug("tlibUri already visited: " + tlibUri);
-                        }
-                        else {
-                            queryLibDependencies(tLib, tLibs, loopDepth);
+                            logger.debug("nodeUri already visited: " + nodeUri);
+                        } else {
+                            queryDependencies(tLib, nodes, loopDepth);
                         }
                     }
                     // Terminate the graph traversal
-                    loopFinishLibCount = tLibs.size();
-                    if (loopFinishLibCount == loopStartLibCount) {
+                    loopFinishCount = nodes.size();
+                    if (loopFinishCount == loopStartCount) {
                         continueToProcess = false;
                     }
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             unsuccessfulQueries++;
             logger.error(e.getMessage());
             response.setError(e.getMessage());
-        }
-        finally {
+        } finally {
             if (qexec != null) {
                 qexec.close();
             }
@@ -174,54 +167,156 @@ public class AppGraph {
         return response;
     }
 
-    private void queryLibDependencies(
+    // Helper to ensure the configured namespace ends with a separator (# or /)
+    private String namespaceWithSeparator() {
+        if (this.namespace == null || this.namespace.isEmpty()) {
+            return "http://schema.org/ontology#";
+        }
+        if (this.namespace.endsWith("#") || this.namespace.endsWith("/")) {
+            return this.namespace;
+        }
+        return this.namespace + "#";
+    }
+
+    private void queryDependencies(
             TraversedLib tLib, HashMap<String, TraversedLib> tLibs, int loopDepth) {
         try {
             tLib.setVisited(true);
             String sparql = sparqlDependenciesQuery(tLib.getUri());
-            logger.debug("bom sparql: " + sparql);
+            logger.debug("BOM SPARQL: " + sparql);
             Query query = QueryFactory.create(sparql);
             QueryExecution qexec = QueryExecutionFactory.create(
                     query, AppGraph.getSingleton().getModel());
             ResultSet results = qexec.execSelect();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ResultSetFormatter.outputAsJSON(outputStream, results);
-            String json = new String(outputStream.toByteArray()).replaceAll("\\n","");
+            String json = new String(outputStream.toByteArray()).replaceAll("\\n", "");
             ObjectMapper objectMapper = new ObjectMapper();
 
             DependenciesQueryResult dqr = objectMapper.readValue(json, DependenciesQueryResult.class);
-            tLib.setDependencies(dqr.getSingleNamedValues("used_library"));
+            
+            // Collect dependencies from all edge properties discovered in the ontology
+            ArrayList<String> allDependencies = new ArrayList<String>();
+            ArrayList<String> edgeProperties = getEdgePropertiesFromOntology();
+            
+            for (String edgeProperty : edgeProperties) {
+                ArrayList<String> edgeDependencies = dqr.getSingleNamedValues(edgeProperty);
+                if (edgeDependencies != null) {
+                    allDependencies.addAll(edgeDependencies);
+                }
+            }
+            
+            tLib.setDependencies(allDependencies);
 
-            ArrayList<String> dependencies = dqr.getSingleNamedValues("used_library");
-            for (int d = 0; d < dependencies.size(); d++) {
-                String depUri = dependencies.get(d);
+            for (int d = 0; d < allDependencies.size(); d++) {
+                String depUri = allDependencies.get(d);
                 if (!tLibs.containsKey(depUri)) {
                     tLibs.put(depUri, new TraversedLib(depUri, loopDepth));
                 }
             }
             successfulQueries++;
             lastSuccessfulQueryTime = System.currentTimeMillis();
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             unsuccessfulQueries++;
             t.printStackTrace();
         }
     }
 
+    /**
+     * Analyzes the OWL ontology in the model to discover all object properties 
+     * that can serve as edges between nodes in the graph.
+     */
+    private ArrayList<String> getEdgePropertiesFromOntology() {
+        ArrayList<String> edgeProperties = new ArrayList<String>();
+        QueryExecution qexec = null;
+        
+        try {
+            // SPARQL query to find all object properties in the ontology
+            String sparql = "PREFIX owl: <http://www.w3.org/2002/07/owl#> " +
+                           "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+                           "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+                           "SELECT DISTINCT ?property WHERE { " +
+                           "  { ?property rdf:type owl:ObjectProperty . } " +
+                           "  UNION " +
+                           "  { ?property rdf:type rdf:Property . " +
+                           "    ?property rdfs:range ?range . " +
+                           "    FILTER(isURI(?range)) } " +
+                           "  UNION " +
+                           "  { ?s ?property ?o . " +
+                           "    FILTER(isURI(?o) && ?property != rdf:type) } " +
+                           "}";
+            
+            Query query = QueryFactory.create(sparql);
+            qexec = QueryExecutionFactory.create(query, this.model);
+            ResultSet results = qexec.execSelect();
+            
+            while (results.hasNext()) {
+                QuerySolution solution = results.nextSolution();
+                RDFNode propertyNode = solution.get("property");
+                if (propertyNode != null && propertyNode.isURIResource()) {
+                    String propertyUri = propertyNode.asResource().getURI();
+                    // Extract local name from URI for use in SPARQL variable names
+                    String localName = propertyUri.substring(propertyUri.lastIndexOf('#') + 1);
+                    if (localName.isEmpty()) {
+                        localName = propertyUri.substring(propertyUri.lastIndexOf('/') + 1);
+                    }
+                    edgeProperties.add(localName);
+                }
+            }
+            
+            // Fallback to default if no properties found
+            if (edgeProperties.isEmpty()) {
+                logger.warn("No edge properties found in ontology, falling back to 'used_library'");
+                edgeProperties.add("used_library");
+            }
+            
+            logger.debug("Discovered edge properties: " + edgeProperties.toString());
+            
+        } catch (Exception e) {
+            logger.error("Error analyzing ontology for edge properties: " + e.getMessage());
+            // Fallback to default
+            edgeProperties.clear();
+            edgeProperties.add("used_library");
+        } finally {
+            if (qexec != null) {
+                qexec.close();
+            }
+        }
+        
+        return edgeProperties;
+    }
+
     private String sparqlDependenciesQuery(String libUri) {
         StringBuilder sb = new StringBuilder();
-        sb.append("PREFIX c: <http://cosmosdb.com/caig#>");
-        sb.append(" SELECT ?used_library");
+        sb.append("PREFIX c: <" + namespaceWithSeparator() + ">");
+        sb.append("PREFIX owl: <http://www.w3.org/2002/07/owl#>");
+        sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
+        sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>");
+        
+        // Get edge properties from ontology
+        ArrayList<String> edgeProperties = getEdgePropertiesFromOntology();
+        
+        // Build SELECT clause with all edge properties as variables
+        sb.append(" SELECT");
+        for (String edgeProperty : edgeProperties) {
+            sb.append(" ?").append(edgeProperty);
+        }
+        
         sb.append(" WHERE { ");
-        sb.append(" <" + libUri + "> c:uses_library ?used_library .");
+        
+        // Build OPTIONAL patterns for each edge property
+        for (int i = 0; i < edgeProperties.size(); i++) {
+            String edgeProperty = edgeProperties.get(i);
+            sb.append(" OPTIONAL { <").append(libUri).append("> c:").append(edgeProperty).append(" ?").append(edgeProperty).append(" . }");
+        }
+        
         sb.append(" } LIMIT 40");
         return sb.toString();
     }
-
     /**
      * Process an INSERT DATA request that looks like this:
      * {"sparql":"PREFIX c: <http://cosmosdb.com/caig#> INSERT DATA { <http://cosmosdb.com/caig/pypi_m27> <http://cosmosdb.com/caig#lt> \"pypi\" . }"}
-     *
+     * <p>
      * See ConsoleApp#postSparqlAddDocuments for example code to invoke this endpoint.
      */
     public synchronized SparqlQueryResponse update(SparqlQueryRequest request) {
@@ -238,8 +333,7 @@ public class AppGraph {
             this.successfulUpdates++;
             this.lastSuccessfulUpdateTime = System.currentTimeMillis();
             logger.warn("successful update: " + this.successfulUpdates + " at: " + this.lastSuccessfulUpdateTime);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             this.unsuccessfulUpdates++;
             logger.error("update - Exception on sparql: " + request.getSparql());
             logger.error(e.getMessage());
@@ -267,16 +361,14 @@ public class AppGraph {
                         response.incrementProcessedDocumentsCount();
                         Map<String, Object> doc = documents.get(i);
                         triplesBuilder.ingestDocument(doc);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         response.incrementFailuresCount();
                         response.setErrorMessage(e.getMessage());
                         e.printStackTrace();
                     }
                 }
             }
-        }
-        else {
+        } else {
             response.setInputDocumentsCount(-1);
             response.setErrorMessage("null documents list provided to addDocuments");
         }
@@ -364,11 +456,9 @@ public class AppGraph {
                     .set(RIOT.symTurtleDirectiveStyle, "sparql")
                     .lang(lang)
                     .output(fos);
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
-        }
-        finally {
+        } finally {
             logger.warn("writeModelToFile completed");
         }
     }
@@ -392,11 +482,9 @@ public class AppGraph {
             RDFDataMgr.read(model, filename, lang);
 
             this.model = model;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
-        }
-        finally {
+        } finally {
             logger.warn("readGraphFromFile completed");
         }
         return model;
@@ -405,20 +493,15 @@ public class AppGraph {
     private String nodeType(RDFNode node) {
         if (node == null) {
             return "null";
-        }
-        else if (node.isAnon()) {
+        } else if (node.isAnon()) {
             return "anon";
-        }
-        else if (node.isLiteral()) {
+        } else if (node.isLiteral()) {
             return "literal";
-        }
-        else if (node.isResource()) {
+        } else if (node.isResource()) {
             return "resource";
-        }
-        else if (node.isStmtResource()) {
+        } else if (node.isStmtResource()) {
             return "stmt_resource";
-        }
-        else if (node.isURIResource()) {
+        } else if (node.isURIResource()) {
             return "uri_resource";
         }
         return "?";
