@@ -3,18 +3,24 @@
 
 {% block content %}
 <style>
-  pre, code.language-json {
+  pre,
+  code.language-json {
     background: transparent !important;
     box-shadow: none !important;
     text-shadow: none !important;
   }
+
   /* Remove Prism.js code shadows for all tokens */
-  code[class*="language-"], pre[class*="language-"] {
+  code[class*="language-"],
+  pre[class*="language-"] {
     text-shadow: none !important;
     box-shadow: none !important;
   }
+
   /* Remove background from Prism.js operator tokens */
-  span.token.operator, span.token.punctuation, span.token.url {
+  span.token.operator,
+  span.token.punctuation,
+  span.token.url {
     background: transparent !important;
   }
 </style>
@@ -28,161 +34,170 @@
   <p></p>
   <div class="card caig-card" style="width: 100%;">
     <div class="card-body bg-dark text-light caig-inner-body">
-    <form method="post" id="generate_form" name="generate_form" action="/gen_sparql_console_generate_sparql">
-      <div class="mb-3">
-        <label for="sparql" class="form-label">Enter your request:</label>
-        <textarea rows="1" class="form-control" id="natural_language" name="natural_language" 
-          placeholder="Triple-click for suggestions.">{{ natural_language }}</textarea>
-      </div>
-      <div class="mb-6">
-        <button type="submit" id="generate_button" name="generate_button" class="btn btn-outline-primary mb-3">Generate SPARQL from Natural Language</button>
-      </div>
-      <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
-      </form>
-    <p></p>
-
-    <form method="post" id="execute_form" name="execute_form" action="/gen_sparql_console_execute_sparql">
+      <form method="post" id="generate_form" name="generate_form" action="/gen_sparql_console_generate_sparql">
         <div class="mb-3">
-            <label for="sparql" class="form-label">SPARQL query:</label>
-            <textarea id="sparql" name="sparql">{{ sparql }}</textarea>
-            <script>
-              var editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
-                mode: "sparql",
-                lineNumbers: true,
-                theme: "default"
-              });
-              function resizeCodeMirrorToContent(cm) {
-                var doc = cm.getDoc();
-                var lineCount = doc.lineCount();
-                var newHeight = (lineCount + 1) * 24; // 24px is the default line height
-                cm.setSize(null, newHeight + "px");
-              }
-              resizeCodeMirrorToContent(editor);
-              editor.on("change", function(cm) {
-                resizeCodeMirrorToContent(cm);
-              });
-            </script>
+          <label for="sparql" class="form-label">Enter your request:</label>
+          <textarea rows="1" class="form-control" id="natural_language" name="natural_language"
+            placeholder="Triple-click for suggestions.">{{ natural_language }}</textarea>
+        </div>
+        <div class="mb-6">
+          <button type="submit" id="generate_button" name="generate_button"
+            class="btn btn-outline-primary mb-3">Generate SPARQL from Natural Language</button>
+        </div>
+        <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+      </form>
+      <p></p>
+
+      <form method="post" id="execute_form" name="execute_form" action="/gen_sparql_console_execute_sparql">
+        <div class="mb-3">
+          <label for="sparql" class="form-label">SPARQL query:</label>
+          <textarea id="sparql" name="sparql">{{ sparql }}</textarea>
+          <script>
+            var editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
+              mode: "sparql",
+              lineNumbers: true,
+              theme: "default"
+            });
+            function resizeCodeMirrorToContent(cm) {
+              var doc = cm.getDoc();
+              var lineCount = doc.lineCount();
+              var newHeight = (lineCount + 1) * 24; // 24px is the default line height
+              cm.setSize(null, newHeight + "px");
+            }
+            resizeCodeMirrorToContent(editor);
+            editor.on("change", function (cm) {
+              resizeCodeMirrorToContent(cm);
+            });
+          </script>
         </div>
 
-      <div class="mb-6">
-        <button type="submit" id="execute_button" name="execute_button" class="btn btn-outline-primary mb-3">Execute SPARQL Query</button>
-      </div>
-      <input type="hidden" id="generating_nl" name="generating_nl" value="{{ generating_nl }}">
-      <input type="hidden" id="execute_natural_language" name="natural_language" value="{{ natural_language }}">
+        <div class="mb-6">
+          <button type="submit" id="execute_button" name="execute_button" class="btn btn-outline-primary mb-3">Execute
+            SPARQL Query</button>
+        </div>
+        <input type="hidden" id="generating_nl" name="generating_nl" value="{{ generating_nl }}">
+        <input type="hidden" id="execute_natural_language" name="natural_language" value="{{ natural_language }}">
 
-          <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+        <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
       </form>
     </div>
-  </div>
-</div>
 
-<div class="container" id="results_div" name="results_div">
-  <h5>{{ results_message }}</h5>
-  <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
-  <!-- Prism.js for JSON syntax highlighting -->
-  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
-  <br>
-  <br>
-</div>
-
-<div class="container" id="count_div" name="count_div">
-  <h6>Total Results: {{ count }}</h6>
-</div>
-<p></p>
-<p></p>
-
-<!-- Ontology header and controls (label always visible) -->
-<div class="container" id="ontology_header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-    <div style="display:flex;align-items:center;gap:12px;">
-    <h5 style="margin:0;">Ontology (OWL/Turtle)</h5>
-    <div id="ontology_action_controls" style="display:flex;gap:8px;align-items:center;">
-      <button type="button" id="edit_owl_button" class="btn btn-sm btn-outline-secondary">Edit OWL</button>
-      <span class="text-muted small">(Edit the OWL/Turtle then click Re-render)</span>
+    <div class="container" id="results_div" name="results_div">
+      <h5>{{ results_message }}</h5>
+      {% if results %}
+      <pre><code class="language-json">{{ results | tojson | safe }}</code></pre> {% endif %}
+      <!-- Prism.js for JSON syntax highlighting -->
+      <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+      <br>
+      <br>
     </div>
-  </div>
-  <div>
-  <button type="button" id="toggle_ontology_button_ctrl" class="btn btn-sm btn-outline-secondary">Hide Ontology &#9650;</button>
-  </div>
-</div>
 
-<div class="container" id="owl_div" name="owl_div">
-  <pre><code class="language-turtle" id="owl_code">{{ owl }}</code></pre>
-  <!-- Prism.js for Turtle syntax highlighting -->
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
-  <!-- rdflib for robust Turtle/OWL parsing -->
-  <script src="https://cdn.jsdelivr.net/npm/rdflib/dist/rdflib.min.js"></script>
-</div>
-
-<!-- see  https://github.com/visjs/vis-network -->
-<div class="container" id="ontology_div" name="ontology_div">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-    <h5 style="margin:0;">Ontology Visualization</h5>
-    <div id="ontology_viz_controls" style="display:flex;gap:8px;align-items:center;">
-      <button type="button" id="re_render_owl_button" class="btn btn-sm btn-outline-primary">Re-render Visualization</button>
+    <div class="container" id="count_div" name="count_div">
+      <h6>Total Results: {{ count }}</h6>
     </div>
+    <p></p>
+    <p></p>
+
+    <!-- Ontology header and controls (label always visible) -->
+    <div class="container" id="ontology_header"
+      style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <h5 style="margin:0;">Ontology (OWL/Turtle)</h5>
+        <div id="ontology_action_controls" style="display:flex;gap:8px;align-items:center;">
+          <button type="button" id="edit_owl_button" class="btn btn-sm btn-outline-secondary">Edit OWL</button>
+          <span class="text-muted small">(Edit the OWL/Turtle then click Re-render)</span>
+        </div>
+      </div>
+      <div>
+        <button type="button" id="toggle_ontology_button_ctrl" class="btn btn-sm btn-outline-secondary">Hide Ontology
+          &#9650;</button>
+      </div>
+    </div>
+
+    <div class="container" id="owl_div" name="owl_div">
+      <pre><code class="language-turtle" id="owl_code">{{ owl }}</code></pre>
+      <!-- Prism.js for Turtle syntax highlighting -->
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
+      <!-- rdflib for robust Turtle/OWL parsing -->
+      <script src="https://cdn.jsdelivr.net/npm/rdflib/dist/rdflib.min.js"></script>
+    </div>
+
+    <!-- see  https://github.com/visjs/vis-network -->
+    <div class="container" id="ontology_div" name="ontology_div">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h5 style="margin:0;">Ontology Visualization</h5>
+        <div id="ontology_viz_controls" style="display:flex;gap:8px;align-items:center;">
+          <button type="button" id="re_render_owl_button" class="btn btn-sm btn-outline-primary">Re-render
+            Visualization</button>
+        </div>
+      </div>
+      <div class="container" id="ontology_viz" style="width:1024px;height:768px;border: 0px solid lightgray"></div>
+    </div>
+
+
   </div>
-  <div class="container" id="ontology_viz" style="width:1024px;height:768px;border: 0px solid lightgray"></div>
 </div>
+
 {% endblock %}
 {% block js %}
 <script>
 
-const nl_form_field   = document.getElementById("natural_language");
-const generate_form   = document.getElementById("generate_form");
-const generate_button = document.getElementById("generate_button");
-const execute_form    = document.getElementById("execute_form");
-const execute_button  = document.getElementById("execute_button");
+  const nl_form_field = document.getElementById("natural_language");
+  const generate_form = document.getElementById("generate_form");
+  const generate_button = document.getElementById("generate_button");
+  const execute_form = document.getElementById("execute_form");
+  const execute_button = document.getElementById("execute_button");
 
-// Triple-click handler for #natural_language
-let nl_clickCount = 0;
-let nl_clickTimer = null;
+  // Triple-click handler for #natural_language
+  let nl_clickCount = 0;
+  let nl_clickTimer = null;
 
-nl_form_field.addEventListener('click', function(event) {
-  nl_clickCount++;
-  if (nl_clickCount === 1) {
-    nl_clickTimer = setTimeout(function() {
+  nl_form_field.addEventListener('click', function (event) {
+    nl_clickCount++;
+    if (nl_clickCount === 1) {
+      nl_clickTimer = setTimeout(function () {
+        nl_clickCount = 0;
+      }, 400);
+    } else if (nl_clickCount === 3) {
+      clearTimeout(nl_clickTimer);
       nl_clickCount = 0;
-    }, 400);
-  } else if (nl_clickCount === 3) {
-    clearTimeout(nl_clickTimer);
-    nl_clickCount = 0;
-    nl_query_index++;
-    if (nl_query_index >= nl_queries.length) {
-      nl_query_index = 0;
+      nl_query_index++;
+      if (nl_query_index >= nl_queries.length) {
+        nl_query_index = 0;
+      }
+      nl_form_field.value = nl_queries[nl_query_index];
+      generate_button.disabled = false;
     }
-    nl_form_field.value = nl_queries[nl_query_index];
-    generate_button.disabled = false;
-  }
-});
+  });
 
-var nl_query_index = -1;
-var nl_queries = [
-  "What is the most connected node?",
-  "What entity has the most outgoing connections?",
-  "How many nodes are there?",
-  "How many connections are there?",
-  "What are the dependencies of the flask library?",
-  "What are the dependencies of the pandas library?",
-  "What are the dependencies of the openai library?", 
-  "what 5 libraries have the most dependencies ?"
-];
+  var nl_query_index = -1;
+  var nl_queries = [
+    "What is the most connected node?",
+    "What entity has the most outgoing connections?",
+    "How many nodes are there?",
+    "How many connections are there?",
+    "What are the dependencies of the flask library?",
+    "What are the dependencies of the pandas library?",
+    "What are the dependencies of the openai library?",
+    "what 5 libraries have the most dependencies ?"
+  ];
 
 
-generate_button.addEventListener('click', 
-    function(event) {
+  generate_button.addEventListener('click',
+    function (event) {
       event.preventDefault();
       generate_button.disabled = true;
       generate_button.textContent = "Processing...";
       execute_button.disabled = true;
       generate_form.submit();
     }
-);
+  );
 
 
-execute_button.addEventListener('click', 
-    function(event) {
+  execute_button.addEventListener('click',
+    function (event) {
       event.preventDefault();
       // Sync the current value of the textarea to the hidden input before submit
       document.getElementById('execute_natural_language').value = nl_form_field.value;
@@ -191,7 +206,7 @@ execute_button.addEventListener('click',
       generate_button.disabled = true;
       execute_form.submit();
     }
-);
+  );
 
 
 
@@ -293,8 +308,8 @@ python main_common.py owl_visualizer ontologies/libraries.owl
       // fallback if parse produced no nodes
       if (!graph.nodes.length) {
         graph = {
-          nodes: [ { id: 'Dev', label: 'Dev' }, { id: 'Doc', label: 'Doc' }, { id: 'Lib', label: 'Lib' } ],
-          edges: [ { from: 'Dev', to: 'Lib', title: 'developer_of' }, { from: 'Lib', to: 'Dev', title: 'developed_by' }, { from: 'Lib', to: 'Lib', title: 'used_by_lib, uses_lib' } ]
+          nodes: [{ id: 'Dev', label: 'Dev' }, { id: 'Doc', label: 'Doc' }, { id: 'Lib', label: 'Lib' }],
+          edges: [{ from: 'Dev', to: 'Lib', title: 'developer_of' }, { from: 'Lib', to: 'Dev', title: 'developed_by' }, { from: 'Lib', to: 'Lib', title: 'used_by_lib, uses_lib' }]
         };
       }
 
@@ -318,7 +333,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
 
       // clear previous network if present
       if (window.__ontology_network) {
-        try { window.__ontology_network.destroy(); } catch (e) {}
+        try { window.__ontology_network.destroy(); } catch (e) { }
       }
       window.__ontology_network = new vis.Network(html_container, graph_data, graph_options);
     } catch (e) {
@@ -337,7 +352,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
     const base = 'http://example.org/base#';
     return new Promise((resolve, reject) => {
       try {
-        $rdf.parse(turtleText, store, base, mime, function(err, kb) {
+        $rdf.parse(turtleText, store, base, mime, function (err, kb) {
           if (err) {
             // rdflib uses callback with err
             reject(err);
@@ -380,7 +395,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
 
   // Run on DOMContentLoaded to ensure code block is present
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       try {
         // read stored visibility state (session) - default: hidden
         const stored = sessionStorage.getItem('ontologyVisible');
@@ -419,23 +434,23 @@ python main_common.py owl_visualizer ontologies/libraries.owl
     }
   }
   // Edit / Re-render UI wiring
-  (function() {
-  const editBtn = document.getElementById('edit_owl_button');
-  const rerenderBtn = document.getElementById('re_render_owl_button');
-  const toggleBtn = document.getElementById('toggle_ontology_button_ctrl');
+  (function () {
+    const editBtn = document.getElementById('edit_owl_button');
+    const rerenderBtn = document.getElementById('re_render_owl_button');
+    const toggleBtn = document.getElementById('toggle_ontology_button_ctrl');
     const codeBlock = document.getElementById('owl_code');
     let textarea = null;
 
-  // initialize visibility from sessionStorage or current DOM (default: hidden)
-  let ontologyVisible = (function() {
-    try {
-      const stored = sessionStorage.getItem('ontologyVisible');
-      if (stored !== null) return stored === 'true';
-    } catch (e) {}
-    const owlDivInit = document.getElementById('owl_div');
-    if (owlDivInit) return owlDivInit.style.display !== 'none';
-    return false;
-  })();
+    // initialize visibility from sessionStorage or current DOM (default: hidden)
+    let ontologyVisible = (function () {
+      try {
+        const stored = sessionStorage.getItem('ontologyVisible');
+        if (stored !== null) return stored === 'true';
+      } catch (e) { }
+      const owlDivInit = document.getElementById('owl_div');
+      if (owlDivInit) return owlDivInit.style.display !== 'none';
+      return false;
+    })();
 
     function enterEditMode() {
       if (textarea) return;
@@ -456,12 +471,12 @@ python main_common.py owl_visualizer ontologies/libraries.owl
       newCode.textContent = textarea.value;
       textarea.parentNode.replaceChild(newCode, textarea);
       // re-run Prism highlight (if available)
-      try { if (window.Prism) Prism.highlightElement(newCode); } catch (e) {}
+      try { if (window.Prism) Prism.highlightElement(newCode); } catch (e) { }
       textarea = null;
       editBtn.textContent = 'Edit OWL';
     }
 
-    editBtn.addEventListener('click', function() {
+    editBtn.addEventListener('click', function () {
       if (textarea) {
         exitEditMode();
       } else {
@@ -469,7 +484,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
       }
     });
 
-  rerenderBtn.addEventListener('click', function() {
+    rerenderBtn.addEventListener('click', function () {
       // if in edit mode, update the code block from textarea first
       if (textarea) {
         // replace textarea with code block temporarily so renderer finds it
@@ -478,32 +493,32 @@ python main_common.py owl_visualizer ontologies/libraries.owl
         tempCode.className = 'language-turtle';
         tempCode.textContent = textarea.value;
         textarea.parentNode.replaceChild(tempCode, textarea);
-        try { if (window.Prism) Prism.highlightElement(tempCode); } catch (e) {}
+        try { if (window.Prism) Prism.highlightElement(tempCode); } catch (e) { }
         // set textarea back (so user can keep editing) after render
         setTimeout(() => {
           if (tempCode.parentNode) tempCode.parentNode.replaceChild(textarea, tempCode);
         }, 10);
       }
-  // call the existing render function (async)
-  try { renderOntologyGraph().catch(e => console.error('Re-render failed:', e)); } catch (e) { console.error('Re-render failed:', e); }
+      // call the existing render function (async)
+      try { renderOntologyGraph().catch(e => console.error('Re-render failed:', e)); } catch (e) { console.error('Re-render failed:', e); }
     });
 
-      toggleBtn.addEventListener('click', function() {
-        ontologyVisible = !ontologyVisible;
-        const owlDiv = document.getElementById('owl_div');
-        const ontDiv = document.getElementById('ontology_div');
-        const actionControls = document.getElementById('ontology_action_controls');
-        // hide only the content, visualization, and action buttons; keep header and toggle visible
-        if (owlDiv) owlDiv.style.display = ontologyVisible ? '' : 'none';
-        if (ontDiv) ontDiv.style.display = ontologyVisible ? '' : 'none';
-        if (actionControls) actionControls.style.display = ontologyVisible ? 'flex' : 'none';
-        toggleBtn.innerHTML = ontologyVisible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
-        try { sessionStorage.setItem('ontologyVisible', ontologyVisible ? 'true' : 'false'); } catch (e) {}
-        // when showing, ensure visualization is (re)rendered
-        if (ontologyVisible) {
-          try { renderOntologyGraph().catch(e => console.error('Render after show failed:', e)); } catch (e) { console.error(e); }
-        }
-      });
+    toggleBtn.addEventListener('click', function () {
+      ontologyVisible = !ontologyVisible;
+      const owlDiv = document.getElementById('owl_div');
+      const ontDiv = document.getElementById('ontology_div');
+      const actionControls = document.getElementById('ontology_action_controls');
+      // hide only the content, visualization, and action buttons; keep header and toggle visible
+      if (owlDiv) owlDiv.style.display = ontologyVisible ? '' : 'none';
+      if (ontDiv) ontDiv.style.display = ontologyVisible ? '' : 'none';
+      if (actionControls) actionControls.style.display = ontologyVisible ? 'flex' : 'none';
+      toggleBtn.innerHTML = ontologyVisible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
+      try { sessionStorage.setItem('ontologyVisible', ontologyVisible ? 'true' : 'false'); } catch (e) { }
+      // when showing, ensure visualization is (re)rendered
+      if (ontologyVisible) {
+        try { renderOntologyGraph().catch(e => console.error('Render after show failed:', e)); } catch (e) { console.error(e); }
+      }
+    });
   })();
 </script>
 

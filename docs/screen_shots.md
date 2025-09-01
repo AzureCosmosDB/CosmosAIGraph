@@ -34,7 +34,7 @@ A bill-of-material query of the Python Flask library.
 
 ---
 
-D3.js visualization of the Python Flask library bill-of-material graph.
+Graph visualization of the Python Flask library.
 
 <p align="center">
   <img src="img/screen-shot-sparql-console-3-d3-bom-viz.png" width="100%">

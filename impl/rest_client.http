@@ -39,6 +39,18 @@ content-type: application/json
     "sparql": "PREFIX c: <http://cosmosdb.com/caig#> SELECT ?used_library WHERE { <http://cosmosdb.com/caig/pypi_flask> c:uses_library ?used_library . } LIMIT 10"
 }
 
+
+###
+
+POST http://127.0.0.1:8001/sparql_query
+User-Agent: VSC-REST-Client
+content-type: application/json
+
+{
+    "sparql": "PREFIX c: <http://schema.org/ontology#> SELECT ?tag WHERE { c:EDBC3EC5E6EA41F5832B3BF0BB7C786C c:ItemTag ?tag . } LIMIT 10"
+}
+
+
 ###
 
 
@@ -48,7 +60,7 @@ content-type: application/json
 
 {
     "libname": "flask",
-    "max_depth": 2
+    "max_depth": 3
 }
 
 

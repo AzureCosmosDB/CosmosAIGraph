@@ -366,7 +366,7 @@ def vector_search_view_data():
     view_data = dict()
     view_data["libname"] = ""
     view_data["results_message"] = ""
-    view_data["results"] = ""
+    view_data["results"] = {}
     view_data["embedding_message"] = ""
     view_data["embedding"] = ""
     return view_data
@@ -560,7 +560,7 @@ def get_sparql_console_view_data() -> dict:
     view_data["sparql"] = sparql
     view_data["bom_query"] = ""
     view_data["results_message"] = ""
-    view_data["results"] = ""
+    view_data["results"] = {}
     view_data["visualization_message"] = ""
     view_data["bom_json_str"] = "{}"
     view_data["inline_bom_json"] = "{}"
@@ -581,7 +581,7 @@ def post_libraries_sparql_console(form_data):
     view_data["sparql"] = sparql
     view_data["bom_query"] = bom_query
     view_data["results_message"] = "Results"
-    view_data["results"] = "{}"
+    view_data["results"] = {}
     view_data["visualization_message"] = ""
     view_data["bom_json_str"] = "{}"
     view_data["inline_bom_json"] = "{}"
@@ -614,7 +614,7 @@ def post_libraries_sparql_console(form_data):
                 bom_obj = json.loads(r.text)
                 view_data["results"] = bom_obj#json.dumps(bom_obj, sort_keys=False, indent=2)
                 view_data["inline_bom_json"] = view_data["results"]
-                view_data["visualization_message"] = "D3.js Graph Visualization"
+                view_data["visualization_message"] = "Graph Visualization"
                 if (LoggingLevelService.get_level() == logging.DEBUG):
                     try:
                         FS.write_json(
