@@ -10,8 +10,8 @@
 <input type="hidden" id="conversation_id" name="conversation_id" value="{{ conversation_id }}">
 
 <div class="container">
-  <div class="card" style="width: 90%;">
-    <div class="card-body bg-light text-dark">
+  <div class="card caig-card" style="width: 100%;">
+    <div class="card-body bg-dark text-light">
       <p class="card-title text-end fw-light fs-6">Conversation ID: {{ conversation_id }}</p>
       <p></p>
       {% for comp in conv["completions"] %}
@@ -21,10 +21,10 @@
           <p class="text-start fw-bold fs-6" style="border-radius: 15px; background-color: rgba(119, 119, 119, 0.2);">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ comp["user_text"] }}
           </p>
-          <div class="text-start fs-6" style="border-radius: 15px; background-color: #fbfbfb;">
+          <div class="text-start fs-6" style="border-radius: 12px; background-color: rgba(255,255,255,0.03);">
             {{ comp["content"] | markdown | safe }}
           </div>
-          <p class="text-start fw-light fs-6">
+          <p class="text-start fw-light fs-6 text-muted">
             Prompt tokens: {{ comp["usage"]["prompt_tokens"] }},
             Completion tokens: {{ comp["usage"]["completion_tokens"] }},
             Total tokens: {{ comp["usage"]["total_tokens"] }},

@@ -21,48 +21,51 @@
 <div class="container">
   <h5>Vector Search Console</h5>
   <p></p>
+  <div class="card caig-card" style="width: 100%;">
+    <div class="card-body bg-dark text-light caig-inner-body">
+      <form method="post" id="form" name="form" action="/vector_search_console">
+        <div class="row  align-items-center">
+          <div class="col-8">
+            <label for="libname" class="form-label">Enter a library name or 'text:your text...'</label>
+            <input type="text" class="form-control" id="libname" name="libname" value='{{ libname }}'
+              placeholder="Double-click for suggestions."/> 
+          </div>
+          <div class="col-2">
+            <span>
+              <label for="search_button" class="form-label"><pre>
 
-<form method="post" id="form" name="form" action="/vector_search_console">
-  <div class="row  align-items-center">
-    <div class="col-8">
-      <label for="libname" class="form-label">Enter a library name or 'text:your text...'</label>
-      <input type="text" class="form-control" id="libname" name="libname" value='{{ libname }}'
-        placeholder="Double-click for suggestions."/> 
-    </div>
-    <div class="col-2">
-      <span>
-        <label for="search_button" class="form-label"><pre>
+              </pre></label>
+              <button id="search_button" name="search_button" type="submit" class="btn btn-outline-primary">Search</button>
+            </span>
+          </div>
+        </div>
+        <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+      </form>
 
-        </pre></label>
-        <button id="search_button" name="search_button" type="submit" class="btn btn-outline-primary">Search</button>
-      </span>
-    </div>
+      <hr>
+
+      <div class="container" id="results_div" name="results_div">
+        <h5>{{ results_message }}</h5>
+        <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
+            <!-- Prism.js for JSON syntax highlighting -->
+            <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+            <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
+      </div>
+
+      <hr>
+
+      <div class="container" id="embedding_div" name="embedding_div">
+        <h5>{{ embedding_message }}</h5>
+        <pre>
+        <code>
+      {{ embedding }}
+        </code>
+        </pre>
+      </div>
+   </div>
   </div>
-  <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
-</form>
-</div>
-
-<hr>
-
-<div class="container" id="results_div" name="results_div">
-  <h5>{{ results_message }}</h5>
-  <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
-      <!-- Prism.js for JSON syntax highlighting -->
-      <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
-      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
-</div>
-
-<hr>
-
-<div class="container" id="embedding_div" name="embedding_div">
-  <h5>{{ embedding_message }}</h5>
-  <pre>
-  <code>
-{{ embedding }}
-  </code>
-  </pre>
 </div>
 
 {% endblock %}

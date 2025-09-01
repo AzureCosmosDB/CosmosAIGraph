@@ -26,22 +26,21 @@
 <div class="container">
   <h5>Generate SPARQL Console</h5>
   <p></p>
-
-  <form method="post" id="generate_form" name="generate_form" action="/gen_sparql_console_generate_sparql">
-    <div class="mb-3">
-      <label for="sparql" class="form-label">Enter your request:</label>
-      <textarea rows="1" class="form-control" id="natural_language" name="natural_language" 
-        placeholder="Triple-click for suggestions.">{{ natural_language }}</textarea>
-    </div>
-    <div class="mb-6">
-      <button type="submit" id="generate_button" name="generate_button" class="btn btn-outline-primary mb-3">Generate SPARQL from Natural Language</button>
-    </div>
-    <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
-  </form>
-</div>
-
-<div class="container">
+  <div class="card caig-card" style="width: 100%;">
+    <div class="card-body bg-dark text-light caig-inner-body">
+    <form method="post" id="generate_form" name="generate_form" action="/gen_sparql_console_generate_sparql">
+      <div class="mb-3">
+        <label for="sparql" class="form-label">Enter your request:</label>
+        <textarea rows="1" class="form-control" id="natural_language" name="natural_language" 
+          placeholder="Triple-click for suggestions.">{{ natural_language }}</textarea>
+      </div>
+      <div class="mb-6">
+        <button type="submit" id="generate_button" name="generate_button" class="btn btn-outline-primary mb-3">Generate SPARQL from Natural Language</button>
+      </div>
+      <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+      </form>
     <p></p>
+
     <form method="post" id="execute_form" name="execute_form" action="/gen_sparql_console_execute_sparql">
         <div class="mb-3">
             <label for="sparql" class="form-label">SPARQL query:</label>
@@ -65,14 +64,16 @@
             </script>
         </div>
 
-    <div class="mb-6">
-      <button type="submit" id="execute_button" name="execute_button" class="btn btn-outline-primary mb-3">Execute SPARQL Query</button>
-    </div>
-    <input type="hidden" id="generating_nl" name="generating_nl" value="{{ generating_nl }}">
-    <input type="hidden" id="execute_natural_language" name="natural_language" value="{{ natural_language }}">
+      <div class="mb-6">
+        <button type="submit" id="execute_button" name="execute_button" class="btn btn-outline-primary mb-3">Execute SPARQL Query</button>
+      </div>
+      <input type="hidden" id="generating_nl" name="generating_nl" value="{{ generating_nl }}">
+      <input type="hidden" id="execute_natural_language" name="natural_language" value="{{ natural_language }}">
 
-        <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
-    </form>
+          <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+      </form>
+    </div>
+  </div>
 </div>
 
 <div class="container" id="results_div" name="results_div">
