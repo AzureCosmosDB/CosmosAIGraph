@@ -69,18 +69,7 @@
       </form>
     </div>
 
-    <div class="container" id="results_div" name="results_div">
-      <h5>{{ results_message}}</h5>
-      {% if results %}
-      <pre><code class="language-json">{{ results | tojson | safe }}</code></pre> {% endif %}
-      <!-- Prism.js for JSON syntax highlighting -->
-      <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
-      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
-    </div>
-
-    <div class="container-fluid p-0">
+    <div id="viz_wrapper" class="container-fluid p-0" style="display:none;">
       <h5 style="padding-left: 12px;">{{ visualization_message }}</h5>
 
       <div class="bg-dark" id="d3viz" name="d3viz" style="width:100%; height:800px; overflow:auto;">
@@ -92,7 +81,42 @@
       <div style="display: none;" id="inline_bom_json" name="inline_bom_json">
         {{ inline_bom_json }}
       </div>
+    </div>   
+    
+    <div class="container" id="results_div" name="results_div">
+      {% set computed_count = count if count else 0 %}
+      {% if (not computed_count) and results %}
+      {# SPARQL (Apache Jena) JSON shape: results -> { head, results: { bindings: [...] } } #}
+      {% if results.results is defined and results.results.results is defined and results.results.results.bindings is
+      defined %}
+      {% set computed_count = results.results.results.bindings | length %}
+      {% elif results.results is defined and results.results.bindings is defined %}
+      {% set computed_count = results.results.bindings | length %}
+      {% elif results.nodes is defined %}
+      {% set computed_count = results.nodes | length %}
+      {% elif results.libs is defined %}
+      {% set computed_count = results.libs | length %}
+      {% endif %}
+      {% endif %}
+
+      <div class="d-flex justify-content-between align-items-center">
+        <h5>{{ results_message}}</h5>
+        {% if computed_count and computed_count > 0 %}
+        <h6 class="text-muted mb-0">Total Results: {{ computed_count }}</h6>
+        {% elif results %}
+        <h6 class="text-muted mb-0">Results returned (count not provided)</h6>
+        {% endif %}
+      </div>
+      {% if results %}
+      <pre><code class="language-json">{{ results | tojson | safe }}</code></pre> {% endif %}
+      <!-- Prism.js for JSON syntax highlighting -->
+      <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
     </div>
+
+
   </div>
 </div>
 
@@ -103,7 +127,7 @@
   console.log('Script block started');
   console.log('D3 available:', typeof d3 !== 'undefined');
   console.log('jQuery available:', typeof $ !== 'undefined');
-  
+
   const form = document.getElementById("form");
   const submit_button = document.getElementById("submit_button");
 
@@ -127,7 +151,7 @@
 
   domReady(function () {
     console.log('DOM ready, starting processing');
-    
+
     var method = "{{ method }}";
     var libtype = "{{ libtype }}";
     var libtype_prefix_idx = libtype.length + 1;
@@ -149,43 +173,23 @@
     // Get the Bill-of-Materials (BOM) data that is embedded in the page.
     var bomElement = document.getElementById("inline_bom_json");
     console.log('BOM element found:', !!bomElement);
-    
+
     if (!bomElement) {
       console.error('inline_bom_json element not found');
-      d3.select("#graph-svg")
-        .append("text")
-        .attr("x", "50%")
-        .attr("y", "50%")
-        .attr("text-anchor", "middle")
-        .attr("dominant-baseline", "middle")
-        .style("font-size", "16px")
-        .style("fill", "#ff0000")
-        .text("BOM element not found");
+      // Keep visualization hidden when there is nothing to render
+      const wrapper = document.getElementById('viz_wrapper');
+      if (wrapper) wrapper.style.display = 'none';
       return;
     }
-    
+
     var bom_json = bomElement.innerHTML.trim();
     console.log('Raw BOM JSON length:', bom_json.length);
     console.log('Raw BOM JSON first 300 chars:', bom_json.substring(0, 300));
-    
+
     // Show the raw content in the SVG for debugging
-    d3.select("#graph-svg").selectAll("*").remove(); // Clear test circle
-    d3.select("#graph-svg")
-      .append("text")
-      .attr("x", "10")
-      .attr("y", "30")
-      .style("font-size", "12px")
-      .style("fill", "#333")
-      .text("Raw JSON length: " + bom_json.length);
-    
-    d3.select("#graph-svg")
-      .append("text")
-      .attr("x", "10")
-      .attr("y", "50")
-      .style("font-size", "10px")
-      .style("fill", "#666")
-      .text("Content preview: " + bom_json.substring(0, 100) + "...");
-    
+    // Do not show any preview text when hidden
+    d3.select("#graph-svg").selectAll("*").remove();
+
     if (bom_json && bom_json.trim() !== '') {
       // Clean up the JSON string - fix Python-style booleans, None values, and quotes
       bom_json = bom_json.trim()
@@ -196,25 +200,16 @@
         .replaceAll(":True", ":true")
         .replaceAll(": None", ": null")
         .replaceAll(":None", ":null");
-      
+
       console.log('Cleaned JSON first 500 chars:', bom_json.substring(0, 500));
-      
+
       try {
         var bom_obj = JSON.parse(bom_json);
         console.log('BOM data parsed successfully');
         console.log('BOM object keys:', Object.keys(bom_obj));
-        
-        // Clear debug info and show success
+
+        // Clear any debug info; we'll render only if nodes exist
         d3.select("#graph-svg").selectAll("*").remove();
-        d3.select("#graph-svg")
-          .append("text")
-          .attr("x", "50%")
-          .attr("y", "50%")
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "middle")
-          .style("font-size", "16px")
-          .style("fill", "#00aa00");
-          //.text("JSON parsed successfully! Keys: " + Object.keys(bom_obj).join(", "));
 
         // Transform the BOM data into a structure that is usable by D3.js to render the graph.
         var nodes = Array();
@@ -230,13 +225,13 @@
           for (let i = 0; i < node_keys.length; i++) {
             var node_key = node_keys[i];
             var node_data = bom_nodes[node_key];
-            
+
             // Extract clean node name (remove URI prefix if present)
             var clean_name = node_data.name || node_key;
             if (clean_name.includes('#')) {
               clean_name = clean_name.split('#').pop();
             }
-            
+
             console.log('Processing node:', clean_name, 'with dependencies:', node_data.dependencies);
             nodes_set.add(clean_name);
 
@@ -246,21 +241,21 @@
               for (let d = 0; d < dependencies.length; d++) {
                 var dep_uri = dependencies[d];
                 var dep_clean_name = dep_uri;
-                
+
                 // Clean up dependency name (remove URI prefix if present)
                 if (typeof dep_uri === 'string' && dep_uri.includes('#')) {
                   dep_clean_name = dep_uri.split('#').pop();
                 }
-                
+
                 // Create edges for all meaningful dependencies
                 // Only skip exact self-references and empty strings
-                if (dep_clean_name !== clean_name && 
-                    dep_clean_name.length > 0 && 
-                    dep_clean_name.trim() !== '') {
-                  
+                if (dep_clean_name !== clean_name &&
+                  dep_clean_name.length > 0 &&
+                  dep_clean_name.trim() !== '') {
+
                   console.log('Creating edge:', clean_name, '->', dep_clean_name);
                   nodes_set.add(dep_clean_name);
-                  
+
                   var edge = {};
                   edge["source"] = clean_name;
                   edge["target"] = dep_clean_name;
@@ -290,7 +285,7 @@
                 var dep_lib_uri_tokens = dep_lib_uri.split("#");
                 var dep_lib_no_prefix = dep_lib_uri_tokens[1] || dep_lib_uri;
                 nodes_set.add(dep_lib_no_prefix);
-                
+
                 var edge = {};
                 edge["source"] = lib_key_no_prefix;
                 edge["target"] = dep_lib_no_prefix;
@@ -309,7 +304,7 @@
           n["name"] = s;
           n["type"] = "vertex";
           n["adjCount"] = 0;
-          
+
           // Find the depth for this node from the original data
           n["depth"] = 0; // default depth
           if (bom_obj.hasOwnProperty('nodes')) {
@@ -327,10 +322,10 @@
               }
             }
           }
-          
+
           nodes.push(n);
         });
-        
+
         // Generate consistent colors for node types with depth-based intensity
         function getNodeColor(nodeName, depth) {
           // Create a simple hash function for consistent colors
@@ -340,17 +335,17 @@
             hash = ((hash << 5) - hash) + char;
             hash = hash & hash; // Convert to 32bit integer
           }
-          
+
           // Generate a color based on the hash
           const hue = Math.abs(hash) % 360;
-          
+
           // Calculate lightness based on depth - 0 is brightest, higher depth is dimmer
           // Start at 70% lightness for depth 0, decrease by 10% per depth level, minimum 20%
           const lightness = Math.max(20, 70 - (depth * 10));
-          
+
           return `hsl(${hue}, 70%, ${lightness}%)`;
         }
-        
+
         console.log('Final processing results:');
         console.log('- Nodes count:', nodes.length);
         console.log('- Edges count:', edges.length);
@@ -360,17 +355,19 @@
         // Always try to create visualization, even with just nodes
         if (nodes.length > 0) {
           console.log('Starting visualization with', nodes.length, 'nodes and', edges.length, 'edges');
-          
+          const wrapper = document.getElementById('viz_wrapper');
+          if (wrapper) wrapper.style.display = '';
+
           // Clear any existing content including test circle
           d3.select("#graph-svg").selectAll("*").remove();
-          
+
           // Set up the SVG dimensions
           const svg = d3.select("#graph-svg");
           const width = 800;
           const height = 600;
-          
+
           svg.attr("viewBox", `0 0 ${width} ${height}`);
-          
+
           const g = svg.append("g").attr("id", "graph-container");
 
           console.log("Setting up visualization...");
@@ -392,7 +389,7 @@
           }
 
           // Create a copy of nodes and edges for D3
-          const graphNodes = nodes.map(d => ({...d}));
+          const graphNodes = nodes.map(d => ({ ...d }));
           const graphEdges = edges.map(d => ({
             source: d.source,
             target: d.target,
@@ -456,14 +453,14 @@
           // Add zoom behavior
           const zoom = d3.zoom()
             .scaleExtent([0.1, 10])
-            .on("zoom", function(event) {
+            .on("zoom", function (event) {
               g.attr("transform", event.transform);
             });
 
           svg.call(zoom);
 
           // Update positions on tick
-          simulation.on("tick", function() {
+          simulation.on("tick", function () {
             if (link) {
               link
                 .attr("x1", d => d.source.x)
@@ -495,76 +492,31 @@
           }
 
           // Add click handlers
-          node.on("click", function(event, d) {
+          node.on("click", function (event, d) {
             console.log("Clicked node:", d.name);
           });
 
           console.log("Visualization setup complete");
         } else {
           console.log('No nodes found to visualize');
-          // Show a message in the visualization area
-          d3.select("#graph-svg")
-            .append("text")
-            .attr("x", "50%")
-            .attr("y", "50%")
-            .attr("text-anchor", "middle")
-            .attr("dominant-baseline", "middle")
-            .style("font-size", "16px")
-            .style("fill", "#666");
+          const wrapper = document.getElementById('viz_wrapper');
+          if (wrapper) wrapper.style.display = 'none';
         }
       } catch (e) {
         console.error('Error parsing BOM JSON:', e);
         console.log('Error details:', e.message);
         console.log('JSON content that failed:', bom_json.substring(0, 500));
-        
+
         // Show detailed error message in visualization
-        d3.select("#graph-svg").selectAll("*").remove();
-        d3.select("#graph-svg")
-          .append("text")
-          .attr("x", "10")
-          .attr("y", "30")
-          .style("font-size", "14px")
-          .style("fill", "#ff0000")
-          .text("JSON Parse Error: " + e.message);
-          
-        d3.select("#graph-svg")
-          .append("text")
-          .attr("x", "10")
-          .attr("y", "60")
-          .style("font-size", "10px")
-          .style("fill", "#666")
-          .text("Content (first 800 chars): " + bom_json.substring(0, 800) + "...");
-          
-        // Show more content in additional lines
-        d3.select("#graph-svg")
-          .append("text")
-          .attr("x", "10")
-          .attr("y", "90")
-          .style("font-size", "10px")
-          .style("fill", "#666")
-          .text("Content (chars 800-1600): " + bom_json.substring(800, 1600) + "...");
-          
-        d3.select("#graph-svg")
-          .append("text")
-          .attr("x", "10")
-          .attr("y", "120")
-          .style("font-size", "10px")
-          .style("fill", "#666")
-          .text("Total length: " + bom_json.length + " characters");
+        // Keep visualization hidden on parse errors
+        const wrapper = document.getElementById('viz_wrapper');
+        if (wrapper) wrapper.style.display = 'none';
       }
     } else {
       console.log('No BOM data found - element content is empty');
-      // Show message for no data
-      d3.select("#graph-svg").selectAll("*").remove();
-      d3.select("#graph-svg")
-        .append("text")
-        .attr("x", "50%")
-        .attr("y", "50%")
-        .attr("text-anchor", "middle")
-        .attr("dominant-baseline", "middle")
-        .style("font-size", "16px")
-        .style("fill", "#999")
-        .text("No data available - submit a query first");
+      // Keep hidden when there's no data
+      const wrapper = document.getElementById('viz_wrapper');
+      if (wrapper) wrapper.style.display = 'none';
     }
   });
 </script>

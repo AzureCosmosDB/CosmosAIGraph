@@ -42,7 +42,7 @@
         </div>
         <div class="mb-6">
           <button type="submit" id="generate_button" name="generate_button"
-            class="btn btn-outline-primary mb-3">Generate SPARQL from Natural Language</button>
+            class="btn btn-outline-primary mb-3">Generate SPARQL</button>
         </div>
         <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
       </form>
@@ -73,7 +73,7 @@
 
         <div class="mb-6">
           <button type="submit" id="execute_button" name="execute_button" class="btn btn-outline-primary mb-3">Execute
-            SPARQL Query</button>
+            SPARQL</button>
         </div>
         <input type="hidden" id="generating_nl" name="generating_nl" value="{{ generating_nl }}">
         <input type="hidden" id="execute_natural_language" name="natural_language" value="{{ natural_language }}">
@@ -83,23 +83,23 @@
     </div>
 
     <div class="container" id="results_div" name="results_div">
-      <h5>{{ results_message }}</h5>
+      <div class="d-flex justify-content-between align-items-center">
+        <h5>{{ results_message }}</h5>
+        {% if count and count > 0 %}
+        <h6 class="text-muted mb-0">Total Results: {{ count }}</h6>
+        {% endif %}
+      </div>
       {% if results %}
       <pre><code class="language-json">{{ results | tojson | safe }}</code></pre> {% endif %}
       <!-- Prism.js for JSON syntax highlighting -->
       <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
       <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
-      <br>
-      <br>
+      <br/>
     </div>
 
-    <div class="container" id="count_div" name="count_div">
-      <h6>Total Results: {{ count }}</h6>
-    </div>
-    <p></p>
-    <p></p>
-
+    <br/>
+    <br/>
     <!-- Ontology header and controls (label always visible) -->
     <div class="container" id="ontology_header"
       style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
@@ -441,15 +441,12 @@ python main_common.py owl_visualizer ontologies/libraries.owl
     const codeBlock = document.getElementById('owl_code');
     let textarea = null;
 
-    // initialize visibility from sessionStorage or current DOM (default: hidden)
+    // initialize visibility strictly from sessionStorage (default: hidden)
     let ontologyVisible = (function () {
       try {
         const stored = sessionStorage.getItem('ontologyVisible');
-        if (stored !== null) return stored === 'true';
-      } catch (e) { }
-      const owlDivInit = document.getElementById('owl_div');
-      if (owlDivInit) return owlDivInit.style.display !== 'none';
-      return false;
+        return stored === 'true'; // default false when null
+      } catch (e) { return false; }
     })();
 
     function enterEditMode() {

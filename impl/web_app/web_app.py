@@ -615,6 +615,21 @@ def post_libraries_sparql_console(form_data):
                 view_data["results"] = bom_obj#json.dumps(bom_obj, sort_keys=False, indent=2)
                 view_data["inline_bom_json"] = view_data["results"]
                 view_data["visualization_message"] = "Graph Visualization"
+                # Derive a count for the header if possible
+                try:
+                    count_val = 0
+                    if isinstance(bom_obj, dict):
+                        # Prefer 'nodes' map count (new format)
+                        if "nodes" in bom_obj and isinstance(bom_obj["nodes"], dict):
+                            count_val = len(bom_obj["nodes"].keys())
+                        # Legacy 'libs' map count
+                        elif "libs" in bom_obj and isinstance(bom_obj["libs"], dict):
+                            count_val = len(bom_obj["libs"].keys())
+                        # Fallbacks: actual_depth/max_depth don't reflect rows, skip
+                    view_data["count"] = count_val
+                except Exception:
+                    # Don't break UI if counting fails
+                    view_data["count"] = 0
                 if (LoggingLevelService.get_level() == logging.DEBUG):
                     try:
                         FS.write_json(
@@ -633,6 +648,7 @@ def post_libraries_sparql_console(form_data):
                 view_data["results"] = sqr.response_obj# json.dumps(
                 #     sqr.response_obj, sort_keys=False, indent=2
                 # )
+                view_data["count"] = sqr.count
                 view_data["results_message"] = "SPARQL Query Results"
     return view_data
 
