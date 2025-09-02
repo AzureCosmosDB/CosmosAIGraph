@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
-{% block title %} Conversational AI {% endblock %}
+{% block title %} OmniRAG Chat {% endblock %}
 
 {% block content %}
 <div class="container">
-  <h5>Conversational AI Console</h5>
+  <h5>OmniRAG Chat</h5>
 </div>
 
 <form method="post"  id="form" name="form" action="/conv_ai_console">
@@ -51,17 +51,17 @@
 </div>
 </form>
 <div class="container" id="feedback_div" name="feedback_div">
-  <hr>
+  <br/>
   <h5>Feedback</h5>
   <form method="post" id="feedback_form" name="feedback_form" action="/conv_ai_feedback" onsubmit="submitForm(); return false;">
     <input type="hidden" id="conversation_id" name="conversation_id" value="{{ conversation_id }}">
   <div>
-    <label class="form-label fs-6" for="user_text">Enter your feedback on the last response:</label>
-    <input class="form-control" type="text" id="feedback_conversation_id" name="feedback_conversation_id" value="Conversation ID: {{ conversation_id }}" readonly>
-    <input class="form-control" type="text" id="feedback_last_question"   name="feedback_last_question" value="Question: {{ last_user_question }}" readonly>
-    <input class="form-control" type="text" id="feedback_user_feedback"   name="feedback_user_feedback" placeholder="enter your feedback here">
+    <label class="form-label fs-6" for="user_text">Enter your feedback on the last response:</label><br/>
+    <label class="form-label text-muted">Conversation ID: {{ conversation_id }}</label><br/>
+    <label class="form-label text-muted">Question: {{ last_user_question }}</label><br/>
+    <input class="form-control" type="text" id="feedback_user_feedback"   name="feedback_user_feedback" placeholder="enter your feedback here"><br/>
     <div>
-      <button type="submit" class="btn btn-outline-primary" id="feedback_submit_button" name="feedback_submit_button">Submit Feedback</button>
+      <button type="submit" class="btn btn-outline-primary" id="feedback_submit_button" name="feedback_submit_button">Submit</button>
     </div>
   </div>
   </form>
@@ -100,9 +100,9 @@ const prompts_div = document.getElementById("prompts_div");
 
 user_text.focus();
 continue_button.disabled = true;
-conversation_data.style.visibility = "hidden";
-feedback_div.style.visibility = "hidden";
-prompts_div.style.visibility = "hidden";
+conversation_data.style.display = "none";
+feedback_div.style.display = "none";
+prompts_div.style.display = "none";
 
 var suggestions_index = -1;
 var suggestions = [
@@ -151,11 +151,11 @@ feedback_button.addEventListener('click',
     function(event) {
       console.log("feedback_button click");
       event.preventDefault();
-      if (feedback_div.style.visibility == "hidden") {
-        feedback_div.style.visibility = "visible";
+      if (feedback_div.style.display == "none") {
+        feedback_div.style.display = "block";
       }
       else {
-        feedback_div.style.visibility = "hidden";
+        feedback_div.style.display = "none";
       }
     }
 );
@@ -165,7 +165,7 @@ feedback_submit_button.addEventListener('click',
       console.log("feedback_submit_button click");
       event.preventDefault();
       submitFeedbackForm();
-      feedback_div.style.visibility = "hidden";
+      feedback_div.style.display = "none";
     }
 );
 
@@ -173,11 +173,11 @@ prompts_button.addEventListener('click',
     function(event) {
       console.log("prompts_button click");
       event.preventDefault();
-      if (prompts_div.style.visibility == "hidden") {
-        prompts_div.style.visibility = "visible";
+      if (prompts_div.style.display == "none") {
+        prompts_div.style.display = "block";
       }
       else {
-        prompts_div.style.visibility = "hidden";
+        prompts_div.style.display = "none";
       }
     }
 );
@@ -186,11 +186,11 @@ json_button.addEventListener('click',
     function(event) {
       console.log("json_button click");
       event.preventDefault();
-      if (conversation_data.style.visibility == "hidden") {
-        conversation_data.style.visibility = "visible";
+      if (conversation_data.style.display == "none") {
+        conversation_data.style.display = "block";
       }
       else {
-        conversation_data.style.visibility = "hidden";
+        conversation_data.style.display = "none";
       }
     }
 );
@@ -223,7 +223,7 @@ function submitFeedbackForm() {
     http.setRequestHeader("Content-type", "application/json");
     postObj = {};
     postObj["conversation_id"] = document.getElementById('conversation_id').value;
-    postObj["feedback_last_question"] = document.getElementById('feedback_last_question').value;
+    postObj["feedback_last_question"] = "{{ last_user_question }}";
     postObj["feedback_user_feedback"] = document.getElementById('feedback_user_feedback').value;
     console.log("submitFeedbackForm: " + JSON.stringify(postObj));
     http.send(JSON.stringify(postObj));

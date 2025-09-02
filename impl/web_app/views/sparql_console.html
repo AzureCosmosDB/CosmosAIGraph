@@ -213,8 +213,8 @@
           .attr("text-anchor", "middle")
           .attr("dominant-baseline", "middle")
           .style("font-size", "16px")
-          .style("fill", "#00aa00")
-          .text("JSON parsed successfully! Keys: " + Object.keys(bom_obj).join(", "));
+          .style("fill", "#00aa00");
+          //.text("JSON parsed successfully! Keys: " + Object.keys(bom_obj).join(", "));
 
         // Transform the BOM data into a structure that is usable by D3.js to render the graph.
         var nodes = Array();
@@ -510,8 +510,7 @@
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "middle")
             .style("font-size", "16px")
-            .style("fill", "#666")
-            .text("No graph data to visualize");
+            .style("fill", "#666");
         }
       } catch (e) {
         console.error('Error parsing BOM JSON:', e);
