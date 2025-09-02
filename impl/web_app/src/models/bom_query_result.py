@@ -6,11 +6,11 @@ import time
 
 
 class BomQueryResult:
-    def __init__(self, libtype, libname, max_depth):
-        type_name = "{}_{}".format(libtype, libname)
+    def __init__(self, libtype, entrypoint, max_depth):
+        type_name = "{}_{}".format(libtype, entrypoint)
         self.data = dict()
         self.data["libtype"] = libtype
-        self.data["libname"] = libname
+        self.data["entrypoint"] = entrypoint
         self.data["max_depth"] = int(max_depth)
         self.data["actual_depth"] = 0
         self.data["exception"] = None

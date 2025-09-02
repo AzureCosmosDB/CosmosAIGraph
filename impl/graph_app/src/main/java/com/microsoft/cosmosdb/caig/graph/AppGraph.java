@@ -180,13 +180,26 @@ public class AppGraph {
 
     private void queryDependencies(
             TraversedLib tLib, HashMap<String, TraversedLib> tLibs, int loopDepth) {
+        QueryExecution qexec = null;
         try {
             tLib.setVisited(true);
-            String sparql = sparqlDependenciesQuery(tLib.getUri());
+            String originalUri = tLib.getUri();
+            logger.debug("queryDependencies - original URI: " + originalUri);
+            
+            String sparql = sparqlDependenciesQuery(originalUri);
             logger.debug("BOM SPARQL: " + sparql);
-            Query query = QueryFactory.create(sparql);
-            QueryExecution qexec = QueryExecutionFactory.create(
-                    query, AppGraph.getSingleton().getModel());
+            
+            // Validate the SPARQL query before creating it
+            Query query = null;
+            try {
+                query = QueryFactory.create(sparql);
+            } catch (Exception e) {
+                logger.error("Failed to create SPARQL query for URI: " + originalUri + ". SPARQL: " + sparql, e);
+                unsuccessfulQueries++;
+                return;
+            }
+            
+            qexec = QueryExecutionFactory.create(query, AppGraph.getSingleton().getModel());
             ResultSet results = qexec.execSelect();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ResultSetFormatter.outputAsJSON(outputStream, results);
@@ -200,12 +213,14 @@ public class AppGraph {
             ArrayList<String> edgeProperties = getEdgePropertiesFromOntology();
             
             for (String edgeProperty : edgeProperties) {
-                ArrayList<String> edgeDependencies = dqr.getSingleNamedValues(edgeProperty);
+                String sanitizedVar = sanitizeVariableName(edgeProperty);
+                ArrayList<String> edgeDependencies = dqr.getSingleNamedValues(sanitizedVar);
                 if (edgeDependencies != null) {
                     allDependencies.addAll(edgeDependencies);
                 }
             }
             
+            logger.debug("Found " + allDependencies.size() + " dependencies for URI: " + originalUri);
             tLib.setDependencies(allDependencies);
 
             for (int d = 0; d < allDependencies.size(); d++) {
@@ -218,7 +233,16 @@ public class AppGraph {
             lastSuccessfulQueryTime = System.currentTimeMillis();
         } catch (Throwable t) {
             unsuccessfulQueries++;
+            logger.error("Error in queryDependencies for URI: " + tLib.getUri(), t);
             t.printStackTrace();
+        } finally {
+            if (qexec != null) {
+                try {
+                    qexec.close();
+                } catch (Exception e) {
+                    logger.warn("Error closing query execution", e);
+                }
+            }
         }
     }
 
@@ -232,19 +256,26 @@ public class AppGraph {
         
         try {
             // SPARQL query to find all object properties in the ontology
-            String sparql = "PREFIX owl: <http://www.w3.org/2002/07/owl#> " +
-                           "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
-                           "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
-                           "SELECT DISTINCT ?property WHERE { " +
-                           "  { ?property rdf:type owl:ObjectProperty . } " +
-                           "  UNION " +
-                           "  { ?property rdf:type rdf:Property . " +
-                           "    ?property rdfs:range ?range . " +
-                           "    FILTER(isURI(?range)) } " +
-                           "  UNION " +
-                           "  { ?s ?property ?o . " +
-                           "    FILTER(isURI(?o) && ?property != rdf:type) } " +
-                           "}";
+            String sparql = "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
+                           "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                           "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+                           "SELECT DISTINCT ?property WHERE {\n" +
+                           "  {\n" +
+                           "    ?property rdf:type owl:ObjectProperty .\n" +
+                           "  }\n" +
+                           "  UNION\n" +
+                           "  {\n" +
+                           "    ?property rdf:type rdf:Property .\n" +
+                           "    ?property rdfs:range ?range .\n" +
+                           "    FILTER(isURI(?range))\n" +
+                           "  }\n" +
+                           "  UNION\n" +
+                           "  {\n" +
+                           "    ?s ?property ?o .\n" +
+                           "    FILTER(isURI(?o) && ?property != rdf:type && ?property != rdfs:subClassOf)\n" +
+                           "  }\n" +
+                           "}\n" +
+                           "LIMIT 100";
             
             Query query = QueryFactory.create(sparql);
             qexec = QueryExecutionFactory.create(query, this.model);
@@ -256,11 +287,10 @@ public class AppGraph {
                 if (propertyNode != null && propertyNode.isURIResource()) {
                     String propertyUri = propertyNode.asResource().getURI();
                     // Extract local name from URI for use in SPARQL variable names
-                    String localName = propertyUri.substring(propertyUri.lastIndexOf('#') + 1);
-                    if (localName.isEmpty()) {
-                        localName = propertyUri.substring(propertyUri.lastIndexOf('/') + 1);
+                    String localName = extractLocalName(propertyUri);
+                    if (localName != null && !localName.isEmpty() && !edgeProperties.contains(localName)) {
+                        edgeProperties.add(localName);
                     }
-                    edgeProperties.add(localName);
                 }
             }
             
@@ -285,33 +315,238 @@ public class AppGraph {
         
         return edgeProperties;
     }
+    
+    /**
+     * Extracts the local name from a URI, handling both # and / separators.
+     */
+    private String extractLocalName(String uri) {
+        if (uri == null || uri.isEmpty()) {
+            return null;
+        }
+        
+        // Try # separator first
+        int hashIndex = uri.lastIndexOf('#');
+        if (hashIndex != -1 && hashIndex < uri.length() - 1) {
+            return uri.substring(hashIndex + 1);
+        }
+        
+        // Try / separator
+        int slashIndex = uri.lastIndexOf('/');
+        if (slashIndex != -1 && slashIndex < uri.length() - 1) {
+            return uri.substring(slashIndex + 1);
+        }
+        
+        // Return the whole URI if no separators found
+        return uri;
+    }
 
     private String sparqlDependenciesQuery(String libUri) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("PREFIX c: <" + namespaceWithSeparator() + ">");
-        sb.append("PREFIX owl: <http://www.w3.org/2002/07/owl#>");
-        sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
-        sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>");
-        
-        // Get edge properties from ontology
-        ArrayList<String> edgeProperties = getEdgePropertiesFromOntology();
-        
-        // Build SELECT clause with all edge properties as variables
-        sb.append(" SELECT");
-        for (String edgeProperty : edgeProperties) {
-            sb.append(" ?").append(edgeProperty);
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append("PREFIX c: <").append(namespaceWithSeparator()).append(">\n");
+            sb.append("PREFIX owl: <http://www.w3.org/2002/07/owl#>\n");
+            sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
+            sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n");
+            
+            // Get edge properties from ontology
+            ArrayList<String> edgeProperties = getEdgePropertiesFromOntology();
+            
+            if (edgeProperties.isEmpty()) {
+                logger.warn("No edge properties found, using default fallback query");
+                return createFallbackQuery(libUri);
+            }
+            
+            // Build SELECT clause with all edge properties as variables
+            sb.append("SELECT");
+            for (String edgeProperty : edgeProperties) {
+                String sanitizedVar = sanitizeVariableName(edgeProperty);
+                if (sanitizedVar != null && !sanitizedVar.isEmpty()) {
+                    sb.append(" ?").append(sanitizedVar);
+                }
+            }
+            sb.append("\n");
+            
+            sb.append("WHERE {\n");
+            
+            // Ensure libUri is properly formatted as a full URI
+            String formattedLibUri = formatUri(libUri);
+            logger.debug("sparqlDependenciesQuery - original URI: " + libUri + " -> formatted: " + formattedLibUri);
+            
+            // Validate the formatted URI
+            if (formattedLibUri == null || formattedLibUri.equals("<>") || !formattedLibUri.startsWith("<") || !formattedLibUri.endsWith(">")) {
+                logger.error("Invalid formatted URI: " + formattedLibUri + " from original: " + libUri);
+                return createFallbackQuery(libUri);
+            }
+            
+            // Build OPTIONAL patterns for each edge property
+            for (String edgeProperty : edgeProperties) {
+                String sanitizedVar = sanitizeVariableName(edgeProperty);
+                if (sanitizedVar != null && !sanitizedVar.isEmpty()) {
+                    sb.append("  OPTIONAL { ").append(formattedLibUri).append(" c:").append(edgeProperty).append(" ?").append(sanitizedVar).append(" . }\n");
+                }
+            }
+            
+            sb.append("}\n");
+            sb.append("LIMIT 40");
+            
+            String query = sb.toString();
+            logger.debug("Generated SPARQL query:\n" + query);
+            
+            // Basic validation of the generated query
+            if (!query.contains("SELECT") || !query.contains("WHERE")) {
+                logger.error("Generated invalid SPARQL query structure: " + query);
+                return createFallbackQuery(libUri);
+            }
+            
+            return query;
+        } catch (Exception e) {
+            logger.error("Error generating SPARQL query for URI: " + libUri, e);
+            return createFallbackQuery(libUri);
+        }
+    }
+    
+    /**
+     * Creates a simple fallback SPARQL query when the main query generation fails.
+     */
+    private String createFallbackQuery(String libUri) {
+        String formattedUri = formatUri(libUri);
+        if (formattedUri == null || formattedUri.equals("<>")) {
+            formattedUri = "<" + namespaceWithSeparator() + "unknown>";
         }
         
-        sb.append(" WHERE { ");
-        
-        // Build OPTIONAL patterns for each edge property
-        for (int i = 0; i < edgeProperties.size(); i++) {
-            String edgeProperty = edgeProperties.get(i);
-            sb.append(" OPTIONAL { <").append(libUri).append("> c:").append(edgeProperty).append(" ?").append(edgeProperty).append(" . }");
+        return "PREFIX c: <" + namespaceWithSeparator() + ">\n" +
+               "SELECT ?used_library\n" +
+               "WHERE {\n" +
+               "  OPTIONAL { " + formattedUri + " c:used_library ?used_library . }\n" +
+               "}\n" +
+               "LIMIT 40";
+    }
+    
+    /**
+     * Formats a URI string to be valid in SPARQL queries.
+     * If the URI is already a full URI (starts with http:// or https://), wraps it in angle brackets.
+     * If it's a bare identifier, constructs a full URI using the namespace and wraps in angle brackets.
+     */
+    private String formatUri(String uri) {
+        if (uri == null || uri.isEmpty()) {
+            return "<" + namespaceWithSeparator() + "unknown>";
         }
         
-        sb.append(" } LIMIT 40");
-        return sb.toString();
+        // If it starts with angle brackets, it's already formatted - but validate it
+        if (uri.startsWith("<") && uri.endsWith(">")) {
+            String innerUri = uri.substring(1, uri.length() - 1);
+            if (isValidURI(innerUri)) {
+                return uri;
+            } else {
+                // Remove angle brackets and re-process
+                uri = innerUri;
+            }
+        }
+        
+        // If it's already a full URI, validate and wrap in angle brackets
+        if (uri.startsWith("http://") || uri.startsWith("https://")) {
+            if (isValidURI(uri)) {
+                return "<" + uri + ">";
+            } else {
+                logger.warn("Invalid URI detected, escaping: " + uri);
+                return "<" + escapeUri(uri) + ">";
+            }
+        }
+        
+        // Check if it already contains the namespace (from bomQuery concatenation)
+        String namespace = namespaceWithSeparator();
+        if (uri.startsWith(namespace)) {
+            if (isValidURI(uri)) {
+                return "<" + uri + ">";
+            } else {
+                logger.warn("Invalid URI with namespace detected, escaping: " + uri);
+                return "<" + escapeUri(uri) + ">";
+            }
+        }
+        
+        // If it's a bare identifier, construct full URI with namespace
+        String fullUri = namespace + escapeUriComponent(uri);
+        return "<" + fullUri + ">";
+    }
+    
+    /**
+     * Checks if a URI string is valid for SPARQL.
+     */
+    private boolean isValidURI(String uri) {
+        if (uri == null || uri.isEmpty()) {
+            return false;
+        }
+        
+        // Check for invalid characters that would break SPARQL parsing
+        // These characters need to be escaped or the URI is invalid
+        String invalidChars = "<>\"{}|^`\\";
+        for (char c : invalidChars.toCharArray()) {
+            if (uri.indexOf(c) != -1) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Escapes a full URI for safe use in SPARQL.
+     */
+    private String escapeUri(String uri) {
+        if (uri == null) {
+            return "";
+        }
+        
+        return uri.replace("<", "%3C")
+                  .replace(">", "%3E")
+                  .replace("\"", "%22")
+                  .replace("{", "%7B")
+                  .replace("}", "%7D")
+                  .replace("|", "%7C")
+                  .replace("^", "%5E")
+                  .replace("`", "%60")
+                  .replace("\\", "%5C");
+    }
+    
+    /**
+     * Escapes a URI component (the part after the namespace) for safe use in SPARQL.
+     */
+    private String escapeUriComponent(String component) {
+        if (component == null) {
+            return "";
+        }
+        
+        // More aggressive escaping for URI components
+        return component.replace(" ", "%20")
+                       .replace("<", "%3C")
+                       .replace(">", "%3E")
+                       .replace("\"", "%22")
+                       .replace("{", "%7B")
+                       .replace("}", "%7D")
+                       .replace("|", "%7C")
+                       .replace("^", "%5E")
+                       .replace("`", "%60")
+                       .replace("\\", "%5C");
+    }
+    
+    /**
+     * Sanitizes a property name to be a valid SPARQL variable name.
+     * SPARQL variables must start with a letter and contain only letters, digits, and underscores.
+     */
+    private String sanitizeVariableName(String propertyName) {
+        if (propertyName == null || propertyName.isEmpty()) {
+            return "property";
+        }
+        
+        // Replace invalid characters with underscores
+        String sanitized = propertyName.replaceAll("[^a-zA-Z0-9_]", "_");
+        
+        // Ensure it starts with a letter
+        if (!Character.isLetter(sanitized.charAt(0))) {
+            sanitized = "var_" + sanitized;
+        }
+        
+        return sanitized;
     }
     /**
      * Process an INSERT DATA request that looks like this:

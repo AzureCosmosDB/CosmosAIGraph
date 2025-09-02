@@ -48,6 +48,8 @@ public class DependenciesQueryResult {
             for (int h = 0; h < headVars.size(); h++) {
                 String var = headVars.get(h);
                 Map map = (Map) binding.get(var);
+                if (map == null)
+                    continue;
                 rowValues.put(var, (String) map.get("value"));
             }
             returnValues.add(rowValues);

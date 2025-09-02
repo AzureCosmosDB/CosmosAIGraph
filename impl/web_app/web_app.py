@@ -318,13 +318,13 @@ async def post_vector_search_console(req: Request):
     global nosql_svc
     form_data = await req.form()
     logging.info("/vector_search_console form_data: {}".format(form_data))
-    libname = form_data.get("libname").strip()
-    logging.debug("vector_search_console; libname: {}".format(libname))
+    entrypoint = form_data.get("entrypoint").strip()
+    logging.debug("vector_search_console; entrypoint: {}".format(entrypoint))
     view_data = vector_search_view_data()
-    view_data["libname"] = libname
+    view_data["entrypoint"] = entrypoint
 
-    if libname.startswith("text:"):
-        text = libname[5:]
+    if entrypoint.startswith("text:"):
+        text = entrypoint[5:]
         logging.info(f"post_vector_search_console; text: {text}")
         try:
             logging.info("vectorize: {}".format(text))
@@ -343,7 +343,7 @@ async def post_vector_search_console(req: Request):
     else:
         nosql_svc.set_db(ConfigService.graph_source_db())
         nosql_svc.set_container(ConfigService.graph_source_container())
-        docs = await nosql_svc.get_documents_by_name([libname])
+        docs = await nosql_svc.get_documents_by_name([entrypoint])
         logging.debug("vector_search_console - docs count: {}".format(len(docs)))
         #logging.debug("vector_search_console - docs: {}".format(json.dumps(docs)))
 
@@ -364,7 +364,7 @@ async def post_vector_search_console(req: Request):
 
 def vector_search_view_data():
     view_data = dict()
-    view_data["libname"] = ""
+    view_data["entrypoint"] = ""
     view_data["results_message"] = ""
     view_data["results"] = {}
     view_data["embedding_message"] = ""
@@ -602,7 +602,7 @@ def post_libraries_sparql_console(form_data):
                 url = graph_microsvc_bom_query_url()
                 logging.info("url: {}".format(url))
                 postdata = dict()
-                postdata["libname"] = tokens[0]
+                postdata["entrypoint"] = tokens[0]
                 postdata["max_depth"] = tokens[1]
                 logging.info("postdata: {}".format(postdata))
                 r = httpx.post(

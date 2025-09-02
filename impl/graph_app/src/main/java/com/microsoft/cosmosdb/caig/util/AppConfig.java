@@ -89,12 +89,11 @@ public class AppConfig {
      */
     public static String getEnvVar(String name) {
 
-        if (name != null) {
-            if (overrideProperties.containsKey(name)) {
-                return overrideProperties.getProperty(name);
-            }
-            return System.getenv(name);
-        }
+        if (name != null)
+            return (overrideProperties.containsKey(name)) ?
+                    overrideProperties.getProperty(name).replaceAll("^(\"|')|(\"|')$", "") :
+                    System.getenv(name);
+
         return null;
     }
 
