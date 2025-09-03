@@ -61,9 +61,8 @@ class StrategyBuilder:
                 "The user may also want to ask about relationship between entities, which can be retrieved by traversing a knowledge graph. "
                 "Classify the data source with one word: db, vector, or graph."
             )
-            strategy["strategy"] = self.ai_svc.get_completion(
-                natural_language, system_prompt
-            )
+            raw = self.ai_svc.get_completion(natural_language, system_prompt)
+            strategy["strategy"] = self._normalize_strategy_output(raw)
             strategy["algorithm"] = "llm"
             logging.info(
                 "StrategyBuilder:determine got strategy: {} from {}".format(
@@ -77,6 +76,46 @@ class StrategyBuilder:
                 )
             )
         return strategy
+
+    def _normalize_strategy_output(self, raw) -> str:
+        """Normalize LLM output to one of 'db', 'vector', or 'graph'."""
+        try:
+            valid = {"db", "vector", "graph"}
+            if raw is None:
+                return "vector"
+            text = str(raw).strip().lower()
+            # Attempt JSON parse if looks like JSON
+            if (text.startswith("{") and text.endswith("}")) or (text.startswith("[") and text.endswith("]")):
+                import json
+                try:
+                    obj = json.loads(text)
+                    if isinstance(obj, dict):
+                        for k in ("source", "strategy", "data_source", "result"):
+                            v = obj.get(k)
+                            if v:
+                                text = str(v).strip().lower()
+                                break
+                    elif isinstance(obj, list) and len(obj) > 0:
+                        text = str(obj[0]).strip().lower()
+                except Exception:
+                    # fall back to plain text handling
+                    pass
+            # Map common variants
+            if text in ("database", "db", "dbms"):
+                return "db"
+            if text in valid:
+                return text
+            # Heuristic containment
+            if "graph" in text:
+                return "graph"
+            if "vector" in text or "embedding" in text:
+                return "vector"
+            if "db" in text or "database" in text or "sql" in text or "lookup" in text or "find" in text or "fetch" in text:
+                return "db"
+            # Default safe choice
+            return "vector"
+        except Exception:
+            return "vector"
 
     def check_for_simple_known_utterances(self, strategy):
         """

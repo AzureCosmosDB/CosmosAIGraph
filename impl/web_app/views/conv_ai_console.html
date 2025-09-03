@@ -14,22 +14,7 @@
     <div class="card-body bg-dark text-light">
       <p class="card-title text-end fw-light fs-6">Conversation ID: {{ conversation_id }}</p>
       <p></p>
-      <div class="mb-3">
-        <label class="form-label fs-6 d-block">RAG data source:</label>
-        <div class="btn-group" role="group" aria-label="RAG strategy">
-          <input type="radio" class="btn-check" name="rag_strategy" id="rag_auto" autocomplete="off" value="auto" {% if rag_strategy == 'auto' or not rag_strategy %}checked{% endif %}>
-          <label class="btn btn-sm btn-outline-secondary" for="rag_auto">Auto</label>
-
-          <input type="radio" class="btn-check" name="rag_strategy" id="rag_db" autocomplete="off" value="db" {% if rag_strategy == 'db' %}checked{% endif %}>
-          <label class="btn btn-sm btn-outline-secondary" for="rag_db">DB</label>
-
-          <input type="radio" class="btn-check" name="rag_strategy" id="rag_vector" autocomplete="off" value="vector" {% if rag_strategy == 'vector' %}checked{% endif %}>
-          <label class="btn btn-sm btn-outline-secondary" for="rag_vector">Vector</label>
-
-          <input type="radio" class="btn-check" name="rag_strategy" id="rag_graph" autocomplete="off" value="graph" {% if rag_strategy == 'graph' %}checked{% endif %}>
-          <label class="btn btn-sm btn-outline-secondary" for="rag_graph">Graph</label>
-        </div>
-      </div>
+      
       {% for comp in conv["completions"] %}
       {% set content_lines = comp["content"].split("\n") %} 
       <div class="row">
@@ -50,13 +35,31 @@
       </div>
       {% endfor %}
       <hr>
+      <div class="row align-items-end mb-3">
+        <div class="col">
+          <label class="form-label fs-6" for="user_text">Enter your request:</label>
+          <input class="form-control" type="text" id="user_text" name="user_text" 
+            placeholder="Enter your request here. Triple-click for suggestions.">
+        </div>
+  <div class="col-auto text-end">
+          <label class="form-label fs-6 d-block">RAG data source:</label>
+          <div class="btn-group" role="group" aria-label="RAG strategy">
+            <input type="radio" class="btn-check" name="rag_strategy" id="rag_auto" autocomplete="off" value="auto" {% if rag_strategy == 'auto' or not rag_strategy %}checked{% endif %}>
+            <label class="btn btn-sm btn-outline-secondary" for="rag_auto">Auto</label>
+
+            <input type="radio" class="btn-check" name="rag_strategy" id="rag_db" autocomplete="off" value="db" {% if rag_strategy == 'db' %}checked{% endif %}>
+            <label class="btn btn-sm btn-outline-secondary" for="rag_db">DB</label>
+
+            <input type="radio" class="btn-check" name="rag_strategy" id="rag_vector" autocomplete="off" value="vector" {% if rag_strategy == 'vector' %}checked{% endif %}>
+            <label class="btn btn-sm btn-outline-secondary" for="rag_vector">Vector</label>
+
+            <input type="radio" class="btn-check" name="rag_strategy" id="rag_graph" autocomplete="off" value="graph" {% if rag_strategy == 'graph' %}checked{% endif %}>
+            <label class="btn btn-sm btn-outline-secondary" for="rag_graph">Graph</label>
+          </div>
+        </div>
+      </div>
       <div>
-        <label class="form-label fs-6" for="user_text">Enter your request:</label>
-        <input class="form-control" type="text" id="user_text" name="user_text" 
-          placeholder="Enter your request here. Triple-click for suggestions.">
-        <p></p>
-        <div>
-          <button type="submit" class="btn btn-outline-primary" id="continue_button" name="continue_button">Continue</button>
+          <button type="submit" class="btn btn-outline-primary" id="continue_button" name="continue_button">Submit</button>
           <button type="button" class="btn btn-outline-secondary" id="feedback_button" name="feedback_button">Feedback</button>
           <button type="button" class="btn btn-outline-secondary" id="prompts_button" name="prompts_button">Prompts</button>
           <button type="button" class="btn btn-outline-secondary" id="json_button" name="json_button">Show/Hide conversation JSON</button>
