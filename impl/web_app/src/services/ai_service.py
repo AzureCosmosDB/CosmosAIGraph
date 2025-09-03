@@ -359,6 +359,7 @@ ChatBot: """
             temperature=ConfigService.get_completion_temperature(),
             messages=[
                 {"role": "system", "content": system_prompt},
+                {"role": "system", "content": "Return the response as JSON only. (json)"},
                 {"role": "user", "content": user_prompt},
             ],
         )

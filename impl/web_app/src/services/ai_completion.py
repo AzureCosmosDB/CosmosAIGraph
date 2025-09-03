@@ -2,6 +2,7 @@ import datetime
 import logging
 import time
 import uuid
+from typing import Optional
 
 from semantic_kernel.functions.function_result import FunctionResult
 
@@ -14,7 +15,7 @@ from semantic_kernel.functions.function_result import FunctionResult
 
 class AiCompletion:
 
-    def __init__(self, conversation_id: str, invoke_result: FunctionResult):
+    def __init__(self, conversation_id: str, invoke_result: Optional[FunctionResult]):
         try:
             self.data = dict()
             self.data["conversation_id"] = conversation_id

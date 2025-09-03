@@ -384,6 +384,7 @@ async def conv_ai_console(req: Request):
     view_data["conversation_data"] = ""
     view_data["prompts_text"] = "no prompts yet"
     view_data["last_user_question"] = ""
+    view_data["rag_strategy"] = "auto"
     return views.TemplateResponse(
         request=req, name="conv_ai_console.html", context=view_data
     )
@@ -398,8 +399,9 @@ async def conv_ai_console(req: Request):
 
     form_data = await req.form()
     logging.info("/conv_ai_console form_data: {}".format(form_data))
-    conversation_id = form_data.get("conversation_id").strip()
-    user_text = form_data.get("user_text").strip()
+    conversation_id = str(form_data.get("conversation_id") or "").strip()
+    user_text = str(form_data.get("user_text") or "").strip()
+    rag_strategy_choice = str(form_data.get("rag_strategy") or '').strip().lower()
     logging.info(
         "conversation_id: {}, user_text: {}".format(conversation_id, user_text)
     )
@@ -416,10 +418,10 @@ async def conv_ai_console(req: Request):
         )
 
     if len(user_text) > 0:
-        
         prompt_text = ai_svc.generic_prompt_template()
 
-        rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 20)
+        override = None if rag_strategy_choice in ("", "auto") else rag_strategy_choice
+        rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 20, override)
         if (LoggingLevelService.get_level() == logging.DEBUG):
             FS.write_json(rdr.get_data(), "tmp/ai_conv_rdr.json")
 
@@ -504,6 +506,7 @@ async def conv_ai_console(req: Request):
     view_data["conversation_data"] = conv.serialize()
     view_data["prompts_text"] = conv.formatted_prompts_text()
     view_data["last_user_question"] = conv.get_last_user_message()
+    view_data["rag_strategy"] = rag_strategy_choice or (rdr.get_strategy() if 'rdr' in locals() and rdr else "auto")
     return views.TemplateResponse(
         request=req, name="conv_ai_console.html", context=view_data
     )
@@ -586,7 +589,6 @@ def post_libraries_sparql_console(form_data):
     view_data["bom_json_str"] = "{}"
     view_data["inline_bom_json"] = "{}"
     view_data["libtype"] = ""
-
     if sparql == "count":
         view_data["sparql"] = (
             "SELECT (COUNT(?s) AS ?triples) WHERE { ?s ?p ?o } LIMIT 10"

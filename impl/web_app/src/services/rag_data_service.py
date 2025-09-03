@@ -3,6 +3,7 @@ import json
 import logging
 
 import httpx
+from typing import Optional
 
 from src.services.ai_service import AiService
 from src.services.cosmos_nosql_service import CosmosNoSQLService
@@ -44,7 +45,7 @@ class RAGDataService:
         except Exception as e:
             logging.critical("Exception in RagDataService#__init__: {}".format(str(e)))
 
-    async def get_rag_data(self, user_text, max_doc_count=10) -> RAGDataResult:
+    async def get_rag_data(self, user_text, max_doc_count=10, strategy_override: Optional[str] = None) -> RAGDataResult:
         """
         Return a RAGDataResult object which contains an array of documents to
         be used as a system prompt of a completion call to Azure OpenAI.
@@ -60,7 +61,11 @@ class RAGDataService:
 
         sb = StrategyBuilder(self.ai_svc)
         strategy_obj = sb.determine(user_text)
+        # honor explicit user choice when provided and valid; still use name/context from builder
+        valid_choices = {"db", "vector", "graph"}
         strategy = strategy_obj["strategy"]
+        if strategy_override and strategy_override in valid_choices:
+            strategy = strategy_override
         rdr.add_strategy(strategy)
         rdr.set_context(strategy_obj["name"])
 
