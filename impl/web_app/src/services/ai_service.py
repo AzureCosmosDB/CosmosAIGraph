@@ -271,8 +271,8 @@ class AiService:
             actual_tokens = result_obj["pruned_tokens"]
 
             # prev history -> conversation.get_chat_history().serialize()
-
-            conversation.add_user_message(user_query)
+            # The caller (web layer) is responsible for adding the user message
+            # to avoid duplicate entries for the same turn.
             conversation.add_system_message(pruned_context)
             conversation.add_prompt(actual_prompt)
             conversation.add_diagnostic_message(
@@ -330,10 +330,8 @@ class AiService:
             invoke_result = await self.sk_kernel.invoke(self.chat_function, kernel_args)
 
             conversation.add_assistant_message(str(invoke_result))
-            completion = AiCompletion(conversation.get_conversation_id(), invoke_result)
-            conversation.add_completion(completion)
-            await self.nosql_svc.save_conversation(conversation)
-            return completion
+            # Create completion but don't persist or append here; let the caller handle it
+            return AiCompletion(conversation.get_conversation_id(), invoke_result)
         except Exception as e:
             conversation.add_assistant_message("exception: {}".format(str(e)))
             logging.critical("Exception in AiService#invoke_kernel: {}".format(str(e)))

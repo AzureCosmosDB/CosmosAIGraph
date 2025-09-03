@@ -3,6 +3,7 @@ import json
 import logging
 import time
 import uuid
+import copy
 
 from typing import Any, Dict, Final, Iterator, List, Optional, Tuple, Type, Union
 
@@ -31,7 +32,8 @@ class AiConversation:
                 self.conversation_id = json_obj["conversation_id"]
                 self.pk = self.conversation_id
                 self.id = self.conversation_id
-                self.last_user_message = json_obj["conversation_id"]
+                # load last_user_message from document when present
+                self.last_user_message = json_obj.get("last_user_message", "")
                 self.context = json_obj["context"]
 
                 if "prompts" in json_obj.keys():
@@ -199,7 +201,57 @@ class AiConversation:
     def add_completion(self, completion: AiCompletion):
         if completion is not None:
             completion.set_user_text(self.last_user_message)
-            self.completions.append(completion.get_data())
+            new_comp = completion.get_data()
+
+            # Assign a strictly-increasing insertion index for ordering in views
+            try:
+                # Determine the next index from existing completions (use max to survive reloads)
+                curr_indices = [c.get("index") for c in self.completions if isinstance(c.get("index"), int)]
+                next_index = (max(curr_indices) + 1) if curr_indices else 1
+                new_comp["index"] = next_index
+                logging.info(f"Assigned index {next_index} to new completion.")
+            except Exception as e:
+                logging.error(f"Error assigning index: {e}")
+                new_comp["index"] = len(self.completions) + 1
+
+            # Suppress only true duplicates of the same completion object (guards double submit)
+            try:
+                if self.completions and self.completions[-1].get("completion_id") == new_comp.get("completion_id"):
+                    logging.info("Duplicate completion_id suppressed.")
+                    return
+            except Exception as e:
+                logging.error(f"Error checking duplicates: {e}")
+
+            # Enhanced duplicate check: scan all completions for matching completion_id
+            if any(c.get("completion_id") == new_comp.get("completion_id") for c in self.completions):
+                logging.info("Duplicate completion_id suppressed (global check).")
+                return
+
+            # Debugging log for index assignment
+            logging.debug(f"Assigned index {new_comp['index']} to completion with ID {new_comp['completion_id']}")
+
+            # Debugging: Log all completion IDs and indices before appending
+            logging.debug("Existing completions before append:")
+            for c in self.completions:
+                logging.debug(f"Completion ID: {c.get('completion_id')}, Index: {c.get('index')}")
+
+            # Debugging: Log the new completion being added
+            logging.debug(f"New completion to append: ID: {new_comp.get('completion_id')}, Index: {new_comp.get('index')}")
+
+            # Append a deep copy to prevent future mutations altering history
+            try:
+                logging.info(f"Current completions before append: {self.completions}")
+                logging.info(f"Appending new completion: {new_comp}")
+                self.completions.append(copy.deepcopy(new_comp))
+                logging.info(f"State of completions after append: {self.completions}")
+            except Exception as e:
+                logging.error(f"Deep copy failed: {e}")
+                self.completions.append(json.loads(json.dumps(new_comp)))
+
+            # Debugging: Log completions after appending the new entry
+            logging.debug("State of completions after append:")
+            for c in self.completions:
+                logging.debug(f"Completion ID: {c.get('completion_id')}, Index: {c.get('index')}, Content: {c.get('content')}")
 
     def formatted_prompts_text(self) -> str:
         """return a formatted string of the prompts for display in the UI"""
@@ -268,10 +320,10 @@ class AiConversation:
                 f"Unable to serialize chat history to JSON: {e}"
             )
 
-    def last_completion(self) -> dict:
+    def last_completion(self) -> Optional[dict]:
         return None if not self.completions else self.completions[-1]
 
-    def last_completion_content(self):
+    def last_completion_content(self) -> str:
         c = self.last_completion()
         if c is None:
             return ""
@@ -296,3 +348,23 @@ class AiConversation:
                 lines = ptxt.split("\n")
                 for line in lines:
                     print("prompt: {}".format(line))
+
+    def ensure_indices(self) -> None:
+        """Ensure each completion has a stable 'index' set and no duplicates."""
+        try:
+            # First pass: fix missing indices
+            for i, comp in enumerate(self.completions, start=1):
+                if comp.get("index") is None:
+                    comp["index"] = i
+            # Second pass: de-duplicate any repeated indices by reassigning in order
+            seen = set()
+            next_idx = 1 if len(self.completions) == 0 else (max([c.get("index", 0) for c in self.completions]) + 1)
+            for comp in self.completions:
+                idx = comp.get("index")
+                if idx in seen:
+                    comp["index"] = next_idx
+                    next_idx += 1
+                else:
+                    seen.add(idx)
+        except Exception as e:
+            logging.warning("ensure_indices failed: {}".format(str(e)))

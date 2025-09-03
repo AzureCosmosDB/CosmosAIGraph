@@ -4,9 +4,12 @@ import traceback
 import uuid
 
 from azure.cosmos.aio import CosmosClient
+from azure.cosmos.aio._database import DatabaseProxy
+from azure.cosmos.aio._container import ContainerProxy
+from azure.identity.aio import DefaultAzureCredential
 
 # from azure.cosmos import CosmosClient
-from azure.identity import ClientSecretCredential, DefaultAzureCredential
+from azure.identity import ClientSecretCredential
 
 from src.models.webservice_models import AiConvFeedbackModel
 from src.services.ai_conversation import AiConversation
@@ -40,36 +43,34 @@ class CosmosNoSQLService:
         # https://www.slingacademy.com/article/python-defining-a-class-with-an-async-constructor/
         # https://stackoverflow.com/questions/33128325/how-to-set-class-attribute-with-await-in-init
         self._opts = opts
-        self._dbname = None
-        self._dbproxy = None
-        self._ctrproxy = None
-        self._cname = None
-        self._client = None
+        self._dbname: str | None = None
+        self._dbproxy: DatabaseProxy | None = None
+        self._ctrproxy: ContainerProxy | None = None
+        self._cname: str | None = None
+        self._client: CosmosClient | None = None
         logging.info("CosmosNoSQLService - constructor")
 
     async def initialize(self):
         """This method should be called after the above constructor."""
         auth_mechanism = ConfigService.cosmosdb_nosql_auth_mechanism()
-        logging.info("CosmosNoSQLService#auth_mechanism: {}".format(auth_mechanism))
+        logging.info("CosmosNoSQLService#auth_mechanism: %s", auth_mechanism)
 
-        if auth_mechanism == "key":
-            logging.info("CosmosNoSQLService#initialize with key")
+        try:
             uri = ConfigService.cosmosdb_nosql_uri()
-            key = ConfigService.cosmosdb_nosql_key()
-            logging.debug("CosmosNoSQLService#uri: {}".format(uri))
-            logging.debug("CosmosNoSQLService#key: {}".format(key))
-            self._client = CosmosClient(uri, key)
-            logging.info("CosmosNoSQLService - initialize() with key completed")
-        else:
-            logging.info("CosmosNoSQLService#initialize with DefaultAzureCredential")
-            uri = ConfigService.cosmosdb_nosql_uri()
-            credential = DefaultAzureCredential()
-            # credential ino is injected into the runtime environment
-            self._client = CosmosClient(uri, credential=credential)
-            logging.info(
-                "CosmosNoSQLService - initialize() with DefaultAzureCredential completed"
-            )
-        self.set_db(ConfigService.graph_source_db())
+            if auth_mechanism == "key":
+                logging.info("Initializing CosmosClient with key authentication.")
+                key = ConfigService.cosmosdb_nosql_key()
+                self._client = CosmosClient(uri, credential=key)
+            else:
+                logging.info("Initializing CosmosClient with DefaultAzureCredential.")
+                credential = DefaultAzureCredential()
+                self._client = CosmosClient(uri, credential=credential)
+
+            logging.info("CosmosClient initialized successfully.")
+            self.set_db(ConfigService.graph_source_db())
+        except Exception as e:
+            logging.error("Failed to initialize CosmosNoSQLService: %s", e)
+            raise RuntimeError("CosmosNoSQLService initialization failed.") from e
 
     async def close(self):
         if self._client is not None:
@@ -78,66 +79,86 @@ class CosmosNoSQLService:
 
     async def list_databases(self):
         """Return the list of database names in the account."""
+        self.validate_client()
         dblist = list()
         async for db in self._client.list_databases():
             dblist.append(db["id"])
         return dblist
 
-    def set_db(self, dbname):
+    def validate_client(self):
+        assert self._client is not None, "CosmosClient is not initialized. Call 'initialize' first."
+
+    def validate_dbproxy(self):
+        assert self._dbproxy is not None, "Database proxy is not set. Call 'set_db' first."
+
+    def validate_ctrproxy(self):
+        assert self._ctrproxy is not None, "Container proxy is not set. Call 'set_container' first."
+
+    def set_db(self, dbname: str) -> DatabaseProxy:
         """Set the current database to the given dbname."""
+        self.validate_client()
         try:
             self._dbname = dbname
             self._dbproxy = self._client.get_database_client(dbname)
         except Exception as e:
-            logging.critical(str(e))
-            print(traceback.format_exc())
+            logging.critical("Failed to set database: %s", e)
+            raise
         return self._dbproxy  # <class 'azure.cosmos.aio._database.DatabaseProxy'>
 
     def get_current_cname(self):
         return self._cname
 
-    def set_container(self, cname):
+    def set_container(self, cname: str) -> ContainerProxy:
         """Set the current container in the current database to the given cname."""
-        self._cname = cname
-        self._ctrproxy = self._dbproxy.get_container_client(cname)
+        self.validate_dbproxy()
+        if cname is None:
+            raise ValueError("Container name cannot be None.")
+        try:
+            self._cname = cname
+            self._ctrproxy = self._dbproxy.get_container_client(cname)
+        except Exception as e:
+            logging.critical("Failed to set container: %s", e)
+            raise
         return self._ctrproxy  # <class 'azure.cosmos.aio._container.ContainerProxy'>
 
     async def list_containers(self):
         """Return the list of container names in the current database."""
+        self.validate_dbproxy()
         container_list = list()
         async for container in self._dbproxy.list_containers():
             container_list.append(container["id"])
         return container_list
 
-    async def point_read(self, id, pk):
+    async def point_read(self, id: str, pk: str):
+        self.validate_ctrproxy()
         return await self._ctrproxy.read_item(item=id, partition_key=pk)
 
-    async def create_item(self, doc):
+    async def create_item(self, doc: dict):
+        self.validate_ctrproxy()
         return await self._ctrproxy.create_item(body=doc)
 
-    async def upsert_item(self, doc):
+    async def upsert_item(self, doc: dict):
+        self.validate_ctrproxy()
         return await self._ctrproxy.upsert_item(body=doc)
 
-    async def delete_item(self, id, pk):
+    async def delete_item(self, id: str, pk: str):
+        self.validate_ctrproxy()
         return await self._ctrproxy.delete_item(item=id, partition_key=pk)
 
     # https://github.com/Azure/azure-sdk-for-python/blob/azure-cosmos_4.7.0/sdk/cosmos/azure-cosmos/samples/document_management_async.py
 
     async def execute_item_batch(self, item_operations: list, pk: str):
-        # example item_operations:
-        #   [("create", (get_sales_order("create_item"),)), next op, next op, ...]
-        # each operation is a 2-tuple, with the operation name as tup[0]
-        # tup[1] is a nested 2-tuple , with the document as tup[0]
+        self.validate_ctrproxy()
         return await self._ctrproxy.execute_item_batch(
             batch_operations=item_operations, partition_key=pk
         )
 
-    async def query_items(self, sql, cross_partition=False, pk=None, max_items=100):
+    async def query_items(self, sql: str, cross_partition: bool = False, pk: str | None = None, max_items: int = 100):
+        self.validate_ctrproxy()
         parameters_list, results_list = list(), list()
         parameters_list.append(
             {"name": "@enable_cross_partition_query", "value": cross_partition}
         )
-        # parameters_list.append({"name": "@max_item_count", "value": max_items})
         if pk is not None:
             parameters_list.append({"name": "@partition_key", "value": pk})
         query_results = self._ctrproxy.query_items(
@@ -188,8 +209,60 @@ class CosmosNoSQLService:
     async def save_conversation(self, conv: AiConversation | None):
         resp = None
         if conv is not None:
+            logging.info(f"Saving conversation with completions: {conv.completions}")
             self.set_container(ConfigService.conversations_container())
+
+            # Load existing conversation to merge completions
+            existing_conv = await self.load_conversation(conv.conversation_id)
+            if existing_conv:
+                logging.info("Merging completions with existing conversation.")
+                logging.info(f"BEFORE MERGE: incoming={len(conv.completions)}, existing={len(existing_conv.completions)}")
+                
+                # Create a comprehensive list of all completions
+                all_completions = existing_conv.completions.copy()  # Start with existing
+                
+                # Add new completions that don't already exist
+                existing_ids = {c.get("completion_id") for c in existing_conv.completions}
+                new_completions = [c for c in conv.completions if c.get("completion_id") not in existing_ids]
+                
+                logging.info(f"MERGE FILTERING: {len(new_completions)} new completions after dedup")
+                for i, c in enumerate(new_completions):
+                    logging.info(f"  New completion {i}: ID={c.get('completion_id')}, Index={c.get('index')}, User={c.get('user_text')}")
+                
+                # Append new completions to the existing list
+                all_completions.extend(new_completions)
+                
+                # Sort by index to maintain proper order
+                all_completions.sort(key=lambda x: x.get('index', 0))
+                
+                # Update the conversation's completions
+                conv.completions = all_completions
+                
+                logging.info(f"AFTER MERGE: total={len(conv.completions)} completions")
+                for i, c in enumerate(conv.completions):
+                    logging.info(f"  Final completion {i}: ID={c.get('completion_id')}, Index={c.get('index')}, User={c.get('user_text')}")
+
+                # Debugging: Log the state of completions after merging
+                logging.debug("Completions after merging:")
+                for c in conv.completions:
+                    logging.debug(f"Completion ID: {c.get('completion_id')}, Index: {c.get('index')}")
+            else:
+                logging.info("No existing conversation found - saving new conversation.")
+
+            # Debugging: Log completions before saving
+            logging.debug("Completions before saving:")
+            for c in conv.completions:
+                logging.debug(f"Completion ID: {c.get('completion_id')}, Index: {c.get('index')}, Content: {c.get('content')}")
+
+            # Debugging: Log completions after merging
+            logging.debug("Completions after merging:")
+            for c in conv.completions:
+                logging.debug(f"Completion ID: {c.get('completion_id')}, Index: {c.get('index')}, Content: {c.get('content')}")
+
             doc = json.loads(conv.serialize())
+            print(f"[DEBUG] SAVING TO DB: {len(doc.get('completions', []))} completions")
+            for i, c in enumerate(doc.get('completions', [])):
+                print(f"[DEBUG]   DB Save completion {i}: Index={c.get('index')}, User={c.get('user_text')}")
             resp = await self.upsert_item(doc)
         return resp
 
@@ -200,8 +273,17 @@ class CosmosNoSQLService:
             sql_params = [dict(name="@conversation_id", value=conv_id)]
             sql = "select * from c where c.conversation_id = @conversation_id offset 0 limit 1"
             items = await self.parameterized_query(sql, sql_params, True)
+            print(f"[DEBUG] DB QUERY returned {len(items)} items for conv_id={conv_id}")
             for doc in items:
+                completions = doc.get("completions", [])
+                print(f"[DEBUG] RAW DB DOC has {len(completions)} completions")
+                for i, c in enumerate(completions):
+                    print(f"[DEBUG]   Raw DB completion {i}: Index={c.get('index')}, User={c.get('user_text')}")
                 conv = AiConversation(doc)
+                # DEBUGGING: Log what we loaded from database
+                logging.info(f"LOADED FROM DB: {len(completions)} completions for conv_id={conv_id}")
+                for i, c in enumerate(completions):
+                    logging.info(f"  DB completion {i}: ID={c.get('completion_id')}, Index={c.get('index')}, User={c.get('user_text')}")
         return conv
 
     async def find_library(self, name: str | None) -> dict | None:

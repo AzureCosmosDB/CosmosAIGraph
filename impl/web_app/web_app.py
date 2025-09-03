@@ -143,6 +143,13 @@ views = Jinja2Templates(directory="views")
 views.env.filters['markdown'] = markdown_filter
 views.env.filters['tojson'] = tojson_pretty
 
+# Enable server-side session to persist conversation_id across posts
+try:
+    session_secret = os.getenv("CAIG_SESSION_SECRET") or "change-me-dev"
+    app.add_middleware(SessionMiddleware, secret_key=session_secret)
+except Exception as e:
+    logging.warning("Session middleware not added: {}".format(str(e)))
+
 # web service authentication with shared secrets
 websvc_auth_header = ConfigService.websvc_auth_header()
 websvc_auth_value = ConfigService.websvc_auth_value()
@@ -379,8 +386,12 @@ async def conv_ai_console(req: Request):
         "conv_ai_console - new conversation_id: {}".format(conv.conversation_id)
     )
     view_data = dict()
-    view_data["conv"] = conv
+    view_data["conv"] = conv.get_data()
     view_data["conversation_id"] = conv.conversation_id
+    try:
+        req.session["conversation_id"] = conv.conversation_id
+    except Exception:
+        pass
     view_data["conversation_data"] = ""
     view_data["prompts_text"] = "no prompts yet"
     view_data["last_user_question"] = ""
@@ -400,24 +411,80 @@ async def conv_ai_console(req: Request):
     form_data = await req.form()
     logging.info("/conv_ai_console form_data: {}".format(form_data))
     conversation_id = str(form_data.get("conversation_id") or "").strip()
+    if not conversation_id:
+        try:
+            conversation_id = str(req.session.get("conversation_id") or "").strip()
+            logging.info("conversation_id restored from session: {}".format(conversation_id))
+        except Exception:
+            pass
     user_text = str(form_data.get("user_text") or "").strip()
     rag_strategy_choice = str(form_data.get("rag_strategy") or '').strip().lower()
+    print(f"[DEBUG] conversation_id: {conversation_id}, user_text: {user_text}")
     logging.info(
         "conversation_id: {}, user_text: {}".format(conversation_id, user_text)
     )
-    conv = await nosql_svc.load_conversation(conversation_id)
+    
+    # Try database first, fall back to file-based storage if database fails
+    import os
+    import json
+    
+    conv_file_path = f"tmp/conv_{conversation_id}.json"
+    conv = None
+    use_file_storage = False
+    
+    # Try to load from database first
+    try:
+        conv = await nosql_svc.load_conversation(conversation_id)
+        if conv:
+            print(f"[DEBUG] LOADED FROM DATABASE: {len(conv.completions)} completions")
+        else:
+            print(f"[DEBUG] NO DATABASE RECORD found for conversation_id: {conversation_id}")
+    except Exception as e:
+        print(f"[DEBUG] DATABASE LOAD FAILED: {e}")
+        logging.warning(f"Database load failed, falling back to file storage: {e}")
+        use_file_storage = True
+    
+    # If database failed or returned None, try file-based storage
+    if conv is None:
+        if os.path.exists(conv_file_path):
+            try:
+                with open(conv_file_path, 'r') as f:
+                    conv_data = json.load(f)
+                conv = AiConversation(conv_data)
+                print(f"[DEBUG] LOADED FROM FILE (fallback): {len(conv.completions)} completions")
+                use_file_storage = True
+            except Exception as e:
+                print(f"[DEBUG] FILE LOAD ALSO FAILED: {e}")
+                conv = None
+        else:
+            print(f"[DEBUG] NO FILE found either for conversation_id: {conversation_id}")
+            use_file_storage = True  # Use file storage for new conversations if DB failed
+
+    # DEBUGGING: Log completions immediately after loading
+    if conv:
+        print(f"[DEBUG] LOADED CONVERSATION: {len(conv.completions)} completions")
+        logging.info(f"LOADED CONVERSATION: {len(conv.completions)} completions")
+        for i, c in enumerate(conv.completions):
+            print(f"[DEBUG]   Loaded completion {i}: Index={c.get('index')}, User={c.get('user_text')}")
+            logging.info(f"  Loaded completion {i}: ID={c.get('completion_id')}, Index={c.get('index')}, User={c.get('user_text')}")
+    else:
+        print(f"[DEBUG] LOADED CONVERSATION: None (new conversation)")
+        logging.info("LOADED CONVERSATION: None (new conversation)")
 
     if conv is None:
         conv = AiConversation()
-        conv.set_conversation_id(conversation_id)
-        await nosql_svc.save_conversation(conv)
-        logging.info("new conversation saved: {}".format(conversation_id))
+        # Only set the id if provided; otherwise keep the generated one
+        if conversation_id is not None and len(conversation_id) > 0:
+            conv.set_conversation_id(conversation_id)
+        logging.info("new conversation created")
     else:
         logging.info(
             "conversation loaded: {} {}".format(conversation_id, conv.serialize())
         )
 
     if len(user_text) > 0:
+        # Always record the user's message first so each turn shows in order
+        conv.add_user_message(user_text)
         prompt_text = ai_svc.generic_prompt_template()
 
         override = None if rag_strategy_choice in ("", "auto") else rag_strategy_choice
@@ -429,9 +496,12 @@ async def conv_ai_console(req: Request):
         completion.set_user_text(user_text)
         completion.set_rag_strategy(rdr.get_strategy())
         content_lines = list()
+
+        # Prepare context based on RAG strategy
+        context = ""
+        completion_context = conv.last_completion_content()
         
         if rdr.has_db_rag_docs() == True:
-            conv.add_user_message(user_text)
             for doc in rdr.get_rag_docs():
                 logging.debug("doc: {}".format(doc))
                 line_parts = list()
@@ -441,72 +511,160 @@ async def conv_ai_console(req: Request):
                         if len(value) > 0:
                             line_parts.append("{}: {}".format(attr, value))
                 content_lines.append(".  ".join(line_parts))
-            completion.set_content("\n".join(content_lines))
-            conv.add_completion(completion)
+            
+            # For DB RAG, set the context but don't set completion content yet
             conv.set_context(rdr.get_context())
-            await nosql_svc.save_conversation(conv)
-        else:
-            context = ""
-            completion_context = conv.last_completion_content()
-            if rdr.has_graph_rag_docs() == True:
-                for doc in rdr.get_rag_docs():
-                    content_lines.append(json.dumps(doc))
-                completion.set_content(", ".join(content_lines))
-                #conv.add_completion(completion)
-                conv.set_context(completion.get_content())
-                conv.add_diagnostic_message("sparql: {}".format(rdr.get_sparql()))
-
-                if conv.has_context():
-                    context = "Found context: {}\n{}\n".format(
-                        conv.get_context(), completion_context
-                    )
-                else:
-                    context = "{}\n".format(completion_context)
-                    
-                #await nosql_svc.save_conversation(conv)
+            rag_data = "\n".join(content_lines)
+            
+            if conv.has_context():
+                context = "Found context: {}\n{}\n{}".format(
+                    conv.get_context(), completion_context, rag_data
+                )
             else:
-                rag_data = rdr.as_system_prompt_text()
-
-                if conv.has_context():
-                    context = "Found context: {}\n{}\n{}".format(
-                        conv.get_context(), completion_context, rag_data
-                    )
-                else:
-                    context = "{}\n{}".format(completion_context, rag_data)
-
-            max_tokens = ConfigService.invoke_kernel_max_tokens()
-            temperature = ConfigService.invoke_kernel_temperature()
-            top_p = ConfigService.invoke_kernel_top_p()
-            comp_result = await ai_svc.invoke_kernel(
-                conv,
-                prompt_text,
-                user_text,
-                context=context,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                top_p=top_p,
-            )
-            if comp_result is not None: 
-                completion = comp_result 
-                completion.set_rag_strategy(rdr.get_strategy())
-                #conv.add_completion(completion)         
-            else: 
-                completion.set_content("No results found")
+                context = "{}\n{}".format(completion_context, rag_data)
                 
-            #await nosql_svc.save_conversation(conv)
+            try:
+                logging.info("conv save (db path) completions: {}".format(len(conv.get_data().get("completions", []))))
+            except Exception:
+                pass
+                
+        elif rdr.has_graph_rag_docs() == True:
+            for doc in rdr.get_rag_docs():
+                content_lines.append(json.dumps(doc))
+            
+            # For Graph RAG, set the context but don't set completion content yet
+            graph_content = ", ".join(content_lines)
+            conv.set_context(graph_content)
+            conv.add_diagnostic_message("sparql: {}".format(rdr.get_sparql()))
+
+            if conv.has_context():
+                context = "Found context: {}\n{}\n".format(
+                    conv.get_context(), completion_context
+                )
+            else:
+                context = "{}\n".format(completion_context)
+        else:
+            # No specific RAG docs, use system prompt
+            rag_data = rdr.as_system_prompt_text()
+
+            if conv.has_context():
+                context = "Found context: {}\n{}\n{}".format(
+                    conv.get_context(), completion_context, rag_data
+                )
+            else:
+                context = "{}\n{}".format(completion_context, rag_data)
+
+        # Always run AI inference to generate the actual response
+        max_tokens = ConfigService.invoke_kernel_max_tokens()
+        temperature = ConfigService.invoke_kernel_temperature()
+        top_p = ConfigService.invoke_kernel_top_p()
+        comp_result = await ai_svc.invoke_kernel(
+            conv,
+            prompt_text,
+            user_text,
+            context=context,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            top_p=top_p,
+        )
+        if comp_result is not None:
+            completion = comp_result
+            completion.set_rag_strategy(rdr.get_strategy())
+        else:
+            completion.set_content("No results found")
+
+        # Add completion exactly once at the end
+        conv.add_completion(completion)
+        
+        print(f"[DEBUG] AFTER ADD_COMPLETION: {len(conv.completions)} completions")
+        # DEBUGGING: Log completions immediately after adding
+        logging.info(f"AFTER ADD_COMPLETION: {len(conv.completions)} completions")
+        for i, c in enumerate(conv.completions):
+            print(f"[DEBUG]   After add completion {i}: Index={c.get('index')}, User={c.get('user_text')}")
+            logging.info(f"  After add completion {i}: ID={c.get('completion_id')}, Index={c.get('index')}, User={c.get('user_text')}")
+        
+        # Save conversation - try database first, fall back to file if database fails
+        save_success = False
+        
+        # Try database save first (unless we're already using file storage)
+        if not use_file_storage:
+            try:
+                await nosql_svc.save_conversation(conv)
+                print(f"[DEBUG] SAVED TO DATABASE: {len(conv.completions)} completions")
+                logging.info(f"SAVED TO DATABASE: {len(conv.completions)} completions")
+                save_success = True
+            except Exception as e:
+                print(f"[DEBUG] DATABASE SAVE FAILED: {e}")
+                logging.warning(f"Database save failed, falling back to file storage: {e}")
+                use_file_storage = True
+        
+        # If database save failed or we're using file storage, save to file
+        if not save_success or use_file_storage:
+            try:
+                with open(conv_file_path, 'w') as f:
+                    json.dump(conv.get_data(), f, indent=2)
+                print(f"[DEBUG] SAVED TO FILE: {len(conv.completions)} completions")
+                logging.info(f"SAVED TO FILE: {len(conv.completions)} completions")
+                save_success = True
+            except Exception as e:
+                print(f"[DEBUG] FILE SAVE ALSO FAILED: {e}")
+                logging.error(f"Both database and file save failed: {e}")
+        
+        if not save_success:
+            logging.error("CRITICAL: Conversation could not be saved to either database or file!")
+
+        # DEBUGGING: Log completions immediately after save
+        storage_type = "DATABASE" if not use_file_storage else "FILE"
+        print(f"[DEBUG] AFTER SAVE_CONVERSATION ({storage_type}): {len(conv.completions)} completions")
+        logging.info(f"AFTER SAVE_CONVERSATION ({storage_type}): {len(conv.completions)} completions")
+        for i, c in enumerate(conv.completions):
+            print(f"[DEBUG]   After save completion {i}: Index={c.get('index')}, User={c.get('user_text')}")
+            logging.info(f"  After save completion {i}: ID={c.get('completion_id')}, Index={c.get('index')}, User={c.get('user_text')}")
+
+        logging.info(f"Completions after add_completion: {len(conv.completions)}")
+        save_method = "database" if not use_file_storage else "file"
+        logging.info(f"Conversation saved successfully using {save_method} storage.")
 
     #textformat_conversation(conv)
+    # Disable optional reload to prevent issues with conversation state
+    # The in-memory conversation should be the source of truth after save
+    logging.info(f"Final conversation has {len(conv.get_data().get('completions', []))} completions")
+
     if (LoggingLevelService.get_level() == logging.DEBUG):
         FS.write_json(conv.get_data(), "tmp/ai_conv_{}.json".format(
             conv.get_message_count()))
 
     view_data = dict()
-    view_data["conv"] = conv
+    # Backfill indices for stable ordering in the UI
+    try:
+        conv.ensure_indices()
+    except Exception:
+        pass
+    view_data["conv"] = conv.get_data()
     view_data["conversation_id"] = conv.conversation_id
+    
+    # DEBUGGING: Log completions before rendering template
+    completions_data = conv.get_data().get("completions", [])
+    logging.info(f"BEFORE TEMPLATE RENDER: {len(completions_data)} completions")
+    for i, c in enumerate(completions_data):
+        logging.info(f"  Template completion {i}: ID={c.get('completion_id')}, Index={c.get('index')}, User={c.get('user_text')}")
+    
+    try:
+        req.session["conversation_id"] = conv.conversation_id
+    except Exception:
+        pass
     view_data["conversation_data"] = conv.serialize()
     view_data["prompts_text"] = conv.formatted_prompts_text()
     view_data["last_user_question"] = conv.get_last_user_message()
     view_data["rag_strategy"] = rag_strategy_choice or (rdr.get_strategy() if 'rdr' in locals() and rdr else "auto")
+    
+    # Debugging: Log the state of completions before rendering the template
+    logging.debug("Final completions before rendering: {}".format(conv.get_data().get("completions", [])))
+    # Debugging: Log the final state of completions before rendering the template
+    logging.debug("Final state of completions before rendering:")
+    for c in conv.get_data().get("completions", []):
+        logging.debug(f"Completion ID: {c.get('completion_id')}, Index: {c.get('index')}, Content: {c.get('content')}")
+
     return views.TemplateResponse(
         request=req, name="conv_ai_console.html", context=view_data
     )

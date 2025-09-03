@@ -6,83 +6,95 @@
   <h5>OmniRAG Chat</h5>
 </div>
 
-<form method="post"  id="form" name="form" action="/conv_ai_console">
-<input type="hidden" id="conversation_id" name="conversation_id" value="{{ conversation_id }}">
+<form method="post" id="form" name="form" action="/conv_ai_console">
+  <input type="hidden" id="conversation_id" name="conversation_id" value="{{ conversation_id }}">
 
-<div class="container">
-  <div class="card caig-card" style="width: 100%;">
-    <div class="card-body bg-dark text-light">
-      <p class="card-title text-end fw-light fs-6">Conversation ID: {{ conversation_id }}</p>
-      <p></p>
-      
-      {% for comp in conv["completions"] %}
-      {% set content_lines = comp["content"].split("\n") %} 
-      <div class="row">
-        <div class="col">
-          <p class="text-start fw-bold fs-6" style="border-radius: 15px; background-color: rgba(119, 119, 119, 0.2);">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ comp["user_text"] }}
-          </p>
-          <div class="text-start fs-6" style="border-radius: 12px; background-color: rgba(255,255,255,0.03);">
-            {{ comp["content"] | markdown | safe }}
-          </div>
-          <p class="text-start fw-light fs-6 text-muted">
-            Prompt tokens: {{ comp["usage"]["prompt_tokens"] }},
-            Completion tokens: {{ comp["usage"]["completion_tokens"] }},
-            Total tokens: {{ comp["usage"]["total_tokens"] }},
-            RAG strategy: {{ comp["rag_strategy"] }}
-          </p>
-        </div>
-      </div>
-      {% endfor %}
-      <hr>
-      <div class="row align-items-end mb-3">
-        <div class="col">
-          <label class="form-label fs-6" for="user_text">Enter your request:</label>
-          <input class="form-control" type="text" id="user_text" name="user_text" 
-            placeholder="Enter your request here. Triple-click for suggestions.">
-        </div>
-  <div class="col-auto text-end">
-          <label class="form-label fs-6 d-block">RAG data source:</label>
-          <div class="btn-group" role="group" aria-label="RAG strategy">
-            <input type="radio" class="btn-check" name="rag_strategy" id="rag_auto" autocomplete="off" value="auto" {% if rag_strategy == 'auto' or not rag_strategy %}checked{% endif %}>
-            <label class="btn btn-sm btn-outline-secondary" for="rag_auto">Auto</label>
+  <div class="container">
+    <div class="card caig-card" style="width: 100%;">
+      <div class="card-body bg-dark text-light">
+        <p class="card-title text-end fw-light fs-6">Conversation ID: {{ conversation_id }}</p>
+        <p></p>
 
-            <input type="radio" class="btn-check" name="rag_strategy" id="rag_db" autocomplete="off" value="db" {% if rag_strategy == 'db' %}checked{% endif %}>
-            <label class="btn btn-sm btn-outline-secondary" for="rag_db">DB</label>
-
-            <input type="radio" class="btn-check" name="rag_strategy" id="rag_vector" autocomplete="off" value="vector" {% if rag_strategy == 'vector' %}checked{% endif %}>
-            <label class="btn btn-sm btn-outline-secondary" for="rag_vector">Vector</label>
-
-            <input type="radio" class="btn-check" name="rag_strategy" id="rag_graph" autocomplete="off" value="graph" {% if rag_strategy == 'graph' %}checked{% endif %}>
-            <label class="btn btn-sm btn-outline-secondary" for="rag_graph">Graph</label>
+        {# Sort primarily by index, with created_at as stable secondary sort #}
+        {% set sorted_completions = conv["completions"]|sort(attribute='created_at')|sort(attribute='index') %}
+        {% for comp in sorted_completions %}
+        {% set content_lines = comp["content"].split("\n") %}
+        <div class="row">
+          <div class="col">
+            <p class="text-start fw-bold fs-6" style="border-radius: 15px; background-color: rgba(119, 119, 119, 0.2);">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ comp["user_text"] }}
+            </p>
+            <div class="text-start fs-6" style="border-radius: 12px; background-color: rgba(255,255,255,0.03);">
+              {{ comp["content"] | markdown | safe }}
+            </div>
+            <p class="text-start fw-light fs-6 text-muted">
+              Prompt tokens: {{ comp["usage"]["prompt_tokens"] }},
+              Completion tokens: {{ comp["usage"]["completion_tokens"] }},
+              Total tokens: {{ comp["usage"]["total_tokens"] }},
+              RAG strategy: {{ comp["rag_strategy"] }}
+            </p>
           </div>
         </div>
-      </div>
-      <div>
-          <button type="submit" class="btn btn-outline-primary" id="continue_button" name="continue_button">Submit</button>
-          <button type="button" class="btn btn-outline-secondary" id="feedback_button" name="feedback_button">Feedback</button>
-          <button type="button" class="btn btn-outline-secondary" id="prompts_button" name="prompts_button">Prompts</button>
-          <button type="button" class="btn btn-outline-secondary" id="json_button" name="json_button">Show/Hide conversation JSON</button>
+        {% endfor %}
+        <hr>
+        <div class="row align-items-end mb-3">
+          <div class="col">
+            <label class="form-label fs-6" for="user_text">Enter your request:</label>
+            <input class="form-control" type="text" id="user_text" name="user_text"
+              placeholder="Enter your request here. Triple-click for suggestions.">
+          </div>
+          <div class="col-auto text-end">
+            <label class="form-label fs-6 d-block">RAG data source:</label>
+            <div class="btn-group" role="group" aria-label="RAG strategy">
+              <input type="radio" class="btn-check" name="rag_strategy" id="rag_auto" autocomplete="off" value="auto" {%
+                if rag_strategy=='auto' or not rag_strategy %}checked{% endif %}>
+              <label class="btn btn-sm btn-outline-secondary" for="rag_auto">Auto</label>
+
+              <input type="radio" class="btn-check" name="rag_strategy" id="rag_db" autocomplete="off" value="db" {% if
+                rag_strategy=='db' %}checked{% endif %}>
+              <label class="btn btn-sm btn-outline-secondary" for="rag_db">DB</label>
+
+              <input type="radio" class="btn-check" name="rag_strategy" id="rag_vector" autocomplete="off"
+                value="vector" {% if rag_strategy=='vector' %}checked{% endif %}>
+              <label class="btn btn-sm btn-outline-secondary" for="rag_vector">Vector</label>
+
+              <input type="radio" class="btn-check" name="rag_strategy" id="rag_graph" autocomplete="off" value="graph"
+                {% if rag_strategy=='graph' %}checked{% endif %}>
+              <label class="btn btn-sm btn-outline-secondary" for="rag_graph">Graph</label>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button type="button" class="btn btn-outline-primary" id="continue_button"
+            name="continue_button">Submit</button>
+          <button type="button" class="btn btn-outline-secondary" id="feedback_button"
+            name="feedback_button">Feedback</button>
+          <button type="button" class="btn btn-outline-secondary" id="prompts_button"
+            name="prompts_button">Prompts</button>
+          <button type="button" class="btn btn-outline-secondary" id="json_button" name="json_button">Show/Hide
+            conversation JSON</button>
         </div>
       </div>
     </div>
   </div>
-</div>
 </form>
 <div class="container" id="feedback_div" name="feedback_div">
-  <br/>
+  <br />
   <h5>Feedback</h5>
-  <form method="post" id="feedback_form" name="feedback_form" action="/conv_ai_feedback" onsubmit="submitForm(); return false;">
+  <form method="post" id="feedback_form" name="feedback_form" action="/conv_ai_feedback"
+    onsubmit="submitForm(); return false;">
     <input type="hidden" id="conversation_id" name="conversation_id" value="{{ conversation_id }}">
-  <div>
-    <label class="form-label fs-6" for="user_text">Enter your feedback on the last response:</label><br/>
-    <label class="form-label text-muted">Conversation ID: {{ conversation_id }}</label><br/>
-    <label class="form-label text-muted">Question: {{ last_user_question }}</label><br/>
-    <input class="form-control" type="text" id="feedback_user_feedback"   name="feedback_user_feedback" placeholder="enter your feedback here"><br/>
     <div>
-      <button type="submit" class="btn btn-outline-primary" id="feedback_submit_button" name="feedback_submit_button">Submit</button>
+      <label class="form-label fs-6" for="user_text">Enter your feedback on the last response:</label><br />
+      <label class="form-label text-muted">Conversation ID: {{ conversation_id }}</label><br />
+      <label class="form-label text-muted">Question: {{ last_user_question }}</label><br />
+      <input class="form-control" type="text" id="feedback_user_feedback" name="feedback_user_feedback"
+        placeholder="enter your feedback here"><br />
+      <div>
+        <button type="submit" class="btn btn-outline-primary" id="feedback_submit_button"
+          name="feedback_submit_button">Submit</button>
+      </div>
     </div>
-  </div>
   </form>
 </div>
 <div class="container" id="prompts_div" name="prompts_div">
@@ -104,70 +116,95 @@
   </code>
   </pre>
 </div>
-
 {% endblock %}
 
 {% block js %}
 <script>
-const form = document.getElementById("form");
-var user_text = document.getElementById("user_text");
-const continue_button = document.getElementById("continue_button");
-const json_button = document.getElementById("json_button");
-const conversation_data = document.getElementById("conversation_data");
-const feedback_div = document.getElementById("feedback_div");
-const prompts_div = document.getElementById("prompts_div");
+  const form = document.getElementById("form");
+  var user_text = document.getElementById("user_text");
+  const continue_button = document.getElementById("continue_button");
+  const json_button = document.getElementById("json_button");
+  const conversation_data = document.getElementById("conversation_data");
+  const feedback_div = document.getElementById("feedback_div");
+  const prompts_div = document.getElementById("prompts_div");
 
-user_text.focus();
-continue_button.disabled = true;
-conversation_data.style.display = "none";
-feedback_div.style.display = "none";
-prompts_div.style.display = "none";
-
-var suggestions_index = -1;
-var suggestions = [
-  "what are the dependencies of the python library called flask?",
-  "Look up record flask",
-  "What are the possible alternatives to it?",
-  "Is there an asynchronous version of flask?"
-];
-
-let clickCount = 0;
-let clickTimer = null;
-
-user_text.addEventListener('click', function(event) {
-  clickCount++;
-  if (clickCount === 1) {
-    clickTimer = setTimeout(function() {
-      clickCount = 0;
-    }, 400);
-  } else if (clickCount === 3) {
-    clearTimeout(clickTimer);
-    clickCount = 0;
-    suggestions_index++;
-    if (suggestions_index >= suggestions.length) {
-      suggestions_index = 0;
+  function scrollToBottom() {
+    try {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    } catch (e) {
+      // no-op
     }
-    user_text.value = suggestions[suggestions_index];
-    continue_button.disabled = false;
   }
-});
 
-continue_button.addEventListener('click', 
-    function(event) {
-      user_text = document.getElementById("user_text");
-      console.log("continue_button click");
-      event.preventDefault();
-      if (user_text.value.trim().length > 0) {
-        continue_button.disabled = true;
-        continue_button.textContent = "Processing...";
-        json_button.disabled = true;
-        form.submit();
+  user_text.focus();
+  continue_button.disabled = true;
+  conversation_data.style.display = "none";
+  feedback_div.style.display = "none";
+  prompts_div.style.display = "none";
+  // ensure latest completion is visible on render
+  document.addEventListener('DOMContentLoaded', scrollToBottom);
+
+  var suggestions_index = -1;
+  var suggestions = [
+    "what are the dependencies of the python library called flask?",
+    "Look up record flask",
+    "What are the possible alternatives to it?",
+    "Is there an asynchronous version of flask?"
+  ];
+
+  let clickCount = 0;
+  let clickTimer = null;
+
+  user_text.addEventListener('click', function (event) {
+    clickCount++;
+    if (clickCount === 1) {
+      clickTimer = setTimeout(function () {
+        clickCount = 0;
+      }, 400);
+    } else if (clickCount === 3) {
+      clearTimeout(clickTimer);
+      clickCount = 0;
+      suggestions_index++;
+      if (suggestions_index >= suggestions.length) {
+        suggestions_index = 0;
       }
+      user_text.value = suggestions[suggestions_index];
+      continue_button.disabled = false;
     }
-);
+  });
 
-feedback_button.addEventListener('click', 
-    function(event) {
+  // remove duplicate submit bindings and guard against double submit
+  let isSubmitting = false;
+  function triggerSubmit() {
+    user_text = document.getElementById("user_text");
+    if (isSubmitting) {
+      return;
+    }
+    if (user_text && user_text.value.trim().length > 0) {
+      isSubmitting = true;
+      continue_button.disabled = true;
+      continue_button.textContent = "Processing...";
+      json_button.disabled = true;
+      form.submit();
+    }
+  }
+
+  continue_button.addEventListener('click', function (event) {
+    console.log("continue_button click");
+    event.preventDefault();
+    triggerSubmit();
+  });
+
+  // Submit on Enter key in the text box
+  user_text.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      triggerSubmit();
+    }
+  });
+
+  feedback_button.addEventListener('click',
+    function (event) {
       console.log("feedback_button click");
       event.preventDefault();
       if (feedback_div.style.display == "none") {
@@ -177,19 +214,19 @@ feedback_button.addEventListener('click',
         feedback_div.style.display = "none";
       }
     }
-);
+  );
 
-feedback_submit_button.addEventListener('click', 
-    function(event) {
+  feedback_submit_button.addEventListener('click',
+    function (event) {
       console.log("feedback_submit_button click");
       event.preventDefault();
       submitFeedbackForm();
       feedback_div.style.display = "none";
     }
-);
+  );
 
-prompts_button.addEventListener('click', 
-    function(event) {
+  prompts_button.addEventListener('click',
+    function (event) {
       console.log("prompts_button click");
       event.preventDefault();
       if (prompts_div.style.display == "none") {
@@ -199,10 +236,10 @@ prompts_button.addEventListener('click',
         prompts_div.style.display = "none";
       }
     }
-);
+  );
 
-json_button.addEventListener('click', 
-    function(event) {
+  json_button.addEventListener('click',
+    function (event) {
       console.log("json_button click");
       event.preventDefault();
       if (conversation_data.style.display == "none") {
@@ -212,31 +249,21 @@ json_button.addEventListener('click',
         conversation_data.style.display = "none";
       }
     }
-);
+  );
 
-continue_button.addEventListener('click', 
-    function(event) {
-      console.log("continue_button click");
-      event.preventDefault();
-      if (user_text.value.trim().length > 0) {
-        continue_button.disabled = true;
-        continue_button.textContent = "Processing...";
-        form.submit();
-      }
+  // (kept single handler above)
+
+  user_text.addEventListener("input", () => {
+    console.log("user_text: " + user_text.value);
+    if (user_text.value.trim().length > 0) {
+      continue_button.disabled = false;
     }
-);
+    else {
+      continue_button.disabled = true;
+    }
+  });
 
-user_text.addEventListener("input", () => {
-  console.log("user_text: " + user_text.value);
-  if (user_text.value.trim().length > 0) {
-    continue_button.disabled = false;
-  }
-  else {
-    continue_button.disabled = true;
-  }
-});
-
-function submitFeedbackForm() {
+  function submitFeedbackForm() {
     var http = new XMLHttpRequest();
     http.open("POST", "/conv_ai_feedback", true);
     http.setRequestHeader("Content-type", "application/json");
@@ -246,11 +273,11 @@ function submitFeedbackForm() {
     postObj["feedback_user_feedback"] = document.getElementById('feedback_user_feedback').value;
     console.log("submitFeedbackForm: " + JSON.stringify(postObj));
     http.send(JSON.stringify(postObj));
-    http.onload = function() {
+    http.onload = function () {
       console.log(http.responseText);
       document.getElementById('feedback_user_feedback').value = "";
     }
-}
+  }
 
 </script>
 {% endblock %}
