@@ -196,8 +196,62 @@ async def get_liveness(req: Request, resp: Response) -> LivenessModel:
 
 @app.get("/")
 async def get_home(req: Request):
+    global nosql_svc
+    # Use the same logic as conv_ai_console to make it the default page
+    conv = None
+    conversation_id = None
+    
+    # Check if there's an existing conversation in the session
+    try:
+        conversation_id = str(req.session.get("conversation_id") or "").strip()
+        if conversation_id:
+            logging.info("Found existing conversation_id in session: {}".format(conversation_id))
+            # Try to load the existing conversation
+            try:
+                conv = await nosql_svc.load_conversation(conversation_id)
+                if conv:
+                    logging.info("Loaded existing conversation with {} completions".format(len(conv.completions)))
+                else:
+                    # Try file-based storage fallback
+                    import os
+                    import json
+                    conv_file_path = f"tmp/conv_{conversation_id}.json"
+                    if os.path.exists(conv_file_path):
+                        with open(conv_file_path, 'r') as f:
+                            conv_data = json.load(f)
+                        conv = AiConversation()
+                        conv.conversation_id = conversation_id
+                        conv.completions = conv_data.get("completions", [])
+                        logging.info("Loaded conversation from file with {} completions".format(len(conv.completions)))
+            except Exception as e:
+                logging.warning("Failed to load existing conversation: {}".format(e))
+                conv = None
+    except Exception:
+        pass
+    
+    # If no existing conversation found or loading failed, create a new one
+    if not conv:
+        conv = AiConversation()
+        logging.info(
+            "get_home (/) - new conversation_id: {}".format(conv.conversation_id)
+        )
+        # Store the new conversation_id in session
+        try:
+            req.session["conversation_id"] = conv.conversation_id
+        except Exception:
+            pass
+    
     view_data = dict()
-    return views.TemplateResponse(request=req, name="home.html", context=view_data)
+    view_data["conv"] = conv.get_data()
+    view_data["conversation_id"] = conv.conversation_id
+    view_data["conversation_data"] = ""
+    view_data["prompts_text"] = "no prompts yet"
+    view_data["last_user_question"] = ""
+    view_data["rag_strategy"] = "auto"
+    view_data["current_page"] = "conv_ai_console"  # Set active page for navbar
+    return views.TemplateResponse(
+        request=req, name="conv_ai_console.html", context=view_data
+    )
 
 
 @app.get("/about")
@@ -207,12 +261,14 @@ async def get_about(req: Request):
     view_data["graph_source"] = ConfigService.graph_source()
     view_data["graph_source_db"] = ConfigService.graph_source_db()
     view_data["graph_source_container"] = ConfigService.graph_source_container()
+    view_data["current_page"] = "about"  # Set active page for navbar
     return views.TemplateResponse(request=req, name="about.html", context=view_data)
 
 
 @app.get("/sparql_console")
 async def get_sparql_console(req: Request):
     view_data = get_sparql_console_view_data()
+    view_data["current_page"] = "sparql_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="sparql_console.html", context=view_data
     )
@@ -239,6 +295,7 @@ async def get_ai_console(req: Request):
     view_data = gen_sparql_console_view_data()
     view_data["natural_language"] = ""
     view_data["sparql"] = "SELECT * WHERE { ?s ?p ?o . } LIMIT 10"
+    view_data["current_page"] = "gen_sparql_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="gen_sparql_console.html", context=view_data
     )
@@ -315,6 +372,7 @@ async def gen_sparql_console_execute_sparql(req: Request):
 @app.get("/vector_search_console")
 async def get_vector_search_console(req: Request):
     view_data = vector_search_view_data()
+    view_data["current_page"] = "vector_search_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="vector_search_console.html", context=view_data
     )
@@ -381,28 +439,65 @@ def vector_search_view_data():
 
 @app.get("/conv_ai_console")
 async def conv_ai_console(req: Request):
-    conv = AiConversation()
-    logging.info(
-        "conv_ai_console - new conversation_id: {}".format(conv.conversation_id)
-    )
+    global nosql_svc
+    conv = None
+    conversation_id = None
+    
+    # Check if there's an existing conversation in the session
+    try:
+        conversation_id = str(req.session.get("conversation_id") or "").strip()
+        if conversation_id:
+            logging.info("Found existing conversation_id in session: {}".format(conversation_id))
+            # Try to load the existing conversation
+            try:
+                conv = await nosql_svc.load_conversation(conversation_id)
+                if conv:
+                    logging.info("Loaded existing conversation with {} completions".format(len(conv.completions)))
+                else:
+                    # Try file-based storage fallback
+                    import os
+                    import json
+                    conv_file_path = f"tmp/conv_{conversation_id}.json"
+                    if os.path.exists(conv_file_path):
+                        with open(conv_file_path, 'r') as f:
+                            conv_data = json.load(f)
+                        conv = AiConversation()
+                        conv.conversation_id = conversation_id
+                        conv.completions = conv_data.get("completions", [])
+                        logging.info("Loaded conversation from file with {} completions".format(len(conv.completions)))
+            except Exception as e:
+                logging.warning("Failed to load existing conversation: {}".format(e))
+                conv = None
+    except Exception:
+        pass
+    
+    # If no existing conversation found or loading failed, create a new one
+    if not conv:
+        conv = AiConversation()
+        logging.info(
+            "conv_ai_console - new conversation_id: {}".format(conv.conversation_id)
+        )
+        # Store the new conversation_id in session
+        try:
+            req.session["conversation_id"] = conv.conversation_id
+        except Exception:
+            pass
+    
     view_data = dict()
     view_data["conv"] = conv.get_data()
     view_data["conversation_id"] = conv.conversation_id
-    try:
-        req.session["conversation_id"] = conv.conversation_id
-    except Exception:
-        pass
     view_data["conversation_data"] = ""
     view_data["prompts_text"] = "no prompts yet"
     view_data["last_user_question"] = ""
     view_data["rag_strategy"] = "auto"
+    view_data["current_page"] = "conv_ai_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="conv_ai_console.html", context=view_data
     )
 
 
 @app.post("/conv_ai_console")
-async def conv_ai_console(req: Request):
+async def conv_ai_console_post(req: Request):
     global ai_svc
     global nosql_svc
     global ontology_svc
@@ -657,6 +752,7 @@ async def conv_ai_console(req: Request):
     view_data["prompts_text"] = conv.formatted_prompts_text()
     view_data["last_user_question"] = conv.get_last_user_message()
     view_data["rag_strategy"] = rag_strategy_choice or (rdr.get_strategy() if 'rdr' in locals() and rdr else "auto")
+    view_data["current_page"] = "conv_ai_console"  # Set active page for navbar
     
     # Debugging: Log the state of completions before rendering the template
     logging.debug("Final completions before rendering: {}".format(conv.get_data().get("completions", [])))
