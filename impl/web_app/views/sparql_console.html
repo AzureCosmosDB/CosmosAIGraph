@@ -21,6 +21,17 @@
   span.token.operator {
     background: transparent !important;
   }
+
+  /* Style for edge labels */
+  .link-label {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    paint-order: stroke fill;
+    stroke: white;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
 </style>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
@@ -235,32 +246,84 @@
             console.log('Processing node:', clean_name, 'with dependencies:', node_data.dependencies);
             nodes_set.add(clean_name);
 
-            // Process dependencies for this node
-            var dependencies = node_data.dependencies;
-            if (Array.isArray(dependencies)) {
-              for (let d = 0; d < dependencies.length; d++) {
-                var dep_uri = dependencies[d];
-                var dep_clean_name = dep_uri;
+            // Process rich dependencies if available (new enhanced format)
+            var richDependencies = node_data.richDependencies;
+            if (Array.isArray(richDependencies) && richDependencies.length > 0) {
+              console.log('Found rich dependencies:', richDependencies.length);
+              
+              for (let d = 0; d < richDependencies.length; d++) {
+                var richDep = richDependencies[d];
+                var dep_uri = richDep.uri;
+                var dep_clean_name = richDep.name || dep_uri;
 
                 // Clean up dependency name (remove URI prefix if present)
-                if (typeof dep_uri === 'string' && dep_uri.includes('#')) {
-                  dep_clean_name = dep_uri.split('#').pop();
+                if (typeof dep_clean_name === 'string' && dep_clean_name.includes('#')) {
+                  dep_clean_name = dep_clean_name.split('#').pop();
                 }
 
-                // Create edges for all meaningful dependencies
-                // Only skip exact self-references and empty strings
+                // Create edges with rich information
                 if (dep_clean_name !== clean_name &&
                   dep_clean_name.length > 0 &&
                   dep_clean_name.trim() !== '') {
 
-                  console.log('Creating edge:', clean_name, '->', dep_clean_name);
+                  console.log('Creating rich edge:', clean_name, '->', dep_clean_name, 'with properties:', richDep.properties);
                   nodes_set.add(dep_clean_name);
 
                   var edge = {};
                   edge["source"] = clean_name;
                   edge["target"] = dep_clean_name;
                   edge["weight"] = 1.0;
+                  
+                  // Use rich dependency data for meaningful edge labels
+                  edge["label"] = richDep.edgeLabel || "connects";
+                  edge["displayLabel"] = richDep.displayLabel || dep_clean_name;
+                  edge["tooltipText"] = richDep.tooltipText || "";
+                  edge["properties"] = richDep.properties || {};
+                  edge["type"] = richDep.type || "connection";
+                  
+                  // Extract specific engineering properties for enhanced visualization
+                  if (richDep.properties) {
+                    edge["itemTag"] = richDep.properties.ItemTag || "";
+                    edge["nominalDiameter"] = richDep.properties.NominalDiameter || "";
+                    edge["flowDir"] = richDep.properties.FlowDir || "";
+                    edge["drawingNumber"] = richDep.properties.DrawingNumber || "";
+                  }
+                  
                   edges.push(edge);
+                }
+              }
+            }
+            // Fallback to legacy dependencies if no rich dependencies available
+            else {
+              var dependencies = node_data.dependencies;
+              if (Array.isArray(dependencies)) {
+                console.log('Using legacy dependencies format');
+                
+                for (let d = 0; d < dependencies.length; d++) {
+                  var dep_uri = dependencies[d];
+                  var dep_clean_name = dep_uri;
+
+                  // Clean up dependency name (remove URI prefix if present)
+                  if (typeof dep_uri === 'string' && dep_uri.includes('#')) {
+                    dep_clean_name = dep_uri.split('#').pop();
+                  }
+
+                  // Create edges for all meaningful dependencies
+                  // Only skip exact self-references and empty strings
+                  if (dep_clean_name !== clean_name &&
+                    dep_clean_name.length > 0 &&
+                    dep_clean_name.trim() !== '') {
+
+                    console.log('Creating legacy edge:', clean_name, '->', dep_clean_name);
+                    nodes_set.add(dep_clean_name);
+
+                    var edge = {};
+                    edge["source"] = clean_name;
+                    edge["target"] = dep_clean_name;
+                    edge["weight"] = 1.0;
+                    edge["label"] = "depends on";
+                    edges.push(edge);
+                  }
                 }
               }
             }
@@ -290,6 +353,7 @@
                 edge["source"] = lib_key_no_prefix;
                 edge["target"] = dep_lib_no_prefix;
                 edge["weight"] = 1.0;
+                edge["label"] = "depends on";
                 edges.push(edge);
               }
             }
@@ -393,7 +457,16 @@
           const graphEdges = edges.map(d => ({
             source: d.source,
             target: d.target,
-            weight: d.weight || 1
+            weight: d.weight || 1,
+            label: d.label || "connects",
+            displayLabel: d.displayLabel || "",
+            tooltipText: d.tooltipText || "",
+            properties: d.properties || {},
+            type: d.type || "connection",
+            itemTag: d.itemTag || "",
+            nominalDiameter: d.nominalDiameter || "",
+            flowDir: d.flowDir || "",
+            drawingNumber: d.drawingNumber || ""
           }));
 
           console.log("Graph nodes for D3:", graphNodes);
@@ -412,6 +485,7 @@
 
           // Create links only if we have edges
           let link = null;
+          let linkLabels = null;
           if (graphEdges.length > 0) {
             link = g.append("g")
               .attr("class", "links")
@@ -422,6 +496,83 @@
               .style("stroke", "#666666")
               .style("stroke-width", 2)
               .attr("marker-end", "url(#Triangle)");
+
+            // Add tooltips to edges showing rich dependency information
+            link.append("title")
+              .text(d => {
+                if (d.tooltipText && d.tooltipText !== "") {
+                  return d.tooltipText;
+                } else {
+                  // Generate tooltip from available rich properties
+                  let tooltip = `Connection: ${d.source} → ${d.target}\n`;
+                  if (d.type && d.type !== "connection") {
+                    tooltip += `Type: ${d.type}\n`;
+                  }
+                  if (d.itemTag && d.itemTag !== "") {
+                    tooltip += `Equipment Tag: ${d.itemTag}\n`;
+                  }
+                  if (d.nominalDiameter && d.nominalDiameter !== "") {
+                    tooltip += `Diameter: ${d.nominalDiameter}\n`;
+                  }
+                  if (d.flowDir && d.flowDir !== "") {
+                    tooltip += `Flow Direction: ${d.flowDir}\n`;
+                  }
+                  if (d.drawingNumber && d.drawingNumber !== "") {
+                    tooltip += `Drawing: ${d.drawingNumber}\n`;
+                  }
+                  return tooltip.trim();
+                }
+              });
+
+            // Add labels to edges with rich information
+            linkLabels = g.append("g")
+              .attr("class", "link-labels")
+              .selectAll("text")
+              .data(graphEdges)
+              .enter().append("text")
+              .attr("class", "link-label")
+              .style("font-size", "8px")
+              .style("fill", "#333333")
+              .style("text-anchor", "middle")
+              .style("pointer-events", "none")
+              .text(d => {
+                // Use rich dependency information for meaningful labels
+                if (d.label && d.label !== "depends on") {
+                  // If we have a specific label from rich dependencies, use it
+                  return d.label;
+                } else if (d.itemTag) {
+                  // Show equipment tag if available
+                  return d.itemTag;
+                } else if (d.nominalDiameter && d.nominalDiameter !== "") {
+                  // Show diameter information for piping
+                  return `Ø${d.nominalDiameter}`;
+                } else if (d.type && d.type !== "connection") {
+                  // Show the connection type
+                  return d.type;
+                } else if (d.flowDir && d.flowDir !== "") {
+                  // Show flow direction
+                  return "flows";
+                } else if (d.weight && d.weight !== 1) {
+                  return `weight: ${d.weight}`;
+                } else {
+                  // Try to infer relationship from node types or names
+                  const sourceName = d.source.name || d.source;
+                  const targetName = d.target.name || d.target;
+                  
+                  // Check if it looks like engineering equipment connections
+                  if (typeof sourceName === 'string' && typeof targetName === 'string') {
+                    if (sourceName.includes('VES') || targetName.includes('VES')) {
+                      return "flows to";
+                    } else if (sourceName.includes('PIPE') || targetName.includes('PIPE')) {
+                      return "connects";
+                    } else if (sourceName.includes('Junction') || targetName.includes('Junction')) {
+                      return "flows to";
+                    }
+                  }
+                  
+                  return "connects";
+                }
+              });
           }
 
           // Create nodes
@@ -467,6 +618,13 @@
                 .attr("y1", d => d.source.y)
                 .attr("x2", d => d.target.x)
                 .attr("y2", d => d.target.y);
+            }
+
+            if (linkLabels) {
+              linkLabels
+                .attr("x", d => (d.source.x + d.target.x) / 2)
+                .attr("y", d => (d.source.y + d.target.y) / 2)
+                .attr("dy", "0.35em");
             }
 
             node

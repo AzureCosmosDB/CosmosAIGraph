@@ -279,6 +279,7 @@ async def post_sparql_console(req: Request):
     form_data = await req.form()  # <class 'starlette.datastructures.FormData'>
     logging.info("/sparql_console form_data: {}".format(form_data))
     view_data = post_libraries_sparql_console(form_data)
+    view_data["current_page"] = "sparql_console"  # Set active page for navbar
     
     if (LoggingLevelService.get_level() == logging.DEBUG):
         try:
@@ -336,6 +337,7 @@ async def ai_post_gen_sparql(req: Request):
 
     view_data["results"] = resp_obj#json.dumps(resp_obj, sort_keys=False, indent=2)
     view_data["results_message"] = "Generative AI Response"
+    view_data["current_page"] = "gen_sparql_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="gen_sparql_console.html", context=view_data
     )
@@ -364,6 +366,7 @@ async def gen_sparql_console_execute_sparql(req: Request):
         view_data["results"] = sqr.response_obj#json.dumps(sqr.response_obj, sort_keys=False, indent=2)
         view_data["count"] = sqr.count
         view_data["results_message"] = "SPARQL Query Results"
+    view_data["current_page"] = "gen_sparql_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="gen_sparql_console.html", context=view_data
     )
@@ -422,6 +425,7 @@ async def post_vector_search_console(req: Request):
 
     view_data["results_message"] = "Vector Search Results"
     view_data["results"] = results_obj#json.dumps(results_obj, sort_keys=False, indent=2)
+    view_data["current_page"] = "vector_search_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="vector_search_console.html", context=view_data
     )
@@ -825,6 +829,129 @@ def get_sparql_console_view_data() -> dict:
     return view_data
 
 
+def filter_numeric_nodes(bom_obj):
+    """
+    Filter out nodes that are purely numeric values, GUIDs, or other technical identifiers.
+    These are likely properties/attributes rather than actual meaningful graph entities.
+    """
+    if not isinstance(bom_obj, dict) or "nodes" not in bom_obj:
+        return bom_obj
+    
+    def is_technical_identifier(name):
+        """Check if a node name represents a technical value that should be filtered out"""
+        if not isinstance(name, str):
+            return False
+        
+        name = name.strip()
+        
+        # Skip empty names
+        if not name:
+            return True
+            
+        # Check if it's a pure decimal number (like "1600.0", "0.28575", "301.0")
+        try:
+            float(name)
+            return True
+        except ValueError:
+            pass
+        
+        # Check if it's a GUID/UUID (like "11AF48DE79124AED8210C92F7EF8DF36")
+        # These are technical identifiers, not meaningful entities for visualization
+        if len(name) >= 32 and all(c in '0123456789ABCDEFabcdef' for c in name):
+            return True
+            
+        # Check if it's mostly numeric with minimal text (measurement values)
+        if len(name) <= 15:  # Short strings that might be measurements
+            numeric_chars = sum(1 for c in name if c.isdigit() or c in '.-')
+            if numeric_chars / len(name) > 0.6:  # More than 60% numeric characters
+                return True
+        
+        # Check for URI fragments that start with schema references
+        if name.startswith("http://") or name.startswith("https://"):
+            return True
+            
+        return False
+    
+    def is_meaningful_entity(name, node_data):
+        """Determine if a node represents a meaningful engineering entity"""
+        if not isinstance(name, str):
+            return False
+            
+        name = name.strip()
+        
+        # Keep well-formed equipment tags (like "1011-VES-301")
+        if "-" in name and len(name) > 5:
+            return True
+            
+        # Keep descriptive names with spaces
+        if " " in name and len(name) > 10:
+            return True
+            
+        # Keep file paths (engineering drawings, symbols)
+        if "\\" in name or "/" in name:
+            return True
+            
+        # Keep short meaningful codes (like "VES", "Equipment")
+        if len(name) <= 15 and name.isalpha():
+            return True
+            
+        # Reject technical identifiers
+        if is_technical_identifier(name):
+            return False
+            
+        return True
+    
+    def should_keep_node(name, node_data):
+        """Determine if a node should be kept in the graph"""
+        # First check if it's a meaningful entity
+        if not is_meaningful_entity(name, node_data):
+            return False
+            
+        # Additional check: nodes with no dependencies and short names are likely values
+        if isinstance(node_data, dict):
+            dependencies = node_data.get("dependencies", [])
+            if not dependencies and len(name) < 5:
+                return False
+                
+        return True
+    
+    # Create filtered copy of the BOM object
+    filtered_bom_obj = {
+        key: value for key, value in bom_obj.items() 
+        if key != "nodes"
+    }
+    
+    # Filter the nodes
+    filtered_nodes = {}
+    original_nodes = bom_obj.get("nodes", {})
+    
+    # First pass: determine which nodes to keep
+    nodes_to_keep = set()
+    for node_name, node_data in original_nodes.items():
+        if should_keep_node(node_name, node_data):
+            nodes_to_keep.add(node_name)
+    
+    # Second pass: create filtered nodes with cleaned dependencies
+    for node_name, node_data in original_nodes.items():
+        if node_name in nodes_to_keep:
+            # Filter the dependencies to only include meaningful entities
+            if isinstance(node_data, dict) and "dependencies" in node_data:
+                filtered_dependencies = [
+                    dep for dep in node_data["dependencies"] 
+                    if is_meaningful_entity(dep, {}) and not is_technical_identifier(dep)
+                ]
+                
+                # Create a copy of node_data with filtered dependencies
+                filtered_node_data = node_data.copy()
+                filtered_node_data["dependencies"] = filtered_dependencies
+                filtered_nodes[node_name] = filtered_node_data
+            else:
+                filtered_nodes[node_name] = node_data
+    
+    filtered_bom_obj["nodes"] = filtered_nodes
+    return filtered_bom_obj
+
+
 def post_libraries_sparql_console(form_data):
     global websvc_headers
 
@@ -868,19 +995,23 @@ def post_libraries_sparql_console(form_data):
                     timeout=120.0,
                 )
                 bom_obj = json.loads(r.text)
-                view_data["results"] = bom_obj#json.dumps(bom_obj, sort_keys=False, indent=2)
+                
+                # Filter out numeric nodes that are likely measurement values
+                filtered_bom_obj = filter_numeric_nodes(bom_obj)
+                
+                view_data["results"] = filtered_bom_obj
                 view_data["inline_bom_json"] = view_data["results"]
                 view_data["visualization_message"] = "Graph Visualization"
                 # Derive a count for the header if possible
                 try:
                     count_val = 0
-                    if isinstance(bom_obj, dict):
+                    if isinstance(filtered_bom_obj, dict):
                         # Prefer 'nodes' map count (new format)
-                        if "nodes" in bom_obj and isinstance(bom_obj["nodes"], dict):
-                            count_val = len(bom_obj["nodes"].keys())
+                        if "nodes" in filtered_bom_obj and isinstance(filtered_bom_obj["nodes"], dict):
+                            count_val = len(filtered_bom_obj["nodes"].keys())
                         # Legacy 'libs' map count
-                        elif "libs" in bom_obj and isinstance(bom_obj["libs"], dict):
-                            count_val = len(bom_obj["libs"].keys())
+                        elif "libs" in filtered_bom_obj and isinstance(filtered_bom_obj["libs"], dict):
+                            count_val = len(filtered_bom_obj["libs"].keys())
                         # Fallbacks: actual_depth/max_depth don't reflect rows, skip
                     view_data["count"] = count_val
                 except Exception:
@@ -889,7 +1020,7 @@ def post_libraries_sparql_console(form_data):
                 if (LoggingLevelService.get_level() == logging.DEBUG):
                     try:
                         FS.write_json(
-                            json.loads(view_data["inline_bom_json"]), "tmp/inline_bom.json"
+                            view_data["inline_bom_json"], "tmp/inline_bom.json"
                         )
                     except Exception as e:
                         pass

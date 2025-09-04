@@ -210,6 +210,7 @@ public class AppGraph {
             
             // Collect dependencies from all edge properties discovered in the ontology
             ArrayList<String> allDependencies = new ArrayList<String>();
+            ArrayList<RichDependency> richDependencies = new ArrayList<RichDependency>();
             ArrayList<String> edgeProperties = getEdgePropertiesFromOntology();
             
             for (String edgeProperty : edgeProperties) {
@@ -221,7 +222,23 @@ public class AppGraph {
             }
             
             logger.debug("Found " + allDependencies.size() + " dependencies for URI: " + originalUri);
+            
+            // For each dependency, fetch its rich TTL properties
+            for (String depUri : allDependencies) {
+                RichDependency richDep = fetchRichDependencyProperties(depUri);
+                
+                // Find which edge property connected this dependency
+                String connectingProperty = findConnectingProperty(originalUri, depUri, edgeProperties, dqr);
+                if (connectingProperty != null) {
+                    richDep.addProperty("ConnectingProperty", connectingProperty);
+                }
+                
+                richDependencies.add(richDep);
+            }
+            
+            // Set both rich and legacy dependencies
             tLib.setDependencies(allDependencies);
+            tLib.setRichDependencies(richDependencies);
 
             for (int d = 0; d < allDependencies.size(); d++) {
                 String depUri = allDependencies.get(d);
@@ -747,6 +764,136 @@ public class AppGraph {
             return null;
         }
         return obj.getClass().getName();
+    }
+    
+    /**
+     * Fetch all TTL properties for a given dependency URI to create a RichDependency object.
+     * This method queries the TTL graph to retrieve properties like DrawingNumber, ItemTag,
+     * NominalDiameter, FlowDir, Type, StartNode, EndNode, etc.
+     */
+    private RichDependency fetchRichDependencyProperties(String depUri) {
+        RichDependency richDep = new RichDependency(depUri);
+        QueryExecution qexec = null;
+        
+        try {
+            // Build a SPARQL query to fetch all properties for this dependency URI
+            StringBuilder sb = new StringBuilder();
+            sb.append("PREFIX c: <").append(namespaceWithSeparator()).append(">\n");
+            sb.append("PREFIX owl: <http://www.w3.org/2002/07/owl#>\n");
+            sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
+            sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n");
+            sb.append("SELECT ?property ?value WHERE {\n");
+            
+            // Format the URI properly
+            String formattedUri = formatUri(depUri);
+            sb.append("  ").append(formattedUri).append(" ?property ?value .\n");
+            
+            // Filter out RDF type statements to focus on data properties
+            sb.append("  FILTER(?property != rdf:type)\n");
+            sb.append("}\n");
+            sb.append("LIMIT 50");
+            
+            String sparql = sb.toString();
+            logger.debug("Rich dependency query for " + depUri + ":\n" + sparql);
+            
+            Query query = QueryFactory.create(sparql);
+            qexec = QueryExecutionFactory.create(query, this.model);
+            ResultSet results = qexec.execSelect();
+            
+            while (results.hasNext()) {
+                QuerySolution solution = results.nextSolution();
+                RDFNode propertyNode = solution.get("property");
+                RDFNode valueNode = solution.get("value");
+                
+                if (propertyNode != null && valueNode != null) {
+                    String propertyUri = propertyNode.toString();
+                    String propertyName = extractLocalName(propertyUri);
+                    
+                    // Extract the value based on its type
+                    Object value;
+                    if (valueNode.isLiteral()) {
+                        // Handle literal values (strings, numbers, etc.)
+                        String literalValue = valueNode.asLiteral().getString();
+                        
+                        // Try to parse as number if it looks like a number
+                        if (literalValue.matches("\\d+\\.\\d+")) {
+                            try {
+                                value = Double.parseDouble(literalValue);
+                            } catch (NumberFormatException e) {
+                                value = literalValue;
+                            }
+                        } else if (literalValue.matches("\\d+")) {
+                            try {
+                                value = Integer.parseInt(literalValue);
+                            } catch (NumberFormatException e) {
+                                value = literalValue;
+                            }
+                        } else {
+                            value = literalValue;
+                        }
+                    } else if (valueNode.isURIResource()) {
+                        // Handle URI references - extract the local name
+                        String uriValue = valueNode.asResource().getURI();
+                        value = extractLocalName(uriValue);
+                    } else {
+                        value = valueNode.toString();
+                    }
+                    
+                    // Add the property to the rich dependency
+                    if (propertyName != null && !propertyName.isEmpty()) {
+                        richDep.addProperty(propertyName, value);
+                        logger.debug("Added property " + propertyName + " = " + value + " to " + depUri);
+                    }
+                }
+            }
+            
+            // Set the type from properties if available
+            String type = richDep.getStringProperty("Type");
+            if (type != null) {
+                richDep.setType(type);
+            }
+            
+            logger.debug("Created rich dependency for " + depUri + " with " + 
+                        richDep.getProperties().size() + " properties");
+            
+        } catch (Exception e) {
+            logger.error("Error fetching rich properties for dependency: " + depUri, e);
+            // Return a basic RichDependency even if query fails
+        } finally {
+            if (qexec != null) {
+                try {
+                    qexec.close();
+                } catch (Exception e) {
+                    logger.warn("Error closing rich dependency query execution", e);
+                }
+            }
+        }
+        
+        return richDep;
+    }
+    
+    /**
+     * Find which edge property connected the source URI to the target dependency URI.
+     * This helps us show the actual property name (like "StartNode", "EndNode") in edge labels.
+     */
+    private String findConnectingProperty(String sourceUri, String targetUri, 
+                                        ArrayList<String> edgeProperties, 
+                                        DependenciesQueryResult dqr) {
+        try {
+            for (String edgeProperty : edgeProperties) {
+                String sanitizedVar = sanitizeVariableName(edgeProperty);
+                ArrayList<String> propertyValues = dqr.getSingleNamedValues(sanitizedVar);
+                
+                if (propertyValues != null && propertyValues.contains(targetUri)) {
+                    logger.debug("Found connecting property: " + edgeProperty + " links " + sourceUri + " -> " + targetUri);
+                    return edgeProperty;
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Error finding connecting property for " + sourceUri + " -> " + targetUri, e);
+        }
+        
+        return null;
     }
 
 }
