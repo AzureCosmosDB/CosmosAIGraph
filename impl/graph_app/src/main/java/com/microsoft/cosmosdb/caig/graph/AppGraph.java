@@ -768,8 +768,8 @@ public class AppGraph {
     
     /**
      * Fetch all TTL properties for a given dependency URI to create a RichDependency object.
-     * This method queries the TTL graph to retrieve properties like DrawingNumber, ItemTag,
-     * NominalDiameter, FlowDir, Type, StartNode, EndNode, etc.
+     * This method dynamically queries the TTL graph to retrieve all available properties
+     * for any ontology structure, making it domain-agnostic.
      */
     private RichDependency fetchRichDependencyProperties(String depUri) {
         RichDependency richDep = new RichDependency(depUri);
@@ -847,10 +847,14 @@ public class AppGraph {
                 }
             }
             
-            // Set the type from properties if available
-            String type = richDep.getStringProperty("Type");
-            if (type != null) {
-                richDep.setType(type);
+            // Set the type from properties if available (try common type property names)
+            String[] typePropertyNames = {"type", "Type", "class", "Class", "category", "Category"};
+            for (String typeProp : typePropertyNames) {
+                String type = richDep.getStringProperty(typeProp);
+                if (type != null) {
+                    richDep.setType(type);
+                    break;
+                }
             }
             
             logger.debug("Created rich dependency for " + depUri + " with " + 
@@ -874,7 +878,8 @@ public class AppGraph {
     
     /**
      * Find which edge property connected the source URI to the target dependency URI.
-     * This helps us show the actual property name (like "StartNode", "EndNode") in edge labels.
+     * This helps us show the actual property name in edge labels for any ontology.
+     * Uses dynamic discovery rather than hardcoded property names.
      */
     private String findConnectingProperty(String sourceUri, String targetUri, 
                                         ArrayList<String> edgeProperties, 

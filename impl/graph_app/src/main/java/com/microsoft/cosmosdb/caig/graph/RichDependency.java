@@ -7,11 +7,12 @@ import java.util.Map;
 /**
  * Represents a rich dependency relationship in the TTL graph.
  * Instead of just storing a simple URI string, this class captures
- * all the TTL properties of a dependency like DrawingNumber, ItemTag,
- * NominalDiameter, FlowDir, Type, StartNode, EndNode, etc.
+ * all the TTL properties of a dependency dynamically from the loaded ontology.
  * 
  * This enables richer graph visualizations with meaningful edge labels
- * and detailed tooltips showing engineering properties.
+ * and detailed tooltips showing actual domain properties from any ontology.
+ * 
+ * Aleksey Savateyev
  */
 @Data
 public class RichDependency {
@@ -84,17 +85,29 @@ public class RichDependency {
     
     /**
      * Generate a meaningful display label for this dependency based on its properties
+     * Uses dynamic prioritization based on available properties
      */
     public String getDisplayLabel() {
-        // Priority order for display labels
-        String itemTag = getStringProperty("ItemTag");
-        if (itemTag != null && !itemTag.isEmpty()) {
-            return itemTag;
+        // Priority order: look for common identifier properties
+        String[] priorityKeys = {"name", "label", "title", "identifier", "id", "tag", "itemTag", "drawingNumber"};
+        
+        for (String key : priorityKeys) {
+            String value = getStringProperty(key);
+            if (value != null && !value.isEmpty()) {
+                return value;
+            }
         }
         
-        String drawingNumber = getStringProperty("DrawingNumber");
-        if (drawingNumber != null && !drawingNumber.isEmpty()) {
-            return drawingNumber;
+        // Try case-insensitive search for these common patterns
+        for (String propKey : this.properties.keySet()) {
+            String lowerKey = propKey.toLowerCase();
+            if (lowerKey.contains("name") || lowerKey.contains("label") || 
+                lowerKey.contains("title") || lowerKey.contains("tag")) {
+                String value = getStringProperty(propKey);
+                if (value != null && !value.isEmpty()) {
+                    return value;
+                }
+            }
         }
         
         if (this.name != null && !this.name.isEmpty()) {
@@ -106,7 +119,7 @@ public class RichDependency {
     
     /**
      * Generate a meaningful edge label for graph visualization
-     * Shows actual property names from the TTL graph
+     * Shows actual property names from the TTL graph using dynamic discovery
      */
     public String getEdgeLabel() {
         // Highest priority: Show the actual connecting property name
@@ -115,84 +128,104 @@ public class RichDependency {
             return connectingProperty;
         }
         
-        // First priority: Show actual ItemTag if available
-        String itemTag = getStringProperty("ItemTag");
-        if (itemTag != null && !itemTag.isEmpty()) {
-            return itemTag;
+        // Look for common meaningful properties in order of priority
+        String[] priorityKeys = {
+            // Relationship properties
+            "relationship", "relation", "edge", "link", "connection",
+            // Identifier properties  
+            "name", "label", "title", "identifier", "id", "tag",
+            // Type/classification properties
+            "type", "category", "class", "classification",
+            // Numeric/measurement properties
+            "value", "size", "diameter", "length", "weight"
+        };
+        
+        for (String key : priorityKeys) {
+            String value = getStringProperty(key);
+            if (value != null && !value.isEmpty()) {
+                return key + ":" + value;
+            }
         }
         
-        // Second priority: Show the connecting property name with diameter
-        String nominalDiameter = getStringProperty("NominalDiameter");
-        if (nominalDiameter != null && !nominalDiameter.isEmpty()) {
-            return "NominalDiameter:" + nominalDiameter;
+        // Search for properties with common patterns (case-insensitive)
+        for (String propKey : this.properties.keySet()) {
+            String lowerKey = propKey.toLowerCase();
+            Object value = this.properties.get(propKey);
+            
+            // Prefer shorter, more meaningful property names
+            if (lowerKey.length() <= 15 && value != null) {
+                String strValue = value.toString();
+                if (!strValue.isEmpty() && strValue.length() <= 20) {
+                    // Skip generic/system properties
+                    if (!lowerKey.startsWith("rdf") && !lowerKey.startsWith("owl") && 
+                        !lowerKey.startsWith("rdfs") && !lowerKey.equals("type")) {
+                        return propKey + ":" + strValue;
+                    }
+                }
+            }
         }
         
-        // Third priority: Show the actual connection property that created this edge
-        if (hasProperty("StartNode") && hasProperty("EndNode")) {
-            return "StartNode→EndNode";
-        } else if (hasProperty("StartNode")) {
-            return "StartNode";
-        } else if (hasProperty("EndNode")) {
-            return "EndNode";
+        // Look for any connecting relationship properties
+        for (String propKey : this.properties.keySet()) {
+            String lowerKey = propKey.toLowerCase();
+            if (lowerKey.contains("start") || lowerKey.contains("end") || 
+                lowerKey.contains("from") || lowerKey.contains("to") || 
+                lowerKey.contains("source") || lowerKey.contains("target")) {
+                Object value = this.properties.get(propKey);
+                if (value != null) {
+                    return propKey;
+                }
+            }
         }
         
-        // Fourth priority: Show FlowDir property if available
-        String flowDir = getStringProperty("FlowDir");
-        if (flowDir != null && !flowDir.isEmpty()) {
-            return "FlowDir:" + flowDir.replace("StartNode to EndNode", "S→E");
+        // Final fallback: use the first available property
+        if (!this.properties.isEmpty()) {
+            String firstKey = this.properties.keySet().iterator().next();
+            Object firstValue = this.properties.get(firstKey);
+            if (firstValue != null && !firstKey.toLowerCase().startsWith("rdf") && 
+                !firstKey.toLowerCase().startsWith("owl") && !firstKey.toLowerCase().startsWith("rdfs")) {
+                String strValue = firstValue.toString();
+                if (strValue.length() <= 15) {
+                    return firstKey + ":" + strValue;
+                } else {
+                    return firstKey;
+                }
+            }
         }
         
-        // Fifth priority: Show the Type property
-        String type = getStringProperty("Type");
-        if (type != null && !type.isEmpty()) {
-            return "Type:" + type;
-        }
-        
-        // Sixth priority: Show DrawingNumber if available
-        String drawingNumber = getStringProperty("DrawingNumber");
-        if (drawingNumber != null && !drawingNumber.isEmpty()) {
-            return "Drawing:" + drawingNumber.substring(drawingNumber.lastIndexOf('-') + 1);
-        }
-        
-        // Last resort: Show RunID
-        String runId = getStringProperty("RunID");
-        if (runId != null && !runId.isEmpty()) {
-            return "RunID:" + runId.substring(0, Math.min(8, runId.length()));
-        }
-        
-        return "Property:Unknown";
+        return "connected";
     }
     
     /**
      * Generate a detailed tooltip text for this dependency
+     * Shows all available properties dynamically
      */
     public String getTooltipText() {
         StringBuilder tooltip = new StringBuilder();
         
         String displayLabel = getDisplayLabel();
-        tooltip.append("Equipment: ").append(displayLabel).append("\n");
+        tooltip.append("Entity: ").append(displayLabel).append("\n");
         
-        if (hasProperty("Type")) {
-            tooltip.append("Type: ").append(getStringProperty("Type")).append("\n");
-        }
-        
-        if (hasProperty("NominalDiameter")) {
-            Double diameter = getDoubleProperty("NominalDiameter");
-            if (diameter != null) {
-                tooltip.append("Diameter: ").append(diameter).append("\n");
+        // Show all properties except system ones
+        for (Map.Entry<String, Object> entry : this.properties.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            
+            // Skip system/technical properties
+            if (key.toLowerCase().startsWith("rdf") || 
+                key.toLowerCase().startsWith("owl") || 
+                key.toLowerCase().startsWith("rdfs") ||
+                key.equals("ConnectingProperty")) {
+                continue;
             }
-        }
-        
-        if (hasProperty("FlowDir")) {
-            tooltip.append("Flow Direction: ").append(getStringProperty("FlowDir")).append("\n");
-        }
-        
-        if (hasProperty("DrawingNumber")) {
-            tooltip.append("Drawing: ").append(getStringProperty("DrawingNumber")).append("\n");
-        }
-        
-        if (hasProperty("RunID")) {
-            tooltip.append("Run ID: ").append(getStringProperty("RunID")).append("\n");
+            
+            if (value != null) {
+                String strValue = value.toString();
+                if (strValue.length() > 50) {
+                    strValue = strValue.substring(0, 47) + "...";
+                }
+                tooltip.append(key).append(": ").append(strValue).append("\n");
+            }
         }
         
         return tooltip.toString().trim();
