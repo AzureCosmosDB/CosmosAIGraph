@@ -24,19 +24,15 @@
   <div class="card caig-card" style="width: 100%;">
     <div class="card-body bg-dark text-light caig-inner-body">
       <form method="post" id="form" name="form" action="/vector_search_console">
-        <div class="row  align-items-center">
-          <div class="col-8">
-            <label for="libname" class="form-label">Enter a library name or 'text:your text...'</label>
-            <input type="text" class="form-control" id="libname" name="libname" value='{{ libname }}'
+        <div class="row align-items-end">
+          <div class="col">
+            <label for="entrypoint" class="form-label">Enter a library name or 'text:your text...'</label>
+            <input type="text" class="form-control" id="entrypoint" name="entrypoint" value='{{ entrypoint }}'
               placeholder="Double-click for suggestions."/> 
           </div>
-          <div class="col-2">
-            <span>
-              <label for="search_button" class="form-label"><pre>
-
-              </pre></label>
-              <button id="search_button" name="search_button" type="submit" class="btn btn-outline-primary">Search</button>
-            </span>
+          <div class="col-auto">
+            <label class="form-label d-block">&nbsp;</label>
+            <button id="search_button" name="search_button" type="submit" class="btn btn-outline-primary">Search</button>
           </div>
         </div>
         <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
@@ -44,8 +40,9 @@
 
       <hr>
 
+      {% if results_message or results %}
       <div class="container" id="results_div" name="results_div">
-        <h5>{{ results_message }}</h5>
+        <h5>{{ results_message or "Vector Search Results" }}</h5>
         <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
             <!-- Prism.js for JSON syntax highlighting -->
             <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
@@ -53,17 +50,20 @@
             <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
       </div>
+      {% endif %}
 
+      {% if embedding_message or embedding %}
       <hr>
 
       <div class="container" id="embedding_div" name="embedding_div">
-        <h5>{{ embedding_message }}</h5>
+        <h5>{{ embedding_message or "Embedding" }}</h5>
         <pre>
         <code>
       {{ embedding }}
         </code>
         </pre>
       </div>
+      {% endif %}
    </div>
   </div>
 </div>
@@ -71,10 +71,33 @@
 {% endblock %}
 
 {% block js %}
+<style>
+  /* Search button styling - consistent with Submit button from conv_ai_console.html */
+  #search_button {
+    background-color: transparent !important;
+    border-color: #6c757d !important;
+    color: #6c757d !important;
+  }
+  
+  #search_button:hover, 
+  #search_button:focus, 
+  #search_button.processing {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+  }
+  
+  #search_button:disabled {
+    background-color: transparent !important;
+    border-color: #495057 !important;
+    color: #495057 !important;
+    opacity: 0.6;
+  }
+</style>
 <script>
 const form = document.getElementById("form");
 const search_button = document.getElementById("search_button");
-const libname_form_field = document.getElementById("libname");
+const entrypoint_form_field = document.getElementById("entrypoint");
 
 var suggestions_index = -1;
 var suggestions = [
@@ -85,13 +108,13 @@ var suggestions = [
   "pandas"
 ];
 
-libname_form_field.addEventListener('dblclick', 
+entrypoint_form_field.addEventListener('dblclick', 
     function(event) {
       suggestions_index++;
       if (suggestions_index >= suggestions.length) {
         suggestions_index = 0;
       }
-      $("#libname").val(suggestions[suggestions_index]);
+      $("#entrypoint").val(suggestions[suggestions_index]);
     }
 );
 
@@ -99,9 +122,27 @@ search_button.addEventListener('click',
     function(event) {
       event.preventDefault();
       search_button.disabled = true;
+      search_button.classList.add('processing');
       search_button.textContent = "Processing...";
+      
+      // Store the search query in localStorage before submitting
+      const entrypoint_value = entrypoint_form_field.value;
+      localStorage.setItem('vector_search_entrypoint', entrypoint_value);
+      
       form.submit();
     }
 );
+
+// On page load, restore the search query from localStorage
+document.addEventListener('DOMContentLoaded', function() {
+    // Only restore entrypoint if server didn't provide one
+    const server_entrypoint = entrypoint_form_field.value.trim();
+    if (!server_entrypoint) {
+        const saved_entrypoint = localStorage.getItem('vector_search_entrypoint');
+        if (saved_entrypoint) {
+            entrypoint_form_field.value = saved_entrypoint;
+        }
+    }
+});
 </script>
 {% endblock %}

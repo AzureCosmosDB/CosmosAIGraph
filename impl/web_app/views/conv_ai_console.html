@@ -43,6 +43,11 @@
             <input class="form-control" type="text" id="user_text" name="user_text"
               placeholder="Enter your request here. Triple-click for suggestions.">
           </div>
+          <div class="col-auto">
+            <label class="form-label fs-6 d-block">&nbsp;</label>
+            <button type="button" class="btn btn-outline-primary" id="continue_button"
+              name="continue_button">Submit</button>
+          </div>
           <div class="col-auto text-end">
             <label class="form-label fs-6 d-block">RAG data source:</label>
             <div class="btn-group" role="group" aria-label="RAG strategy">
@@ -64,9 +69,7 @@
             </div>
           </div>
         </div>
-        <div>
-          <button type="button" class="btn btn-outline-primary" id="continue_button"
-            name="continue_button">Submit</button>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Conversation actions">
           <button type="button" class="btn btn-outline-secondary" id="feedback_button"
             name="feedback_button">Feedback</button>
           <button type="button" class="btn btn-outline-secondary" id="prompts_button"
@@ -119,6 +122,36 @@
 {% endblock %}
 
 {% block js %}
+<style>
+  /* Submit button styling - only highlight on hover/focus/processing */
+  #continue_button {
+    background-color: transparent !important;
+    border-color: #6c757d !important;
+    color: #6c757d !important;
+  }
+  
+  #continue_button:hover, 
+  #continue_button:focus, 
+  #continue_button.processing {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+  }
+  
+  #continue_button:disabled {
+    background-color: transparent !important;
+    border-color: #495057 !important;
+    color: #495057 !important;
+    opacity: 0.6;
+  }
+  
+  /* Active state for toggle buttons */
+  .btn-toggle-active {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: white !important;
+  }
+</style>
 <script>
   const form = document.getElementById("form");
   var user_text = document.getElementById("user_text");
@@ -183,6 +216,7 @@
     if (user_text && user_text.value.trim().length > 0) {
       isSubmitting = true;
       continue_button.disabled = true;
+      continue_button.classList.add('processing');
       continue_button.textContent = "Processing...";
       json_button.disabled = true;
       form.submit();
@@ -209,9 +243,11 @@
       event.preventDefault();
       if (feedback_div.style.display == "none") {
         feedback_div.style.display = "block";
+        feedback_button.classList.add('btn-toggle-active');
       }
       else {
         feedback_div.style.display = "none";
+        feedback_button.classList.remove('btn-toggle-active');
       }
     }
   );
@@ -222,6 +258,7 @@
       event.preventDefault();
       submitFeedbackForm();
       feedback_div.style.display = "none";
+      feedback_button.classList.remove('btn-toggle-active');
     }
   );
 
@@ -231,9 +268,11 @@
       event.preventDefault();
       if (prompts_div.style.display == "none") {
         prompts_div.style.display = "block";
+        prompts_button.classList.add('btn-toggle-active');
       }
       else {
         prompts_div.style.display = "none";
+        prompts_button.classList.remove('btn-toggle-active');
       }
     }
   );
@@ -244,9 +283,11 @@
       event.preventDefault();
       if (conversation_data.style.display == "none") {
         conversation_data.style.display = "block";
+        json_button.classList.add('btn-toggle-active');
       }
       else {
         conversation_data.style.display = "none";
+        json_button.classList.remove('btn-toggle-active');
       }
     }
   );

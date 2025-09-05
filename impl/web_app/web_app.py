@@ -375,6 +375,51 @@ async def gen_sparql_console_execute_sparql(req: Request):
 @app.get("/vector_search_console")
 async def get_vector_search_console(req: Request):
     view_data = vector_search_view_data()
+    
+    # Test session functionality
+    req.session["test_session"] = "session_working"
+    test_value = req.session.get("test_session")
+    logging.info(f"Session test - stored: 'session_working', retrieved: '{test_value}'")
+    
+    # Debug: Log session contents
+    logging.info(f"Session keys: {list(req.session.keys())}")
+    logging.info(f"Full session contents: {dict(req.session)}")
+    
+    # Restore previous search data from session if available
+    try:
+        last_entrypoint = str(req.session.get("vector_search_entrypoint") or "").strip()
+        if last_entrypoint:
+            view_data["entrypoint"] = last_entrypoint
+            logging.info(f"Restored entrypoint from session: {last_entrypoint}")
+        else:
+            logging.info("No entrypoint found in session")
+            
+        # Restore previous results if available
+        last_results = req.session.get("vector_search_results")
+        logging.info(f"Session results type: {type(last_results)}, value: {last_results}")
+        
+        if last_results is not None and len(last_results) > 0:
+            view_data["results"] = last_results
+            view_data["results_message"] = "Vector Search Results (from session)"
+            logging.info(f"Restored {len(last_results)} results from session")
+        else:
+            logging.info("No results found in session or results are empty")
+            
+        # Restore previous embedding if available
+        last_embedding = req.session.get("vector_search_embedding")
+        last_embedding_message = req.session.get("vector_search_embedding_message")
+        if last_embedding:
+            view_data["embedding"] = last_embedding
+            view_data["embedding_message"] = last_embedding_message or "Embedding (from session)"
+            logging.info(f"Restored embedding from session")
+        else:
+            logging.info("No embedding found in session")
+            
+    except Exception as e:
+        logging.error(f"Error restoring vector search session data: {e}")
+        import traceback
+        logging.error(traceback.format_exc())
+    
     view_data["current_page"] = "vector_search_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="vector_search_console.html", context=view_data
@@ -386,12 +431,19 @@ async def post_vector_search_console(req: Request):
     global nosql_svc
     form_data = await req.form()
     logging.info("/vector_search_console form_data: {}".format(form_data))
-    entrypoint = form_data.get("entrypoint").strip()
+    
+    # Safely get entrypoint from form data
+    entrypoint_raw = form_data.get("entrypoint")
+    if entrypoint_raw is None:
+        entrypoint = ""
+    else:
+        entrypoint = str(entrypoint_raw).strip()
+    
     logging.debug("vector_search_console; entrypoint: {}".format(entrypoint))
     view_data = vector_search_view_data()
     view_data["entrypoint"] = entrypoint
 
-    if entrypoint.startswith("text:"):
+    if entrypoint and entrypoint.startswith("text:"):
         text = entrypoint[5:]
         logging.info(f"post_vector_search_console; text: {text}")
         try:
@@ -408,7 +460,7 @@ async def post_vector_search_console(req: Request):
         nosql_svc.set_db(ConfigService.graph_source_db())
         nosql_svc.set_container(ConfigService.graph_source_container())
         results_obj = await nosql_svc.vector_search(vector)
-    else:
+    elif entrypoint:
         nosql_svc.set_db(ConfigService.graph_source_db())
         nosql_svc.set_container(ConfigService.graph_source_container())
         docs = await nosql_svc.get_documents_by_name([entrypoint])
@@ -422,10 +474,42 @@ async def post_vector_search_console(req: Request):
             results_obj = await nosql_svc.vector_search(doc["embedding"])
         else:
             results_obj = list()
+    else:
+        # Empty entrypoint - return empty results
+        results_obj = list()
 
     view_data["results_message"] = "Vector Search Results"
     view_data["results"] = results_obj#json.dumps(results_obj, sort_keys=False, indent=2)
     view_data["current_page"] = "vector_search_console"  # Set active page for navbar
+    
+    # Store search data in session for persistence between navigations
+    try:
+        req.session["vector_search_entrypoint"] = entrypoint
+        
+        # Convert results to JSON serializable format
+        if results_obj:
+            # Convert to list if it's not already, and ensure it's JSON serializable
+            serializable_results = list(results_obj) if results_obj else []
+            req.session["vector_search_results"] = serializable_results
+        else:
+            req.session["vector_search_results"] = []
+            
+        logging.info(f"Stored entrypoint '{entrypoint}' and {len(results_obj) if results_obj else 0} results in session")
+        
+        if "embedding" in view_data and view_data["embedding"]:
+            req.session["vector_search_embedding"] = view_data["embedding"]
+            req.session["vector_search_embedding_message"] = view_data["embedding_message"]
+            logging.info(f"Stored embedding data in session")
+        else:
+            # Clear embedding data if not present
+            req.session.pop("vector_search_embedding", None)
+            req.session.pop("vector_search_embedding_message", None)
+            
+    except Exception as e:
+        logging.error(f"Error storing vector search session data: {e}")
+        import traceback
+        logging.error(traceback.format_exc())
+    
     return views.TemplateResponse(
         request=req, name="vector_search_console.html", context=view_data
     )
