@@ -395,6 +395,26 @@ async def get_vector_search_console(req: Request):
         else:
             logging.info("No entrypoint found in session")
             
+        # Restore search method
+        last_search_method = str(req.session.get("vector_search_method") or "vector").strip()
+        view_data["search_method"] = last_search_method
+        logging.info(f"Restored search method from session: {last_search_method}")
+        
+        # Restore search limit
+        last_search_limit = req.session.get("vector_search_limit")
+        if last_search_limit is not None:
+            try:
+                search_limit = int(last_search_limit)
+                if 1 <= search_limit <= 100:  # Validate bounds
+                    view_data["search_limit"] = search_limit
+                    logging.info(f"Restored search limit from session: {search_limit}")
+                else:
+                    view_data["search_limit"] = 4  # Default if out of bounds
+            except (ValueError, TypeError):
+                view_data["search_limit"] = 4  # Default if invalid
+        else:
+            view_data["search_limit"] = 4  # Default if not found
+            
         # Restore previous results if available
         last_results = req.session.get("vector_search_results")
         logging.info(f"Session results type: {type(last_results)}, value: {last_results}")
@@ -433,59 +453,122 @@ async def post_vector_search_console(req: Request):
     form_data = await req.form()
     logging.info("/vector_search_console form_data: {}".format(form_data))
     
-    # Safely get entrypoint from form data
+    # Safely get entrypoint and search method from form data
     entrypoint_raw = form_data.get("entrypoint")
     if entrypoint_raw is None:
         entrypoint = ""
     else:
         entrypoint = str(entrypoint_raw).strip()
     
-    logging.debug("vector_search_console; entrypoint: {}".format(entrypoint))
+    search_method_raw = form_data.get("search_method")
+    if search_method_raw is None:
+        search_method = "vector"  # Default to vector search
+    else:
+        search_method = str(search_method_raw).strip()
+    
+    # Safely get search limit from form data
+    search_limit_raw = form_data.get("search_limit")
+    if search_limit_raw is None or str(search_limit_raw).strip() == "":
+        search_limit = 4  # Default limit
+    else:
+        try:
+            search_limit = int(str(search_limit_raw).strip())
+            # Ensure limit is within reasonable bounds
+            if search_limit < 1:
+                search_limit = 1
+            elif search_limit > 100:
+                search_limit = 100
+        except ValueError:
+            search_limit = 4  # Default if invalid
+    
+    logging.debug("vector_search_console; entrypoint: {}, search_method: {}, limit: {}".format(entrypoint, search_method, search_limit))
     view_data = vector_search_view_data()
     view_data["entrypoint"] = entrypoint
+    view_data["search_method"] = search_method
+    view_data["search_limit"] = search_limit
 
     if entrypoint and entrypoint.startswith("text:"):
         text = entrypoint[5:]
         logging.info(f"post_vector_search_console; text: {text}")
-        try:
-            logging.info("vectorize: {}".format(text))
-            ai_svc_resp = ai_svc.generate_embeddings(text)
-            vector = ai_svc_resp.data[0].embedding
-            view_data["embedding_message"] = "Embedding from Text"
-            view_data["embedding"] = json.dumps(vector, sort_keys=False, indent=2)
-            logging.warning(f"post_vector_search_console; vector: {vector}")
-        except Exception as e:
-            logging.critical((str(e)))
-            logging.exception(e, stack_info=True, exc_info=True)
-
+        
         nosql_svc.set_db(ConfigService.graph_source_db())
         nosql_svc.set_container(ConfigService.graph_source_container())
-        results_obj = await nosql_svc.vector_search(vector)
+        
+        if search_method == "fulltext":
+            # Full-text search only
+            results_obj = await nosql_svc.vector_search(search_text=text, search_method="fulltext", limit=search_limit)
+            view_data["results_message"] = "Full-text Search Results"
+        elif search_method == "rrf":
+            # RRF search - need both vector and text
+            try:
+                logging.info("vectorize: {}".format(text))
+                ai_svc_resp = ai_svc.generate_embeddings(text)
+                vector = ai_svc_resp.data[0].embedding
+                view_data["embedding_message"] = "Embedding from Text"
+                view_data["embedding"] = json.dumps(vector, sort_keys=False, indent=2)
+                logging.warning(f"post_vector_search_console; vector: {vector}")
+                
+                results_obj = await nosql_svc.vector_search(embedding_value=vector, search_text=text, search_method="rrf", limit=search_limit)
+                view_data["results_message"] = "RRF (Hybrid) Search Results"
+            except Exception as e:
+                logging.critical((str(e)))
+                logging.exception(e, stack_info=True, exc_info=True)
+                results_obj = list()
+        else:
+            # Vector search (default)
+            try:
+                logging.info("vectorize: {}".format(text))
+                ai_svc_resp = ai_svc.generate_embeddings(text)
+                vector = ai_svc_resp.data[0].embedding
+                view_data["embedding_message"] = "Embedding from Text"
+                view_data["embedding"] = json.dumps(vector, sort_keys=False, indent=2)
+                logging.warning(f"post_vector_search_console; vector: {vector}")
+                
+                results_obj = await nosql_svc.vector_search(embedding_value=vector, search_method="vector", limit=search_limit)
+                view_data["results_message"] = "Vector Search Results"
+            except Exception as e:
+                logging.critical((str(e)))
+                logging.exception(e, stack_info=True, exc_info=True)
+                results_obj = list()
+                
     elif entrypoint:
         nosql_svc.set_db(ConfigService.graph_source_db())
         nosql_svc.set_container(ConfigService.graph_source_container())
         docs = await nosql_svc.get_documents_by_name([entrypoint])
         logging.debug("vector_search_console - docs count: {}".format(len(docs)))
-        #logging.debug("vector_search_console - docs: {}".format(json.dumps(docs)))
 
         if len(docs) > 0:
             doc = docs[0]
-            nosql_svc.set_db(ConfigService.graph_source_db())
-            nosql_svc.set_container(ConfigService.graph_source_container())
-            results_obj = await nosql_svc.vector_search(doc["embedding"])
+            if search_method == "fulltext":
+                # For entity search with fulltext, use the entity name as search text
+                results_obj = await nosql_svc.vector_search(search_text=entrypoint, search_method="fulltext", limit=search_limit)
+                view_data["results_message"] = "Full-text Search Results"
+            elif search_method == "rrf":
+                # For RRF with entity, use both embedding and entity name
+                results_obj = await nosql_svc.vector_search(embedding_value=doc["embedding"], search_text=entrypoint, search_method="rrf", limit=search_limit)
+                view_data["results_message"] = "RRF (Hybrid) Search Results"
+            else:
+                # Vector search (default)
+                results_obj = await nosql_svc.vector_search(embedding_value=doc["embedding"], search_method="vector", limit=search_limit)
+                view_data["results_message"] = "Vector Search Results"
         else:
             results_obj = list()
     else:
         # Empty entrypoint - return empty results
         results_obj = list()
 
-    view_data["results_message"] = "Vector Search Results"
-    view_data["results"] = results_obj#json.dumps(results_obj, sort_keys=False, indent=2)
+    # Set default results message if not already set
+    if "results_message" not in view_data:
+        view_data["results_message"] = "Search Results"
+    
+    view_data["results"] = results_obj
     view_data["current_page"] = "vector_search_console"  # Set active page for navbar
     
     # Store search data in session for persistence between navigations
     try:
         req.session["vector_search_entrypoint"] = entrypoint
+        req.session["vector_search_method"] = search_method
+        req.session["vector_search_limit"] = search_limit
         
         # Convert results to JSON serializable format
         if results_obj:
@@ -495,7 +578,7 @@ async def post_vector_search_console(req: Request):
         else:
             req.session["vector_search_results"] = []
             
-        logging.info(f"Stored entrypoint '{entrypoint}' and {len(results_obj) if results_obj else 0} results in session")
+        logging.info(f"Stored entrypoint '{entrypoint}', method '{search_method}', limit '{search_limit}', and {len(results_obj) if results_obj else 0} results in session")
         
         if "embedding" in view_data and view_data["embedding"]:
             req.session["vector_search_embedding"] = view_data["embedding"]
@@ -519,6 +602,7 @@ async def post_vector_search_console(req: Request):
 def vector_search_view_data():
     view_data = dict()
     view_data["entrypoint"] = ""
+    view_data["search_method"] = "vector"  # Default to vector search
     view_data["results_message"] = ""
     view_data["results"] = {}
     view_data["embedding_message"] = ""

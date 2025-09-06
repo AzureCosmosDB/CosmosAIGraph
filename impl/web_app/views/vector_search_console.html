@@ -35,10 +35,28 @@
               <label class="btn btn-sm btn-outline-secondary" for="search_text">Text</label>
             </div>
           </div>
+          <div class="col-auto">
+            <label class="form-label d-block">Search Method:</label>
+            <div class="btn-group" role="group" aria-label="Search method">
+              <input type="radio" class="btn-check" name="search_method" id="search_vector" autocomplete="off" value="vector" {{ 'checked' if search_method == 'vector' or not search_method else '' }}>
+              <label class="btn btn-sm btn-outline-secondary" for="search_vector">Vector</label>
+              
+              <input type="radio" class="btn-check" name="search_method" id="search_fulltext" autocomplete="off" value="fulltext" {{ 'checked' if search_method == 'fulltext' else '' }}>
+              <label class="btn btn-sm btn-outline-secondary" for="search_fulltext">Full-text</label>
+              
+              <input type="radio" class="btn-check" name="search_method" id="search_rrf" autocomplete="off" value="rrf" {{ 'checked' if search_method == 'rrf' else '' }}>
+              <label class="btn btn-sm btn-outline-secondary" for="search_rrf">RRF</label>
+            </div>
+          </div>
           <div class="col">
             <label for="entrypoint" class="form-label" id="entrypoint_label">Enter entity name:</label>
             <input type="text" class="form-control" id="entrypoint" name="entrypoint" value='{{ entrypoint }}'
               placeholder="Triple-click for suggestions."/> 
+          </div>
+          <div class="col-auto">
+            <label for="search_limit" class="form-label">Limit:</label>
+            <input type="number" class="form-control" id="search_limit" name="search_limit" value='{{ search_limit or 4 }}' 
+              min="1" max="100" style="width: 80px;" placeholder="4"/>
           </div>
           <div class="col-auto">
             <label class="form-label d-block">&nbsp;</label>
@@ -51,7 +69,19 @@
 
     {% if results_message or results %}
     <div id="results_div" name="results_div" style="padding: 20px; background-color: rgba(255,255,255,0.03);">
-      <h5>{{ results_message or "Vector Search Results" }}</h5>
+      {% set computed_count = 0 %}
+      {% if results %}
+      {% set computed_count = results | length %}
+      {% endif %}
+
+      <div class="d-flex justify-content-between align-items-center">
+        <h5>{{ results_message or "Vector Search Results" }}</h5>
+        {% if computed_count and computed_count > 0 %}
+        <h6 class="text-muted mb-0">Total Results: {{ computed_count }}</h6>
+        {% elif results %}
+        <h6 class="text-muted mb-0">Results returned (count not provided)</h6>
+        {% endif %}
+      </div>
       <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
           <!-- Prism.js for JSON syntax highlighting -->
           <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
@@ -120,8 +150,32 @@ const entrypoint_form_field = document.getElementById("entrypoint");
 const entrypoint_label = document.getElementById("entrypoint_label");
 const search_entity_radio = document.getElementById("search_entity");
 const search_text_radio = document.getElementById("search_text");
+const search_vector_radio = document.getElementById("search_vector");
+const search_fulltext_radio = document.getElementById("search_fulltext");
+const search_rrf_radio = document.getElementById("search_rrf");
+const search_limit_field = document.getElementById("search_limit");
 const embedding_toggle_button = document.getElementById("embedding_toggle_button");
 const embedding_content = document.getElementById("embedding_content");
+
+// Function to get the selected search method from radio buttons
+function getSearchMethod() {
+  if (search_vector_radio.checked) return 'vector';
+  if (search_fulltext_radio.checked) return 'fulltext';
+  if (search_rrf_radio.checked) return 'rrf';
+  return 'vector'; // default
+}
+
+// Function to set the search method radio button
+function setSearchMethod(method) {
+  search_vector_radio.checked = (method === 'vector');
+  search_fulltext_radio.checked = (method === 'fulltext');
+  search_rrf_radio.checked = (method === 'rrf');
+  
+  // If no valid method provided, default to vector
+  if (!search_vector_radio.checked && !search_fulltext_radio.checked && !search_rrf_radio.checked) {
+    search_vector_radio.checked = true;
+  }
+}
 
 var suggestions_index = -1;
 var entity_suggestions = [
@@ -204,11 +258,15 @@ search_button.addEventListener('click',
       search_button.classList.add('processing');
       search_button.textContent = "Processing...";
       
-      // Store the search query and type in localStorage before submitting
+      // Store the search query, type, method, and limit in localStorage before submitting
       const entrypoint_value = entrypoint_form_field.value;
       const search_type = search_entity_radio.checked ? 'entity' : 'text';
+      const search_method = getSearchMethod();
+      const search_limit = search_limit_field.value || '4';
       localStorage.setItem('vector_search_entrypoint', entrypoint_value);
       localStorage.setItem('vector_search_type', search_type);
+      localStorage.setItem('vector_search_method', search_method);
+      localStorage.setItem('vector_search_limit', search_limit);
       
       // If text search is selected, prefix the value with "text:" for backend compatibility
       if (search_text_radio.checked && entrypoint_value && !entrypoint_value.startsWith('text:')) {
@@ -219,7 +277,7 @@ search_button.addEventListener('click',
     }
 );
 
-// On page load, restore the search query and type from localStorage
+// On page load, restore the search query, type, and method from localStorage
 document.addEventListener('DOMContentLoaded', function() {
     // Restore search type
     const saved_search_type = localStorage.getItem('vector_search_type');
@@ -229,6 +287,23 @@ document.addEventListener('DOMContentLoaded', function() {
         search_entity_radio.checked = true;
     }
     updateSearchType();
+    
+    // Restore search method
+    const saved_search_method = localStorage.getItem('vector_search_method');
+    if (saved_search_method) {
+        setSearchMethod(saved_search_method);
+    } else {
+        setSearchMethod('vector'); // default to vector if nothing saved
+    }
+    
+    // Restore search limit if not provided by server
+    const server_limit = search_limit_field.value.trim();
+    if (!server_limit || server_limit === '4') {
+        const saved_limit = localStorage.getItem('vector_search_limit');
+        if (saved_limit) {
+            search_limit_field.value = saved_limit;
+        }
+    }
     
     // Only restore entrypoint if server didn't provide one
     const server_entrypoint = entrypoint_form_field.value.trim();
