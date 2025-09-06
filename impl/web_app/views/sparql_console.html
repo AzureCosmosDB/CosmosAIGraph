@@ -25,12 +25,13 @@
   /* Style for edge labels */
   .link-label {
     font-family: Arial, sans-serif;
-    font-weight: bold;
-    paint-order: stroke fill;
-    stroke: white;
-    stroke-width: 3px;
-    stroke-linejoin: round;
-    stroke-linecap: round;
+    text-shadow: none !important;
+  }
+
+  /* Style for node labels */
+  .node text {
+    text-shadow: none !important;
+    font-family: Arial, sans-serif;
   }
 
   /* Add rounded corners to CodeMirror editor to match form controls */
@@ -83,7 +84,7 @@
         <div class="mb-3">
           <label for="bom_query" class="form-label">Enter an entity name, space and its dependency depth number to visualize its graph:</label>
           <input type="text" class="form-control" id="bom_query" name="bom_query" value="{{ bom_query }}"
-            placeholder="flask 3"></input>
+            placeholder="<Entity ID/name> <Depth>"></input>
         </div>
         <div class="mb-6">
           <button type="submit" id="submit_button" name="submit_button"
@@ -92,21 +93,17 @@
         <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
       </form>
     </div>
-
     <div id="viz_wrapper" class="container-fluid p-0" style="display:none;">
       <h5 style="padding-left: 12px;">{{ visualization_message }}</h5>
-
       <div class="bg-dark" id="d3viz" name="d3viz" style="width:100%; height:800px; overflow:auto;">
         <svg id="graph-svg" style="width:100%; height:100%; display:block;" preserveAspectRatio="xMidYMid meet">
           <g id="graph-container"></g>
         </svg>
       </div>
-
       <div style="display: none;" id="inline_bom_json" name="inline_bom_json">
         {{ inline_bom_json }}
       </div>
     </div>   
-    
     <div class="container" id="results_div" name="results_div">
       {% set computed_count = count if count else 0 %}
       {% if (not computed_count) and results %}
@@ -376,14 +373,17 @@
         }
 
         // Create nodes array from the set with depth information
+        console.log('=== Creating nodes array with depth information ===');
         nodes_set.forEach(s => {
           var n = {};
           n["name"] = s;
           n["type"] = "vertex";
           n["adjCount"] = 0;
 
-          // Find the depth for this node from the original data
+          // Find the depth and additional attributes for this node from the original data
           n["depth"] = 0; // default depth
+          n["attributes"] = {}; // Store additional attributes
+          
           if (bom_obj.hasOwnProperty('nodes')) {
             var node_keys = Object.keys(bom_obj['nodes']);
             for (let i = 0; i < node_keys.length; i++) {
@@ -393,14 +393,38 @@
               if (clean_name.includes('#')) {
                 clean_name = clean_name.split('#').pop();
               }
-              if (clean_name === s && node_data.depth !== undefined) {
-                n["depth"] = node_data.depth;
+              if (clean_name === s) {
+                if (node_data.depth !== undefined) {
+                  n["depth"] = node_data.depth;
+                }
+                
+                // Extract rich attributes from the node data
+                if (node_data.richDependencies && node_data.richDependencies.length > 0) {
+                  // Get properties from the first rich dependency that has properties
+                  const richDep = node_data.richDependencies.find(rd => rd.properties && Object.keys(rd.properties).length > 0);
+                  if (richDep && richDep.properties) {
+                    n["attributes"] = richDep.properties;
+                  }
+                }
+                
+                // Also check for direct properties on the node
+                if (node_data.properties) {
+                  n["attributes"] = { ...n["attributes"], ...node_data.properties };
+                }
+                
+                console.log('Found attributes for node:', s, '-> attributes:', n["attributes"]);
                 break;
               }
             }
           }
-
+          
+          console.log('Node created:', s, 'with final depth =', n["depth"], 'and attributes:', Object.keys(n["attributes"]));
           nodes.push(n);
+        });
+
+        console.log('=== Final node depth summary ===');
+        nodes.forEach(node => {
+          console.log('Node:', node.name, '-> depth:', node.depth);
         });
 
         // Generate consistent colors for node types with depth-based intensity
@@ -467,7 +491,7 @@
 
           // Create a copy of nodes and edges for D3
           const graphNodes = nodes.map(d => ({ ...d }));
-          const graphEdges = edges.map(d => ({
+          const allGraphEdges = edges.map(d => ({
             source: d.source,
             target: d.target,
             weight: d.weight || 1,
@@ -482,8 +506,42 @@
             drawingNumber: d.drawingNumber || ""
           }));
 
+          // Deduplicate edges - only keep one edge per source-target pair (including bidirectional)
+          const edgeMap = new Map();
+          allGraphEdges.forEach(edge => {
+            // Create both directional keys to handle bidirectional deduplication
+            const key1 = `${edge.source}-${edge.target}`;
+            const key2 = `${edge.target}-${edge.source}`;
+            
+            // Check if either direction already exists
+            if (!edgeMap.has(key1) && !edgeMap.has(key2)) {
+              // For the first edge, use it as-is
+              edgeMap.set(key1, edge);
+            } else {
+              // For duplicates, prefer edges with better labels
+              const existingKey = edgeMap.has(key1) ? key1 : key2;
+              const existing = edgeMap.get(existingKey);
+              
+              if (edge.displayLabel && edge.displayLabel !== "" && 
+                  !edge.displayLabel.includes("connects") && 
+                  (!existing.displayLabel || existing.displayLabel.includes("connects"))) {
+                // Replace with better edge, but keep the original key direction
+                edgeMap.delete(existingKey);
+                edgeMap.set(key1, edge);
+              }
+            }
+          });
+          
+          // Use the deduplicated edges
+          const graphEdges = Array.from(edgeMap.values());
+
           console.log("Graph nodes for D3:", graphNodes);
-          console.log("Graph edges for D3:", graphEdges);
+          console.log("Graph edges for D3 (deduplicated):", graphEdges);
+          console.log("Original edges count:", allGraphEdges.length, "Deduplicated count:", graphEdges.length);
+          
+          // Debug: Log edge source-target pairs to check for duplicates
+          const edgePairs = graphEdges.map(e => `${e.source} → ${e.target} (${e.displayLabel || e.label})`);
+          console.log("Final edge pairs:", edgePairs);
 
           // Set up the simulation
           const simulation = d3.forceSimulation(graphNodes)
@@ -513,31 +571,18 @@
             // Add tooltips to edges showing rich dependency information
             link.append("title")
               .text(d => {
-                if (d.tooltipText && d.tooltipText !== "") {
-                  return d.tooltipText;
+                // Use short displayLabel for cleaner tooltips
+                if (d.displayLabel && d.displayLabel !== "") {
+                  return d.displayLabel;
+                } else if (d.edgeLabel && d.edgeLabel !== "") {
+                  return d.edgeLabel;
                 } else {
-                  // Generate tooltip from available rich properties
-                  let tooltip = `Connection: ${d.source} → ${d.target}\n`;
-                  if (d.type && d.type !== "connection") {
-                    tooltip += `Type: ${d.type}\n`;
-                  }
-                  if (d.itemTag && d.itemTag !== "") {
-                    tooltip += `Equipment Tag: ${d.itemTag}\n`;
-                  }
-                  if (d.nominalDiameter && d.nominalDiameter !== "") {
-                    tooltip += `Diameter: ${d.nominalDiameter}\n`;
-                  }
-                  if (d.flowDir && d.flowDir !== "") {
-                    tooltip += `Flow Direction: ${d.flowDir}\n`;
-                  }
-                  if (d.drawingNumber && d.drawingNumber !== "") {
-                    tooltip += `Drawing: ${d.drawingNumber}\n`;
-                  }
-                  return tooltip.trim();
+                  // Fallback to simple connection label
+                  return `${d.source} → ${d.target}`;
                 }
               });
 
-            // Add labels to edges with rich information
+            // Add labels to edges with proper angle alignment
             linkLabels = g.append("g")
               .attr("class", "link-labels")
               .selectAll("text")
@@ -545,45 +590,21 @@
               .enter().append("text")
               .attr("class", "link-label")
               .style("font-size", "8px")
-              .style("fill", "#333333")
+              .style("fill", "#4a5568")
               .style("text-anchor", "middle")
               .style("pointer-events", "none")
+              .style("text-shadow", "none")
               .text(d => {
-                // Use rich dependency information for meaningful labels
-                if (d.label && d.label !== "depends on") {
-                  // If we have a specific label from rich dependencies, use it
-                  return d.label;
-                } else if (d.itemTag) {
-                  // Show equipment tag if available
-                  return d.itemTag;
-                } else if (d.nominalDiameter && d.nominalDiameter !== "") {
-                  // Show diameter information for piping
-                  return `Ø${d.nominalDiameter}`;
+                // Extract clean connection type without arrows or prefixes
+                if (d.displayLabel && d.displayLabel !== "") {
+                  // Remove arrows and clean up the label
+                  return d.displayLabel.replace(/[←→↔]/g, '').trim();
+                } else if (d.label && d.label !== "depends on" && d.label !== "connects") {
+                  return d.label.replace(/[←→↔]/g, '').trim();
                 } else if (d.type && d.type !== "connection") {
-                  // Show the connection type
                   return d.type;
-                } else if (d.flowDir && d.flowDir !== "") {
-                  // Show flow direction
-                  return "flows";
-                } else if (d.weight && d.weight !== 1) {
-                  return `weight: ${d.weight}`;
                 } else {
-                  // Try to infer relationship from node types or names
-                  const sourceName = d.source.name || d.source;
-                  const targetName = d.target.name || d.target;
-                  
-                  // Check if it looks like engineering equipment connections
-                  if (typeof sourceName === 'string' && typeof targetName === 'string') {
-                    if (sourceName.includes('VES') || targetName.includes('VES')) {
-                      return "flows to";
-                    } else if (sourceName.includes('PIPE') || targetName.includes('PIPE')) {
-                      return "connects";
-                    } else if (sourceName.includes('Junction') || targetName.includes('Junction')) {
-                      return "flows to";
-                    }
-                  }
-                  
-                  return "connects";
+                  return "Connection";
                 }
               });
           }
@@ -606,13 +627,72 @@
             .style("fill", d => getNodeColor(d.name, d.depth))
             .style("stroke", "none");
 
-          // Add labels to nodes
-          node.append("text")
-            .text(d => d.name.length > 256 ? d.name.substring(0, 256) + '...' : d.name)
+          // Add labels to nodes - multi-line with attributes
+          const nodeLabels = node.append("text")
             .style("font-size", "10px")
-            .style("text-anchor", "middle")
-            .attr("dy", "20")
-            .style("fill", "#888888");
+            .style("text-anchor", "start") // Left-align text to start right of circle
+            .attr("dx", "8") // Position 8 pixels to the right of circle center
+            .attr("dy", "-0.5em") // Start slightly above center for multi-line
+            .style("fill", "white")
+            .style("text-shadow", "none");
+
+          nodeLabels.each(function(d) {
+            const textElement = d3.select(this);
+            const lines = [];
+            
+            // First line: Node name (more generous truncation)
+            const displayName = d.name.length > 30 ? d.name.substring(0, 30) + '...' : d.name;
+            lines.push({ text: displayName, opacity: 1.0 });
+            
+            // Add up to 3 additional attribute lines (just values, no keys)
+            if (d.attributes && Object.keys(d.attributes).length > 0) {
+              const attrKeys = Object.keys(d.attributes);
+              const interestingAttributes = ["ItemTag", "NominalDiameter", "FlowDir", "DrawingNumber", "Type", "Category"];
+              
+              // Prioritize interesting attributes, then add others
+              const sortedKeys = [...attrKeys].sort((a, b) => {
+                const aIndex = interestingAttributes.indexOf(a);
+                const bIndex = interestingAttributes.indexOf(b);
+                if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+                if (aIndex !== -1) return -1;
+                if (bIndex !== -1) return 1;
+                return a.localeCompare(b);
+              });
+              
+              // Take up to 3 attributes
+              for (let i = 0; i < Math.min(3, sortedKeys.length); i++) {
+                const key = sortedKeys[i];
+                const value = d.attributes[key];
+                if (value && value.toString().trim() !== "") {
+                  let displayValue = value.toString();
+                  
+                  // If value is short (< 10 chars), add predicate prefix
+                  if (displayValue.length < 10) {
+                    displayValue = `${key}: ${displayValue}`;
+                  }
+                  // Only truncate if really long (> 25 chars)
+                  else if (displayValue.length > 25) {
+                    displayValue = displayValue.substring(0, 25) + '...';
+                  }
+                  
+                  // Each line gets progressively dimmer: 1.0, 0.8, 0.6, 0.4
+                  const opacity = 1.0 - ((i + 1) * 0.2);
+                  lines.push({ text: displayValue, opacity: opacity });
+                }
+              }
+            }
+            
+            // Create tspan elements for each line
+            lines.forEach((line, index) => {
+              textElement.append("tspan")
+                .attr("x", 8) // Keep consistent x position
+                .attr("dy", index === 0 ? "0" : "1.1em") // Line spacing
+                .style("font-weight", index === 0 ? "bold" : "normal")
+                .style("font-size", index === 0 ? "10px" : "9px") // Slightly smaller for attributes
+                .style("opacity", line.opacity) // Progressive dimming
+                .text(line.text);
+            });
+          });
 
           // Add zoom behavior
           const zoom = d3.zoom()
@@ -637,7 +717,22 @@
               linkLabels
                 .attr("x", d => (d.source.x + d.target.x) / 2)
                 .attr("y", d => (d.source.y + d.target.y) / 2)
-                .attr("dy", "0.35em");
+                .attr("dy", "0.35em") // Center the text vertically
+                .attr("transform", d => {
+                  // Calculate angle of the line for text rotation
+                  const dx = d.target.x - d.source.x;
+                  const dy = d.target.y - d.source.y;
+                  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                  const x = (d.source.x + d.target.x) / 2;
+                  const y = (d.source.y + d.target.y) / 2;
+                  
+                  // Ensure text is always readable (not upside down)
+                  const rotationAngle = (angle > 90 || angle < -90) ? angle + 180 : angle;
+                  
+                  // Position the text slightly above the line (in the rotated coordinate system)
+                  const offsetY = -5; // 5 pixels above the line
+                  return `rotate(${rotationAngle}, ${x}, ${y}) translate(0, ${offsetY})`;
+                });
             }
 
             node

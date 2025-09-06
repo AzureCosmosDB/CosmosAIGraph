@@ -1,0 +1,36 @@
+PREFIX c: <http://schema.org/ontology#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?connectedNode ?relationshipType ?direction ?connectedType
+WHERE {
+  {
+    # Outbound connections: this node -> other nodes
+    <http://schema.org/ontology#11AF48DE79124AED8210C92F7EF8DF36> ?relationshipType ?connectedNode .
+    BIND("outbound" AS ?direction)
+    # Filter out literal values and focus on URI resources
+    FILTER(isURI(?connectedNode))
+    # Exclude RDF/OWL system properties
+    FILTER(!STRSTARTS(STR(?relationshipType), "http://www.w3.org/1999/02/22-rdf-syntax-ns#"))
+    FILTER(!STRSTARTS(STR(?relationshipType), "http://www.w3.org/2000/01/rdf-schema#"))
+    FILTER(!STRSTARTS(STR(?relationshipType), "http://www.w3.org/2002/07/owl#"))
+    # Get the type of the connected node for proper labeling
+    OPTIONAL { ?connectedNode rdf:type ?connectedType }
+  }
+  UNION
+  {
+    # Inbound connections: other nodes -> this node
+    ?connectedNode ?relationshipType <http://schema.org/ontology#11AF48DE79124AED8210C92F7EF8DF36> .
+    BIND("inbound" AS ?direction)
+    # Filter out literal subjects and focus on URI resources
+    FILTER(isURI(?connectedNode))
+    # Exclude RDF/OWL system properties
+    FILTER(!STRSTARTS(STR(?relationshipType), "http://www.w3.org/1999/02/22-rdf-syntax-ns#"))
+    FILTER(!STRSTARTS(STR(?relationshipType), "http://www.w3.org/2000/01/rdf-schema#"))
+    FILTER(!STRSTARTS(STR(?relationshipType), "http://www.w3.org/2002/07/owl#"))
+    # Get the type of the connected node for proper labeling
+    OPTIONAL { ?connectedNode rdf:type ?connectedType }
+  }
+}
+LIMIT 100

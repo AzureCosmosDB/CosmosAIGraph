@@ -122,7 +122,13 @@ public class RichDependency {
      * Shows actual property names from the TTL graph using dynamic discovery
      */
     public String getEdgeLabel() {
-        // Highest priority: Show the actual connecting property name
+        // HIGHEST PRIORITY: Use the EdgeLabel property set by AppGraph (entity type-based labeling)
+        String edgeLabel = getStringProperty("EdgeLabel");
+        if (edgeLabel != null && !edgeLabel.isEmpty()) {
+            return edgeLabel;
+        }
+        
+        // Second priority: Show the actual connecting property name
         String connectingProperty = getStringProperty("ConnectingProperty");
         if (connectingProperty != null && !connectingProperty.isEmpty()) {
             return connectingProperty;

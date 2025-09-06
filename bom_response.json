@@ -1,0 +1,1144 @@
+﻿{
+    "entrypoint":  "11AF48DE79124AED8210C92F7EF8DF36",
+    "max_depth":  1,
+    "actual_depth":  2,
+    "nodes":  {
+                  "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E":  {
+                                                                                      "uri":  "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                      "depth":  1,
+                                                                                      "name":  "8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F":  {
+                                                                                      "uri":  "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                      "depth":  1,
+                                                                                      "name":  "FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565":  {
+                                                                                      "uri":  "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565",
+                                                                                      "depth":  1,
+                                                                                      "name":  "D024101F650F499A8DCAB014A0A6B565",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17":  {
+                                                                                      "uri":  "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17",
+                                                                                      "depth":  1,
+                                                                                      "name":  "66B23716E1374FBBB7274AA7F9568F17",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365":  {
+                                                                                      "uri":  "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                      "depth":  1,
+                                                                                      "name":  "CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35":  {
+                                                                                      "uri":  "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                      "depth":  1,
+                                                                                      "name":  "DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC":  {
+                                                                                      "uri":  "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC",
+                                                                                      "depth":  1,
+                                                                                      "name":  "2C575155CB404BBBA705692EF93BA1AC",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75":  {
+                                                                                      "uri":  "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                      "depth":  1,
+                                                                                      "name":  "0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD":  {
+                                                                                      "uri":  "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                      "depth":  1,
+                                                                                      "name":  "1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#11AF48DE79124AED8210C92F7EF8DF36":  {
+                                                                                      "uri":  "http://schema.org/ontology#11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                      "depth":  0,
+                                                                                      "name":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                      "visited":  true,
+                                                                                      "dependencies":  [
+                                                                                                           "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                           "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                           "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                           "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                           "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565",
+                                                                                                           "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565",
+                                                                                                           "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565",
+                                                                                                           "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565",
+                                                                                                           "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                           "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                           "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                           "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                           "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                           "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                           "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                           "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                           "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                           "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                           "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                           "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                           "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                           "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                           "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                           "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                           "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                           "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                           "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                           "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                           "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0",
+                                                                                                           "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0",
+                                                                                                           "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0",
+                                                                                                           "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0",
+                                                                                                           "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                           "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                           "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                           "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                           "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                           "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                           "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                           "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                           "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F",
+                                                                                                           "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F",
+                                                                                                           "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F",
+                                                                                                           "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F",
+                                                                                                           "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                           "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                           "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                           "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E"
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                   "name":  "CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "722A7414AA904A98880546BFB1BFFFC4",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                                      "RunID":  "7F7101E315754EE8ABC31BA39A721F7A",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 722A7414AA904A98880546BFB1BFFFC4\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Edge\nID: CBF5EFCA64C54233BAC981E4B9967365\nRunID: 7F7101E315754EE8ABC31BA39A721F7A\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                   "name":  "CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "722A7414AA904A98880546BFB1BFFFC4",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                                      "RunID":  "7F7101E315754EE8ABC31BA39A721F7A",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 722A7414AA904A98880546BFB1BFFFC4\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â DirectConnection\nID: CBF5EFCA64C54233BAC981E4B9967365\nRunID: 7F7101E315754EE8ABC31BA39A721F7A\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                   "name":  "CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "722A7414AA904A98880546BFB1BFFFC4",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                                      "RunID":  "7F7101E315754EE8ABC31BA39A721F7A",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 722A7414AA904A98880546BFB1BFFFC4\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Node\nID: CBF5EFCA64C54233BAC981E4B9967365\nRunID: 7F7101E315754EE8ABC31BA39A721F7A\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                   "name":  "CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "722A7414AA904A98880546BFB1BFFFC4",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "CBF5EFCA64C54233BAC981E4B9967365",
+                                                                                                                                      "RunID":  "7F7101E315754EE8ABC31BA39A721F7A",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 722A7414AA904A98880546BFB1BFFFC4\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Resource\nID: CBF5EFCA64C54233BAC981E4B9967365\nRunID: 7F7101E315754EE8ABC31BA39A721F7A\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                   "name":  "D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "7A2124BFDE39478BAA6C5AFBC39470DA",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 7A2124BFDE39478BAA6C5AFBC39470DA\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Resource\nID: D024101F650F499A8DCAB014A0A6B565\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                   "name":  "D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "7A2124BFDE39478BAA6C5AFBC39470DA",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 7A2124BFDE39478BAA6C5AFBC39470DA\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Node\nID: D024101F650F499A8DCAB014A0A6B565\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                   "name":  "D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "7A2124BFDE39478BAA6C5AFBC39470DA",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 7A2124BFDE39478BAA6C5AFBC39470DA\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Edge\nID: D024101F650F499A8DCAB014A0A6B565\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                   "name":  "D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "7A2124BFDE39478BAA6C5AFBC39470DA",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "D024101F650F499A8DCAB014A0A6B565",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 7A2124BFDE39478BAA6C5AFBC39470DA\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â DirectConnection\nID: D024101F650F499A8DCAB014A0A6B565\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                   "name":  "DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "F28F5824DF5A42E8A17F9F7B8D17061B",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                                      "RunID":  "1B1969E98E0F478F98C44E4326590EFF",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: F28F5824DF5A42E8A17F9F7B8D17061B\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â DirectConnection\nID: DD1D1F5C7CC74F70AC981B95BD7E5C35\nRunID: 1B1969E98E0F478F98C44E4326590EFF\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                   "name":  "DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "F28F5824DF5A42E8A17F9F7B8D17061B",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                                      "RunID":  "1B1969E98E0F478F98C44E4326590EFF",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: F28F5824DF5A42E8A17F9F7B8D17061B\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Node\nID: DD1D1F5C7CC74F70AC981B95BD7E5C35\nRunID: 1B1969E98E0F478F98C44E4326590EFF\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                   "name":  "DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "F28F5824DF5A42E8A17F9F7B8D17061B",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                                      "RunID":  "1B1969E98E0F478F98C44E4326590EFF",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: F28F5824DF5A42E8A17F9F7B8D17061B\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Edge\nID: DD1D1F5C7CC74F70AC981B95BD7E5C35\nRunID: 1B1969E98E0F478F98C44E4326590EFF\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                   "name":  "DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "F28F5824DF5A42E8A17F9F7B8D17061B",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "DD1D1F5C7CC74F70AC981B95BD7E5C35",
+                                                                                                                                      "RunID":  "1B1969E98E0F478F98C44E4326590EFF",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: F28F5824DF5A42E8A17F9F7B8D17061B\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Resource\nID: DD1D1F5C7CC74F70AC981B95BD7E5C35\nRunID: 1B1969E98E0F478F98C44E4326590EFF\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                   "name":  "1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "2D8EF87404734A5887AA6E8CD55F553A",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                                      "RunID":  "6AD2953E47134A66A28EB662781DBEE4",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 2D8EF87404734A5887AA6E8CD55F553A\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â DirectConnection\nID: 1B66AA54502E4C6DAFDC2574D793BCCD\nRunID: 6AD2953E47134A66A28EB662781DBEE4\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                   "name":  "1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "2D8EF87404734A5887AA6E8CD55F553A",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                                      "RunID":  "6AD2953E47134A66A28EB662781DBEE4",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 2D8EF87404734A5887AA6E8CD55F553A\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Node\nID: 1B66AA54502E4C6DAFDC2574D793BCCD\nRunID: 6AD2953E47134A66A28EB662781DBEE4\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                   "name":  "1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "2D8EF87404734A5887AA6E8CD55F553A",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                                      "RunID":  "6AD2953E47134A66A28EB662781DBEE4",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 2D8EF87404734A5887AA6E8CD55F553A\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Edge\nID: 1B66AA54502E4C6DAFDC2574D793BCCD\nRunID: 6AD2953E47134A66A28EB662781DBEE4\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                   "name":  "1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "2D8EF87404734A5887AA6E8CD55F553A",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "1B66AA54502E4C6DAFDC2574D793BCCD",
+                                                                                                                                      "RunID":  "6AD2953E47134A66A28EB662781DBEE4",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 2D8EF87404734A5887AA6E8CD55F553A\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Resource\nID: 1B66AA54502E4C6DAFDC2574D793BCCD\nRunID: 6AD2953E47134A66A28EB662781DBEE4\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                   "name":  "FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "DFD43516CA03443994F1AB5936B77F05",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                                      "RunID":  "87F9210D37EB4B5191A93E0277485524",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: DFD43516CA03443994F1AB5936B77F05\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Resource\nID: FDD5AB22AB0343B1B55749DF040F4F6F\nRunID: 87F9210D37EB4B5191A93E0277485524\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                   "name":  "FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "DFD43516CA03443994F1AB5936B77F05",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                                      "RunID":  "87F9210D37EB4B5191A93E0277485524",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: DFD43516CA03443994F1AB5936B77F05\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Edge\nID: FDD5AB22AB0343B1B55749DF040F4F6F\nRunID: 87F9210D37EB4B5191A93E0277485524\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                   "name":  "FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "DFD43516CA03443994F1AB5936B77F05",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                                      "RunID":  "87F9210D37EB4B5191A93E0277485524",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: DFD43516CA03443994F1AB5936B77F05\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Node\nID: FDD5AB22AB0343B1B55749DF040F4F6F\nRunID: 87F9210D37EB4B5191A93E0277485524\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                   "name":  "FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "DFD43516CA03443994F1AB5936B77F05",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "FDD5AB22AB0343B1B55749DF040F4F6F",
+                                                                                                                                      "RunID":  "87F9210D37EB4B5191A93E0277485524",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: DFD43516CA03443994F1AB5936B77F05\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â DirectConnection\nID: FDD5AB22AB0343B1B55749DF040F4F6F\nRunID: 87F9210D37EB4B5191A93E0277485524\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                   "name":  "0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "D8506E5C94F540E682B434F45C2A1697",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                                      "RunID":  "77CB26D3A96B45F8923D430692794518",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: D8506E5C94F540E682B434F45C2A1697\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â DirectConnection\nID: 0AC8C6E5C3434DB2ABAB2088203F2D75\nRunID: 77CB26D3A96B45F8923D430692794518\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                   "name":  "0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "D8506E5C94F540E682B434F45C2A1697",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                                      "RunID":  "77CB26D3A96B45F8923D430692794518",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: D8506E5C94F540E682B434F45C2A1697\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Node\nID: 0AC8C6E5C3434DB2ABAB2088203F2D75\nRunID: 77CB26D3A96B45F8923D430692794518\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                   "name":  "0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "D8506E5C94F540E682B434F45C2A1697",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                                      "RunID":  "77CB26D3A96B45F8923D430692794518",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: D8506E5C94F540E682B434F45C2A1697\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Resource\nID: 0AC8C6E5C3434DB2ABAB2088203F2D75\nRunID: 77CB26D3A96B45F8923D430692794518\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                   "name":  "0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "D8506E5C94F540E682B434F45C2A1697",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "0AC8C6E5C3434DB2ABAB2088203F2D75",
+                                                                                                                                      "RunID":  "77CB26D3A96B45F8923D430692794518",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: D8506E5C94F540E682B434F45C2A1697\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Edge\nID: 0AC8C6E5C3434DB2ABAB2088203F2D75\nRunID: 77CB26D3A96B45F8923D430692794518\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                   "name":  "5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "5BF3F0943F7E405E982F513CD20EF72A",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                                      "RunID":  "5B05358243964FB5850F1F866448F760",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 5BF3F0943F7E405E982F513CD20EF72A\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Resource\nID: 5C1EB26D79F04514A1FCB4F40109812C\nRunID: 5B05358243964FB5850F1F866448F760\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                   "name":  "5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "5BF3F0943F7E405E982F513CD20EF72A",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                                      "RunID":  "5B05358243964FB5850F1F866448F760",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 5BF3F0943F7E405E982F513CD20EF72A\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â DirectConnection\nID: 5C1EB26D79F04514A1FCB4F40109812C\nRunID: 5B05358243964FB5850F1F866448F760\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                   "name":  "5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "5BF3F0943F7E405E982F513CD20EF72A",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                                      "RunID":  "5B05358243964FB5850F1F866448F760",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 5BF3F0943F7E405E982F513CD20EF72A\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Edge\nID: 5C1EB26D79F04514A1FCB4F40109812C\nRunID: 5B05358243964FB5850F1F866448F760\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                   "name":  "5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "5BF3F0943F7E405E982F513CD20EF72A",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                                                                      "RunID":  "5B05358243964FB5850F1F866448F760",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 5BF3F0943F7E405E982F513CD20EF72A\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Node\nID: 5C1EB26D79F04514A1FCB4F40109812C\nRunID: 5B05358243964FB5850F1F866448F760\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0",
+                                                                                                                   "name":  "8DCDF9485C124E938B583278864544C0",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "E693CDFCC20049149345C2A217573096",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "8DCDF9485C124E938B583278864544C0",
+                                                                                                                                      "RunID":  "574BBBCF6B54408D9C0C4DA73FE92D9A",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: E693CDFCC20049149345C2A217573096\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Resource\nID: 8DCDF9485C124E938B583278864544C0\nRunID: 574BBBCF6B54408D9C0C4DA73FE92D9A\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0",
+                                                                                                                   "name":  "8DCDF9485C124E938B583278864544C0",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "E693CDFCC20049149345C2A217573096",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "8DCDF9485C124E938B583278864544C0",
+                                                                                                                                      "RunID":  "574BBBCF6B54408D9C0C4DA73FE92D9A",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: E693CDFCC20049149345C2A217573096\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â DirectConnection\nID: 8DCDF9485C124E938B583278864544C0\nRunID: 574BBBCF6B54408D9C0C4DA73FE92D9A\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0",
+                                                                                                                   "name":  "8DCDF9485C124E938B583278864544C0",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "E693CDFCC20049149345C2A217573096",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "8DCDF9485C124E938B583278864544C0",
+                                                                                                                                      "RunID":  "574BBBCF6B54408D9C0C4DA73FE92D9A",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: E693CDFCC20049149345C2A217573096\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Node\nID: 8DCDF9485C124E938B583278864544C0\nRunID: 574BBBCF6B54408D9C0C4DA73FE92D9A\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0",
+                                                                                                                   "name":  "8DCDF9485C124E938B583278864544C0",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "E693CDFCC20049149345C2A217573096",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "8DCDF9485C124E938B583278864544C0",
+                                                                                                                                      "RunID":  "574BBBCF6B54408D9C0C4DA73FE92D9A",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: E693CDFCC20049149345C2A217573096\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Edge\nID: 8DCDF9485C124E938B583278864544C0\nRunID: 574BBBCF6B54408D9C0C4DA73FE92D9A\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                   "name":  "66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "C13C94C931984E149AABCE235DC76EC2",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                                      "RunID":  "1A9CB48559884A1F8522E5A7CA2D80A3",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: C13C94C931984E149AABCE235DC76EC2\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â DirectConnection\nID: 66B23716E1374FBBB7274AA7F9568F17\nRunID: 1A9CB48559884A1F8522E5A7CA2D80A3\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                   "name":  "66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "C13C94C931984E149AABCE235DC76EC2",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                                      "RunID":  "1A9CB48559884A1F8522E5A7CA2D80A3",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: C13C94C931984E149AABCE235DC76EC2\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Edge\nID: 66B23716E1374FBBB7274AA7F9568F17\nRunID: 1A9CB48559884A1F8522E5A7CA2D80A3\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                   "name":  "66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "C13C94C931984E149AABCE235DC76EC2",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                                      "RunID":  "1A9CB48559884A1F8522E5A7CA2D80A3",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: C13C94C931984E149AABCE235DC76EC2\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Node\nID: 66B23716E1374FBBB7274AA7F9568F17\nRunID: 1A9CB48559884A1F8522E5A7CA2D80A3\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                   "name":  "66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "C13C94C931984E149AABCE235DC76EC2",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "66B23716E1374FBBB7274AA7F9568F17",
+                                                                                                                                      "RunID":  "1A9CB48559884A1F8522E5A7CA2D80A3",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: C13C94C931984E149AABCE235DC76EC2\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Resource\nID: 66B23716E1374FBBB7274AA7F9568F17\nRunID: 1A9CB48559884A1F8522E5A7CA2D80A3\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                   "name":  "2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "0D8491E4A90C489FBB62A4000B2F867C",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                                      "RunID":  "D857F7C6CBC84DD7A872DDA8DFD403A1",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 0D8491E4A90C489FBB62A4000B2F867C\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Edge\nID: 2C575155CB404BBBA705692EF93BA1AC\nRunID: D857F7C6CBC84DD7A872DDA8DFD403A1\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                   "name":  "2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "0D8491E4A90C489FBB62A4000B2F867C",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                                      "RunID":  "D857F7C6CBC84DD7A872DDA8DFD403A1",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 0D8491E4A90C489FBB62A4000B2F867C\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â DirectConnection\nID: 2C575155CB404BBBA705692EF93BA1AC\nRunID: D857F7C6CBC84DD7A872DDA8DFD403A1\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                   "name":  "2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "0D8491E4A90C489FBB62A4000B2F867C",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                                      "RunID":  "D857F7C6CBC84DD7A872DDA8DFD403A1",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 0D8491E4A90C489FBB62A4000B2F867C\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Node\nID: 2C575155CB404BBBA705692EF93BA1AC\nRunID: D857F7C6CBC84DD7A872DDA8DFD403A1\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                   "name":  "2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "0D8491E4A90C489FBB62A4000B2F867C",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "2C575155CB404BBBA705692EF93BA1AC",
+                                                                                                                                      "RunID":  "D857F7C6CBC84DD7A872DDA8DFD403A1",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 0D8491E4A90C489FBB62A4000B2F867C\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Resource\nID: 2C575155CB404BBBA705692EF93BA1AC\nRunID: D857F7C6CBC84DD7A872DDA8DFD403A1\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F",
+                                                                                                                   "name":  "D718988AB50E406880D08DB599A53D4F",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "94DCC4A1F93B476383771BDC6D09F6BE",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "D718988AB50E406880D08DB599A53D4F",
+                                                                                                                                      "RunID":  "A812962CD2534898857F7E967F991308",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 94DCC4A1F93B476383771BDC6D09F6BE\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â DirectConnection\nID: D718988AB50E406880D08DB599A53D4F\nRunID: A812962CD2534898857F7E967F991308\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F",
+                                                                                                                   "name":  "D718988AB50E406880D08DB599A53D4F",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "94DCC4A1F93B476383771BDC6D09F6BE",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "D718988AB50E406880D08DB599A53D4F",
+                                                                                                                                      "RunID":  "A812962CD2534898857F7E967F991308",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 94DCC4A1F93B476383771BDC6D09F6BE\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Resource\nID: D718988AB50E406880D08DB599A53D4F\nRunID: A812962CD2534898857F7E967F991308\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F",
+                                                                                                                   "name":  "D718988AB50E406880D08DB599A53D4F",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "94DCC4A1F93B476383771BDC6D09F6BE",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "D718988AB50E406880D08DB599A53D4F",
+                                                                                                                                      "RunID":  "A812962CD2534898857F7E967F991308",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 94DCC4A1F93B476383771BDC6D09F6BE\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Edge\nID: D718988AB50E406880D08DB599A53D4F\nRunID: A812962CD2534898857F7E967F991308\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F",
+                                                                                                                   "name":  "D718988AB50E406880D08DB599A53D4F",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "94DCC4A1F93B476383771BDC6D09F6BE",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#StartNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "D718988AB50E406880D08DB599A53D4F",
+                                                                                                                                      "RunID":  "A812962CD2534898857F7E967F991308",
+                                                                                                                                      "FlowDir":  "StartNode to EndNode",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: 11AF48DE79124AED8210C92F7EF8DF36\nType: DirectConnection\nEndNode: 94DCC4A1F93B476383771BDC6D09F6BE\nRelationshipType: http://schema.org/ontology#StartNode\nEdgeLabel: â Node\nID: D718988AB50E406880D08DB599A53D4F\nRunID: A812962CD2534898857F7E967F991308\nFlowDir: StartNode to EndNode\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                   "name":  "8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "EE995DD3379B46878E8BD31E8EC840D4",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Resource",
+                                                                                                                                      "ID":  "8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Resource\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: EE995DD3379B46878E8BD31E8EC840D4\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Resource\nID: 8B7805B037DF4418B5CCF7FD9175F00E\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Resource"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                   "name":  "8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "EE995DD3379B46878E8BD31E8EC840D4",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Node",
+                                                                                                                                      "ID":  "8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Node\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: EE995DD3379B46878E8BD31E8EC840D4\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Node\nID: 8B7805B037DF4418B5CCF7FD9175F00E\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Node"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                   "name":  "8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "EE995DD3379B46878E8BD31E8EC840D4",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â Edge",
+                                                                                                                                      "ID":  "8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â Edge\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: EE995DD3379B46878E8BD31E8EC840D4\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â Edge\nID: 8B7805B037DF4418B5CCF7FD9175F00E\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â Edge"
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "uri":  "http://schema.org/ontology#8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                   "name":  "8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                   "type":  "DirectConnection",
+                                                                                                                   "properties":  {
+                                                                                                                                      "DrawingNumber":  "1011-ENG-PID-M-0001",
+                                                                                                                                      "StartNode":  "EE995DD3379B46878E8BD31E8EC840D4",
+                                                                                                                                      "Type":  "DirectConnection",
+                                                                                                                                      "EndNode":  "11AF48DE79124AED8210C92F7EF8DF36",
+                                                                                                                                      "RelationshipType":  "http://schema.org/ontology#EndNode",
+                                                                                                                                      "EdgeLabel":  "â DirectConnection",
+                                                                                                                                      "ID":  "8B7805B037DF4418B5CCF7FD9175F00E",
+                                                                                                                                      "Direction":  "inbound"
+                                                                                                                                  },
+                                                                                                                   "edgeLabel":  "DrawingNumber:1011-ENG-PID-M-0001",
+                                                                                                                   "tooltipText":  "Entity: â DirectConnection\nDrawingNumber: 1011-ENG-PID-M-0001\nStartNode: EE995DD3379B46878E8BD31E8EC840D4\nType: DirectConnection\nEndNode: 11AF48DE79124AED8210C92F7EF8DF36\nRelationshipType: http://schema.org/ontology#EndNode\nEdgeLabel: â DirectConnection\nID: 8B7805B037DF4418B5CCF7FD9175F00E\nDirection: inbound",
+                                                                                                                   "displayLabel":  "â DirectConnection"
+                                                                                                               }
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C":  {
+                                                                                      "uri":  "http://schema.org/ontology#5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                      "depth":  1,
+                                                                                      "name":  "5C1EB26D79F04514A1FCB4F40109812C",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F":  {
+                                                                                      "uri":  "http://schema.org/ontology#D718988AB50E406880D08DB599A53D4F",
+                                                                                      "depth":  1,
+                                                                                      "name":  "D718988AB50E406880D08DB599A53D4F",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  },
+                  "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0":  {
+                                                                                      "uri":  "http://schema.org/ontology#8DCDF9485C124E938B583278864544C0",
+                                                                                      "depth":  1,
+                                                                                      "name":  "8DCDF9485C124E938B583278864544C0",
+                                                                                      "visited":  false,
+                                                                                      "dependencies":  [
+
+                                                                                                       ],
+                                                                                      "richDependencies":  [
+
+                                                                                                           ]
+                                                                                  }
+              },
+    "error":  null,
+    "elapsed":  33,
+    "request_time":  1757195805777
+}

@@ -6,6 +6,7 @@ import com.microsoft.cosmosdb.caig.models.*;
 import com.microsoft.cosmosdb.caig.util.AppConfig;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFWriter;
@@ -24,7 +25,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Instances of this class represent the in-memory Application Graph object.
@@ -117,6 +120,33 @@ public class AppGraph {
         SparqlBomQueryResponse response = new SparqlBomQueryResponse(request);
         HashMap<String, TraversedLib> nodes = new HashMap<String, TraversedLib>();
         response.setNodes(nodes);
+        
+        // First try exact ID matching
+        String exactNodeUri = namespaceWithSeparator() + response.getEntrypoint();
+        boolean foundExactMatch = nodeExists(exactNodeUri);
+        
+        if (foundExactMatch) {
+            logger.info("Found exact match for: " + exactNodeUri);
+            nodes.put(exactNodeUri, new TraversedLib(exactNodeUri, 0));
+            logger.info("Added root node with depth 0: " + exactNodeUri);
+        } else {
+            logger.info("No exact match found for: " + exactNodeUri + ", trying loose attribute matching");
+            // Try loose matching against all attributes
+            Set<String> matchingNodes = findNodesByLooseMatching(request.getEntrypoint());
+            if (!matchingNodes.isEmpty()) {
+                logger.info("Found " + matchingNodes.size() + " nodes with loose matching");
+                for (String matchingNodeUri : matchingNodes) {
+                    nodes.put(matchingNodeUri, new TraversedLib(matchingNodeUri, 0));
+                    logger.info("Added root node with depth 0: " + matchingNodeUri);
+                }
+            } else {
+                logger.warn("No nodes found with loose matching for: " + request.getEntrypoint());
+                // Still add the original URI to avoid empty response
+                nodes.put(exactNodeUri, new TraversedLib(exactNodeUri, 0));
+                logger.info("Added fallback root node with depth 0: " + exactNodeUri);
+            }
+        }
+        
         QueryExecution qexec = null;
         try {
             boolean continueToProcess = true;
@@ -124,32 +154,35 @@ public class AppGraph {
             int loopDepth = 0;
             int loopStartCount = 0;
             int loopFinishCount = 0;
-            String nodeUri = namespaceWithSeparator() + response.getEntrypoint();
-            nodes.put(nodeUri, new TraversedLib(nodeUri, 0));
 
             while (continueToProcess) {
                 loopDepth++;
                 loopStartCount = nodes.size();
                 response.setActualDepth(loopDepth);
+                logger.info("=== BOM Loop " + loopDepth + " starting, maxDepth=" + maxDepth + ", nodeCount=" + loopStartCount + " ===");
 
                 if (loopDepth > maxDepth) {
+                    logger.info("Terminating: loopDepth (" + loopDepth + ") > maxDepth (" + maxDepth + ")");
                     continueToProcess = false;
                 } else {
                     Object[] nodeUris = nodes.keySet().toArray();
                     logger.warn("loop: " + loopDepth + " count " + nodeUris.length);
                     for (int i = 0; i < nodeUris.length; i++) {
-                        nodeUri = (String) nodeUris[i];
+                        String nodeUri = (String) nodeUris[i];
                         logger.debug("nodeUri: " + nodeUri + " idx " + i);
                         TraversedLib tLib = nodes.get(nodeUri);
                         if (tLib.isVisited()) {
-                            logger.debug("nodeUri already visited: " + nodeUri);
+                            logger.debug("nodeUri already visited: " + nodeUri + " (depth=" + tLib.getDepth() + ")");
                         } else {
+                            logger.info("Processing unvisited node: " + nodeUri + " (current depth=" + tLib.getDepth() + ", assigning new deps to depth=" + loopDepth + ")");
                             queryDependencies(tLib, nodes, loopDepth);
                         }
                     }
                     // Terminate the graph traversal
                     loopFinishCount = nodes.size();
+                    logger.info("=== BOM Loop " + loopDepth + " finished, startCount=" + loopStartCount + ", finishCount=" + loopFinishCount + " ===");
                     if (loopFinishCount == loopStartCount) {
+                        logger.info("No new nodes found, terminating");
                         continueToProcess = false;
                     }
                 }
@@ -178,6 +211,74 @@ public class AppGraph {
         return this.namespace + "#";
     }
 
+    /**
+     * Check if a node with the exact URI exists in the graph
+     */
+    private boolean nodeExists(String nodeUri) {
+        QueryExecution qexec = null;
+        try {
+            String sparql = "PREFIX c: <" + namespaceWithSeparator() + ">\n" +
+                           "ASK { " + formatUri(nodeUri) + " ?p ?o }";
+            
+            Query query = QueryFactory.create(sparql);
+            qexec = QueryExecutionFactory.create(query, this.model);
+            boolean exists = qexec.execAsk();
+            logger.debug("nodeExists check for " + nodeUri + ": " + exists);
+            return exists;
+        } catch (Exception e) {
+            logger.error("Error checking if node exists: " + nodeUri, e);
+            return false;
+        } finally {
+            if (qexec != null) {
+                qexec.close();
+            }
+        }
+    }
+
+    /**
+     * Find nodes by loose matching against all attributes
+     * Returns URIs of nodes that have any attribute containing the search term
+     */
+    private Set<String> findNodesByLooseMatching(String searchTerm) {
+        Set<String> matchingNodes = new HashSet<>();
+        QueryExecution qexec = null;
+        try {
+            // Build SPARQL query to find any subject that has any property with a value containing the search term
+            String sparql = "PREFIX c: <" + namespaceWithSeparator() + ">\n" +
+                           "SELECT DISTINCT ?subject WHERE {\n" +
+                           "  ?subject ?property ?value .\n" +
+                           "  FILTER(isLiteral(?value) && CONTAINS(LCASE(STR(?value)), LCASE(\"" + searchTerm + "\")))\n" +
+                           "} LIMIT 50";
+            
+            logger.debug("Loose matching SPARQL: " + sparql);
+            
+            Query query = QueryFactory.create(sparql);
+            qexec = QueryExecutionFactory.create(query, this.model);
+            ResultSet results = qexec.execSelect();
+            
+            while (results.hasNext()) {
+                QuerySolution soln = results.nextSolution();
+                Resource subject = soln.getResource("subject");
+                if (subject != null) {
+                    String subjectUri = subject.getURI();
+                    matchingNodes.add(subjectUri);
+                    logger.debug("Found loose match: " + subjectUri);
+                }
+            }
+            
+            logger.info("Loose matching found " + matchingNodes.size() + " nodes for term: " + searchTerm);
+            
+        } catch (Exception e) {
+            logger.error("Error in loose matching for term: " + searchTerm, e);
+        } finally {
+            if (qexec != null) {
+                qexec.close();
+            }
+        }
+        
+        return matchingNodes;
+    }
+
     private void queryDependencies(
             TraversedLib tLib, HashMap<String, TraversedLib> tLibs, int loopDepth) {
         QueryExecution qexec = null;
@@ -186,7 +287,7 @@ public class AppGraph {
             String originalUri = tLib.getUri();
             logger.debug("queryDependencies - original URI: " + originalUri);
             
-            String sparql = sparqlDependenciesQuery(originalUri);
+            String sparql = sparqlConnectionsQuery(originalUri);
             logger.debug("BOM SPARQL: " + sparql);
             
             // Validate the SPARQL query before creating it
@@ -208,42 +309,91 @@ public class AppGraph {
 
             DependenciesQueryResult dqr = objectMapper.readValue(json, DependenciesQueryResult.class);
             
-            // Collect dependencies from all edge properties discovered in the ontology
-            ArrayList<String> allDependencies = new ArrayList<String>();
+            // Collect all connected nodes from the new connections query
+            ArrayList<String> allConnections = new ArrayList<String>();
             ArrayList<RichDependency> richDependencies = new ArrayList<RichDependency>();
-            ArrayList<String> edgeProperties = getEdgePropertiesFromOntology();
             
-            for (String edgeProperty : edgeProperties) {
-                String sanitizedVar = sanitizeVariableName(edgeProperty);
-                ArrayList<String> edgeDependencies = dqr.getSingleNamedValues(sanitizedVar);
-                if (edgeDependencies != null) {
-                    allDependencies.addAll(edgeDependencies);
+            // Extract connected nodes from the query result
+            ArrayList<String> connectedNodes = dqr.getSingleNamedValues("connectedNode");
+            ArrayList<String> relationshipTypes = dqr.getSingleNamedValues("relationshipType");
+            ArrayList<String> directions = dqr.getSingleNamedValues("direction");
+            ArrayList<String> connectedTypes = dqr.getSingleNamedValues("connectedType");
+            
+            if (connectedNodes != null) {
+                allConnections.addAll(connectedNodes);
+                logger.info("Found " + connectedNodes.size() + " connected nodes for URI: " + originalUri);
+                
+                // Create rich dependencies with relationship information
+                for (int i = 0; i < connectedNodes.size(); i++) {
+                    String connectedNode = connectedNodes.get(i);
+                    RichDependency richDep = fetchRichDependencyProperties(connectedNode);
+                    
+                    // Add relationship metadata
+                    if (relationshipTypes != null && i < relationshipTypes.size()) {
+                        String relType = relationshipTypes.get(i);
+                        richDep.addProperty("RelationshipType", relType);
+                    }
+                    
+                    // Use the connected node's type for the edge label (e.g., "DirectConnection")
+                    String edgeLabel = "Connection"; // Default fallback
+                    if (connectedTypes != null && i < connectedTypes.size() && connectedTypes.get(i) != null) {
+                        String connectedType = connectedTypes.get(i);
+                        // Extract the simple class name from the URI
+                        if (connectedType.contains("#")) {
+                            edgeLabel = connectedType.substring(connectedType.lastIndexOf("#") + 1);
+                        } else if (connectedType.contains("/")) {
+                            edgeLabel = connectedType.substring(connectedType.lastIndexOf("/") + 1);
+                        } else {
+                            edgeLabel = connectedType;
+                        }
+                    } else if (relationshipTypes != null && i < relationshipTypes.size()) {
+                        // Fallback to relationship type if no connected type found
+                        String relType = relationshipTypes.get(i);
+                        if (relType.contains("#")) {
+                            edgeLabel = relType.substring(relType.lastIndexOf("#") + 1);
+                        } else if (relType.contains("/")) {
+                            edgeLabel = relType.substring(relType.lastIndexOf("/") + 1);
+                        } else {
+                            edgeLabel = relType;
+                        }
+                    }
+                    
+                    richDep.addProperty("EdgeLabel", edgeLabel);
+                    
+                    if (directions != null && i < directions.size()) {
+                        String direction = directions.get(i);
+                        richDep.addProperty("Direction", direction);
+                        
+                        // Adjust edge label based on direction for clarity
+                        String currentLabel = richDep.getStringProperty("EdgeLabel");
+                        if (currentLabel == null || currentLabel.isEmpty()) {
+                            currentLabel = "Connection";
+                        }
+                        
+                        if ("inbound".equals(direction)) {
+                            richDep.addProperty("EdgeLabel", "← " + currentLabel);
+                        } else {
+                            richDep.addProperty("EdgeLabel", currentLabel + " →");
+                        }
+                    }
+                    
+                    richDependencies.add(richDep);
                 }
+            } else {
+                logger.info("No connected nodes found for URI: " + originalUri);
             }
             
-            logger.debug("Found " + allDependencies.size() + " dependencies for URI: " + originalUri);
-            
-            // For each dependency, fetch its rich TTL properties
-            for (String depUri : allDependencies) {
-                RichDependency richDep = fetchRichDependencyProperties(depUri);
-                
-                // Find which edge property connected this dependency
-                String connectingProperty = findConnectingProperty(originalUri, depUri, edgeProperties, dqr);
-                if (connectingProperty != null) {
-                    richDep.addProperty("ConnectingProperty", connectingProperty);
-                }
-                
-                richDependencies.add(richDep);
-            }
-            
-            // Set both rich and legacy dependencies
-            tLib.setDependencies(allDependencies);
+            // Set both rich and legacy dependencies (keeping the same interface)
+            tLib.setDependencies(allConnections);
             tLib.setRichDependencies(richDependencies);
 
-            for (int d = 0; d < allDependencies.size(); d++) {
-                String depUri = allDependencies.get(d);
-                if (!tLibs.containsKey(depUri)) {
-                    tLibs.put(depUri, new TraversedLib(depUri, loopDepth));
+            for (int d = 0; d < allConnections.size(); d++) {
+                String connectedUri = allConnections.get(d);
+                if (!tLibs.containsKey(connectedUri)) {
+                    tLibs.put(connectedUri, new TraversedLib(connectedUri, loopDepth));
+                    logger.info("Added new connection: " + connectedUri + " with depth " + loopDepth);
+                } else {
+                    logger.debug("Connection already exists: " + connectedUri + " (existing depth=" + tLibs.get(connectedUri).getDepth() + ")");
                 }
             }
             successfulQueries++;
@@ -355,6 +505,102 @@ public class AppGraph {
         
         // Return the whole URI if no separators found
         return uri;
+    }
+
+    /**
+     * Generates a SPARQL query to find ALL connections (both inbound and outbound) for a given URI.
+     * This provides a much richer graph visualization than just dependencies.
+     */
+    private String sparqlConnectionsQuery(String libUri) {
+        try {
+            StringBuilder sb = new StringBuilder();
+            sb.append("PREFIX c: <").append(namespaceWithSeparator()).append(">\n");
+            sb.append("PREFIX owl: <http://www.w3.org/2002/07/owl#>\n");
+            sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
+            sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n");
+            
+            // Ensure libUri is properly formatted as a full URI
+            String formattedLibUri = formatUri(libUri);
+            logger.debug("sparqlConnectionsQuery - original URI: " + libUri + " -> formatted: " + formattedLibUri);
+            
+            // Validate the formatted URI
+            if (formattedLibUri == null || formattedLibUri.equals("<>") || !formattedLibUri.startsWith("<") || !formattedLibUri.endsWith(">")) {
+                logger.error("Invalid formatted URI: " + formattedLibUri + " from original: " + libUri);
+                return createFallbackConnectionsQuery(libUri);
+            }
+            
+            // Build a comprehensive query that finds ALL connected nodes with their types
+            sb.append("SELECT DISTINCT ?connectedNode ?relationshipType ?direction ?connectedType\n");
+            sb.append("WHERE {\n");
+            sb.append("  {\n");
+            sb.append("    # Outbound connections: this node -> other nodes\n");
+            sb.append("    ").append(formattedLibUri).append(" ?relationshipType ?connectedNode .\n");
+            sb.append("    BIND(\"outbound\" AS ?direction)\n");
+            sb.append("    # Filter out literal values and focus on URI resources\n");
+            sb.append("    FILTER(isURI(?connectedNode))\n");
+            sb.append("    # Exclude RDF/OWL system properties\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"))\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/2000/01/rdf-schema#\"))\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/2002/07/owl#\"))\n");
+            sb.append("    # Get the type of the connected node for proper labeling\n");
+            sb.append("    OPTIONAL { ?connectedNode rdf:type ?connectedType }\n");
+            sb.append("  }\n");
+            sb.append("  UNION\n");
+            sb.append("  {\n");
+            sb.append("    # Inbound connections: other nodes -> this node\n");
+            sb.append("    ?connectedNode ?relationshipType ").append(formattedLibUri).append(" .\n");
+            sb.append("    BIND(\"inbound\" AS ?direction)\n");
+            sb.append("    # Filter out literal subjects and focus on URI resources\n");
+            sb.append("    FILTER(isURI(?connectedNode))\n");
+            sb.append("    # Exclude RDF/OWL system properties\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"))\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/2000/01/rdf-schema#\"))\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/2002/07/owl#\"))\n");
+            sb.append("    # Get the type of the connected node for proper labeling\n");
+            sb.append("    OPTIONAL { ?connectedNode rdf:type ?connectedType }\n");
+            sb.append("  }\n");
+            sb.append("}\n");
+            sb.append("LIMIT 100");
+            
+            String query = sb.toString();
+            logger.debug("Generated SPARQL connections query:\n" + query);
+            
+            // Basic validation of the generated query
+            if (!query.contains("SELECT") || !query.contains("WHERE")) {
+                logger.error("Generated invalid SPARQL query structure: " + query);
+                return createFallbackConnectionsQuery(libUri);
+            }
+            
+            return query;
+        } catch (Exception e) {
+            logger.error("Error generating SPARQL connections query for URI: " + libUri, e);
+            return createFallbackConnectionsQuery(libUri);
+        }
+    }
+    
+    /**
+     * Creates a simple fallback SPARQL query for connections when the main query generation fails.
+     */
+    private String createFallbackConnectionsQuery(String libUri) {
+        String formattedUri = formatUri(libUri);
+        if (formattedUri == null || formattedUri.equals("<>")) {
+            formattedUri = "<" + namespaceWithSeparator() + "unknown>";
+        }
+        
+        return "PREFIX c: <" + namespaceWithSeparator() + ">\n" +
+               "SELECT DISTINCT ?connectedNode\n" +
+               "WHERE {\n" +
+               "  {\n" +
+               "    " + formattedUri + " ?p ?connectedNode .\n" +
+               "    FILTER(isURI(?connectedNode))\n" +
+               "  }\n" +
+               "  UNION\n" +
+               "  {\n" +
+               "    ?connectedNode ?p " + formattedUri + " .\n" +
+               "    FILTER(isURI(?connectedNode))\n" +
+               "  }\n" +
+               "}\n" +
+               "LIMIT 50";
     }
 
     private String sparqlDependenciesQuery(String libUri) {

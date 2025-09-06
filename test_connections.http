@@ -1,0 +1,33 @@
+### Test Person entity (should have no connections in engineering dataset)
+POST http://localhost:8001/sparql_bom_query
+Content-Type: application/json
+
+{
+  "query": "Person",
+  "maxDepth": 3
+}
+
+### Test Engineering entity (should have many connections)
+POST http://localhost:8001/sparql_bom_query
+Content-Type: application/json
+
+{
+  "query": "EDBC3EC5E6EA41F5832B3BF0BB7C786C",
+  "maxDepth": 3
+}
+
+### Test to explore what entity types exist in the dataset
+POST http://localhost:8001/sparql_query
+Content-Type: application/json
+
+{
+  "sparql": "SELECT DISTINCT ?type WHERE { ?s a ?type } LIMIT 20"
+}
+
+### Test to find actual Person entities in the dataset
+POST http://localhost:8001/sparql_query
+Content-Type: application/json
+
+{
+  "sparql": "SELECT ?s ?p ?o WHERE { ?s a <http://schema.org/Person> } LIMIT 10"
+}
