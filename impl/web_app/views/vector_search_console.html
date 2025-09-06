@@ -25,10 +25,20 @@
     <div class="card-body bg-dark text-light caig-inner-body">
       <form method="post" id="form" name="form" action="/vector_search_console">
         <div class="row align-items-end">
+          <div class="col-auto">
+            <label class="form-label d-block">Search for:</label>
+            <div class="btn-group" role="group" aria-label="Search type">
+              <input type="radio" class="btn-check" name="search_type" id="search_entity" autocomplete="off" value="entity" checked>
+              <label class="btn btn-sm btn-outline-secondary" for="search_entity">Entity</label>
+              
+              <input type="radio" class="btn-check" name="search_type" id="search_text" autocomplete="off" value="text">
+              <label class="btn btn-sm btn-outline-secondary" for="search_text">Text</label>
+            </div>
+          </div>
           <div class="col">
-            <label for="entrypoint" class="form-label">Enter a library name or 'text:your text...'</label>
+            <label for="entrypoint" class="form-label" id="entrypoint_label">Enter entity name:</label>
             <input type="text" class="form-control" id="entrypoint" name="entrypoint" value='{{ entrypoint }}'
-              placeholder="Double-click for suggestions."/> 
+              placeholder="Triple-click for suggestions."/> 
           </div>
           <div class="col-auto">
             <label class="form-label d-block">&nbsp;</label>
@@ -37,34 +47,36 @@
         </div>
         <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
       </form>
+    </div>
 
-      <hr>
+    {% if results_message or results %}
+    <div id="results_div" name="results_div" style="padding: 20px; background-color: rgba(255,255,255,0.03);">
+      <h5>{{ results_message or "Vector Search Results" }}</h5>
+      <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
+          <!-- Prism.js for JSON syntax highlighting -->
+          <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+          <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
+    </div>
+    {% endif %}
 
-      {% if results_message or results %}
-      <div class="container" id="results_div" name="results_div">
-        <h5>{{ results_message or "Vector Search Results" }}</h5>
-        <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
-            <!-- Prism.js for JSON syntax highlighting -->
-            <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
-            <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
+    {% if embedding_message or embedding %}
+    <div class="bg-dark" id="embedding_div" name="embedding_div" style="padding: 20px; border-radius: 8px;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0 text-light">{{ embedding_message or "Embedding from Text" }}</h5>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="embedding_toggle_button" name="embedding_toggle_button">Show Embeddings ▼</button>
       </div>
-      {% endif %}
-
-      {% if embedding_message or embedding %}
-      <hr>
-
-      <div class="container" id="embedding_div" name="embedding_div">
-        <h5>{{ embedding_message or "Embedding" }}</h5>
-        <pre>
+      <div id="embedding_content" name="embedding_content" style="display: none;">
+        <pre class="text-light">
         <code>
       {{ embedding }}
         </code>
         </pre>
       </div>
-      {% endif %}
-   </div>
+    </div>
+    {% endif %}
+  </div>
   </div>
 </div>
 
@@ -93,30 +105,97 @@
     color: #495057 !important;
     opacity: 0.6;
   }
+  
+  /* Active state for toggle buttons */
+  .btn-toggle-active {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: white !important;
+  }
 </style>
 <script>
 const form = document.getElementById("form");
 const search_button = document.getElementById("search_button");
 const entrypoint_form_field = document.getElementById("entrypoint");
+const entrypoint_label = document.getElementById("entrypoint_label");
+const search_entity_radio = document.getElementById("search_entity");
+const search_text_radio = document.getElementById("search_text");
+const embedding_toggle_button = document.getElementById("embedding_toggle_button");
+const embedding_content = document.getElementById("embedding_content");
 
 var suggestions_index = -1;
-var suggestions = [
+var entity_suggestions = [
   "flask",
-  "text: web framework async pydantic",
-  "text: calculations for sports like running, cycling, and swimming",
-  "text: gps file trackpoint garmin connect and garmin devices",
-  "pandas"
+  "pandas",
+  "numpy",
+  "requests",
+  "django"
 ];
 
-entrypoint_form_field.addEventListener('dblclick', 
-    function(event) {
-      suggestions_index++;
-      if (suggestions_index >= suggestions.length) {
-        suggestions_index = 0;
-      }
-      $("#entrypoint").val(suggestions[suggestions_index]);
+var text_suggestions = [
+  "web framework async pydantic",
+  "calculations for sports like running, cycling, and swimming",
+  "gps file trackpoint garmin connect and garmin devices",
+  "machine learning data analysis",
+  "http requests and api integration"
+];
+
+var current_suggestions = entity_suggestions;
+
+// Update label and suggestions based on search type
+function updateSearchType() {
+  if (search_entity_radio.checked) {
+    entrypoint_label.textContent = "Enter entity name:";
+    entrypoint_form_field.placeholder = "Triple-click for suggestions";
+    current_suggestions = entity_suggestions;
+  } else {
+    entrypoint_label.textContent = "Enter search text:";
+    entrypoint_form_field.placeholder = "Triple-click for suggestions";
+    current_suggestions = text_suggestions;
+  }
+  suggestions_index = -1; // Reset suggestions index
+}
+
+// Add event listeners for radio buttons
+search_entity_radio.addEventListener('change', updateSearchType);
+search_text_radio.addEventListener('change', updateSearchType);
+
+// Embedding toggle functionality
+if (embedding_toggle_button && embedding_content) {
+  embedding_toggle_button.addEventListener('click', function(event) {
+    event.preventDefault();
+    if (embedding_content.style.display === 'none') {
+      embedding_content.style.display = 'block';
+      embedding_toggle_button.textContent = 'Hide Embeddings ▲';
+      embedding_toggle_button.classList.add('btn-toggle-active');
+    } else {
+      embedding_content.style.display = 'none';
+      embedding_toggle_button.textContent = 'Show Embeddings ▼';
+      embedding_toggle_button.classList.remove('btn-toggle-active');
     }
-);
+  });
+}
+
+// Triple-click implementation similar to conv_ai_console.html
+let clickCount = 0;
+let clickTimer = null;
+
+entrypoint_form_field.addEventListener('click', function (event) {
+  clickCount++;
+  if (clickCount === 1) {
+    clickTimer = setTimeout(function () {
+      clickCount = 0;
+    }, 400);
+  } else if (clickCount === 3) {
+    clearTimeout(clickTimer);
+    clickCount = 0;
+    suggestions_index++;
+    if (suggestions_index >= current_suggestions.length) {
+      suggestions_index = 0;
+    }
+    entrypoint_form_field.value = current_suggestions[suggestions_index];
+  }
+});
 
 search_button.addEventListener('click', 
     function(event) {
@@ -125,22 +204,45 @@ search_button.addEventListener('click',
       search_button.classList.add('processing');
       search_button.textContent = "Processing...";
       
-      // Store the search query in localStorage before submitting
+      // Store the search query and type in localStorage before submitting
       const entrypoint_value = entrypoint_form_field.value;
+      const search_type = search_entity_radio.checked ? 'entity' : 'text';
       localStorage.setItem('vector_search_entrypoint', entrypoint_value);
+      localStorage.setItem('vector_search_type', search_type);
+      
+      // If text search is selected, prefix the value with "text:" for backend compatibility
+      if (search_text_radio.checked && entrypoint_value && !entrypoint_value.startsWith('text:')) {
+        entrypoint_form_field.value = 'text:' + entrypoint_value;
+      }
       
       form.submit();
     }
 );
 
-// On page load, restore the search query from localStorage
+// On page load, restore the search query and type from localStorage
 document.addEventListener('DOMContentLoaded', function() {
+    // Restore search type
+    const saved_search_type = localStorage.getItem('vector_search_type');
+    if (saved_search_type === 'text') {
+        search_text_radio.checked = true;
+    } else {
+        search_entity_radio.checked = true;
+    }
+    updateSearchType();
+    
     // Only restore entrypoint if server didn't provide one
     const server_entrypoint = entrypoint_form_field.value.trim();
     if (!server_entrypoint) {
         const saved_entrypoint = localStorage.getItem('vector_search_entrypoint');
         if (saved_entrypoint) {
             entrypoint_form_field.value = saved_entrypoint;
+        }
+    } else {
+        // If server provided entrypoint with "text:" prefix, clean it up and set the radio button
+        if (server_entrypoint.startsWith('text:')) {
+            entrypoint_form_field.value = server_entrypoint.substring(5); // Remove "text:" prefix
+            search_text_radio.checked = true;
+            updateSearchType();
         }
     }
 });

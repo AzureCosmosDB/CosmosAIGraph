@@ -258,6 +258,7 @@ async def get_home(req: Request):
 async def get_about(req: Request):
     view_data = dict()
     view_data["application_version"] = ConfigService.application_version()
+    view_data["application_build"] = ConfigService.application_build()
     view_data["graph_source"] = ConfigService.graph_source()
     view_data["graph_source_db"] = ConfigService.graph_source_db()
     view_data["graph_source_container"] = ConfigService.graph_source_container()

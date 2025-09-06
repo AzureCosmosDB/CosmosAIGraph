@@ -21,10 +21,10 @@
         {% set content_lines = comp["content"].split("\n") %}
         <div class="row">
           <div class="col">
-            <p class="text-start fw-bold fs-6" style="border-radius: 15px; background-color: rgba(119, 119, 119, 0.2);">
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ comp["user_text"] }}
+            <p class="text-start fw-bold fs-6 text-white" style="background-color: rgb(31, 41, 75); padding: 8px; margin-left: -24px; margin-right: -24px; padding-left: 32px; padding-right: 32px;">
+              {{ comp["user_text"] }}
             </p>
-            <div class="text-start fs-6" style="border-radius: 12px; background-color: rgba(255,255,255,0.03);">
+            <div class="text-start fs-6" style="background-color: rgba(255,255,255,0.03); margin-left: -24px; margin-right: -24px; padding-left: 32px; padding-right: 32px;">
               {{ comp["content"] | markdown | safe }}
             </div>
             <p class="text-start fw-light fs-6 text-muted">
@@ -38,17 +38,7 @@
         {% endfor %}
         <hr>
         <div class="row align-items-end mb-3">
-          <div class="col">
-            <label class="form-label fs-6" for="user_text">Enter your request:</label>
-            <input class="form-control" type="text" id="user_text" name="user_text"
-              placeholder="Enter your request here. Triple-click for suggestions.">
-          </div>
           <div class="col-auto">
-            <label class="form-label fs-6 d-block">&nbsp;</label>
-            <button type="button" class="btn btn-outline-primary" id="continue_button"
-              name="continue_button">Submit</button>
-          </div>
-          <div class="col-auto text-end">
             <label class="form-label fs-6 d-block">RAG data source:</label>
             <div class="btn-group" role="group" aria-label="RAG strategy">
               <input type="radio" class="btn-check" name="rag_strategy" id="rag_auto" autocomplete="off" value="auto" {%
@@ -68,14 +58,28 @@
               <label class="btn btn-sm btn-outline-secondary" for="rag_graph">Graph</label>
             </div>
           </div>
+          <div class="col">
+            <label class="form-label fs-6" for="user_text">Enter your request:</label>
+            <input class="form-control" type="text" id="user_text" name="user_text"
+              placeholder="Enter your request here. Triple-click for suggestions.">
+          </div>
+          <div class="col-auto">
+            <label class="form-label fs-6 d-block">&nbsp;</label>
+            <button type="button" class="btn btn-outline-primary" id="continue_button"
+              name="continue_button">Submit</button>
+          </div>
         </div>
-        <div class="btn-group btn-group-sm" role="group" aria-label="Conversation actions">
-          <button type="button" class="btn btn-outline-secondary" id="feedback_button"
-            name="feedback_button">Feedback</button>
-          <button type="button" class="btn btn-outline-secondary" id="prompts_button"
-            name="prompts_button">Prompts</button>
-          <button type="button" class="btn btn-outline-secondary" id="json_button" name="json_button">Show/Hide
-            conversation JSON</button>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col-auto text-end">
+            <div class="btn-group btn-group-sm" role="group" aria-label="Conversation actions">
+              <button type="button" class="btn btn-outline-secondary" id="feedback_button"
+                name="feedback_button">Feedback</button>
+              <button type="button" class="btn btn-outline-secondary" id="prompts_button"
+                name="prompts_button">Prompts</button>
+              <button type="button" class="btn btn-outline-secondary" id="json_button" name="json_button">Conversation JSON</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

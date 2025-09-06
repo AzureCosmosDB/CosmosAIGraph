@@ -45,6 +45,15 @@
             margin-right: 2% !important;
             max-width: 96% !important;
         }
+        
+        /* brand link styling: match the brightened SVG color */
+        .navbar a.text-decoration-none,
+        .navbar a.text-decoration-none:hover,
+        .navbar a.text-decoration-none:visited,
+        .navbar a.text-decoration-none:focus {
+            color: #ffffff !important;
+            filter: brightness(3);
+        }
 
     </style>
 </head>
@@ -54,16 +63,18 @@
         <nav class="navbar navbar-expand-lg navbar-dark mx-right bg-dark text-light">
             <div class="container-fluid">
                 <div class="navbar-collapse d-flex" id="navbarNav">
-                    <div class="brand-group d-flex align-items-center">
-                        <img class="brand-logo lighten-svg" src="static/CAIGLogoGrey.svg" alt="CosmosAIGraph">
-                        <h4 class="brand-title fw-bold mb-0">CosmosAIGraph</h4>
-                    </div>
+                    <a href="/" class="text-decoration-none" id="brandLink">
+                        <div class="brand-group d-flex align-items-center">
+                            <img class="brand-logo lighten-svg" src="static/CAIGLogoGrey.svg" alt="CosmosAIGraph">
+                            <h4 class="brand-title fw-bold mb-0">CosmosAIGraph</h4>
+                        </div>
+                    </a>
                     <div class="ms-auto">
                         <div class="btn-group btn-group-sm" role="group" aria-label="Main navigation">
                             <a class="btn {{ 'btn-primary' if current_page == 'sparql_console' else 'btn-outline-primary' }} small" href="/sparql_console">SPARQL</a>
                             <a class="btn {{ 'btn-primary' if current_page == 'gen_sparql_console' else 'btn-outline-primary' }} small" href="/gen_sparql_console">NL2SPARQL</a>
-                            <a class="btn {{ 'btn-primary' if current_page == 'vector_search_console' else 'btn-outline-primary' }} small" href="/vector_search_console">Vector Search</a>
                             <a class="btn {{ 'btn-primary' if current_page == 'conv_ai_console' else 'btn-outline-primary' }} small" href="/conv_ai_console">OmniRAG Chat</a>
+                            <a class="btn {{ 'btn-primary' if current_page == 'vector_search_console' else 'btn-outline-primary' }} small" href="/vector_search_console">Vector Search</a>
                             <a class="btn {{ 'btn-primary' if current_page == 'about' else 'btn-outline-primary' }} small" href="/about">About</a>
                         </div>
                     </div>
@@ -77,6 +88,13 @@
 {% endblock %}
 {% block js %}
 {% endblock %}
+<script>
+// Clear session state when brand link is clicked
+document.getElementById('brandLink').addEventListener('click', function() {
+    // Clear all localStorage data to refresh session state
+    localStorage.clear();
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </body>
 </html>

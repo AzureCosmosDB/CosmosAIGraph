@@ -2,6 +2,7 @@ import base64
 import json
 import logging
 import os
+import subprocess
 import sys
 import time
 import traceback
@@ -10,7 +11,7 @@ import traceback
 # values in this solution.  These are typically obtained at runtime via
 # environment variables.
 #
-# Chris Joakim, Microsoft, 2025
+# Chris Joakim, Aleksey Savateyev
 
 
 class ConfigService:
@@ -93,6 +94,30 @@ class ConfigService:
     @classmethod
     def application_version(cls) -> str:
         return "3.0"
+
+    @classmethod
+    def application_build(cls) -> str:
+        """
+        Return the date of the last git commit in the repository.
+        """
+        try:
+            # Get the last commit date in ISO format
+            result = subprocess.run(
+                ["git", "log", "-1", "--format=%ci"],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            if result.returncode == 0:
+                # Parse the date and return in a readable format
+                commit_date = result.stdout.strip()
+                # Convert from "2025-01-15 14:30:25 -0800" format to "2025-01-15"
+                if commit_date:
+                    return commit_date.split()[0]  # Get just the date part
+            return "unknown"
+        except Exception as e:
+            logging.warning(f"Could not retrieve git commit date: {e}")
+            return "unknown"
 
     @classmethod
     def defined_environment_variables(cls) -> dict:
