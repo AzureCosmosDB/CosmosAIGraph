@@ -134,7 +134,7 @@ class RAGDataService:
             self.nosql_svc.set_db(ConfigService.graph_source_db())
             self.nosql_svc.set_container(ConfigService.graph_source_container())
             vs_result = await self.nosql_svc.vector_search(
-                embedding, embedding_attr="embedding", limit=max_doc_count
+                embedding_value=embedding, search_text=user_text, search_method="rrf", embedding_attr="embedding", limit=max_doc_count
             )
             for vs_doc in vs_result:
                 doc_copy = dict(vs_doc)  # shallow copy

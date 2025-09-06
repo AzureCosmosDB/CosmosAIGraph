@@ -19,22 +19,22 @@
         {% set sorted_completions = conv["completions"]|sort(attribute='created_at')|sort(attribute='index') %}
         {% for comp in sorted_completions %}
         {% set content_lines = comp["content"].split("\n") %}
-        <div class="row">
-          <div class="col">
-            <p class="text-start fw-bold fs-6 text-white" style="background-color: rgb(31, 41, 75); padding: 8px; margin-left: -24px; margin-right: -24px; padding-left: 32px; padding-right: 32px;">
-              {{ comp["user_text"] }}
-            </p>
-            <div class="text-start fs-6" style="background-color: rgba(255,255,255,0.03); margin-left: -24px; margin-right: -24px; padding-left: 32px; padding-right: 32px;">
-              {{ comp["content"] | markdown | safe }}
-            </div>
-            <p class="text-start fw-light fs-6 text-muted">
-              Prompt tokens: {{ comp["usage"]["prompt_tokens"] }},
-              Completion tokens: {{ comp["usage"]["completion_tokens"] }},
-              Total tokens: {{ comp["usage"]["total_tokens"] }},
-              RAG strategy: {{ comp["rag_strategy"] }}
-            </p>
+        <div style="background-color: #083a5b; padding: 16px; margin: 0 -1.25rem;">
+          <p class="text-start fw-bold fs-6 mb-0" style="color: #79c2ff; margin: 0;">
+            {{ comp["user_text"] }}
+          </p>
+        </div>
+        <div style="background-color: rgba(255,255,255,0.03); padding: 20px; margin: 0 -1.25rem;">
+          <div class="text-start fs-6" style="margin: 0;">
+            {{ comp["content"] | markdown | safe }}
           </div>
         </div>
+        <p class="text-start fw-light fs-6 text-muted mt-2 mb-4">
+          Prompt tokens: {{ comp["usage"]["prompt_tokens"] }},
+          Completion tokens: {{ comp["usage"]["completion_tokens"] }},
+          Total tokens: {{ comp["usage"]["total_tokens"] }},
+          RAG strategy: {{ comp["rag_strategy"] }}
+        </p>
         {% endfor %}
         <hr>
         <div class="row align-items-end mb-3">
@@ -137,9 +137,9 @@
   #continue_button:hover, 
   #continue_button:focus, 
   #continue_button.processing {
-    background-color: #0d6efd !important;
-    border-color: #0d6efd !important;
-    color: white !important;
+    background-color: rgb(8, 58, 91) !important;
+    border-color: rgb(121, 194, 255) !important;
+    color: rgb(121, 194, 255) !important;
   }
   
   #continue_button:disabled {
@@ -154,6 +154,17 @@
     background-color: #6c757d !important;
     border-color: #6c757d !important;
     color: white !important;
+  }
+  /* full-bleed helpers: let background blocks reach the card-body edges while keeping inner content padded */
+  .full-bleed {
+    width: calc(100% + 2.5rem); /* compensate for .card-body default horizontal padding (1.25rem each side) */
+    margin-left: -1.25rem;
+    margin-right: -1.25rem;
+    box-sizing: border-box;
+  }
+  .full-bleed .full-bleed-inner {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
   }
 </style>
 <script>
