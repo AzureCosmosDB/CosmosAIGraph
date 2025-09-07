@@ -127,34 +127,6 @@
 
 {% block js %}
 <style>
-  /* Submit button styling - only highlight on hover/focus/processing */
-  #continue_button {
-    background-color: transparent !important;
-    border-color: #6c757d !important;
-    color: #6c757d !important;
-  }
-  
-  #continue_button:hover, 
-  #continue_button:focus, 
-  #continue_button.processing {
-    background-color: rgb(8, 58, 91) !important;
-    border-color: rgb(121, 194, 255) !important;
-    color: rgb(121, 194, 255) !important;
-  }
-  
-  #continue_button:disabled {
-    background-color: transparent !important;
-    border-color: #495057 !important;
-    color: #495057 !important;
-    opacity: 0.6;
-  }
-  
-  /* Active state for toggle buttons */
-  .btn-toggle-active {
-    background-color: #6c757d !important;
-    border-color: #6c757d !important;
-    color: white !important;
-  }
   /* full-bleed helpers: let background blocks reach the card-body edges while keeping inner content padded */
   .full-bleed {
     width: calc(100% + 2.5rem); /* compensate for .card-body default horizontal padding (1.25rem each side) */

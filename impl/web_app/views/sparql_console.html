@@ -3,49 +3,22 @@
 
 {% block content %}
 <style>
-  pre,
-  code.language-json {
-    background: transparent !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-
-  /* Remove Prism.js code shadows for all tokens */
-  code[class*="language-"],
-  pre[class*="language-"] {
-    text-shadow: none !important;
-    box-shadow: none !important;
-  }
-
-  /* Remove background from Prism.js operator tokens */
-  span.token.operator {
-    background: transparent !important;
-  }
-
-  /* Style for edge labels */
+  /* Style for edge labels - D3.js specific */
   .link-label {
     font-family: Arial, sans-serif;
     text-shadow: none !important;
   }
 
-  /* Style for node labels */
+  /* Style for node labels - D3.js specific */
   .node text {
     text-shadow: none !important;
     font-family: Arial, sans-serif;
   }
 
-  /* Add rounded corners to CodeMirror editor to match form controls */
-  .CodeMirror {
-    border-radius: 0.375rem !important;
-    border: 1px solid #ced4da !important;
-  }
-
-  /* Ensure CodeMirror focused state also has rounded corners */
-  .CodeMirror-focused {
-    border-radius: 0.375rem !important;
-    border-color: #86b7fe !important;
-    outline: 0 !important;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+  /* Remove all padding from caig-inner-body - page specific */
+  .caig-inner-body {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
   }
 </style>
 
@@ -61,7 +34,7 @@
     <div class="card-body bg-dark text-light caig-inner-body">
       <form method="post" id="form" name="form">
         <div class="mb-3">
-          <label for="sparql" class="form-label">Enter a SPARQL query:</label>
+          <label for="sparql" class="form-label">SPARQL query:</label>
           <textarea rows='8' class="form-control" id="sparql" name="sparql" value="{{ sparql }}">{{ sparql }}</textarea>
           <script>
             var editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
@@ -82,7 +55,7 @@
           </script>
         </div>
         <div class="mb-3">
-          <label for="bom_query" class="form-label">Enter an entity name, space and its dependency depth number to visualize its graph:</label>
+          <label for="bom_query" class="form-label">Entity name, space and dependency depth:</label>
           <input type="text" class="form-control" id="bom_query" name="bom_query" value="{{ bom_query }}"
             placeholder="<Entity ID/name> <Depth>"></input>
         </div>
@@ -177,6 +150,26 @@
     var libtype = "{{ libtype }}";
     var libtype_prefix_idx = libtype.length + 1;
 
+    // Helper function to generate consistent colors for nodes
+    function getNodeColor(nodeName, depth) {
+      // Create a simple hash function for consistent colors
+      let hash = 0;
+      for (let i = 0; i < nodeName.length; i++) {
+        const char = nodeName.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+      }
+
+      // Generate a color based on the hash
+      const hue = Math.abs(hash) % 360;
+
+      // Calculate lightness based on depth - 0 is brightest, higher depth is dimmer
+      // Start at 70% lightness for depth 0, decrease by 10% per depth level, minimum 20%
+      const lightness = Math.max(20, 70 - (depth * 10));
+
+      return `hsl(${hue}, 70%, ${lightness}%)`;
+    }
+
     // Test basic D3 functionality
     console.log('Testing D3.js...');
     try {
@@ -254,6 +247,7 @@
             }
 
             console.log('Processing node:', clean_name, 'with dependencies:', node_data.dependencies);
+            console.log('Adding to nodes_set:', clean_name);
             nodes_set.add(clean_name);
 
             // Process rich dependencies if available (new enhanced format)
@@ -282,6 +276,7 @@
                   var edge = {};
                   edge["source"] = clean_name;
                   edge["target"] = dep_clean_name;
+                  console.log('Creating edge:', clean_name, '->', dep_clean_name);
                   edge["weight"] = 1.0;
                   
                   // Use rich dependency data for meaningful edge labels
@@ -372,11 +367,98 @@
           console.log('No recognized data structure found. Available keys:', Object.keys(bom_obj));
         }
 
+        // Function to fetch node properties using SPARQL
+        async function fetchNodeProperties(nodeId) {
+          try {
+            console.log(`Fetching properties for node: ${nodeId}`);
+            
+            // Create SPARQL query to get node properties
+            const sparqlQuery = `
+              PREFIX owl: <http://www.w3.org/2002/07/owl#>
+              PREFIX schema: <http://schema.org/ontology#>
+              SELECT ?property ?value WHERE {
+                <http://schema.org/ontology#${nodeId}> ?property ?value .
+                FILTER(?property != <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+              }
+            `;
+            
+            console.log('SPARQL query for node properties:', sparqlQuery);
+            
+            // Post SPARQL query to the backend
+            const response = await fetch('/sparql_console', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: new URLSearchParams({
+                'sparql': sparqlQuery,
+                'bom_query': ''
+              })
+            });
+            
+            if (!response.ok) {
+              console.error('Failed to fetch node properties:', response.status);
+              return {};
+            }
+            
+            const responseText = await response.text();
+            console.log('Raw SPARQL response for node properties:', responseText.substring(0, 500));
+            
+            // Parse the response to extract properties
+            // This is a simplified parser - in production you'd want more robust parsing
+            const properties = {};
+            
+            try {
+              // Try to extract JSON from the response
+              const jsonMatch = responseText.match(/"results":\s*{[^}]*"bindings":\s*\[([^\]]*)\]/);
+              if (jsonMatch) {
+                const bindingsText = jsonMatch[1];
+                console.log('Bindings text:', bindingsText);
+                
+                // Parse individual bindings
+                const bindingMatches = bindingsText.match(/{[^}]*}/g);
+                if (bindingMatches) {
+                  bindingMatches.forEach(binding => {
+                    const propMatch = binding.match(/"property":\s*{\s*"value":\s*"([^"]*)".*?"value":\s*{\s*"value":\s*"([^"]*)"/);
+                    if (propMatch) {
+                      const propUri = propMatch[1];
+                      const propValue = propMatch[2];
+                      
+                      // Extract property name from URI
+                      let propName = propUri;
+                      if (propUri.includes('#')) {
+                        propName = propUri.split('#').pop();
+                      }
+                      
+                      properties[propName] = propValue;
+                      console.log(`Extracted property: ${propName} = ${propValue}`);
+                    }
+                  });
+                }
+              }
+            } catch (parseError) {
+              console.error('Error parsing SPARQL response:', parseError);
+            }
+            
+            console.log('Final extracted properties for', nodeId, ':', properties);
+            return properties;
+            
+          } catch (error) {
+            console.error('Error fetching node properties:', error);
+            return {};
+          }
+        }
+
         // Create nodes array from the set with depth information
         console.log('=== Creating nodes array with depth information ===');
+        console.log('BOM object structure:', Object.keys(bom_obj));
+        console.log('BOM nodes keys:', bom_obj.hasOwnProperty('nodes') ? Object.keys(bom_obj['nodes']).slice(0, 5) : 'No nodes property');
+        
         nodes_set.forEach(s => {
           var n = {};
           n["name"] = s;
+          n["id"] = s;
+          console.log('Creating node with ID:', s);
           n["type"] = "vertex";
           n["adjCount"] = 0;
 
@@ -384,43 +466,183 @@
           n["depth"] = 0; // default depth
           n["attributes"] = {}; // Store additional attributes
           
-          if (bom_obj.hasOwnProperty('nodes')) {
-            var node_keys = Object.keys(bom_obj['nodes']);
-            for (let i = 0; i < node_keys.length; i++) {
-              var node_key = node_keys[i];
-              var node_data = bom_obj['nodes'][node_key];
-              var clean_name = node_data.name || node_key;
-              if (clean_name.includes('#')) {
-                clean_name = clean_name.split('#').pop();
-              }
-              if (clean_name === s) {
-                if (node_data.depth !== undefined) {
-                  n["depth"] = node_data.depth;
+          console.log(`\n=== SEARCHING FOR NODE: ${s} ===`);
+            
+            if (bom_obj.hasOwnProperty('nodes')) {
+              var node_keys = Object.keys(bom_obj['nodes']);
+              const directProperties = ['DrawingID', 'DrawingNumber', 'ItemTag', 'InternalDiameter', 'Subtype', 'Type'];
+              
+              for (let i = 0; i < node_keys.length; i++) {
+                var node_key = node_keys[i];
+                var node_data = bom_obj['nodes'][node_key];
+                var clean_name = node_data.name || node_key;
+                if (clean_name.includes('#')) {
+                  clean_name = clean_name.split('#').pop();
                 }
                 
-                // Extract rich attributes from the node data
-                if (node_data.richDependencies && node_data.richDependencies.length > 0) {
-                  // Get properties from the first rich dependency that has properties
-                  const richDep = node_data.richDependencies.find(rd => rd.properties && Object.keys(rd.properties).length > 0);
-                  if (richDep && richDep.properties) {
-                    n["attributes"] = richDep.properties;
+                console.log(`Checking node_key: ${node_key}, clean_name: ${clean_name}, looking for: ${s}`);
+                
+                if (clean_name === s) {
+                  console.log(`*** FOUND MATCHING NODE DATA FOR ${s} ***`);
+                  console.log('Raw node_data:', node_data);
+                  console.log('Available keys on node_data:', Object.keys(node_data));
+                  
+                  if (node_data.depth !== undefined) {
+                    n["depth"] = node_data.depth;
+                    console.log(`Set depth to ${node_data.depth}`);
+                  }
+                  
+                  // Look for properties directly on the node_data
+                  console.log('Checking for direct properties on node_data...');
+                  directProperties.forEach(prop => {
+                    if (node_data.hasOwnProperty(prop)) {
+                      n["attributes"][prop] = node_data[prop];
+                      console.log(`FOUND direct property: ${prop} = ${node_data[prop]}`);
+                    } else {
+                      console.log(`Node ${s}: Direct property ${prop} not found`);
+                    }
+                  });
+                  
+                  // Look for properties in a properties sub-object
+                  if (node_data.properties) {
+                    console.log('Found properties sub-object:', Object.keys(node_data.properties));
+                    directProperties.forEach(prop => {
+                      if (node_data.properties.hasOwnProperty(prop) && !n["attributes"][prop]) {
+                        n["attributes"][prop] = node_data.properties[prop];
+                        console.log(`FOUND in properties: ${prop} = ${node_data.properties[prop]}`);
+                      }
+                    });
+                  } else {
+                    console.log(`Node ${s}: No properties object found`);
+                  }
+                  
+                  // Look for properties in richDependencies (this is where connection properties are stored)
+                  if (node_data.richDependencies) {
+                    console.log(`Node ${s}: richDependencies exists with ${node_data.richDependencies.length} items`);
+                    
+                    // Try to find properties from the first rich dependency as an example
+                    if (node_data.richDependencies.length > 0) {
+                      console.log(`Node ${s}: RichDep 0:`, node_data.richDependencies[0]);
+                      if (node_data.richDependencies[0].properties) {
+                        console.log(`Node ${s}: RichDep 0 has properties with keys:`, Object.keys(node_data.richDependencies[0].properties));
+                        
+                        // Check if this is a connection (has StartNode/EndNode)
+                        const richDepProps = node_data.richDependencies[0].properties;
+                        if (richDepProps.StartNode || richDepProps.EndNode) {
+                          console.log(`Node ${s}: Skipping richDep 0 - has StartNode/EndNode (connection)`);
+                        } else {
+                          // This might be actual node properties
+                          directProperties.forEach(prop => {
+                            if (richDepProps.hasOwnProperty(prop) && !n["attributes"][prop]) {
+                              n["attributes"][prop] = richDepProps[prop];
+                              console.log(`FOUND in richDep properties: ${prop} = ${richDepProps[prop]}`);
+                            }
+                          });
+                        }
+                      }
+                    }
+                  }
+                  
+                  console.log(`Final attributes for ${s}:`, n["attributes"]);
+                  break;
+                }
+              }
+              
+              // ENHANCED: If no attributes found in BOM, provide fallback information
+              if (Object.keys(n["attributes"]).length === 0) {
+                console.log(`*** NO ATTRIBUTES FOUND FOR ${s} IN BOM - using fallback display ***`);
+                
+                // Try to extract any shared properties from richDependencies (like DrawingNumber)
+                if (node_data && node_data.richDependencies && node_data.richDependencies.length > 0) {
+                  const firstRichDep = node_data.richDependencies[0];
+                  if (firstRichDep.properties) {
+                    // Extract common properties that appear in connections
+                    if (firstRichDep.properties.DrawingNumber) {
+                      n["attributes"]["DrawingNumber"] = firstRichDep.properties.DrawingNumber;
+                    }
+                    if (firstRichDep.properties.Type) {
+                      n["attributes"]["Type"] = firstRichDep.properties.Type;
+                    }
                   }
                 }
                 
-                // Also check for direct properties on the node
-                if (node_data.properties) {
-                  n["attributes"] = { ...n["attributes"], ...node_data.properties };
-                }
-                
-                console.log('Found attributes for node:', s, '-> attributes:', n["attributes"]);
-                break;
+                console.log(`Applied fallback attributes for ${s}:`, n["attributes"]);
               }
             }
-          }
           
           console.log('Node created:', s, 'with final depth =', n["depth"], 'and attributes:', Object.keys(n["attributes"]));
           nodes.push(n);
         });
+
+        console.log('=== BOM Parsing Summary ===');
+        console.log('Total nodes:', nodes.length);
+        console.log('Total edges:', edges.length);
+        
+        // Debug edge connectivity
+        console.log('=== Edge Connectivity Debug ===');
+        const nodeIds = new Set(nodes.map(n => n.id));
+        console.log('Node IDs:', Array.from(nodeIds).slice(0, 5), '... (first 5)');
+        
+        edges.forEach((edge, i) => {
+          if (i < 3) { // Show first 3 edges
+            console.log(`Edge ${i}:`, {
+              source: edge.source,
+              target: edge.target,
+              sourceExists: nodeIds.has(edge.source),
+              targetExists: nodeIds.has(edge.target)
+            });
+          }
+        });
+        
+        const missingSources = edges.filter(e => !nodeIds.has(e.source));
+        const missingTargets = edges.filter(e => !nodeIds.has(e.target));
+        console.log('Edges with missing source nodes:', missingSources.length);
+        console.log('Edges with missing target nodes:', missingTargets.length);
+        
+        if (missingSources.length > 0) {
+          console.log('Example missing source:', missingSources[0].source);
+        }
+        if (missingTargets.length > 0) {
+          console.log('Example missing target:', missingTargets[0].target);
+        }
+        
+        // Continue with visualization if we have content
+        if (nodes.length > 0 || edges.length > 0) {
+          console.log('Proceeding with D3.js visualization');
+          
+          // Show the wrapper div for visualization
+          const wrapper = document.getElementById('viz_wrapper');
+          if (wrapper) wrapper.style.display = 'block';
+
+          /* COMMENTED OUT - OLD VISUALIZATION SETUP THAT CONFLICTS WITH NEW ONE
+          // Initial cleanup and setup
+          const svg = d3.select("#graph-svg");
+          const container = d3.select("#graph-container");
+          
+          // Clear any existing content
+          container.selectAll("*").remove();
+
+          // Get SVG dimensions
+          const svgElement = document.getElementById("graph-svg");
+          const svgRect = svgElement.getBoundingClientRect();
+          const width = svgRect.width;
+          const height = svgRect.height;
+          
+          console.log('SVG dimensions:', width, 'x', height);
+
+          // Initialize the D3.js force simulation
+          const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(edges).id(d => d.id).distance(200))
+            .force("charge", d3.forceManyBody().strength(-1000))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(40));
+
+          END OF OLD VISUALIZATION SETUP COMMENT */
+        } else {
+          console.log('No nodes or edges found - hiding visualization');
+          const wrapper = document.getElementById('viz_wrapper');
+          if (wrapper) wrapper.style.display = 'none';
+        }
 
         console.log('=== Final node depth summary ===');
         nodes.forEach(node => {
@@ -506,29 +728,15 @@
             drawingNumber: d.drawingNumber || ""
           }));
 
-          // Deduplicate edges - only keep one edge per source-target pair (including bidirectional)
+          // Deduplicate edges - only keep one edge per unique source-target pair
           const edgeMap = new Map();
           allGraphEdges.forEach(edge => {
-            // Create both directional keys to handle bidirectional deduplication
-            const key1 = `${edge.source}-${edge.target}`;
-            const key2 = `${edge.target}-${edge.source}`;
+            // Simple key: just source-target, no bidirectional deduplication
+            const key = `${edge.source}-${edge.target}`;
             
-            // Check if either direction already exists
-            if (!edgeMap.has(key1) && !edgeMap.has(key2)) {
-              // For the first edge, use it as-is
-              edgeMap.set(key1, edge);
-            } else {
-              // For duplicates, prefer edges with better labels
-              const existingKey = edgeMap.has(key1) ? key1 : key2;
-              const existing = edgeMap.get(existingKey);
-              
-              if (edge.displayLabel && edge.displayLabel !== "" && 
-                  !edge.displayLabel.includes("connects") && 
-                  (!existing.displayLabel || existing.displayLabel.includes("connects"))) {
-                // Replace with better edge, but keep the original key direction
-                edgeMap.delete(existingKey);
-                edgeMap.set(key1, edge);
-              }
+            // Only add if this exact source->target doesn't exist yet
+            if (!edgeMap.has(key)) {
+              edgeMap.set(key, edge);
             }
           });
           
@@ -538,6 +746,12 @@
           console.log("Graph nodes for D3:", graphNodes);
           console.log("Graph edges for D3 (deduplicated):", graphEdges);
           console.log("Original edges count:", allGraphEdges.length, "Deduplicated count:", graphEdges.length);
+          
+          // Debug: Check edge source/target types
+          if (graphEdges.length > 0) {
+            console.log("First edge source type:", typeof graphEdges[0].source, "value:", graphEdges[0].source);
+            console.log("First edge target type:", typeof graphEdges[0].target, "value:", graphEdges[0].target);
+          }
           
           // Debug: Log edge source-target pairs to check for duplicates
           const edgePairs = graphEdges.map(e => `${e.source} → ${e.target} (${e.displayLabel || e.label})`);
@@ -551,7 +765,7 @@
 
           // Add link force only if we have edges
           if (graphEdges.length > 0) {
-            simulation.force("link", d3.forceLink(graphEdges).id(d => d.name).distance(100));
+            simulation.force("link", d3.forceLink(graphEdges).id(d => d.id).distance(100));
           }
 
           // Create links only if we have edges
@@ -641,15 +855,15 @@
             const lines = [];
             
             // First line: Node name (more generous truncation)
-            const displayName = d.name.length > 30 ? d.name.substring(0, 30) + '...' : d.name;
+            const displayName = d.name.length > 32 ? d.name.substring(0, 32) + '...' : d.name;
             lines.push({ text: displayName, opacity: 1.0 });
             
             // Add up to 3 additional attribute lines (just values, no keys)
             if (d.attributes && Object.keys(d.attributes).length > 0) {
               const attrKeys = Object.keys(d.attributes);
-              const interestingAttributes = ["ItemTag", "NominalDiameter", "FlowDir", "DrawingNumber", "Type", "Category"];
+              const interestingAttributes = ["ItemTag", "DrawingNumber", "DrawingID", "Type", "Subtype", "InternalDiameter", "TagPrefix", "TagSequenceNo"];
               
-              // Prioritize interesting attributes, then add others
+              // Prioritize TTL-based attributes first, then add others
               const sortedKeys = [...attrKeys].sort((a, b) => {
                 const aIndex = interestingAttributes.indexOf(a);
                 const bIndex = interestingAttributes.indexOf(b);
@@ -666,8 +880,12 @@
                 if (value && value.toString().trim() !== "") {
                   let displayValue = value.toString();
                   
-                  // If value is short (< 10 chars), add predicate prefix
-                  if (displayValue.length < 10) {
+                  // For key TTL properties, show them cleanly
+                  if (["ItemTag", "DrawingNumber", "DrawingID", "InternalDiameter"].includes(key)) {
+                    displayValue = displayValue.length > 25 ? displayValue.substring(0, 25) + '...' : displayValue;
+                  }
+                  // For other properties, add the key prefix if value is short
+                  else if (displayValue.length < 10) {
                     displayValue = `${key}: ${displayValue}`;
                   }
                   // Only truncate if really long (> 25 chars)

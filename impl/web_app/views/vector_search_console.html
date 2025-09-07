@@ -2,22 +2,6 @@
 {% block title %} Vector Search Console {% endblock %}
 
 {% block content %}
-<style>
-  pre, code.language-json {
-    background: transparent !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-  /* Remove Prism.js code shadows for all tokens */
-  code[class*="language-"], pre[class*="language-"] {
-    text-shadow: none !important;
-    box-shadow: none !important;
-  }
-  /* Remove background from Prism.js operator tokens */
-  span.token.operator {
-    background: transparent !important;
-  }
-</style>
 <div class="container">
   <h5>Vector Search Console</h5>
   <p></p>
@@ -45,7 +29,7 @@
               <label class="btn btn-sm btn-outline-secondary" for="search_fulltext">Full-text</label>
               
               <input type="radio" class="btn-check" name="search_method" id="search_rrf" autocomplete="off" value="rrf" {{ 'checked' if search_method == 'rrf' else '' }}>
-              <label class="btn btn-sm btn-outline-secondary" for="search_rrf">RRF</label>
+              <label class="btn btn-sm btn-outline-secondary" for="search_rrf">Hybrid</label>
             </div>
           </div>
           <div class="col">
