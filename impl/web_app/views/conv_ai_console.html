@@ -307,5 +307,62 @@
     }
   }
 
+  // Local Storage Management for user input
+  const STORAGE_KEY = 'conv_ai_console_user_text';
+
+  // Load saved value from localStorage
+  function loadFromLocalStorage() {
+    try {
+      const savedValue = localStorage.getItem(STORAGE_KEY);
+      if (savedValue && user_text) {
+        user_text.value = savedValue;
+        // Enable submit button if there's saved content
+        if (savedValue.trim().length > 0) {
+          continue_button.disabled = false;
+        }
+      }
+    } catch (e) {
+      console.warn('Error loading from localStorage:', e);
+    }
+  }
+
+  // Save value to localStorage
+  function saveToLocalStorage() {
+    try {
+      if (user_text) {
+        localStorage.setItem(STORAGE_KEY, user_text.value);
+      }
+    } catch (e) {
+      console.warn('Error saving to localStorage:', e);
+    }
+  }
+
+  // Set up event listeners for auto-saving
+  function setupAutoSave() {
+    if (user_text) {
+      user_text.addEventListener('blur', saveToLocalStorage);
+    }
+  }
+
+  // Initialize localStorage functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    loadFromLocalStorage();
+    setupAutoSave();
+  });
+
+  // Clear localStorage when form is successfully submitted
+  const originalTriggerSubmit = triggerSubmit;
+  triggerSubmit = function() {
+    if (user_text && user_text.value.trim().length > 0) {
+      // Clear the saved text before submitting since we're about to process it
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {
+        console.warn('Error clearing localStorage on submit:', e);
+      }
+    }
+    originalTriggerSubmit();
+  };
+
 </script>
 {% endblock %}

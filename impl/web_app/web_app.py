@@ -958,6 +958,63 @@ async def post_sparql_query(
     return req_model
 
 
+@app.post("/clear_session")
+async def clear_session(req: Request):
+    """Clear conversation and session state both from server session and database"""
+    global nosql_svc
+    
+    try:
+        # Get current conversation_id from session before clearing
+        conversation_id = None
+        try:
+            conversation_id = str(req.session.get("conversation_id") or "").strip()
+        except Exception:
+            pass
+            
+        # Clear server-side session
+        try:
+            req.session.clear()
+            logging.info("Cleared server-side session")
+        except Exception as e:
+            logging.warning("Failed to clear server session: {}".format(e))
+            
+        # Delete conversation from database if it exists
+        if conversation_id and nosql_svc:
+            try:
+                await nosql_svc.delete_item(conversation_id, conversation_id)
+                logging.info("Deleted conversation from database: {}".format(conversation_id))
+            except Exception as e:
+                # Don't fail if conversation doesn't exist in DB or deletion fails
+                logging.warning("Failed to delete conversation from database: {}".format(e))
+                
+        # Clear any temporary conversation files
+        if conversation_id:
+            try:
+                import os
+                import glob
+                
+                # Clear specific conversation file
+                conv_file_path = f"tmp/conv_{conversation_id}.json"
+                if os.path.exists(conv_file_path):
+                    os.remove(conv_file_path)
+                    logging.info("Deleted temporary conversation file: {}".format(conv_file_path))
+                
+                # Clear AI conversation files for this conversation
+                ai_conv_pattern = f"tmp/ai_conv_{conversation_id}.json"
+                for file_path in glob.glob(ai_conv_pattern):
+                    os.remove(file_path)
+                    logging.info("Deleted AI conversation file: {}".format(file_path))
+                    
+            except Exception as e:
+                logging.warning("Failed to delete temporary conversation files: {}".format(e))
+                
+        return {"status": "success", "message": "Session and conversation state cleared"}
+        
+    except Exception as e:
+        logging.error("Error clearing session: {}".format(e))
+        return {"status": "error", "message": str(e)}
+
+
 def gen_sparql_console_view_data():
     view_data = dict()
     view_data["natural_language"] = "What is the total count of nodes?"

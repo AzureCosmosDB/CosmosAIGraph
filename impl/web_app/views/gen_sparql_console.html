@@ -10,13 +10,13 @@
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/xml/xml.min.js"></script>
 
 <div class="container">
-  <h5>NL2SPARQL Console</h5>
+  <h5>Natural Language-to-SPARQL Playground</h5>
   <p></p>
   <div class="card caig-card" style="width: 100%;">
     <div class="card-body bg-dark text-light caig-inner-body">
       <form method="post" id="generate_form" name="generate_form" action="/gen_sparql_console_generate_sparql">
         <div class="mb-3">
-          <label for="sparql" class="form-label">Enter your request:</label>
+          <label for="sparql" class="form-label">Natural language request:</label>
           <textarea rows="1" class="form-control" id="natural_language" name="natural_language"
             placeholder="Triple-click for suggestions.">{{ natural_language }}</textarea>
         </div>
@@ -33,7 +33,8 @@
           <label for="sparql" class="form-label">SPARQL query:</label>
           <textarea id="sparql" name="sparql">{{ sparql }}</textarea>
           <script>
-            var editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
+            // Create global CodeMirror editor instance
+            window.editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
               mode: "sparql",
               lineNumbers: true,
               theme: "default"
@@ -44,8 +45,8 @@
               var newHeight = (lineCount + 1) * 24; // 24px is the default line height
               cm.setSize(null, newHeight + "px");
             }
-            resizeCodeMirrorToContent(editor);
-            editor.on("change", function (cm) {
+            resizeCodeMirrorToContent(window.editor);
+            window.editor.on("change", function (cm) {
               resizeCodeMirrorToContent(cm);
             });
           </script>
@@ -172,6 +173,8 @@
       generate_button.disabled = true;
       generate_button.textContent = "Processing...";
       execute_button.disabled = true;
+      // Mark that we're submitting a form to prevent localStorage restoration
+      sessionStorage.setItem('gen_sparql_form_submitted', 'true');
       generate_form.submit();
     }
   );
@@ -649,6 +652,95 @@ python main_common.py owl_visualizer ontologies/libraries.owl
       }
     });
   })();
+
+  // Local Storage Management for form inputs
+  const STORAGE_KEYS = {
+    naturalLanguage: 'gen_sparql_console_natural_language',
+    sparqlQuery: 'gen_sparql_console_sparql_query'
+  };
+
+  // Flag to track if we should save changes (prevents overwriting server content)
+  let allowSaving = true;
+
+  // Load saved values from localStorage
+  function loadFromLocalStorage() {
+    try {
+      // Always load natural language input
+      const savedNaturalLanguage = localStorage.getItem(STORAGE_KEYS.naturalLanguage);
+      const naturalLanguageInput = document.getElementById('natural_language');
+      if (savedNaturalLanguage && naturalLanguageInput) {
+        naturalLanguageInput.value = savedNaturalLanguage;
+      }
+
+      // Check if we just submitted a form (which means don't restore SPARQL content)
+      const justSubmitted = sessionStorage.getItem('gen_sparql_form_submitted');
+      if (justSubmitted) {
+        // Clear the flag and don't restore SPARQL content
+        sessionStorage.removeItem('gen_sparql_form_submitted');
+        // Temporarily disable saving to preserve server content
+        allowSaving = false;
+        // Re-enable saving after server content has had time to load
+        setTimeout(function() {
+          allowSaving = true;
+        }, 1000);
+        return;
+      }
+
+      // Load SPARQL query for CodeMirror editor
+      const savedSparqlQuery = localStorage.getItem(STORAGE_KEYS.sparqlQuery);
+      if (savedSparqlQuery && window.editor) {
+        editor.setValue(savedSparqlQuery);
+      }
+    } catch (e) {
+      console.warn('Error loading from localStorage:', e);
+    }
+  }
+
+  // Save values to localStorage
+  function saveToLocalStorage() {
+    if (!allowSaving) return; // Don't save if we're preserving server content
+    
+    try {
+      // Save natural language input
+      const naturalLanguageInput = document.getElementById('natural_language');
+      if (naturalLanguageInput) {
+        localStorage.setItem(STORAGE_KEYS.naturalLanguage, naturalLanguageInput.value);
+      }
+
+      // Save SPARQL query from CodeMirror editor
+      if (window.editor) {
+        localStorage.setItem(STORAGE_KEYS.sparqlQuery, editor.getValue());
+      }
+    } catch (e) {
+      console.warn('Error saving to localStorage:', e);
+    }
+  }
+
+  // Set up event listeners for auto-saving
+  function setupAutoSave() {
+    // Auto-save natural language input
+    const naturalLanguageInput = document.getElementById('natural_language');
+    if (naturalLanguageInput) {
+      naturalLanguageInput.addEventListener('input', saveToLocalStorage);
+      naturalLanguageInput.addEventListener('blur', saveToLocalStorage);
+    }
+
+    // Auto-save CodeMirror editor changes
+    if (window.editor) {
+      editor.on('change', function() {
+        saveToLocalStorage();
+      });
+    }
+  }
+
+  // Initialize localStorage functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Wait a bit for CodeMirror to be fully initialized
+    setTimeout(function() {
+      loadFromLocalStorage();
+      setupAutoSave();
+    }, 100);
+  });
 </script>
 
 {% endblock %}

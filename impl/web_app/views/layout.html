@@ -55,6 +55,18 @@
             filter: brightness(3);
         }
         
+        /* Brand link hover effect - indicate it's clickable */
+        #brandLink {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        #brandLink:hover .brand-group {
+            opacity: 0.8;
+            transform: scale(1.02);
+            transition: all 0.2s ease;
+        }
+        
         /* Custom button colors: override Bootstrap blue with custom blue palette */
         .btn-primary {
             --bs-btn-color: #ffffff;
@@ -186,9 +198,64 @@
 {% endblock %}
 <script>
 // Clear session state when brand link is clicked
-document.getElementById('brandLink').addEventListener('click', function() {
-    // Clear all localStorage data to refresh session state
+document.getElementById('brandLink').addEventListener('click', function(event) {
+    event.preventDefault(); // Prevent default navigation
+    
+    // Visual feedback - temporarily change the brand text
+    const brandTitle = document.querySelector('.brand-title');
+    const originalText = brandTitle.textContent;
+    brandTitle.textContent = 'Clearing Session...';
+    brandTitle.style.opacity = '0.7';
+    
+    // Clear all localStorage data to refresh client-side session state
     localStorage.clear();
+    
+    // Specifically clear our form storage keys for good measure
+    try {
+        // SPARQL Console storage keys
+        localStorage.removeItem('sparql_console_sparql_query');
+        localStorage.removeItem('sparql_console_bom_query');
+        
+        // Gen SPARQL Console storage key
+        localStorage.removeItem('gen_sparql_console_natural_language');
+        
+        // Conv AI Console storage key
+        localStorage.removeItem('conv_ai_console_user_text');
+        
+        // Vector Search Console storage keys (already implemented)
+        localStorage.removeItem('vector_search_entrypoint');
+        localStorage.removeItem('vector_search_limit');
+        localStorage.removeItem('vector_search_type');
+        localStorage.removeItem('vector_search_method');
+    } catch (e) {
+        console.warn('Error clearing specific localStorage keys:', e);
+    }
+    
+    // Call backend to clear server session and database conversation state
+    fetch('/clear_session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin' // Include session cookies
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Session cleared:', data);
+        // Brief delay to show the feedback, then navigate
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 500);
+    })
+    .catch(error => {
+        console.error('Error clearing session:', error);
+        // Restore original text and navigate anyway
+        brandTitle.textContent = originalText;
+        brandTitle.style.opacity = '1';
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 500);
+    });
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>

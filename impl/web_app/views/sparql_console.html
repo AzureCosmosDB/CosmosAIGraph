@@ -28,7 +28,7 @@
 <script src="https://d3js.org/d3.v7.min.js"></script>
 
 <div class="container">
-  <h5>SPARQL Console</h5>
+  <h5>SPARQL Playground</h5>
   <p></p>
   <div class="card caig-card" style="width: 100%;">
     <div class="card-body bg-dark text-light caig-inner-body">
@@ -1002,6 +1002,76 @@
       const wrapper = document.getElementById('viz_wrapper');
       if (wrapper) wrapper.style.display = 'none';
     }
+  });
+
+  // Local Storage Management for form inputs
+  const STORAGE_KEYS = {
+    sparqlQuery: 'sparql_console_sparql_query',
+    bomQuery: 'sparql_console_bom_query'
+  };
+
+  // Load saved values from localStorage
+  function loadFromLocalStorage() {
+    try {
+      // Load SPARQL query (CodeMirror editor)
+      const savedSparqlQuery = localStorage.getItem(STORAGE_KEYS.sparqlQuery);
+      if (savedSparqlQuery && editor) {
+        editor.setValue(savedSparqlQuery);
+      }
+
+      // Load BOM query (regular input)
+      const savedBomQuery = localStorage.getItem(STORAGE_KEYS.bomQuery);
+      const bomQueryInput = document.getElementById('bom_query');
+      if (savedBomQuery && bomQueryInput) {
+        bomQueryInput.value = savedBomQuery;
+      }
+    } catch (e) {
+      console.warn('Error loading from localStorage:', e);
+    }
+  }
+
+  // Save values to localStorage
+  function saveToLocalStorage() {
+    try {
+      // Save SPARQL query (CodeMirror editor)
+      if (editor) {
+        localStorage.setItem(STORAGE_KEYS.sparqlQuery, editor.getValue());
+      }
+
+      // Save BOM query (regular input)
+      const bomQueryInput = document.getElementById('bom_query');
+      if (bomQueryInput) {
+        localStorage.setItem(STORAGE_KEYS.bomQuery, bomQueryInput.value);
+      }
+    } catch (e) {
+      console.warn('Error saving to localStorage:', e);
+    }
+  }
+
+  // Set up event listeners for auto-saving
+  function setupAutoSave() {
+    // Auto-save CodeMirror editor changes
+    if (editor) {
+      editor.on('change', function() {
+        saveToLocalStorage();
+      });
+    }
+
+    // Auto-save BOM query input changes
+    const bomQueryInput = document.getElementById('bom_query');
+    if (bomQueryInput) {
+      bomQueryInput.addEventListener('input', saveToLocalStorage);
+      bomQueryInput.addEventListener('blur', saveToLocalStorage);
+    }
+  }
+
+  // Initialize localStorage functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Wait a bit for CodeMirror to be fully initialized
+    setTimeout(function() {
+      loadFromLocalStorage();
+      setupAutoSave();
+    }, 100);
   });
 </script>
 {% endblock %}
