@@ -20,7 +20,6 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.util.FileManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -279,23 +278,42 @@ public class AppGraphBuilder {
      */
     private static void populateFromRdfFile(AppGraph g) throws Exception {
         try {
-            String infile = AppConfig.getGraphRdfFilename();
-            logger.warn("populateFromRdfFile - " + infile);
+            String graphPath = AppConfig.getGraphPath();
+            logger.warn("populateFromRdfFile - " + graphPath);
             Model ontology = g.getModel();
-            Model model = g.readGraphFromFile(infile, Lang.TTL);
+            Model model = ModelFactory.createDefaultModel();
+            java.io.File fileOrDir = new java.io.File(graphPath);
+            if (fileOrDir.isDirectory()) {
+                java.io.File[] files = fileOrDir.listFiles((dir, name) -> name.endsWith(".ttl") || name.endsWith(".nt") || name.endsWith(".rdf") || name.endsWith(".owl"));
+                if (files != null) {
+                    for (java.io.File f : files) {
+                        logger.warn("Loading RDF file: " + f.getAbsolutePath());
+                        // Try to guess the language from the extension
+                        String fname = f.getName().toLowerCase();
+                        Lang lang = Lang.TTL;
+                        if (fname.endsWith(".nt")) lang = Lang.NT;
+                        else if (fname.endsWith(".rdf")) lang = Lang.RDFXML;
+                        else if (fname.endsWith(".owl")) lang = Lang.RDFXML;
+                        model.read(f.getAbsolutePath(), lang.getName());
+                    }
+                }
+            } else {
+                // Single file
+                String fname = fileOrDir.getName().toLowerCase();
+                Lang lang = Lang.TTL;
+                if (fname.endsWith(".nt")) lang = Lang.NT;
+                else if (fname.endsWith(".rdf")) lang = Lang.RDFXML;
+                else if (fname.endsWith(".owl")) lang = Lang.RDFXML;
+                model = g.readGraphFromFile(graphPath, lang);
+            }
             logger.warn("model class:" + model.getClass().getName());
             logger.warn("empty: " + model.isEmpty());
-            //g.setModel(model);
             // Create reasoner and materialize inferences
-
             Reasoner reasoner = ReasonerRegistry.getRDFSReasoner().bindSchema(ontology);
             InfModel infModel = ModelFactory.createInfModel(reasoner, model);
-
             // Materialize all inferred triples into a new model
             Model materialized = ModelFactory.createDefaultModel().add(infModel);
-            //InfModel inf = ModelFactory.createRDFSModel(ontology, model);
             g.setModel(materialized);
-
         }
         catch (Throwable t) {
             t.printStackTrace();
@@ -328,3 +346,4 @@ public class AppGraphBuilder {
         }
     }
 }
+

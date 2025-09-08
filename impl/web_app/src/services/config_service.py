@@ -133,9 +133,9 @@ class ConfigService:
         )
         d["CAIG_GRAPH_NAMESPACE"] = "The custom namespace for the RED graph.  (GRAPH RUNTIME)"
         d["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "The input RDF OWL ontology file.  (GRAPH RUNTIME)"
-        d["CAIG_GRAPH_SOURCE_RDF_FILENAME"] = (
-            "The RDF input file, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.  (GRAPH RUNTIME)"
-        )
+        # d["CAIG_GRAPH_SOURCE_PATH"] = (
+        #     "The RDF input file, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.  (GRAPH RUNTIME)"
+        # )
         d["CAIG_GRAPH_SOURCE_DB"] = (
             "The graph Cosmos DB database name, if CAIG_GRAPH_SOURCE_TYPE is 'cosmos_nosql'.  (GRAPH RUNTIME)"
         )
@@ -217,7 +217,7 @@ class ConfigService:
         d["CAIG_GRAPH_NAMESPACE"] = ""
         d["CAIG_GRAPH_SOURCE_TYPE"] = "cosmos_nosql"
         d["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "ontologies/extracted_ontology.ttl"
-        d["CAIG_GRAPH_SOURCE_RDF_FILENAME"] = ""
+        # d["CAIG_GRAPH_SOURCE_PATH"] = ""
         d["CAIG_GRAPH_SOURCE_DB"] = "caig"
         d["CAIG_GRAPH_SOURCE_CONTAINER"] = "libraries"
         d["CAIG_GRAPH_DUMP_UPON_BUILD"] = "false"
@@ -292,9 +292,9 @@ class ConfigService:
     def graph_source_owl_filename(cls) -> str:
         return cls.envvar("CAIG_GRAPH_SOURCE_OWL_FILENAME", "ontologies/extracted_ontology.ttl")
 
-    @classmethod
-    def graph_source_rdf_filename(cls) -> str:
-        return cls.envvar("CAIG_GRAPH_SOURCE_RDF_FILENAME", "")
+    # @classmethod
+    # def graph_source_rdf_filename(cls) -> str:
+    #     return cls.envvar("CAIG_GRAPH_SOURCE_PATH", "")
 
     @classmethod
     def graph_source_db(cls) -> str:
@@ -424,7 +424,7 @@ class ConfigService:
         """Set environment variables for use in unit tests"""
         os.environ["CAIG_GRAPH_SOURCE_TYPE"] = "rdf_file"
         os.environ["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "ontologies/extracted_ontology.ttl"
-        os.environ["CAIG_GRAPH_SOURCE_RDF_FILENAME"] = ""
+        # os.environ["CAIG_GRAPH_SOURCE_PATH"] = ""
         os.environ["CAIG_WEBSVC_AUTH_VALUE"] = "123go"
         os.environ["SAMPLE_INT_VAR"] = "98"
         os.environ["SAMPLE_FLOAT_VAR"] = "98.6"

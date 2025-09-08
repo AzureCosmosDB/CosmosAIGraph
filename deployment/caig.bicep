@@ -171,7 +171,7 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
               value: graphSourceOwlFilename
             }
             {
-              name: 'CAIG_GRAPH_SOURCE_RDF_FILENAME'
+              name: 'CAIG_GRAPH_SOURCE_PATH'
               value: graphSourceRdfFilename
             }
             {
@@ -343,7 +343,7 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
               value: graphSourceOwlFilename
             }
             {
-              name: 'CAIG_GRAPH_SOURCE_RDF_FILENAME'
+              name: 'CAIG_GRAPH_SOURCE_PATH'
               value: graphSourceRdfFilename
             }
             {

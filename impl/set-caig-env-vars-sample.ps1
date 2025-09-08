@@ -70,8 +70,8 @@ echo 'setting CAIG_GRAPH_SOURCE_DB'
 echo 'setting CAIG_GRAPH_SOURCE_OWL_FILENAME'
 [Environment]::SetEnvironmentVariable("CAIG_GRAPH_SOURCE_OWL_FILENAME", "ontologies/libraries.owl", "User")
 
-echo 'setting CAIG_GRAPH_SOURCE_RDF_FILENAME'
-[Environment]::SetEnvironmentVariable("CAIG_GRAPH_SOURCE_RDF_FILENAME", "rdf/libraries-graph.nt", "User")
+echo 'setting CAIG_GRAPH_SOURCE_PATH'
+[Environment]::SetEnvironmentVariable("CAIG_GRAPH_SOURCE_PATH", "rdf/libraries-graph.nt", "User")
 
 echo 'setting CAIG_GRAPH_SOURCE_TYPE'
 [Environment]::SetEnvironmentVariable("CAIG_GRAPH_SOURCE_TYPE", "cosmos_nosql", "User")

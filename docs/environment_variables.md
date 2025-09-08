@@ -33,7 +33,7 @@ All of these begin with the prefix `CAIG_`.
 | CAIG_GRAPH_SOURCE_CONTAINER | The graph Cosmos DB container name, if CAIG_GRAPH_SOURCE_TYPE is 'cosmos_nosql'.   | GRAPH RUNTIME |
 | CAIG_GRAPH_SOURCE_DB | The graph Cosmos DB database name, if CAIG_GRAPH_SOURCE_TYPE is 'cosmos_nosql'.   | GRAPH RUNTIME |
 | CAIG_GRAPH_SOURCE_OWL_FILENAME | The input RDF OWL ontology file.   | GRAPH RUNTIME |
-| CAIG_GRAPH_SOURCE_RDF_FILENAME | The RDF input file, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.   | GRAPH RUNTIME |
+| CAIG_GRAPH_SOURCE_PATH | The RDF input file, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.   | GRAPH RUNTIME |
 | CAIG_GRAPH_SOURCE_TYPE | The RDF graph data source type, either 'cosmos_nosql', or 'json_docs_file' or 'rdf_file'.   | GRAPH RUNTIME |
 | CAIG_HOME | Root directory of the CosmosAIGraph GitHub repository on your system.   | DEV ENV |
 | CAIG_LOG_LEVEL | A standard python or java logging level name.   | RUNTIME |

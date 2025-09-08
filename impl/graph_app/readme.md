@@ -47,7 +47,7 @@ OS:            Windows 11 10.0 amd64
 - example-override.properties
   - Copy file example-override.properties to .override.properties
   - .override.properties has the same functionality as the .env file in python
-  - Particularly important is CAIG_GRAPH_SOURCE_RDF_FILENAME
+  - Particularly important is CAIG_GRAPH_SOURCE_PATH
     - It may be one of: json_docs_file, rdf_file, or cosmos_nosql
 
 - Start the app locally with either:

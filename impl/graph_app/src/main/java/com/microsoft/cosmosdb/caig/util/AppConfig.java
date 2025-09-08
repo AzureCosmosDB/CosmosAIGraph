@@ -32,7 +32,7 @@ public class AppConfig {
     public static final String CAIG_GRAPH_SOURCE_DB               = "CAIG_GRAPH_SOURCE_DB";
     public static final String CAIG_GRAPH_SOURCE_CONTAINER        = "CAIG_GRAPH_SOURCE_CONTAINER";
     public static final String CAIG_GRAPH_SOURCE_OWL_FILENAME     = "CAIG_GRAPH_SOURCE_OWL_FILENAME";
-    public static final String CAIG_GRAPH_SOURCE_RDF_FILENAME     = "CAIG_GRAPH_SOURCE_RDF_FILENAME";
+    public static final String CAIG_GRAPH_SOURCE_PATH     = "CAIG_GRAPH_SOURCE_PATH";
     public static final String CAIG_GRAPH_NAMESPACE               = "CAIG_GRAPH_NAMESPACE";
     public static final String CAIG_GRAPH_DUMP_UPON_BUILD         = "CAIG_GRAPH_DUMP_UPON_BUILD";
     public static final String CAIG_GRAPH_DUMP_OUTFILE            = "CAIG_GRAPH_DUMP_OUTFILE";
@@ -46,7 +46,7 @@ public class AppConfig {
             CAIG_GRAPH_SOURCE_DB,
             CAIG_GRAPH_SOURCE_CONTAINER,
             CAIG_GRAPH_SOURCE_OWL_FILENAME,
-            CAIG_GRAPH_SOURCE_RDF_FILENAME,
+            CAIG_GRAPH_SOURCE_PATH,
             CAIG_GRAPH_NAMESPACE,
             CAIG_GRAPH_DUMP_UPON_BUILD,
             CAIG_GRAPH_DUMP_OUTFILE
@@ -168,8 +168,8 @@ public class AppConfig {
         return getEnvVar(CAIG_GRAPH_SOURCE_OWL_FILENAME, "");
     }
 
-    public static String getGraphRdfFilename() {
-        return getEnvVar(CAIG_GRAPH_SOURCE_RDF_FILENAME, "");
+    public static String getGraphPath() {
+        return getEnvVar(CAIG_GRAPH_SOURCE_PATH, "");
     }
 
     public static String getGraphNamespace() {

@@ -226,3 +226,6 @@ impl/web_app/requirements.txt
 data/Explorer
 impl/web_app/prompts/gen_sparql_v2 copy 2.txt
 impl/web_app/prompts/gen_sparql_v2 copy.txt
+impl/graph_app/ontologies/example.org/
+impl/graph_app/rdf/example.org/
+impl/web_app/ontologies/example.org/

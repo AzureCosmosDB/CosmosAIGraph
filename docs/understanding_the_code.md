@@ -138,7 +138,7 @@ in-memory graph by reading a **RDF *.nt** text file.
 These environment variables are used in building the in-memory graph:
 - CAIG_GRAPH_SOURCE_TYPE
 - CAIG_GRAPH_SOURCE_OWL_FILENAME
-- CAIG_GRAPH_SOURCE_RDF_FILENAME
+- CAIG_GRAPH_SOURCE_PATH
 - CAIG_GRAPH_SOURCE_DB
 - CAIG_GRAPH_SOURCE_CONTAINER
 
@@ -327,7 +327,7 @@ sources per the CAIG_GRAPH_SOURCE_TYPE environment variable.
 CAIG_GRAPH_SOURCE_TYPE may have one of the following values:
 
 - json_docs_file - the graph is sourced from ile cosmosdb_documents.json in the repo
-- rdf_file - the graph is sourced from the file specified in CAIG_GRAPH_SOURCE_RDF_FILENAME
+- rdf_file - the graph is sourced from the file specified in CAIG_GRAPH_SOURCE_PATH
 - cosmos_nosql - the graph is sourced from your Cosmos DB NoSQL account
 
 After the Jena graph is populated, you can optionally dump that
