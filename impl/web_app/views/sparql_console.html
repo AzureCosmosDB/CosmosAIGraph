@@ -205,20 +205,69 @@
     d3.select("#graph-svg").selectAll("*").remove();
 
     if (bom_json && bom_json.trim() !== '') {
-      // Clean up the JSON string - fix Python-style booleans, None values, and quotes
-      bom_json = bom_json.trim()
-        .replaceAll("'", "\"")
-        .replaceAll(": False", ": false")
-        .replaceAll(": True", ": true")
-        .replaceAll(":False", ":false")
-        .replaceAll(":True", ":true")
-        .replaceAll(": None", ": null")
-        .replaceAll(":None", ":null");
+      // Trim only; avoid global single-quote replace which corrupts non-JSON text
+      bom_json = bom_json.trim();
 
-      console.log('Cleaned JSON first 500 chars:', bom_json.substring(0, 500));
+      console.log('Trimmed BOM content first 500 chars:', bom_json.substring(0, 500));
+
+      // Safer BOM JSON parser: detect non-JSON (TTL/plain text) and avoid eval fallback
+      function tolerantParseBom(raw) {
+        const original = raw;
+        let s = (raw || '').trim();
+
+        // Quick heuristic: JSON must start with { or [ after trimming
+        if (!(s.startsWith('{') || s.startsWith('['))) {
+          // Detect likely TTL or other non-JSON artifacts
+          const ttlIndicators = ['@prefix', '@base', 'a :', 'PREFIX ', 'rule "', 'attributeDefinitionRule', 'attributeDescription', ':attributeDefinitionRule', 'ontology', 'rdf:'];
+          for (const ind of ttlIndicators) {
+            if (s.includes(ind)) {
+              console.error('tolerantParseBom: content appears to be TTL or non-JSON; abort parse. Indicator:', ind);
+              throw new SyntaxError('BOM content is not JSON (looks like TTL or plain text).');
+            }
+          }
+
+          // Try to extract a JSON-looking substring between the first { and last }
+          const firstBrace = s.indexOf('{');
+          const lastBrace = s.lastIndexOf('}');
+          if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
+            throw new SyntaxError('BOM content does not contain a JSON object.');
+          }
+          s = s.substring(firstBrace, lastBrace + 1);
+        }
+
+        // Normalize common Python literals into JSON equivalents
+        s = s
+          .replaceAll(': None', ': null')
+          .replaceAll(':None', ':null')
+          .replaceAll(': False', ': false')
+          .replaceAll(':False', ':false')
+          .replaceAll(': True', ': true')
+          .replaceAll(':True', ':true');
+
+        // Try strict JSON.parse first
+        try {
+          return JSON.parse(s);
+        } catch (e1) {
+          console.warn('tolerantParseBom: JSON.parse failed', e1);
+        }
+
+        // Controlled repair: replace standalone single-quoted strings with double-quoted strings
+        try {
+          const repaired = s.replace(/'([^']*)'/g, function(match, p1) {
+            // Escape any double quotes inside
+            const escaped = p1.replace(/"/g, '\\"');
+            return '"' + escaped + '"';
+          });
+          return JSON.parse(repaired);
+        } catch (e2) {
+          console.error('tolerantParseBom: reparsed JSON failed', e2);
+          console.error('Original BOM snippet:', (original || '').substring(0, 1000));
+          throw e2;
+        }
+      }
 
       try {
-        var bom_obj = JSON.parse(bom_json);
+        var bom_obj = tolerantParseBom(bom_json);
         console.log('BOM data parsed successfully');
         console.log('BOM object keys:', Object.keys(bom_obj));
         
