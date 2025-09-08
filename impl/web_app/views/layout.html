@@ -194,70 +194,91 @@
 <hr>
 {% block content %}
 {% endblock %}
-{% block js %}
-{% endblock %}
+{% block js %}{% endblock %}
 <script>
-// Clear session state when brand link is clicked
-document.getElementById('brandLink').addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent default navigation
-    
-    // Visual feedback - temporarily change the brand text
+(function() {
+  const brandLink = document.getElementById('brandLink');
+  if (!brandLink) return;
+
+  function resetBrandTitle(msg, restoringText) {
     const brandTitle = document.querySelector('.brand-title');
-    const originalText = brandTitle.textContent;
-    brandTitle.textContent = 'Clearing Session...';
-    brandTitle.style.opacity = '0.7';
-    
-    // Clear all localStorage data to refresh client-side session state
-    localStorage.clear();
-    
-    // Specifically clear our form storage keys for good measure
-    try {
-        // SPARQL Console storage keys
-        localStorage.removeItem('sparql_console_sparql_query');
-        localStorage.removeItem('sparql_console_bom_query');
-        
-        // Gen SPARQL Console storage key
-        localStorage.removeItem('gen_sparql_console_natural_language');
-        
-        // Conv AI Console storage key
-        localStorage.removeItem('conv_ai_console_user_text');
-        
-        // Vector Search Console storage keys (already implemented)
-        localStorage.removeItem('vector_search_entrypoint');
-        localStorage.removeItem('vector_search_limit');
-        localStorage.removeItem('vector_search_type');
-        localStorage.removeItem('vector_search_method');
-    } catch (e) {
-        console.warn('Error clearing specific localStorage keys:', e);
+    if (!brandTitle) return;
+    if (msg) {
+      brandTitle.textContent = msg;
+      brandTitle.style.opacity = '0.7';
+    } else {
+      brandTitle.textContent = restoringText;
+      brandTitle.style.opacity = '1';
     }
-    
-    // Call backend to clear server session and database conversation state
-    fetch('/clear_session', {
+  }
+
+  async function callClearSession(conversationId) {
+    try {
+      const resp = await fetch('/clear_session', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        credentials: 'same-origin' // Include session cookies
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Session cleared:', data);
-        // Brief delay to show the feedback, then navigate
-        setTimeout(() => {
-            window.location.href = '/';
-        }, 500);
-    })
-    .catch(error => {
-        console.error('Error clearing session:', error);
-        // Restore original text and navigate anyway
-        brandTitle.textContent = originalText;
-        brandTitle.style.opacity = '1';
-        setTimeout(() => {
-            window.location.href = '/';
-        }, 500);
-    });
-});
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        keepalive: true,
+        body: JSON.stringify({ conversation_id: conversationId || null, ignore_missing: true })
+      });
+      // Even if backend returns 404 (conversation not found), treat as success for UX
+      if (!resp.ok && resp.status !== 404) {
+        console.warn('clear_session non-OK:', resp.status);
+      }
+      return true;
+    } catch (e) {
+      console.warn('clear_session fetch error:', e);
+      return false;
+    }
+  }
+
+  brandLink.addEventListener('click', async function(event) {
+    event.preventDefault();
+    const brandTitle = document.querySelector('.brand-title');
+    const originalText = brandTitle ? brandTitle.textContent : 'CosmosAIGraph';
+
+    // Capture BEFORE clearing
+    let conversationId = (localStorage.getItem('conv_ai_console_conversation_id') ||
+                          sessionStorage.getItem('conv_ai_console_conversation_id') || '').trim();
+    if (!conversationId) conversationId = null;
+
+    resetBrandTitle('Clearing Session...', originalText);
+
+    let ok = true;
+    if (conversationId) {
+      // Only call backend if we actually have an id
+      ok = await Promise.race([
+        callClearSession(conversationId),
+        new Promise(resolve => setTimeout(() => resolve(false), 3500))
+      ]);
+    }
+
+    // Clear client storage
+    try { localStorage.clear(); sessionStorage.clear(); } catch(e){}
+
+    // Redundant explicit removals
+    try {
+      [
+        'sparql_console_sparql_query','sparql_console_bom_query',
+        'gen_sparql_console_natural_language','conv_ai_console_user_text',
+        'conv_ai_console_conversation_id','vector_search_entrypoint',
+        'vector_search_limit','vector_search_type','vector_search_method',
+        'ontologyVisible'
+      ].forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
+    } catch(e){}
+
+    if (!ok) { console.info('Proceeding after clear_session (partial/timeout).'); }
+
+    // Short delay for user feedback then navigate
+    setTimeout(() => {
+      resetBrandTitle(null, originalText);
+      window.location.href = '/';
+    }, 400);
+  });
+})();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
 </body>
 </html>

@@ -959,60 +959,68 @@ async def post_sparql_query(
 
 
 @app.post("/clear_session")
-async def clear_session(req: Request):
-    """Clear conversation and session state both from server session and database"""
+async def clear_session(request: Request):
+    """
+    Clear server-side session; optionally delete a conversation document.
+    Frontend may pass: { "conversation_id": "<id>", "ignore_missing": true }
+    """
     global nosql_svc
     
+    # Get current conversation_id from session before clearing
+    conversation_id = None
     try:
-        # Get current conversation_id from session before clearing
-        conversation_id = None
-        try:
-            conversation_id = str(req.session.get("conversation_id") or "").strip()
-        except Exception:
-            pass
-            
-        # Clear server-side session
-        try:
-            req.session.clear()
-            logging.info("Cleared server-side session")
-        except Exception as e:
-            logging.warning("Failed to clear server session: {}".format(e))
-            
-        # Delete conversation from database if it exists
-        if conversation_id and nosql_svc:
-            try:
-                await nosql_svc.delete_item(conversation_id, conversation_id)
-                logging.info("Deleted conversation from database: {}".format(conversation_id))
-            except Exception as e:
-                # Don't fail if conversation doesn't exist in DB or deletion fails
-                logging.warning("Failed to delete conversation from database: {}".format(e))
-                
-        # Clear any temporary conversation files
-        if conversation_id:
-            try:
-                import os
-                import glob
-                
-                # Clear specific conversation file
-                conv_file_path = f"tmp/conv_{conversation_id}.json"
-                if os.path.exists(conv_file_path):
-                    os.remove(conv_file_path)
-                    logging.info("Deleted temporary conversation file: {}".format(conv_file_path))
-                
-                # Clear AI conversation files for this conversation
-                ai_conv_pattern = f"tmp/ai_conv_{conversation_id}.json"
-                for file_path in glob.glob(ai_conv_pattern):
-                    os.remove(file_path)
-                    logging.info("Deleted AI conversation file: {}".format(file_path))
-                    
-            except Exception as e:
-                logging.warning("Failed to delete temporary conversation files: {}".format(e))
-                
-        return {"status": "success", "message": "Session and conversation state cleared"}
+        conversation_id = str(request.session.get("conversation_id") or "").strip()
+    except Exception:
+        pass
+    
+    # Attempt to parse JSON payload
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
         
+    conv_id = (payload.get("conversation_id") or "").strip() or None
+    ignore_missing = bool(payload.get("ignore_missing"))
+
+    # Example: remove server-side stored conversation id (if using session)
+    try:
+        request.session.pop("conversation_id", None)
+    except Exception:
+        pass
+
+    delete_status = "skipped"
+    if conv_id:
+        try:
+            # Assuming conversations_container already initialized
+            conversations_container.delete_item(item=conv_id, partition_key=conv_id)
+            delete_status = "deleted"
+        except CosmosResourceNotFoundError:
+            if ignore_missing:
+                delete_status = "not_found_ignored"
+            else:
+                delete_status = "not_found"
+        except Exception as e:
+            # Log and continue to return success flag=false
+            logging.warning("Unexpected error deleting conversation %s: %s", conv_id, e)
+            return JSONResponse({"success": False, "delete_status": "error", "error": str(e)})
+
+    # Optionally clear any other in-memory caches here
+    return JSONResponse({"success": True, "delete_status": delete_status})
+
+
+@app.post("/api/save_ontology")
+async def save_ontology(request: Request):
+    data = await request.json()
+    content = data.get("content", "")
+    path = os.environ.get("CAIG_GRAPH_SOURCE_OWL_FILENAME")
+    if not path:
+        return JSONResponse({"success": False, "error": "Ontology path not configured."})
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return JSONResponse({"success": True})
     except Exception as e:
-        logging.error("Error clearing session: {}".format(e))
-        return {"status": "error", "message": str(e)}
+        return JSONResponse({"success": False, "error": str(e)})
 
 
 def gen_sparql_console_view_data():
@@ -1323,3 +1331,22 @@ def textformat_conversation(conv: AiConversation) -> None:
     except Exception as e:
         logging.critical((str(e)))
         logging.exception(e, stack_info=True, exc_info=True)
+
+from azure.cosmos.exceptions import CosmosResourceNotFoundError
+import os
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+@app.post("/api/save_ontology")
+async def save_ontology(request: Request):
+    data = await request.json()
+    content = data.get("content", "")
+    path = os.environ.get("CAIG_GRAPH_SOURCE_OWL_FILENAME")
+    if not path:
+        return JSONResponse({"success": False, "error": "Ontology path not configured."})
+    try:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return JSONResponse({"success": True})
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)})

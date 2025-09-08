@@ -79,16 +79,14 @@
       <br/>
     </div>
 
-    <br/>
-    <br/>
     <!-- Ontology header and controls (label always visible) -->
     <div class="container" id="ontology_header"
-      style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;margin-top:0;">
       <div style="display:flex;align-items:center;gap:12px;">
         <h5 style="margin:0;">Ontology (OWL/Turtle)</h5>
         <div id="ontology_action_controls" style="display:flex;gap:8px;align-items:center;">
-          <button type="button" id="edit_owl_button" class="btn btn-sm btn-outline-secondary">Edit OWL</button>
-          <span class="text-muted small">(Edit the OWL/Turtle then click Re-render)</span>
+          <button type="button" id="edit_owl_button" class="btn btn-sm btn-outline-secondary">Edit</button>
+          <!-- Save button removed -->
         </div>
       </div>
       <div>
@@ -96,9 +94,9 @@
           &#9650;</button>
       </div>
     </div>
-
+    <br/>
     <div class="container" id="owl_div" name="owl_div">
-      <pre><code class="language-turtle" id="owl_code">{{ owl }}</code></pre>
+      <pre><code class="language-turtle" id="owl_code" style="font-size: 12px;">{{ owl }}</code></pre>
       <!-- Prism.js for Turtle and XML syntax highlighting -->
       <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-turtle.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-xml-doc.min.js"></script>
@@ -111,8 +109,7 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
         <h5 style="margin:0;">Ontology Visualization</h5>
         <div id="ontology_viz_controls" style="display:flex;gap:8px;align-items:center;">
-          <button type="button" id="re_render_owl_button" class="btn btn-sm btn-outline-primary">Re-render
-            Visualization</button>
+          <button type="button" id="re_render_owl_button" class="btn btn-sm btn-outline-primary">Re-render</button>
         </div>
       </div>
       <div class="container" id="ontology_viz" style="width:100%;height:768px;border: 0px solid lightgray"></div>
@@ -191,7 +188,6 @@
       execute_form.submit();
     }
   );
-
 
 
 
@@ -298,19 +294,92 @@ python main_common.py owl_visualizer ontologies/libraries.owl
       }
 
       // create vis DataSets
-      const nodes = new vis.DataSet(graph.nodes.map(n => ({ id: n.id, label: n.label })));
-      const edges = new vis.DataSet(graph.edges.map(e => ({ from: e.from, to: e.to, label: e.label, title: e.title })));
-
+      // Generate random dark color for each node
+      function randomDarkColor() {
+        // HSL: hue random, sat 40-60%, lightness 15-30%
+        const h = Math.floor(Math.random() * 360);
+        const s = 40 + Math.floor(Math.random() * 20);
+        const l = 15 + Math.floor(Math.random() * 15);
+        return `hsl(${h},${s}%,${l}%)`;
+      }
+      const nodes = new vis.DataSet(graph.nodes.map((n) => {
+        const color = randomDarkColor();
+        return {
+          id: n.id,
+          label: n.label,
+          shape: "box",
+          color: {
+            background: color,
+            border: color,
+            highlight: { background: color, border: color },
+            hover: { background: color, border: color }
+          },
+          font: {
+            color: "#fff",
+            size: 18,
+            face: 'arial',
+            bold: true
+          },
+          borderWidth: 0,
+          margin: 10
+        };
+      }));
+      const edges = new vis.DataSet(graph.edges.map(e => ({
+        from: e.from,
+        to: e.to,
+        label: e.label,
+        title: e.title,
+        font: {
+          color: "#90caf9", // light blue
+          strokeWidth: 0,   // no border/stroke
+          size: 12,
+          face: 'arial',
+          align: 'middle',
+          vadjust: -8 // move label slightly above the line
+        },
+        color: {
+          color: "#b0bec5",
+          highlight: "#90caf9",
+          hover: "#90caf9"
+        },
+        arrows: { to: { enabled: true, scaleFactor: 0.2, type: 'arrow' } },
+        smooth: {
+          enabled: true,
+          type: "dynamic"
+        },
+        shadow: false
+      })));
       const html_container = document.getElementById('ontology_viz');
       const graph_data = { nodes: nodes, edges: edges };
       const graph_options = {
+        nodes: {
+          shape: "box",
+          borderWidth: 0,
+          margin: 10,
+          font: {
+            size: 18,
+            face: 'arial',
+            bold: true,
+            color: "#fff"
+          }
+        },
         edges: {
           arrows: { to: { enabled: true, scaleFactor: 0.2, type: 'arrow' } },
-          color: '#A9A9A9',
-          font: '12px arial #A9A9A9',
+          color: "#b0bec5",
+          font: {
+            color: "#90caf9",
+            strokeWidth: 0, // no border/stroke
+            size: 12,
+            face: 'arial',
+            align: 'middle',
+            vadjust: -8 // move label slightly above the line
+          },
           scaling: { label: true },
           shadow: false,
-          smooth: true,
+          smooth: {
+            enabled: true,
+            type: "dynamic"
+          }
         },
         physics: { enabled: true, repulsion: { centralGravity: 0.2, springLength: 200, springConstant: 0.05, nodeDistance: 200, damping: 0.09 } }
       };
@@ -325,422 +394,171 @@ python main_common.py owl_visualizer ontologies/libraries.owl
     }
   }
 
-  // rdflib-based parser: returns {nodes:[], edges:[]} using basic heuristics
-  function rdflibToGraph(turtleText) {
-    if (typeof $rdf === 'undefined') {
-      throw new Error('rdflib not loaded');
-    }
-    const store = $rdf.graph();
-    const mime = 'text/turtle';
-    // base URI for relative IRIs
-    const base = 'http://example.org/base#';
-    return new Promise((resolve, reject) => {
-      try {
-        $rdf.parse(turtleText, store, base, mime, function (err, kb) {
-          if (err) {
-            // rdflib uses callback with err
-            reject(err);
-            return;
-          }
-          // collect nodes and edges
-          const nodesMap = new Map();
-          const edges = [];
-          const statements = store.statementsMatching(undefined, undefined, undefined, undefined);
-          statements.forEach(st => {
-            const s = termToId(st.subject);
-            const p = termToId(st.predicate);
-            const o = termToId(st.object);
-            if (s) nodesMap.set(s, { id: s, label: s });
-            if (o) nodesMap.set(o, { id: o, label: o });
-            if (s && o) {
-              edges.push({ from: s, to: o, title: p, label: p });
-            }
-          });
-          resolve({ nodes: Array.from(nodesMap.values()), edges: edges });
-        });
-      } catch (ex) {
-        reject(ex);
-      }
-    });
+  // Initial render
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      renderOntologyGraph();
+    }, 100);
+  });
 
-    function termToId(term) {
-      if (!term) return null;
-      if (term.termType === 'Literal') return null;
-      if (term.termType === 'BlankNode') return '_:' + term.value;
-      // URIRef: try to shorten by last fragment or path
-      let v = term.value;
-      // if contains '#', use substring after
-      if (v.indexOf('#') >= 0) return v.split('#').pop();
-      // else use last path segment
-      const parts = v.split('/');
-      return parts[parts.length - 1] || v;
-    }
-  }
+  // Re-render on button click
+  document.getElementById('re_render_owl_button').addEventListener('click', function () {
+    renderOntologyGraph();
+  });
 
-  // Run on DOMContentLoaded to ensure code block is present
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      try {
-        // read stored visibility state (session) - default: hidden
-        const stored = sessionStorage.getItem('ontologyVisible');
-        const visible = stored === null ? false : stored === 'true';
-        const owlDiv = document.getElementById('owl_div');
-        const ontDiv = document.getElementById('ontology_div');
-        const actionControls = document.getElementById('ontology_action_controls');
-        const toggleBtn = document.getElementById('toggle_ontology_button_ctrl');
-        if (owlDiv) owlDiv.style.display = visible ? '' : 'none';
-        if (ontDiv) ontDiv.style.display = visible ? '' : 'none';
-        if (actionControls) actionControls.style.display = visible ? 'flex' : 'none';
-        if (toggleBtn) toggleBtn.innerHTML = visible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
-        // render only when visible
-        if (visible) renderOntologyGraph().catch(e => console.error(e));
-      } catch (e) {
-        console.error('Init error:', e);
-        renderOntologyGraph().catch(e2 => console.error(e2));
-      }
-    });
-  } else {
-    try {
-      const stored = sessionStorage.getItem('ontologyVisible');
-      const visible = stored === null ? false : stored === 'true';
-      const owlDiv = document.getElementById('owl_div');
-      const ontDiv = document.getElementById('ontology_div');
-      const actionControls = document.getElementById('ontology_action_controls');
-      const toggleBtn = document.getElementById('toggle_ontology_button_ctrl');
-      if (owlDiv) owlDiv.style.display = visible ? '' : 'none';
-      if (ontDiv) ontDiv.style.display = visible ? '' : 'none';
-      if (actionControls) actionControls.style.display = visible ? 'flex' : 'none';
-      if (toggleBtn) toggleBtn.innerHTML = visible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
-      if (visible) renderOntologyGraph().catch(e => console.error(e));
-    } catch (e) {
-      console.error('Init error:', e);
-      renderOntologyGraph().catch(e2 => console.error(e2));
-    }
-  }
-  // Edit / Re-render UI wiring
-  (function () {
-    const editBtn = document.getElementById('edit_owl_button');
-    const rerenderBtn = document.getElementById('re_render_owl_button');
-    const toggleBtn = document.getElementById('toggle_ontology_button_ctrl');
+
+
+  // Unified ontology edit/save/toggle logic
+  (function() {
+    const editBtn      = document.getElementById('edit_owl_button');
+    const toggleBtn    = document.getElementById('toggle_ontology_button_ctrl');
+    const rerenderBtn  = document.getElementById('re_render_owl_button');
+    const owlDiv       = document.getElementById('owl_div');
+    const ontDiv       = document.getElementById('ontology_div');
+    const actionCtrls  = document.getElementById('ontology_action_controls');
     let owlEditor = null;
 
-    // Function to detect if content is OWL XML or Turtle format
     function detectOntologyFormat(content) {
-      if (!content || typeof content !== 'string') return 'turtle';
-      
-      const trimmedContent = content.trim();
-      
-      // Check for XML/OWL format indicators
-      if (trimmedContent.startsWith('<?xml') || 
-          trimmedContent.startsWith('<rdf:RDF') ||
-          trimmedContent.startsWith('<owl:Ontology') ||
-          trimmedContent.includes('<owl:') ||
-          trimmedContent.includes('<rdf:') ||
-          trimmedContent.includes('xmlns:owl=') ||
-          trimmedContent.includes('xmlns:rdf=')) {
-        return 'xml';
-      }
-      
-      // Check for Turtle format indicators
-      if (trimmedContent.includes('@prefix') ||
-          trimmedContent.includes('@base') ||
-          trimmedContent.includes('PREFIX') ||
-          trimmedContent.includes('BASE') ||
-          /^\s*#/.test(trimmedContent) || // Comments starting with #
-          /\s+a\s+/.test(trimmedContent)) { // RDF type statements
+      if (!content) return 'turtle';
+      const t = content.trim();
+      if (t.startsWith('<?xml') || t.startsWith('<rdf:RDF') || t.includes('<owl:') || t.includes('xmlns:owl=')
+          || t.includes('xmlns:rdf=')) return 'xml';
+      if (t.includes('@prefix') || t.includes('@base') || /(^|\s)PREFIX\s/i.test(t) || /\s+a\s+/.test(t))
         return 'turtle';
-      }
-      
-      // Default to turtle if uncertain
       return 'turtle';
     }
-
-    // initialize visibility strictly from sessionStorage (default: hidden)
-    let ontologyVisible = (function () {
-      try {
-        const stored = sessionStorage.getItem('ontologyVisible');
-        return stored === 'true'; // default false when null
-      } catch (e) { return false; }
-    })();
-
+    function resizeEditor(cm) {
+      const lc = cm.getDoc().lineCount();
+      cm.setSize(null, Math.max((lc + 1) * 24, 240) + 'px');
+    }
     function enterEditMode() {
       if (owlEditor) return;
-      
-      // Get fresh reference to code block each time
       const codeBlock = document.getElementById('owl_code');
-      if (!codeBlock) {
-        console.error('Could not find owl_code element');
-        return;
-      }
-      
-      // Get content and detect format
-      const content = codeBlock.innerText || codeBlock.textContent || '';
+      if (!codeBlock) return;
+      const content = codeBlock.textContent;
       const format = detectOntologyFormat(content);
-      
-      // Create a textarea for CodeMirror
-      const textarea = document.createElement('textarea');
-      textarea.id = 'owl_edit_textarea';
-      textarea.style.width = '100%';
-      textarea.style.minHeight = '240px';
-      textarea.value = content;
-      
-      // Replace the code block with textarea
-      codeBlock.parentNode.replaceChild(textarea, codeBlock);
-      
-      // Initialize CodeMirror editor with appropriate mode
-      owlEditor = CodeMirror.fromTextArea(textarea, {
+      const ta = document.createElement('textarea');
+      ta.id = 'owl_edit_textarea';
+      ta.style.width = '100%';
+      ta.style.minHeight = '240px';
+      ta.value = content;
+      codeBlock.parentNode.replaceChild(ta, codeBlock);
+      owlEditor = CodeMirror.fromTextArea(ta, {
         mode: format === 'xml' ? 'xml' : 'turtle',
         lineNumbers: true,
-        theme: "default"
+        theme: 'default'
       });
-      
-      // Auto-resize CodeMirror to content
-      function resizeOwlEditorToContent(cm) {
-        const doc = cm.getDoc();
-        const lineCount = doc.lineCount();
-        const newHeight = Math.max((lineCount + 1) * 24, 240); // minimum 240px height
-        cm.setSize(null, newHeight + "px");
-      }
-      
-      resizeOwlEditorToContent(owlEditor);
-      owlEditor.on("change", function (cm) {
-        resizeOwlEditorToContent(cm);
-      });
-      
-      // Update button text with fresh reference
-      const currentEditBtn = document.getElementById('edit_owl_button');
-      if (currentEditBtn) currentEditBtn.textContent = 'Done Editing';
+      resizeEditor(owlEditor);
+      owlEditor.on('change', resizeEditor);
+      editBtn.textContent = 'Save';
     }
-
-    function exitEditMode() {
+    function exitEditMode(replacementContent) {
       if (!owlEditor) return;
-      
-      // Get the content from CodeMirror
-      const content = owlEditor.getValue();
-      
-      // Detect format for proper CSS class
+      const content = replacementContent !== undefined ? replacementContent : owlEditor.getValue();
       const format = detectOntologyFormat(content);
-      
-      // Create new code element
       const newCode = document.createElement('code');
       newCode.id = 'owl_code';
       newCode.className = format === 'xml' ? 'language-xml' : 'language-turtle';
+      newCode.style.fontSize = '12px';
       newCode.textContent = content;
-      
-      // Replace CodeMirror with code block
-      const editorElement = owlEditor.getWrapperElement();
-      editorElement.parentNode.replaceChild(newCode, editorElement);
-      
-      // Clean up CodeMirror instance
+      const wrapper = owlEditor.getWrapperElement();
+      wrapper.parentNode.replaceChild(newCode, wrapper);
+      try { if (window.Prism) Prism.highlightElement(newCode); } catch(e){}
       owlEditor = null;
-      
-      // re-run Prism highlight (if available)
-      try { if (window.Prism) Prism.highlightElement(newCode); } catch (e) { }
-      
-      // Update button text with fresh reference
-      const currentEditBtn = document.getElementById('edit_owl_button');
-      if (currentEditBtn) currentEditBtn.textContent = 'Edit OWL';
+      editBtn.textContent = 'Edit';
+    }
+    function saveOntology() {
+      if (!owlEditor) return;
+      const content = owlEditor.getValue();
+      editBtn.disabled = true;
+      const priorLabel = editBtn.textContent;
+      editBtn.textContent = 'Saving...';
+      fetch('/api/save_ontology', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ content })
+      })
+      .then(r => r.json())
+      .then(j => {
+        if (j.success) {
+          alert('Ontology saved.');
+          exitEditMode(content);
+        } else {
+          console.error('Save ontology failed:', j);
+          alert('Save failed: ' + (j.error || 'Unknown error'));
+          // Keep in edit mode so user can retry (do NOT exit)
+          editBtn.textContent = 'Retry Save';
+        }
+      })
+      .catch(e => {
+        console.error('Save ontology network/error:', e);
+        alert('Save failed: ' + e);
+        editBtn.textContent = 'Retry Save';
+      })
+      .finally(() => {
+        editBtn.disabled = false;
+        if (!owlEditor && editBtn.textContent !== 'Edit') {
+          // If we exited edit mode successfully, ensure label is Edit
+          editBtn.textContent = 'Edit';
+        }
+        if (owlEditor && editBtn.textContent === 'Saving...') {
+          // If still in edit mode but no label update happened, restore to Retry Save
+          editBtn.textContent = 'Retry Save';
+        }
+      });
     }
 
-    // Use event delegation for robust event handling that works after DOM changes
-    document.addEventListener('click', function(event) {
-      if (event.target && event.target.id === 'edit_owl_button') {
-        event.preventDefault();
-        if (owlEditor) {
-          exitEditMode();
-        } else {
-          enterEditMode();
-        }
+    editBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (!owlEditor) {
+        enterEditMode();
+      } else {
+        saveOntology();
       }
     });
 
-    rerenderBtn.addEventListener('click', function () {
-      // if in edit mode, update the code block from CodeMirror editor first
+    toggleBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const visible = owlDiv.style.display !== 'none';
+      const newVisible = !visible;
+      owlDiv.style.display = newVisible ? '' : 'none';
+      ontDiv.style.display = newVisible ? '' : 'none';
+      actionCtrls.style.display = newVisible ? 'flex' : 'none';
+      toggleBtn.innerHTML = newVisible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
+      try { sessionStorage.setItem('ontologyVisible', newVisible.toString()); } catch(e){}
+      if (newVisible) renderOntologyGraph();
+    });
+
+    // Restore persisted visibility
+    (function restoreVisibility() {
+      let vis = true;
+      try {
+        const stored = sessionStorage.getItem('ontologyVisible');
+        if (stored === 'false') vis = false;
+      } catch(e){}
+      if (!vis) {
+        owlDiv.style.display = 'none';
+        ontDiv.style.display = 'none';
+        actionCtrls.style.display = 'none';
+        toggleBtn.innerHTML = 'Show Ontology &#9660;';
+      } else {
+        toggleBtn.innerHTML = 'Hide Ontology &#9650;';
+      }
+    })();
+
+    rerenderBtn.addEventListener('click', function(e) {
+      e.preventDefault();
       if (owlEditor) {
-        // Get content from CodeMirror
+        // temporarily get content for graph parse
         const content = owlEditor.getValue();
-        const format = detectOntologyFormat(content);
-        
-        // replace CodeMirror with code block temporarily so renderer finds it
-        const tempCode = document.createElement('code');
-        tempCode.id = 'owl_code';
-        tempCode.className = format === 'xml' ? 'language-xml' : 'language-turtle';
-        tempCode.textContent = content;
-        
-        const editorElement = owlEditor.getWrapperElement();
-        editorElement.parentNode.replaceChild(tempCode, editorElement);
-        
-        try { if (window.Prism) Prism.highlightElement(tempCode); } catch (e) { }
-        
-        // Recreate CodeMirror editor after render
-        setTimeout(() => {
-          if (tempCode.parentNode) {
-            const newTextarea = document.createElement('textarea');
-            newTextarea.id = 'owl_edit_textarea';
-            newTextarea.value = content;
-            tempCode.parentNode.replaceChild(newTextarea, tempCode);
-            
-            owlEditor = CodeMirror.fromTextArea(newTextarea, {
-              mode: format === 'xml' ? 'xml' : 'turtle',
-              lineNumbers: true,
-              theme: "default"
-            });
-            
-            function resizeOwlEditorToContent(cm) {
-              const doc = cm.getDoc();
-              const lineCount = doc.lineCount();
-              const newHeight = Math.max((lineCount + 1) * 24, 240);
-              cm.setSize(null, newHeight + "px");
-            }
-            
-            resizeOwlEditorToContent(owlEditor);
-            owlEditor.on("change", function (cm) {
-              resizeOwlEditorToContent(cm);
-            });
-          }
-        }, 10);
-      }
-      // call the existing render function (async)
-      try { renderOntologyGraph().catch(e => console.error('Re-render failed:', e)); } catch (e) { console.error('Re-render failed:', e); }
-    });
-
-    toggleBtn.addEventListener('click', function () {
-      // Check if we're currently in edit mode before toggling
-      const wasInEditMode = owlEditor !== null;
-      let editContent = null;
-      
-      if (wasInEditMode && owlEditor) {
-        // Save the content before hiding
-        editContent = owlEditor.getValue();
-        // Exit edit mode cleanly before hiding
-        exitEditMode();
-      }
-      
-      ontologyVisible = !ontologyVisible;
-      const owlDiv = document.getElementById('owl_div');
-      const ontDiv = document.getElementById('ontology_div');
-      const actionControls = document.getElementById('ontology_action_controls');
-      
-      // hide only the content, visualization, and action buttons; keep header and toggle visible
-      if (owlDiv) owlDiv.style.display = ontologyVisible ? '' : 'none';
-      if (ontDiv) ontDiv.style.display = ontologyVisible ? '' : 'none';
-      if (actionControls) actionControls.style.display = ontologyVisible ? 'flex' : 'none';
-      toggleBtn.innerHTML = ontologyVisible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
-      
-      try { sessionStorage.setItem('ontologyVisible', ontologyVisible ? 'true' : 'false'); } catch (e) { }
-      
-      // when showing, ensure visualization is (re)rendered
-      if (ontologyVisible) {
-        try { renderOntologyGraph().catch(e => console.error('Render after show failed:', e)); } catch (e) { console.error(e); }
-        
-        // If we were in edit mode, restore it after a brief delay to ensure DOM is ready
-        if (wasInEditMode && editContent !== null) {
-          setTimeout(() => {
-            // Update the code block content first
-            const codeBlock = document.getElementById('owl_code');
-            if (codeBlock) {
-              codeBlock.textContent = editContent;
-            }
-            // Enter edit mode again
-            enterEditMode();
-            // Set the content in the new editor
-            if (owlEditor) {
-              owlEditor.setValue(editContent);
-            }
-          }, 50);
-        }
+        exitEditMode(content);
+        renderOntologyGraph();
+        enterEditMode();
+      } else {
+        renderOntologyGraph();
       }
     });
   })();
-
-  // Local Storage Management for form inputs
-  const STORAGE_KEYS = {
-    naturalLanguage: 'gen_sparql_console_natural_language',
-    sparqlQuery: 'gen_sparql_console_sparql_query'
-  };
-
-  // Flag to track if we should save changes (prevents overwriting server content)
-  let allowSaving = true;
-
-  // Load saved values from localStorage
-  function loadFromLocalStorage() {
-    try {
-      // Always load natural language input
-      const savedNaturalLanguage = localStorage.getItem(STORAGE_KEYS.naturalLanguage);
-      const naturalLanguageInput = document.getElementById('natural_language');
-      if (savedNaturalLanguage && naturalLanguageInput) {
-        naturalLanguageInput.value = savedNaturalLanguage;
-      }
-
-      // Check if we just submitted a form (which means don't restore SPARQL content)
-      const justSubmitted = sessionStorage.getItem('gen_sparql_form_submitted');
-      if (justSubmitted) {
-        // Clear the flag and don't restore SPARQL content
-        sessionStorage.removeItem('gen_sparql_form_submitted');
-        // Temporarily disable saving to preserve server content
-        allowSaving = false;
-        // Re-enable saving after server content has had time to load
-        setTimeout(function() {
-          allowSaving = true;
-        }, 1000);
-        return;
-      }
-
-      // Load SPARQL query for CodeMirror editor
-      const savedSparqlQuery = localStorage.getItem(STORAGE_KEYS.sparqlQuery);
-      if (savedSparqlQuery && window.editor) {
-        editor.setValue(savedSparqlQuery);
-      }
-    } catch (e) {
-      console.warn('Error loading from localStorage:', e);
-    }
-  }
-
-  // Save values to localStorage
-  function saveToLocalStorage() {
-    if (!allowSaving) return; // Don't save if we're preserving server content
-    
-    try {
-      // Save natural language input
-      const naturalLanguageInput = document.getElementById('natural_language');
-      if (naturalLanguageInput) {
-        localStorage.setItem(STORAGE_KEYS.naturalLanguage, naturalLanguageInput.value);
-      }
-
-      // Save SPARQL query from CodeMirror editor
-      if (window.editor) {
-        localStorage.setItem(STORAGE_KEYS.sparqlQuery, editor.getValue());
-      }
-    } catch (e) {
-      console.warn('Error saving to localStorage:', e);
-    }
-  }
-
-  // Set up event listeners for auto-saving
-  function setupAutoSave() {
-    // Auto-save natural language input
-    const naturalLanguageInput = document.getElementById('natural_language');
-    if (naturalLanguageInput) {
-      naturalLanguageInput.addEventListener('input', saveToLocalStorage);
-      naturalLanguageInput.addEventListener('blur', saveToLocalStorage);
-    }
-
-    // Auto-save CodeMirror editor changes
-    if (window.editor) {
-      editor.on('change', function() {
-        saveToLocalStorage();
-      });
-    }
-  }
-
-  // Initialize localStorage functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    // Wait a bit for CodeMirror to be fully initialized
-    setTimeout(function() {
-      loadFromLocalStorage();
-      setupAutoSave();
-    }, 100);
-  });
 </script>
 
 {% endblock %}
