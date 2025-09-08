@@ -1,12 +1,9 @@
 package com.microsoft.cosmosdb.caig.models;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.microsoft.cosmosdb.caig.graph.DependenciesQueryResult;
-import com.microsoft.cosmosdb.caig.graph.TraversedLib;
+import com.microsoft.cosmosdb.caig.graph.TraversedNode;
 import lombok.Data;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The WebApp responds with instance of this JSON-serialized class in response
@@ -22,7 +19,7 @@ public class SparqlBomQueryResponse {
     private String entrypoint;
     private int max_depth;
     private int actual_depth;
-    private HashMap<String, TraversedLib> nodes;
+    private HashMap<String, TraversedNode> nodes;
     private String error;
     private long elapsed;
     private long request_time;

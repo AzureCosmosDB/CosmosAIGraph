@@ -118,7 +118,7 @@ public class AppGraph {
     public synchronized SparqlBomQueryResponse bomQuery(SparqlBomQueryRequest request) {
         logger.warn("bomQuery - entry point: " + request.getEntrypoint());
         SparqlBomQueryResponse response = new SparqlBomQueryResponse(request);
-        HashMap<String, TraversedLib> nodes = new HashMap<String, TraversedLib>();
+        HashMap<String, TraversedNode> nodes = new HashMap<String, TraversedNode>();
         response.setNodes(nodes);
         
         // First try exact ID matching
@@ -127,7 +127,7 @@ public class AppGraph {
         
         if (foundExactMatch) {
             logger.info("Found exact match for: " + exactNodeUri);
-            nodes.put(exactNodeUri, new TraversedLib(exactNodeUri, 0));
+            nodes.put(exactNodeUri, new TraversedNode(exactNodeUri, 0));
             logger.info("Added root node with depth 0: " + exactNodeUri);
         } else {
             logger.info("No exact match found for: " + exactNodeUri + ", trying loose attribute matching");
@@ -136,13 +136,13 @@ public class AppGraph {
             if (!matchingNodes.isEmpty()) {
                 logger.info("Found " + matchingNodes.size() + " nodes with loose matching");
                 for (String matchingNodeUri : matchingNodes) {
-                    nodes.put(matchingNodeUri, new TraversedLib(matchingNodeUri, 0));
+                    nodes.put(matchingNodeUri, new TraversedNode(matchingNodeUri, 0));
                     logger.info("Added root node with depth 0: " + matchingNodeUri);
                 }
             } else {
                 logger.warn("No nodes found with loose matching for: " + request.getEntrypoint());
                 // Still add the original URI to avoid empty response
-                nodes.put(exactNodeUri, new TraversedLib(exactNodeUri, 0));
+                nodes.put(exactNodeUri, new TraversedNode(exactNodeUri, 0));
                 logger.info("Added fallback root node with depth 0: " + exactNodeUri);
             }
         }
@@ -170,7 +170,7 @@ public class AppGraph {
                     for (int i = 0; i < nodeUris.length; i++) {
                         String nodeUri = (String) nodeUris[i];
                         logger.debug("nodeUri: " + nodeUri + " idx " + i);
-                        TraversedLib tLib = nodes.get(nodeUri);
+                        TraversedNode tLib = nodes.get(nodeUri);
                         if (tLib.isVisited()) {
                             logger.debug("nodeUri already visited: " + nodeUri + " (depth=" + tLib.getDepth() + ")");
                         } else {
@@ -280,16 +280,20 @@ public class AppGraph {
     }
 
     private void queryDependencies(
-            TraversedLib tLib, HashMap<String, TraversedLib> tLibs, int loopDepth) {
+            TraversedNode tLib, HashMap<String, TraversedNode> tLibs, int loopDepth) {
         QueryExecution qexec = null;
         try {
             tLib.setVisited(true);
             String originalUri = tLib.getUri();
             logger.debug("queryDependencies - original URI: " + originalUri);
             
-            String sparql = sparqlConnectionsQuery(originalUri);
-            logger.debug("BOM SPARQL: " + sparql);
-            
+            // First, fetch and set all properties of the node itself
+            RichDependency selfProperties = fetchRichDependencyProperties(originalUri);
+            tLib.setSelfProperties(selfProperties.getProperties());
+
+            String sparql = sparqlGenericEdgesQuery(originalUri);
+            logger.debug("Generic edges SPARQL: " + sparql);
+
             // Validate the SPARQL query before creating it
             Query query = null;
             try {
@@ -302,100 +306,57 @@ public class AppGraph {
             
             qexec = QueryExecutionFactory.create(query, AppGraph.getSingleton().getModel());
             ResultSet results = qexec.execSelect();
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ResultSetFormatter.outputAsJSON(outputStream, results);
-            String json = new String(outputStream.toByteArray()).replaceAll("\\n", "");
-            ObjectMapper objectMapper = new ObjectMapper();
 
-            DependenciesQueryResult dqr = objectMapper.readValue(json, DependenciesQueryResult.class);
-            
-            // Collect all connected nodes from the new connections query
             ArrayList<String> allConnections = new ArrayList<String>();
             ArrayList<RichDependency> richDependencies = new ArrayList<RichDependency>();
             
-            // Extract connected nodes from the query result
-            ArrayList<String> connectedNodes = dqr.getSingleNamedValues("connectedNode");
-            ArrayList<String> relationshipTypes = dqr.getSingleNamedValues("relationshipType");
-            ArrayList<String> directions = dqr.getSingleNamedValues("direction");
-            ArrayList<String> connectedTypes = dqr.getSingleNamedValues("connectedType");
-            
-            if (connectedNodes != null) {
-                allConnections.addAll(connectedNodes);
-                logger.info("Found " + connectedNodes.size() + " connected nodes for URI: " + originalUri);
-                
-                // Create rich dependencies with relationship information
-                for (int i = 0; i < connectedNodes.size(); i++) {
-                    String connectedNode = connectedNodes.get(i);
-                    RichDependency richDep = fetchRichDependencyProperties(connectedNode);
-                    
-                    // Add relationship metadata
-                    if (relationshipTypes != null && i < relationshipTypes.size()) {
-                        String relType = relationshipTypes.get(i);
-                        richDep.addProperty("RelationshipType", relType);
-                    }
-                    
-                    // Use the connected node's type for the edge label (e.g., "DirectConnection")
-                    String edgeLabel = "Connection"; // Default fallback
-                    if (connectedTypes != null && i < connectedTypes.size() && connectedTypes.get(i) != null) {
-                        String connectedType = connectedTypes.get(i);
-                        // Extract the simple class name from the URI
-                        if (connectedType.contains("#")) {
-                            edgeLabel = connectedType.substring(connectedType.lastIndexOf("#") + 1);
-                        } else if (connectedType.contains("/")) {
-                            edgeLabel = connectedType.substring(connectedType.lastIndexOf("/") + 1);
-                        } else {
-                            edgeLabel = connectedType;
-                        }
-                    } else if (relationshipTypes != null && i < relationshipTypes.size()) {
-                        // Fallback to relationship type if no connected type found
-                        String relType = relationshipTypes.get(i);
-                        if (relType.contains("#")) {
-                            edgeLabel = relType.substring(relType.lastIndexOf("#") + 1);
-                        } else if (relType.contains("/")) {
-                            edgeLabel = relType.substring(relType.lastIndexOf("/") + 1);
-                        } else {
-                            edgeLabel = relType;
-                        }
-                    }
-                    
+            while (results.hasNext()) {
+                QuerySolution solution = results.nextSolution();
+
+                // Get the edge property
+                Resource edgeProperty = solution.getResource("edgeProperty");
+                String edgePropertyUri = edgeProperty != null ? edgeProperty.getURI() : null;
+                String edgeLabel = extractLocalName(edgePropertyUri);
+
+                // Get the target node
+                Resource targetNode = solution.getResource("targetNode");
+                if (targetNode != null) {
+                    String targetUri = targetNode.getURI();
+                    allConnections.add(targetUri);
+
+                    // Create rich dependency with all properties of the target
+                    RichDependency richDep = fetchRichDependencyProperties(targetUri);
+                    richDep.addProperty("EdgeProperty", edgePropertyUri);
                     richDep.addProperty("EdgeLabel", edgeLabel);
                     
-                    if (directions != null && i < directions.size()) {
-                        String direction = directions.get(i);
-                        richDep.addProperty("Direction", direction);
-                        
-                        // Adjust edge label based on direction for clarity
-                        String currentLabel = richDep.getStringProperty("EdgeLabel");
-                        if (currentLabel == null || currentLabel.isEmpty()) {
-                            currentLabel = "Connection";
-                        }
-                        
-                        if ("inbound".equals(direction)) {
-                            richDep.addProperty("EdgeLabel", "← " + currentLabel);
-                        } else {
-                            richDep.addProperty("EdgeLabel", currentLabel + " →");
-                        }
+                    // Get the direction
+                    String direction = solution.getLiteral("direction") != null ?
+                        solution.getLiteral("direction").getString() : "outbound";
+                    richDep.addProperty("Direction", direction);
+
+                    // Add directional arrow to edge label
+                    if ("inbound".equals(direction)) {
+                        richDep.addProperty("EdgeLabel", "← " + edgeLabel);
+                    } else {
+                        richDep.addProperty("EdgeLabel", edgeLabel + " →");
                     }
                     
                     richDependencies.add(richDep);
+
+                    // Add the discovered node to the traversal map if not already present
+                    if (!tLibs.containsKey(targetUri)) {
+                        tLibs.put(targetUri, new TraversedNode(targetUri, loopDepth));
+                        logger.info("Added new node: " + targetUri + " with depth " + loopDepth);
+                    }
                 }
-            } else {
-                logger.info("No connected nodes found for URI: " + originalUri);
             }
             
-            // Set both rich and legacy dependencies (keeping the same interface)
+            logger.info("Found " + allConnections.size() + " edges for URI: " + originalUri);
+
+            // Set both rich and legacy dependencies
             tLib.setDependencies(allConnections);
             tLib.setRichDependencies(richDependencies);
 
-            for (int d = 0; d < allConnections.size(); d++) {
-                String connectedUri = allConnections.get(d);
-                if (!tLibs.containsKey(connectedUri)) {
-                    tLibs.put(connectedUri, new TraversedLib(connectedUri, loopDepth));
-                    logger.info("Added new connection: " + connectedUri + " with depth " + loopDepth);
-                } else {
-                    logger.debug("Connection already exists: " + connectedUri + " (existing depth=" + tLibs.get(connectedUri).getDepth() + ")");
-                }
-            }
             successfulQueries++;
             lastSuccessfulQueryTime = System.currentTimeMillis();
         } catch (Throwable t) {
@@ -414,190 +375,81 @@ public class AppGraph {
     }
 
     /**
-     * Analyzes the OWL ontology in the model to discover all object properties 
-     * that can serve as edges between nodes in the graph.
+     * Generates a SPARQL query to find ALL edges (object properties) connected to a given URI.
+     * This is completely generic and works with any RDF ontology structure.
      */
-    private ArrayList<String> getEdgePropertiesFromOntology() {
-        ArrayList<String> edgeProperties = new ArrayList<String>();
-        QueryExecution qexec = null;
-        
-        try {
-            // SPARQL query to find all object properties in the ontology
-            String sparql = "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
-                           "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
-                           "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
-                           "SELECT DISTINCT ?property WHERE {\n" +
-                           "  {\n" +
-                           "    ?property rdf:type owl:ObjectProperty .\n" +
-                           "  }\n" +
-                           "  UNION\n" +
-                           "  {\n" +
-                           "    ?property rdf:type rdf:Property .\n" +
-                           "    ?property rdfs:range ?range .\n" +
-                           "    FILTER(isURI(?range))\n" +
-                           "  }\n" +
-                           "  UNION\n" +
-                           "  {\n" +
-                           "    ?s ?property ?o .\n" +
-                           "    FILTER(isURI(?o) && ?property != rdf:type && ?property != rdfs:subClassOf)\n" +
-                           "  }\n" +
-                           "}\n" +
-                           "LIMIT 100";
-            
-            Query query = QueryFactory.create(sparql);
-            qexec = QueryExecutionFactory.create(query, this.model);
-            ResultSet results = qexec.execSelect();
-            
-            while (results.hasNext()) {
-                QuerySolution solution = results.nextSolution();
-                RDFNode propertyNode = solution.get("property");
-                if (propertyNode != null && propertyNode.isURIResource()) {
-                    String propertyUri = propertyNode.asResource().getURI();
-                    // Extract local name from URI for use in SPARQL variable names
-                    String localName = extractLocalName(propertyUri);
-                    if (localName != null && !localName.isEmpty() && !edgeProperties.contains(localName)) {
-                        edgeProperties.add(localName);
-                    }
-                }
-            }
-            
-            // Fallback to default if no properties found
-            if (edgeProperties.isEmpty()) {
-                logger.warn("No edge properties found in ontology, falling back to 'used_library'");
-                edgeProperties.add("used_library");
-            }
-            
-            logger.debug("Discovered edge properties: " + edgeProperties.toString());
-            
-        } catch (Exception e) {
-            logger.error("Error analyzing ontology for edge properties: " + e.getMessage());
-            // Fallback to default
-            edgeProperties.clear();
-            edgeProperties.add("used_library");
-        } finally {
-            if (qexec != null) {
-                qexec.close();
-            }
-        }
-        
-        return edgeProperties;
-    }
-    
-    /**
-     * Extracts the local name from a URI, handling both # and / separators.
-     */
-    private String extractLocalName(String uri) {
-        if (uri == null || uri.isEmpty()) {
-            return null;
-        }
-        
-        // Try # separator first
-        int hashIndex = uri.lastIndexOf('#');
-        if (hashIndex != -1 && hashIndex < uri.length() - 1) {
-            return uri.substring(hashIndex + 1);
-        }
-        
-        // Try / separator
-        int slashIndex = uri.lastIndexOf('/');
-        if (slashIndex != -1 && slashIndex < uri.length() - 1) {
-            return uri.substring(slashIndex + 1);
-        }
-        
-        // Return the whole URI if no separators found
-        return uri;
-    }
-
-    /**
-     * Generates a SPARQL query to find ALL connections (both inbound and outbound) for a given URI.
-     * This provides a much richer graph visualization than just dependencies.
-     */
-    private String sparqlConnectionsQuery(String libUri) {
+    private String sparqlGenericEdgesQuery(String nodeUri) {
         try {
             StringBuilder sb = new StringBuilder();
-            sb.append("PREFIX c: <").append(namespaceWithSeparator()).append(">\n");
             sb.append("PREFIX owl: <http://www.w3.org/2002/07/owl#>\n");
             sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
             sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n");
             
-            // Ensure libUri is properly formatted as a full URI
-            String formattedLibUri = formatUri(libUri);
-            logger.debug("sparqlConnectionsQuery - original URI: " + libUri + " -> formatted: " + formattedLibUri);
-            
-            // Validate the formatted URI
-            if (formattedLibUri == null || formattedLibUri.equals("<>") || !formattedLibUri.startsWith("<") || !formattedLibUri.endsWith(">")) {
-                logger.error("Invalid formatted URI: " + formattedLibUri + " from original: " + libUri);
-                return createFallbackConnectionsQuery(libUri);
+            String formattedNodeUri = formatUri(nodeUri);
+            logger.debug("sparqlGenericEdgesQuery - formatted URI: " + formattedNodeUri);
+
+            if (formattedNodeUri == null || formattedNodeUri.equals("<>") || !formattedNodeUri.startsWith("<") || !formattedNodeUri.endsWith(">")) {
+                logger.error("Invalid formatted URI: " + formattedNodeUri + " from original: " + nodeUri);
+                return createFallbackGenericEdgesQuery(nodeUri);
             }
             
-            // Build a comprehensive query that finds ALL connected nodes with their types
-            sb.append("SELECT DISTINCT ?connectedNode ?relationshipType ?direction ?connectedType\n");
+            // Query for all object property relationships (edges)
+            sb.append("SELECT DISTINCT ?edgeProperty ?targetNode ?direction\n");
             sb.append("WHERE {\n");
             sb.append("  {\n");
-            sb.append("    # Outbound connections: this node -> other nodes\n");
-            sb.append("    ").append(formattedLibUri).append(" ?relationshipType ?connectedNode .\n");
+            sb.append("    # Outbound edges: this node -> other nodes\n");
+            sb.append("    ").append(formattedNodeUri).append(" ?edgeProperty ?targetNode .\n");
             sb.append("    BIND(\"outbound\" AS ?direction)\n");
-            sb.append("    # Filter out literal values and focus on URI resources\n");
-            sb.append("    FILTER(isURI(?connectedNode))\n");
-            sb.append("    # Exclude RDF/OWL system properties\n");
-            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"))\n");
-            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/2000/01/rdf-schema#\"))\n");
-            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/2002/07/owl#\"))\n");
-            sb.append("    # Get the type of the connected node for proper labeling\n");
-            sb.append("    OPTIONAL { ?connectedNode rdf:type ?connectedType }\n");
+            sb.append("    # Filter to only URI resources (nodes, not literals)\n");
+            sb.append("    FILTER(isURI(?targetNode))\n");
+            sb.append("    # Optionally filter out system properties if needed\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?edgeProperty), \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"))\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?edgeProperty), \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"))\n");
             sb.append("  }\n");
             sb.append("  UNION\n");
             sb.append("  {\n");
-            sb.append("    # Inbound connections: other nodes -> this node\n");
-            sb.append("    ?connectedNode ?relationshipType ").append(formattedLibUri).append(" .\n");
+            sb.append("    # Inbound edges: other nodes -> this node\n");
+            sb.append("    ?targetNode ?edgeProperty ").append(formattedNodeUri).append(" .\n");
             sb.append("    BIND(\"inbound\" AS ?direction)\n");
-            sb.append("    # Filter out literal subjects and focus on URI resources\n");
-            sb.append("    FILTER(isURI(?connectedNode))\n");
-            sb.append("    # Exclude RDF/OWL system properties\n");
-            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"))\n");
-            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/2000/01/rdf-schema#\"))\n");
-            sb.append("    FILTER(!STRSTARTS(STR(?relationshipType), \"http://www.w3.org/2002/07/owl#\"))\n");
-            sb.append("    # Get the type of the connected node for proper labeling\n");
-            sb.append("    OPTIONAL { ?connectedNode rdf:type ?connectedType }\n");
+            sb.append("    FILTER(isURI(?targetNode))\n");
+            sb.append("    # Optionally filter out system properties if needed\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?edgeProperty), \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"))\n");
+            sb.append("    FILTER(!STRSTARTS(STR(?edgeProperty), \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"))\n");
             sb.append("  }\n");
             sb.append("}\n");
             sb.append("LIMIT 100");
             
             String query = sb.toString();
-            logger.debug("Generated SPARQL connections query:\n" + query);
-            
-            // Basic validation of the generated query
-            if (!query.contains("SELECT") || !query.contains("WHERE")) {
-                logger.error("Generated invalid SPARQL query structure: " + query);
-                return createFallbackConnectionsQuery(libUri);
-            }
-            
+            logger.debug("Generated generic edges SPARQL query:\n" + query);
+
             return query;
         } catch (Exception e) {
-            logger.error("Error generating SPARQL connections query for URI: " + libUri, e);
-            return createFallbackConnectionsQuery(libUri);
+            logger.error("Error generating generic edges SPARQL query for URI: " + nodeUri, e);
+            return createFallbackGenericEdgesQuery(nodeUri);
         }
     }
     
     /**
-     * Creates a simple fallback SPARQL query for connections when the main query generation fails.
+     * Creates a fallback query for generic edges when the main query generation fails.
      */
-    private String createFallbackConnectionsQuery(String libUri) {
-        String formattedUri = formatUri(libUri);
+    private String createFallbackGenericEdgesQuery(String nodeUri) {
+        String formattedUri = formatUri(nodeUri);
         if (formattedUri == null || formattedUri.equals("<>")) {
-            formattedUri = "<" + namespaceWithSeparator() + "unknown>";
+            formattedUri = "<http://example.org/unknown>";
         }
         
-        return "PREFIX c: <" + namespaceWithSeparator() + ">\n" +
-               "SELECT DISTINCT ?connectedNode\n" +
+        return "SELECT DISTINCT ?edgeProperty ?targetNode ?direction\n" +
                "WHERE {\n" +
                "  {\n" +
-               "    " + formattedUri + " ?p ?connectedNode .\n" +
-               "    FILTER(isURI(?connectedNode))\n" +
+               "    " + formattedUri + " ?edgeProperty ?targetNode .\n" +
+               "    BIND(\"outbound\" AS ?direction)\n" +
+               "    FILTER(isURI(?targetNode))\n" +
                "  }\n" +
                "  UNION\n" +
                "  {\n" +
-               "    ?connectedNode ?p " + formattedUri + " .\n" +
-               "    FILTER(isURI(?connectedNode))\n" +
+               "    ?targetNode ?edgeProperty " + formattedUri + " .\n" +
+               "    BIND(\"inbound\" AS ?direction)\n" +
+               "    FILTER(isURI(?targetNode))\n" +
                "  }\n" +
                "}\n" +
                "LIMIT 50";
@@ -1123,11 +975,88 @@ public class AppGraph {
     }
     
     /**
-     * Find which edge property connected the source URI to the target dependency URI.
-     * This helps us show the actual property name in edge labels for any ontology.
-     * Uses dynamic discovery rather than hardcoded property names.
+     * Extracts the local name from a URI (the part after the last # or /).
+     * This is useful for creating human-readable labels from URIs.
      */
-    private String findConnectingProperty(String sourceUri, String targetUri, 
+    private String extractLocalName(String uri) {
+        if (uri == null || uri.isEmpty()) {
+            return "";
+        }
+
+        // Remove angle brackets if present
+        if (uri.startsWith("<") && uri.endsWith(">")) {
+            uri = uri.substring(1, uri.length() - 1);
+        }
+
+        // Try to find the last '#' first, then the last '/'
+        int hashIdx = uri.lastIndexOf('#');
+        int slashIdx = uri.lastIndexOf('/');
+
+        // Use whichever delimiter appears last
+        int idx = Math.max(hashIdx, slashIdx);
+
+        if (idx >= 0 && uri.length() > idx + 1) {
+            return uri.substring(idx + 1);
+        } else {
+            // Fallback to the full URI if no delimiter found
+            return uri;
+        }
+    }
+
+    /**
+     * Get edge properties (ObjectProperties) from the ontology.
+     * This method dynamically discovers object properties from the loaded RDF model.
+     */
+    private ArrayList<String> getEdgePropertiesFromOntology() {
+        ArrayList<String> edgeProperties = new ArrayList<>();
+        QueryExecution qexec = null;
+
+        try {
+            // Query to find all object properties in the ontology
+            String sparql = "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n" +
+                           "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n" +
+                           "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" +
+                           "SELECT DISTINCT ?property WHERE {\n" +
+                           "  { ?property a owl:ObjectProperty }\n" +
+                           "  UNION\n" +
+                           "  { ?s ?property ?o . FILTER(isURI(?o)) }\n" +
+                           "} LIMIT 100";
+
+            Query query = QueryFactory.create(sparql);
+            qexec = QueryExecutionFactory.create(query, this.model);
+            ResultSet results = qexec.execSelect();
+
+            while (results.hasNext()) {
+                QuerySolution solution = results.nextSolution();
+                Resource property = solution.getResource("property");
+                if (property != null) {
+                    String propertyUri = property.getURI();
+                    String localName = extractLocalName(propertyUri);
+                    if (localName != null && !localName.isEmpty()) {
+                        edgeProperties.add(localName);
+                    }
+                }
+            }
+
+            logger.info("Found " + edgeProperties.size() + " edge properties from ontology");
+
+        } catch (Exception e) {
+            logger.error("Error getting edge properties from ontology", e);
+            // Return some default properties as fallback
+            edgeProperties.add("uses");
+            edgeProperties.add("used_by");
+            edgeProperties.add("depends_on");
+            edgeProperties.add("dependency_of");
+        } finally {
+            if (qexec != null) {
+                qexec.close();
+            }
+        }
+
+        return edgeProperties;
+    }
+
+    private String findConnectingProperty(String sourceUri, String targetUri,
                                         ArrayList<String> edgeProperties, 
                                         DependenciesQueryResult dqr) {
         try {
@@ -1148,3 +1077,4 @@ public class AppGraph {
     }
 
 }
+

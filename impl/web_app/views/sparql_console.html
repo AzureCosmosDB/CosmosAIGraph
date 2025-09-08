@@ -68,7 +68,7 @@
     </div>
     <div id="viz_wrapper" class="container-fluid p-0" style="display:none;">
       <h5 style="padding-left: 12px;">{{ visualization_message }}</h5>
-      <div class="bg-dark" id="d3viz" name="d3viz" style="width:100%; height:800px; overflow:auto;">
+      <div class="bg-dark" id="d3viz" name="d3viz" style="width:100%; height:800px; overflow:auto;" data-debug="true">
         <svg id="graph-svg" style="width:100%; height:100%; display:block;" preserveAspectRatio="xMidYMid meet">
           <g id="graph-container"></g>
         </svg>
@@ -221,7 +221,7 @@
         var bom_obj = JSON.parse(bom_json);
         console.log('BOM data parsed successfully');
         console.log('BOM object keys:', Object.keys(bom_obj));
-
+        
         // Clear any debug info; we'll render only if nodes exist
         d3.select("#graph-svg").selectAll("*").remove();
 
@@ -285,6 +285,7 @@
                   edge["tooltipText"] = richDep.tooltipText || "";
                   edge["properties"] = richDep.properties || {};
                   edge["type"] = richDep.type || "connection";
+                  edge["isLateralConnection"] = richDep.isLateralConnection || false;
                   
                   // Extract specific engineering properties for enhanced visualization
                   if (richDep.properties) {
@@ -452,131 +453,260 @@
         // Create nodes array from the set with depth information
         console.log('=== Creating nodes array with depth information ===');
         console.log('BOM object structure:', Object.keys(bom_obj));
-        console.log('BOM nodes keys:', bom_obj.hasOwnProperty('nodes') ? Object.keys(bom_obj['nodes']).slice(0, 5) : 'No nodes property');
+        
+        // First, let's examine the actual structure of the BOM data
+        if (bom_obj.hasOwnProperty('nodes')) {
+          const firstNodeKey = Object.keys(bom_obj['nodes'])[0];
+          if (firstNodeKey) {
+            console.log('Sample node from BOM:', firstNodeKey, '=', bom_obj['nodes'][firstNodeKey]);
+          }
+        }
+        
+        // Create a map of all node data from bom_obj for easy lookup
+        const nodeDataMap = new Map();
+        
+        if (bom_obj.hasOwnProperty('nodes')) {
+          const bomNodes = bom_obj['nodes'];
+          Object.keys(bomNodes).forEach(nodeKey => {
+            const nodeData = bomNodes[nodeKey];
+            
+            // The node key might be the full URI
+            let cleanName = nodeKey;
+            if (nodeKey.includes('#')) {
+              cleanName = nodeKey.split('#').pop();
+            }
+            
+            // Also check if there's a name property
+            if (nodeData.name) {
+              let nodeName = nodeData.name;
+              if (nodeName.includes('#')) {
+                nodeName = nodeName.split('#').pop();
+              }
+              // Use the name from the property if different
+              if (nodeName !== cleanName) {
+                nodeDataMap.set(nodeName, nodeData);
+              }
+            }
+            
+            console.log(`Storing node data for ${cleanName}:`, {
+              hasProperties: !!nodeData.properties,
+              propertyCount: nodeData.properties ? Object.keys(nodeData.properties).length : 0,
+              properties: nodeData.properties,
+              fullData: nodeData
+            });
+            
+            nodeDataMap.set(cleanName, nodeData);
+          });
+        }
+        
+        console.log('Node data map size:', nodeDataMap.size);
+        console.log('Node data map keys:', Array.from(nodeDataMap.keys()).slice(0, 5));
         
         nodes_set.forEach(s => {
           var n = {};
           n["name"] = s;
           n["id"] = s;
-          console.log('Creating node with ID:', s);
+          console.log('\nCreating node with ID:', s);
           n["type"] = "vertex";
           n["adjCount"] = 0;
-
-          // Find the depth and additional attributes for this node from the original data
           n["depth"] = 0; // default depth
           n["attributes"] = {}; // Store additional attributes
           
-          console.log(`\n=== SEARCHING FOR NODE: ${s} ===`);
+          console.log(`=== SEARCHING FOR NODE: ${s} ===`);
+          
+          // Look up node data from our map
+          const nodeData = nodeDataMap.get(s);
+          
+          if (nodeData) {
+            console.log(`*** FOUND MATCHING NODE DATA FOR ${s} ***`);
+            console.log('Raw node_data:', JSON.stringify(nodeData, null, 2));
             
+            // Set depth if available
+            if (nodeData.depth !== undefined) {
+              n["depth"] = nodeData.depth;
+            }
+            
+            // Extract properties - handle different possible structures
+            let properties = {};
+            
+            // Check for properties object
+            if (nodeData.properties && typeof nodeData.properties === 'object') {
+              properties = nodeData.properties;
+              console.log('Found properties object:', Object.keys(properties));
+            }
+            // Check if properties are at the root level of nodeData
+            else {
+              console.log('No properties object, checking root level attributes');
+              // Copy all non-standard fields as properties
+              Object.keys(nodeData).forEach(key => {
+                if (!['name', 'depth', 'dependencies', 'richDependencies', 'uri'].includes(key)) {
+                  properties[key] = nodeData[key];
+                }
+              });
+              
+              if (Object.keys(properties).length > 0) {
+                console.log('Found root-level properties:', Object.keys(properties));
+              }
+            }
+            
+            // Filter and add properties as attributes
+            Object.keys(properties).forEach(prop => {
+              // Filter out edge-related properties
+              const edgeProps = ['StartNode', 'EndNode', 'DirectConnection', 'Piping', 'Signal', 
+                                'ConnectToProcess', 'Edge', 'connection', 'depends on', 
+                                'source', 'target', 'weight', 'label'];
+              const isEdgeType = edgeProps.includes(prop) || 
+                                prop.includes('Connection') || 
+                                prop === 'Piping' || 
+                                prop === 'Signal' ||
+                                prop === 'ConnectToProcess';
+              
+              if (!isEdgeType) {
+                n["attributes"][prop] = properties[prop];
+                console.log(`Added property: ${prop} = ${properties[prop]}`);
+              } else {
+                console.log(`Filtered out edge-related property: ${prop}`);
+              }
+            });
+            
+            console.log(`Final attributes for ${s}:`, n["attributes"]);
+            console.log(`Attribute count for ${s}:`, Object.keys(n["attributes"]).length);
+          } else {
+            console.log(`No matching node data found for ${s} in BOM`);
+            
+            // Try to find node data by searching through all BOM nodes with different matching strategies
             if (bom_obj.hasOwnProperty('nodes')) {
               var node_keys = Object.keys(bom_obj['nodes']);
-              const directProperties = ['DrawingID', 'DrawingNumber', 'ItemTag', 'InternalDiameter', 'Subtype', 'Type'];
+              console.log(`Searching through ${node_keys.length} nodes for alternate match`);
               
               for (let i = 0; i < node_keys.length; i++) {
                 var node_key = node_keys[i];
                 var node_data = bom_obj['nodes'][node_key];
-                var clean_name = node_data.name || node_key;
-                if (clean_name.includes('#')) {
-                  clean_name = clean_name.split('#').pop();
-                }
                 
-                console.log(`Checking node_key: ${node_key}, clean_name: ${clean_name}, looking for: ${s}`);
+                // Check various possible name formats
+                var possible_names = [
+                  node_key,
+                  node_key.split('#').pop(),
+                  node_data.name,
+                  node_data.name ? node_data.name.split('#').pop() : null,
+                  node_data.uri,
+                  node_data.uri ? node_data.uri.split('#').pop() : null
+                ].filter(n => n); // Remove null values
                 
-                if (clean_name === s) {
-                  console.log(`*** FOUND MATCHING NODE DATA FOR ${s} ***`);
-                  console.log('Raw node_data:', node_data);
-                  console.log('Available keys on node_data:', Object.keys(node_data));
+                if (possible_names.includes(s)) {
+                  console.log(`Found node data via alternate lookup for ${s} using key ${node_key}`);
                   
                   if (node_data.depth !== undefined) {
                     n["depth"] = node_data.depth;
-                    console.log(`Set depth to ${node_data.depth}`);
                   }
                   
-                  // Look for properties directly on the node_data
-                  console.log('Checking for direct properties on node_data...');
-                  directProperties.forEach(prop => {
-                    if (node_data.hasOwnProperty(prop)) {
-                      n["attributes"][prop] = node_data[prop];
-                      console.log(`FOUND direct property: ${prop} = ${node_data[prop]}`);
-                    } else {
-                      console.log(`Node ${s}: Direct property ${prop} not found`);
+                  // Extract properties
+                  let properties = {};
+                  if (node_data.properties && typeof node_data.properties === 'object') {
+                    properties = node_data.properties;
+                  } else {
+                    // Copy root-level properties
+                    Object.keys(node_data).forEach(key => {
+                      if (!['name', 'depth', 'dependencies', 'richDependencies', 'uri'].includes(key)) {
+                        properties[key] = node_data[key];
+                      }
+                    });
+                  }
+                  
+                  // Add filtered properties
+                  Object.keys(properties).forEach(prop => {
+                    const edgeProps = ['StartNode', 'EndNode', 'DirectConnection', 'Piping', 'Signal', 
+                                      'ConnectToProcess', 'Edge', 'connection', 'depends on', 
+                                      'source', 'target', 'weight', 'label'];
+                    const isEdgeType = edgeProps.includes(prop) || 
+                                      prop.includes('Connection') || 
+                                      prop === 'Piping' || 
+                                      prop === 'Signal' ||
+                                      prop === 'ConnectToProcess';
+                    
+                    if (!isEdgeType) {
+                      n["attributes"][prop] = properties[prop];
                     }
                   });
                   
-                  // Look for properties in a properties sub-object
-                  if (node_data.properties) {
-                    console.log('Found properties sub-object:', Object.keys(node_data.properties));
-                    directProperties.forEach(prop => {
-                      if (node_data.properties.hasOwnProperty(prop) && !n["attributes"][prop]) {
-                        n["attributes"][prop] = node_data.properties[prop];
-                        console.log(`FOUND in properties: ${prop} = ${node_data.properties[prop]}`);
-                      }
-                    });
-                  } else {
-                    console.log(`Node ${s}: No properties object found`);
-                  }
-                  
-                  // Look for properties in richDependencies (this is where connection properties are stored)
-                  if (node_data.richDependencies) {
-                    console.log(`Node ${s}: richDependencies exists with ${node_data.richDependencies.length} items`);
-                    
-                    // Try to find properties from the first rich dependency as an example
-                    if (node_data.richDependencies.length > 0) {
-                      console.log(`Node ${s}: RichDep 0:`, node_data.richDependencies[0]);
-                      if (node_data.richDependencies[0].properties) {
-                        console.log(`Node ${s}: RichDep 0 has properties with keys:`, Object.keys(node_data.richDependencies[0].properties));
-                        
-                        // Check if this is a connection (has StartNode/EndNode)
-                        const richDepProps = node_data.richDependencies[0].properties;
-                        if (richDepProps.StartNode || richDepProps.EndNode) {
-                          console.log(`Node ${s}: Skipping richDep 0 - has StartNode/EndNode (connection)`);
-                        } else {
-                          // This might be actual node properties
-                          directProperties.forEach(prop => {
-                            if (richDepProps.hasOwnProperty(prop) && !n["attributes"][prop]) {
-                              n["attributes"][prop] = richDepProps[prop];
-                              console.log(`FOUND in richDep properties: ${prop} = ${richDepProps[prop]}`);
-                            }
-                          });
-                        }
-                      }
-                    }
-                  }
-                  
-                  console.log(`Final attributes for ${s}:`, n["attributes"]);
+                  console.log(`Added ${Object.keys(n["attributes"]).length} attributes via alternate lookup`);
                   break;
                 }
               }
-              
-              // ENHANCED: If no attributes found in BOM, provide fallback information
-              if (Object.keys(n["attributes"]).length === 0) {
-                console.log(`*** NO ATTRIBUTES FOUND FOR ${s} IN BOM - using fallback display ***`);
-                
-                // Try to extract any shared properties from richDependencies (like DrawingNumber)
-                if (node_data && node_data.richDependencies && node_data.richDependencies.length > 0) {
-                  const firstRichDep = node_data.richDependencies[0];
-                  if (firstRichDep.properties) {
-                    // Extract common properties that appear in connections
-                    if (firstRichDep.properties.DrawingNumber) {
-                      n["attributes"]["DrawingNumber"] = firstRichDep.properties.DrawingNumber;
-                    }
-                    if (firstRichDep.properties.Type) {
-                      n["attributes"]["Type"] = firstRichDep.properties.Type;
-                    }
-                  }
-                }
-                
-                console.log(`Applied fallback attributes for ${s}:`, n["attributes"]);
-              }
             }
+          }
           
-          console.log('Node created:', s, 'with final depth =', n["depth"], 'and attributes:', Object.keys(n["attributes"]));
+          // Double-check attributes are still there before pushing
+          console.log(`Before push - Node ${s} attributes:`, n["attributes"], 'count:', Object.keys(n["attributes"]).length);
           nodes.push(n);
         });
+
+        // After processing nodes and regular edges, add lateral connections
+        if (bom_obj.hasOwnProperty('lateral_connections') && Array.isArray(bom_obj.lateral_connections)) {
+          console.log('Found lateral_connections:', bom_obj.lateral_connections.length);
+          
+          bom_obj.lateral_connections.forEach(conn => {
+            // Ensure both nodes exist in our nodes_set
+            if (conn.source && conn.target) {
+              const sourceName = conn.source.includes('#') ? conn.source.split('#').pop() : conn.source;
+              const targetName = conn.target.includes('#') ? conn.target.split('#').pop() : conn.target;
+              
+              // Add nodes if they don't exist
+              if (!nodes_set.has(sourceName)) {
+                nodes_set.add(sourceName);
+                // Add a basic node for this lateral connection node
+                nodes.push({
+                  name: sourceName,
+                  id: sourceName,
+                  type: "vertex",
+                  adjCount: 0,
+                  depth: conn.properties?.sourceDepth || 999, // Use high depth for lateral nodes
+                  attributes: {}
+                });
+              }
+              
+              if (!nodes_set.has(targetName)) {
+                nodes_set.add(targetName);
+                // Add a basic node for this lateral connection node
+                nodes.push({
+                  name: targetName,
+                  id: targetName,
+                  type: "vertex",
+                  adjCount: 0,
+                  depth: conn.properties?.targetDepth || 999, // Use high depth for lateral nodes
+                  attributes: {}
+                });
+              }
+              
+              // Create lateral edge
+              const lateralEdge = {
+                source: sourceName,
+                target: targetName,
+                weight: 0.8,
+                label: conn.properties?.predicate || "lateral connection",
+                isLateralConnection: true,
+                properties: conn.properties || {}
+              };
+              
+              // Check if this edge doesn't already exist
+              const edgeExists = edges.some(e => 
+                (e.source === sourceName && e.target === targetName) ||
+                (e.source === targetName && e.target === sourceName)
+              );
+              
+              if (!edgeExists) {
+                edges.push(lateralEdge);
+                console.log('Added lateral connection:', sourceName, '->', targetName);
+              }
+            }
+          });
+        }
 
         console.log('=== BOM Parsing Summary ===');
         console.log('Total nodes:', nodes.length);
         console.log('Total edges:', edges.length);
+        const lateralEdges = edges.filter(e => e.isLateralConnection);
+        console.log('Lateral connections:', lateralEdges.length);
         
         // Debug edge connectivity
         console.log('=== Edge Connectivity Debug ===');
@@ -589,7 +719,8 @@
               source: edge.source,
               target: edge.target,
               sourceExists: nodeIds.has(edge.source),
-              targetExists: nodeIds.has(edge.target)
+              targetExists: nodeIds.has(edge.target),
+              isLateral: edge.isLateralConnection || false
             });
           }
         });
@@ -605,75 +736,17 @@
         if (missingTargets.length > 0) {
           console.log('Example missing target:', missingTargets[0].target);
         }
-        
-        // Continue with visualization if we have content
-        if (nodes.length > 0 || edges.length > 0) {
-          console.log('Proceeding with D3.js visualization');
-          
-          // Show the wrapper div for visualization
-          const wrapper = document.getElementById('viz_wrapper');
-          if (wrapper) wrapper.style.display = 'block';
-
-          /* COMMENTED OUT - OLD VISUALIZATION SETUP THAT CONFLICTS WITH NEW ONE
-          // Initial cleanup and setup
-          const svg = d3.select("#graph-svg");
-          const container = d3.select("#graph-container");
-          
-          // Clear any existing content
-          container.selectAll("*").remove();
-
-          // Get SVG dimensions
-          const svgElement = document.getElementById("graph-svg");
-          const svgRect = svgElement.getBoundingClientRect();
-          const width = svgRect.width;
-          const height = svgRect.height;
-          
-          console.log('SVG dimensions:', width, 'x', height);
-
-          // Initialize the D3.js force simulation
-          const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(edges).id(d => d.id).distance(200))
-            .force("charge", d3.forceManyBody().strength(-1000))
-            .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(40));
-
-          END OF OLD VISUALIZATION SETUP COMMENT */
-        } else {
-          console.log('No nodes or edges found - hiding visualization');
-          const wrapper = document.getElementById('viz_wrapper');
-          if (wrapper) wrapper.style.display = 'none';
-        }
 
         console.log('=== Final node depth summary ===');
         nodes.forEach(node => {
           console.log('Node:', node.name, '-> depth:', node.depth);
         });
 
-        // Generate consistent colors for node types with depth-based intensity
-        function getNodeColor(nodeName, depth) {
-          // Create a simple hash function for consistent colors
-          let hash = 0;
-          for (let i = 0; i < nodeName.length; i++) {
-            const char = nodeName.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
-          }
-
-          // Generate a color based on the hash
-          const hue = Math.abs(hash) % 360;
-
-          // Calculate lightness based on depth - 0 is brightest, higher depth is dimmer
-          // Start at 70% lightness for depth 0, decrease by 10% per depth level, minimum 20%
-          const lightness = Math.max(20, 70 - (depth * 10));
-
-          return `hsl(${hue}, 70%, ${lightness}%)`;
-        }
-
         console.log('Final processing results:');
         console.log('- Nodes count:', nodes.length);
         console.log('- Edges count:', edges.length);
         console.log('- Node names:', nodes.map(n => n.name));
-        console.log('- Edge connections:', edges.map(e => e.source + ' -> ' + e.target));
+        console.log('- Edge connections:', edges.map(e => `${e.source} -> ${e.target} (${e.isLateralConnection ? 'lateral' : 'direct'})`));
 
         // Always try to create visualization, even with just nodes
         if (nodes.length > 0) {
@@ -709,6 +782,20 @@
               .append('path')
               .attr("d", 'M 0 0 12 6 0 12 3 6')
               .style("fill", "#666666");
+            
+            // Add a different marker for lateral connections
+            svg.select('defs')
+              .append('marker')
+              .attr("id", "TriangleLateral")
+              .attr("refX", 12)
+              .attr("refY", 6)
+              .attr("markerUnits", 'userSpaceOnUse')
+              .attr("markerWidth", 12)
+              .attr("markerHeight", 18)
+              .attr("orient", 'auto')
+              .append('path')
+              .attr("d", 'M 0 0 12 6 0 12 3 6')
+              .style("fill", "#999999");
           }
 
           // Create a copy of nodes and edges for D3
@@ -722,6 +809,7 @@
             tooltipText: d.tooltipText || "",
             properties: d.properties || {},
             type: d.type || "connection",
+            isLateralConnection: d.isLateralConnection || false,
             itemTag: d.itemTag || "",
             nominalDiameter: d.nominalDiameter || "",
             flowDir: d.flowDir || "",
@@ -746,6 +834,8 @@
           console.log("Graph nodes for D3:", graphNodes);
           console.log("Graph edges for D3 (deduplicated):", graphEdges);
           console.log("Original edges count:", allGraphEdges.length, "Deduplicated count:", graphEdges.length);
+          const lateralCount = graphEdges.filter(e => e.isLateralConnection).length;
+          console.log("Lateral edges count:", lateralCount);
           
           // Debug: Check edge source/target types
           if (graphEdges.length > 0) {
@@ -754,7 +844,7 @@
           }
           
           // Debug: Log edge source-target pairs to check for duplicates
-          const edgePairs = graphEdges.map(e => `${e.source} → ${e.target} (${e.displayLabel || e.label})`);
+          const edgePairs = graphEdges.map(e => `${e.source} → ${e.target} (${e.isLateralConnection ? 'LATERAL' : e.displayLabel || e.label})`);
           console.log("Final edge pairs:", edgePairs);
 
           // Set up the simulation
@@ -765,7 +855,10 @@
 
           // Add link force only if we have edges
           if (graphEdges.length > 0) {
-            simulation.force("link", d3.forceLink(graphEdges).id(d => d.id).distance(100));
+            // Different distances for lateral vs direct connections
+            simulation.force("link", d3.forceLink(graphEdges)
+              .id(d => d.id)
+              .distance(d => d.isLateralConnection ? 150 : 100));
           }
 
           // Create links only if we have edges
@@ -778,21 +871,27 @@
               .data(graphEdges)
               .enter().append("line")
               .attr("class", "link")
-              .style("stroke", "#666666")
-              .style("stroke-width", 2)
-              .attr("marker-end", "url(#Triangle)");
+              .style("stroke", d => d.isLateralConnection ? "#ff9999" : "#666666")
+              .style("stroke-width", d => d.isLateralConnection ? 1.5 : 2)
+              .style("stroke-dasharray", d => d.isLateralConnection ? "5,5" : "none")
+              .style("opacity", d => d.isLateralConnection ? 0.6 : 1)
+              .attr("marker-end", d => d.isLateralConnection ? "url(#TriangleLateral)" : "url(#Triangle)");
 
             // Add tooltips to edges showing rich dependency information
             link.append("title")
               .text(d => {
+                // Add lateral indicator
+                const lateralPrefix = d.isLateralConnection ? "[LATERAL] " : "";
                 // Use short displayLabel for cleaner tooltips
                 if (d.displayLabel && d.displayLabel !== "") {
-                  return d.displayLabel;
+                  return lateralPrefix + d.displayLabel;
                 } else if (d.edgeLabel && d.edgeLabel !== "") {
-                  return d.edgeLabel;
+                  return lateralPrefix + d.edgeLabel;
+                } else if (d.label) {
+                  return lateralPrefix + d.label;
                 } else {
                   // Fallback to simple connection label
-                  return `${d.source} → ${d.target}`;
+                  return `${lateralPrefix}${d.source} → ${d.target}`;
                 }
               });
 
@@ -804,13 +903,16 @@
               .enter().append("text")
               .attr("class", "link-label")
               .style("font-size", "8px")
-              .style("fill", "#4a5568")
+              .style("fill", d => d.isLateralConnection ? "#ff6666" : "#4a5568")
               .style("text-anchor", "middle")
               .style("pointer-events", "none")
               .style("text-shadow", "none")
+              .style("font-style", d => d.isLateralConnection ? "italic" : "normal")
               .text(d => {
                 // Extract clean connection type without arrows or prefixes
-                if (d.displayLabel && d.displayLabel !== "") {
+                if (d.isLateralConnection) {
+                  return "lateral";
+                } else if (d.displayLabel && d.displayLabel !== "") {
                   // Remove arrows and clean up the label
                   return d.displayLabel.replace(/[←→↔]/g, '').trim();
                 } else if (d.label && d.label !== "depends on" && d.label !== "connects") {
@@ -818,7 +920,7 @@
                 } else if (d.type && d.type !== "connection") {
                   return d.type;
                 } else {
-                  return "Connection";
+                  return "";
                 }
               });
           }
@@ -854,62 +956,145 @@
             const textElement = d3.select(this);
             const lines = [];
             
+            console.log(`\n=== Creating labels for node ${d.name} ===`);
+            console.log(`Node object:`, d);
+            console.log(`Attributes object:`, d.attributes);
+            console.log(`Attribute keys:`, d.attributes ? Object.keys(d.attributes) : 'No attributes');
+            
             // First line: Node name (more generous truncation)
             const displayName = d.name.length > 32 ? d.name.substring(0, 32) + '...' : d.name;
             lines.push({ text: displayName, opacity: 1.0 });
             
-            // Add up to 3 additional attribute lines (just values, no keys)
-            if (d.attributes && Object.keys(d.attributes).length > 0) {
+            // Add up to 3 additional attribute lines
+            if (d.attributes && typeof d.attributes === 'object') {
               const attrKeys = Object.keys(d.attributes);
-              const interestingAttributes = ["ItemTag", "DrawingNumber", "DrawingID", "Type", "Subtype", "InternalDiameter", "TagPrefix", "TagSequenceNo"];
+              console.log(`Node ${d.name} has ${attrKeys.length} attribute keys:`, attrKeys);
               
-              // Prioritize TTL-based attributes first, then add others
-              const sortedKeys = [...attrKeys].sort((a, b) => {
-                const aIndex = interestingAttributes.indexOf(a);
-                const bIndex = interestingAttributes.indexOf(b);
+              // Special handling for selfProperties
+              let propertiesToShow = {};
+              
+              // Check if we have selfProperties object
+              if (d.attributes.selfProperties && typeof d.attributes.selfProperties === 'object') {
+                console.log(`Node ${d.name} has selfProperties:`, d.attributes.selfProperties);
+                
+                // Merge selfProperties into propertiesToShow
+                Object.assign(propertiesToShow, d.attributes.selfProperties);
+              }
+              
+              // Add other properties (excluding visited and selfProperties)
+              attrKeys.forEach(key => {
+                if (key !== 'visited' && key !== 'selfProperties') {
+                  propertiesToShow[key] = d.attributes[key];
+                }
+              });
+              
+              console.log(`Properties to show for ${d.name}:`, propertiesToShow);
+              
+              // Define priority attributes
+              const priorityAttributes = ["ItemTag", "DrawingNumber", "DrawingID", "Type", "Subtype", 
+                                        "InternalDiameter", "NominalDiameter", "TagPrefix", "TagSequenceNo", 
+                                        "Symbol", "FlowDir", "ID", "RunID", "XCoordinate", "YCoordinate",
+                                        "MeasuredVariableCode", "LoopFunction", "TagSuffix"];
+              
+
+              // Sort keys by priority
+              const propKeys = Object.keys(propertiesToShow);
+              const sortedKeys = [...propKeys].sort((a, b) => {
+                const aIndex = priorityAttributes.indexOf(a);
+                const bIndex = priorityAttributes.indexOf(b);
                 if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
                 if (aIndex !== -1) return -1;
                 if (bIndex !== -1) return 1;
                 return a.localeCompare(b);
               });
               
+              console.log(`Sorted property keys for ${d.name}:`, sortedKeys);
+              
               // Take up to 3 attributes
-              for (let i = 0; i < Math.min(3, sortedKeys.length); i++) {
+              let addedCount = 0;
+              for (let i = 0; i < sortedKeys.length && addedCount < 3; i++) {
                 const key = sortedKeys[i];
-                const value = d.attributes[key];
-                if (value && value.toString().trim() !== "") {
-                  let displayValue = value.toString();
-                  
-                  // For key TTL properties, show them cleanly
-                  if (["ItemTag", "DrawingNumber", "DrawingID", "InternalDiameter"].includes(key)) {
-                    displayValue = displayValue.length > 25 ? displayValue.substring(0, 25) + '...' : displayValue;
-                  }
-                  // For other properties, add the key prefix if value is short
-                  else if (displayValue.length < 10) {
-                    displayValue = `${key}: ${displayValue}`;
-                  }
-                  // Only truncate if really long (> 25 chars)
-                  else if (displayValue.length > 25) {
+                const value = propertiesToShow[key];
+                
+                // Skip empty/null/undefined values
+                if (value === undefined || value === null || value === '') {
+                  console.log(`Skipping empty property ${key}`);
+                  continue;
+                }
+                
+                const stringValue = value.toString().trim();
+                if (stringValue === '') {
+                  console.log(`Skipping empty string property ${key}`);
+                  continue;
+                }
+                
+                let displayValue = stringValue;
+                console.log(`Processing property ${key} = "${displayValue}" for node ${d.name}`);
+                
+                // Format based on key type
+                if (["ItemTag", "DrawingNumber", "DrawingID", "ID", "RunID"].includes(key)) {
+                  // These are usually meaningful IDs - show as-is but truncate if needed
+                  if (displayValue.length > 25) {
                     displayValue = displayValue.substring(0, 25) + '...';
                   }
-                  
-                  // Each line gets progressively dimmer: 1.0, 0.8, 0.6, 0.4
-                  const opacity = 1.0 - ((i + 1) * 0.2);
-                  lines.push({ text: displayValue, opacity: opacity });
+                } else if (["Type", "Subtype"].includes(key)) {
+                  // Always show key for Type/Subtype for clarity
+                  displayValue = `${key}: ${displayValue}`;
+                  if (displayValue.length > 25) {
+                    displayValue = displayValue.substring(0, 25) + '...';
+                  }
+                } else if (["InternalDiameter", "NominalDiameter", "XCoordinate", "YCoordinate"].includes(key)) {
+                  // Numeric values - show with key
+                  const numValue = parseFloat(displayValue);
+                  if (!isNaN(numValue)) {
+                    // Format numbers nicely
+                    displayValue = `${key}: ${numValue}`;
+                  } else {
+                    displayValue = `${key}: ${displayValue}`;
+                  }
+                  if (displayValue.length > 25) {
+                    displayValue = displayValue.substring(0, 25) + '...';
+                  }
+                } else {
+                  // For other attributes, include key if value is short or unclear
+                  if (displayValue.length < 10 || !displayValue.match(/^[A-Za-z0-9\-_]+$/)) {
+                    displayValue = `${key}: ${displayValue}`;
+                  }
+                  if (displayValue.length > 25) {
+                    displayValue = displayValue.substring(0, 25) + '...';
+                  }
                 }
+                
+                // Each line gets progressively dimmer
+                const opacity = 1.0 - ((addedCount + 1) * 0.2);
+                lines.push({ text: displayValue, opacity: opacity });
+                addedCount++;
+                console.log(`Added line ${addedCount} for ${d.name}: "${displayValue}" with opacity ${opacity}`);
               }
+              
+              if (addedCount === 0 && sortedKeys.length > 0) {
+                console.warn(`No valid properties found to display for node ${d.name} despite having ${sortedKeys.length} property keys`);
+              }
+            } else {
+              console.warn(`No attributes object found for node ${d.name}`);
             }
+            
+            console.log(`Total lines to display for ${d.name}:`, lines.length, 'Lines:', lines);
             
             // Create tspan elements for each line
             lines.forEach((line, index) => {
-              textElement.append("tspan")
+              const tspan = textElement.append("tspan")
                 .attr("x", 8) // Keep consistent x position
                 .attr("dy", index === 0 ? "0" : "1.1em") // Line spacing
                 .style("font-weight", index === 0 ? "bold" : "normal")
                 .style("font-size", index === 0 ? "10px" : "9px") // Slightly smaller for attributes
                 .style("opacity", line.opacity) // Progressive dimming
                 .text(line.text);
+              
+              console.log(`Created tspan ${index} for ${d.name}: "${line.text}"`);
             });
+            
+            console.log(`=== Finished creating ${lines.length} text lines for node ${d.name} ===\n`);
           });
 
           // Add zoom behavior

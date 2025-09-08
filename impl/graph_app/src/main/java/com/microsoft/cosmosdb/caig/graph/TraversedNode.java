@@ -1,68 +1,86 @@
 package com.microsoft.cosmosdb.caig.graph;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Instances of this class represent a Library that is traversed in a
+ * Instances of this class represent a node that is traversed in a
  * Bill-of-Material (BOM) traversal.  Instances are created in AppGraph
  * and returned within a SparqlBomQueryResponse to the Web App.
  *
  * Enhanced to support rich dependency information from TTL properties.
  *
- * Chris Joakim, Microsoft, 2025
+ * Chris Joakim, Aleksey Savateyev
  */
 
 @Data
-public class TraversedLib {
+public class TraversedNode {
 
     private String uri;
-    private String name;
+    private String name; // A.S. Extracting name from URI
     private boolean visited;
     private int depth;
     private ArrayList<String> dependencies; // Keep for backwards compatibility
-    private ArrayList<RichDependency> richDependencies; // New rich dependency objects
-    //private DependenciesQueryResult dependenciesQueryResult;
+    private ArrayList<RichDependency> richDependencies; // A.S. Rich dependency objects to support edge labels
+    private Map<String, Object> selfProperties; // Properties of this node itself
 
-    public TraversedLib(String uri, int depth) {
+    public TraversedNode(String uri, int depth) {
+
         this.uri = uri;
         this.depth = depth;
         this.visited = false;
-        dependencies = new ArrayList<String>();
-        richDependencies = new ArrayList<RichDependency>();
-        int idx = this.uri.indexOf('#');
-        this.name = this.uri.substring(idx + 1);
-    }
-    
-    /**
-     * Add a rich dependency with TTL properties
-     */
-    public void addRichDependency(RichDependency richDep) {
-        if (richDep != null) {
-            this.richDependencies.add(richDep);
-            // Also add to the legacy dependencies list for backwards compatibility
-            if (richDep.getUri() != null) {
-                this.dependencies.add(richDep.getUri());
-            }
-        }
-    }
-    
-    /**
-     * Set both rich and legacy dependencies
-     */
-    public void setRichDependencies(ArrayList<RichDependency> richDeps) {
-        this.richDependencies = richDeps != null ? richDeps : new ArrayList<RichDependency>();
-        
-        // Update legacy dependencies list for backwards compatibility
-        this.dependencies.clear();
-        for (RichDependency richDep : this.richDependencies) {
-            if (richDep.getUri() != null) {
-                this.dependencies.add(richDep.getUri());
-            }
+        this.dependencies = new ArrayList<String>();
+        this.richDependencies = new ArrayList<RichDependency>(); // A.S.
+        this.selfProperties = new HashMap<String, Object>();
+
+        // A.S. Extract name from URI
+        // Try to find the last '#' first, then the last '/'
+        int hashIdx = this.uri.lastIndexOf('#');
+        int slashIdx = this.uri.lastIndexOf('/');
+
+        // Use whichever delimiter appears last
+        int idx = Math.max(hashIdx, slashIdx);
+
+        if (idx >= 0 && this.uri.length() > idx + 1) {
+            this.name = this.uri.substring(idx + 1);
+        } else {
+            // Fallback to the full URI if no delimiter found
+            this.name = this.uri;
         }
     }
 
+    // A.S.
+    public void addRichDependency(RichDependency richDep) {
+        this.richDependencies.add(richDep);
+        this.dependencies.add(richDep.getUri());
+    }
+
+    // A.S.
+    public void setRichDependencies(ArrayList<RichDependency> richDeps) {
+        this.richDependencies = richDeps;
+
+        // Update dependencies to be in sync with rich dependencies
+        this.dependencies.clear();
+        for (RichDependency rd : richDeps) {
+            this.dependencies.add(rd.getUri());
+        }
+    }
+
+    /**
+     * Get a property value from the node's own properties
+     */
+    public Object getProperty(String key) {
+        return selfProperties.get(key);
+    }
+
+    /**
+     * Get a string property value, with null handling
+     */
+    public String getStringProperty(String key) {
+        Object value = selfProperties.get(key);
+        return value != null ? value.toString() : null;
+    }
 }

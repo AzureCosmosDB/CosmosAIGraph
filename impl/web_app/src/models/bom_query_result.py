@@ -17,6 +17,7 @@ class BomQueryResult:
         self.data["elapsed"] = -1
         self.data["bom_libs"] = dict()
         self.data["bom_libs"][type_name] = "unvisited"  # seed the bom_libs dict
+        self.data["lateral_connections"] = []  # Add tracking for lateral connections
         self.t1 = time.perf_counter()
 
     def get_data(self):
@@ -68,3 +69,17 @@ class BomQueryResult:
     def finish(self):
         t2 = time.perf_counter()
         self.data["elapsed"] = t2 - self.t1
+
+    def add_lateral_connection(self, source, target, properties=None):
+        """Add a connection between two nodes that are both in the BOM but not directly from entrypoint"""
+        connection = {
+            "source": source,
+            "target": target,
+            "properties": properties or {},
+            "is_lateral": True
+        }
+        if connection not in self.data["lateral_connections"]:
+            self.data["lateral_connections"].append(connection)
+
+    def get_lateral_connections(self):
+        return self.data["lateral_connections"]
