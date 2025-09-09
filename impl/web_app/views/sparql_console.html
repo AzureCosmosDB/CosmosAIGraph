@@ -5,14 +5,19 @@
 <style>
   /* Style for edge labels - D3.js specific */
   .link-label {
-    font-family: Arial, sans-serif;
+    font-family: "Lucida Console", "Courier New", monospace !important;
     text-shadow: none !important;
   }
 
   /* Style for node labels - D3.js specific */
   .node text {
     text-shadow: none !important;
-    font-family: Arial, sans-serif;
+    font-family: "Lucida Console", "Courier New", monospace !important;
+  }
+
+  /* General D3 visualization font override */
+  #d3viz text {
+    font-family: "Lucida Console", "Courier New", monospace !important;
   }
 
   /* Remove all padding from caig-inner-body - page specific */
@@ -67,7 +72,16 @@
       </form>
     </div>
     <div id="viz_wrapper" class="container-fluid p-0" style="display:none;">
-      <h5 style="padding-left: 12px;">{{ visualization_message }}</h5>
+      <div class="d-flex justify-content-between align-items-center" style="padding: 8px 12px;">
+        <h5 class="mb-0">{{ visualization_message }}</h5>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Visualization toggles">
+          <input type="checkbox" class="btn-check" id="toggle-link-labels" checked>
+          <label class="btn btn-outline-secondary" for="toggle-link-labels">Link Labels</label>
+
+          <input type="checkbox" class="btn-check" id="toggle-node-attributes" checked>
+          <label class="btn btn-outline-secondary" for="toggle-node-attributes">Node Details</label>
+        </div>
+      </div>
       <div class="bg-dark" id="d3viz" name="d3viz" style="width:100%; height:800px; overflow:auto;" data-debug="true">
         <svg id="graph-svg" style="width:100%; height:100%; display:block;" preserveAspectRatio="xMidYMid meet">
           <g id="graph-container"></g>
@@ -1215,6 +1229,48 @@
           });
 
           console.log("Visualization setup complete");
+
+          // Attach toggle handlers for link labels and node secondary labels (tspans)
+          (function(){
+            const linkToggle = document.getElementById('toggle-link-labels');
+            const nodeToggle = document.getElementById('toggle-node-attributes');
+
+            function setLinkLabelsVisibility(show) {
+              // hide/show the entire link-labels group
+              d3.selectAll('.link-labels').style('display', show ? null : 'none');
+            }
+
+            function setNodeAttributesVisibility(show) {
+              // For each node text element, keep the first tspan visible and hide/show others
+              d3.selectAll('.node text').each(function() {
+                const tspans = d3.select(this).selectAll('tspan').nodes();
+                for (let i = 0; i < tspans.length; i++) {
+                  const el = d3.select(tspans[i]);
+                  if (i === 0) {
+                    el.style('display', null); // primary label always visible
+                  } else {
+                    el.style('display', show ? null : 'none');
+                  }
+                }
+              });
+            }
+
+            if (linkToggle) {
+              linkToggle.addEventListener('change', function() {
+                setLinkLabelsVisibility(this.checked);
+              });
+            }
+
+            if (nodeToggle) {
+              nodeToggle.addEventListener('change', function() {
+                setNodeAttributesVisibility(this.checked);
+              });
+            }
+
+            // Initialize visibility according to default checked state
+            if (linkToggle) setLinkLabelsVisibility(linkToggle.checked);
+            if (nodeToggle) setNodeAttributesVisibility(nodeToggle.checked);
+          })();
         } else {
           console.log('No nodes found to visualize');
           const wrapper = document.getElementById('viz_wrapper');

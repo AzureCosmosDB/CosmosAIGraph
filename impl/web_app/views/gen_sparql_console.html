@@ -2,6 +2,12 @@
 {% block title %} NL2SPARQL Console {% endblock %}
 
 {% block content %}
+<style>
+  /* Lucida Console font for ontology visualization (vis.js network) */
+  #ontology_viz .vis-network .vis-label {
+    font-family: "Lucida Console", "Courier New", monospace !important;
+  }
+</style>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
@@ -317,7 +323,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
           font: {
             color: "#fff",
             size: 18,
-            face: 'arial',
+            face: 'Lucida Console',
             bold: true
           },
           borderWidth: 0,
@@ -333,7 +339,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
           color: "#90caf9", // light blue
           strokeWidth: 0,   // no border/stroke
           size: 12,
-          face: 'arial',
+          face: 'Lucida Console',
           align: 'middle',
           vadjust: -8 // move label slightly above the line
         },
@@ -358,7 +364,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
           margin: 10,
           font: {
             size: 18,
-            face: 'arial',
+            face: 'Lucida Console',
             bold: true,
             color: "#fff"
           }
@@ -370,7 +376,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
             color: "#90caf9",
             strokeWidth: 0, // no border/stroke
             size: 12,
-            face: 'arial',
+            face: 'Lucida Console',
             align: 'middle',
             vadjust: -8 // move label slightly above the line
           },
