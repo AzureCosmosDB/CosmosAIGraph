@@ -292,11 +292,38 @@ python main_common.py owl_visualizer ontologies/libraries.owl
       }
 
       // fallback if parse produced no nodes
+      // Performance optimization: define thresholds for vis.js
+      const LARGE_ONTOLOGY_THRESHOLD = 50;
+      const HUGE_ONTOLOGY_THRESHOLD = 150;
+      const isLargeOntology = graph.nodes.length > LARGE_ONTOLOGY_THRESHOLD;
+      const isHugeOntology = graph.nodes.length > HUGE_ONTOLOGY_THRESHOLD;
+
+      if (graph.nodes.length > 0) {
+        console.log(`Rendering ${isLargeOntology ? 'LARGE' : 'NORMAL'} ontology with`, graph.nodes.length, 'nodes and', graph.edges.length, 'edges');
+      }
+
+      // Filter edges for huge ontologies to reduce complexity
+      let displayEdges = graph.edges;
+      if (isHugeOntology && graph.edges.length > 0) {
+        // Keep only the most important relationships for huge ontologies
+        displayEdges = graph.edges.filter(edge => 
+          edge.label && (
+            edge.label.includes('subClassOf') || 
+            edge.label.includes('type') || 
+            edge.label.includes('domain') || 
+            edge.label.includes('range') ||
+            edge.label.length < 15 // Keep short, likely important relationships
+          )
+        );
+        console.log(`Filtered ontology edges for performance: ${graph.edges.length} -> ${displayEdges.length}`);
+      }
+
       if (!graph.nodes.length) {
         graph = {
           nodes: [{ id: 'Dev', label: 'Dev' }, { id: 'Doc', label: 'Doc' }, { id: 'Lib', label: 'Lib' }],
           edges: [{ from: 'Dev', to: 'Lib', title: 'developer_of' }, { from: 'Lib', to: 'Dev', title: 'developed_by' }, { from: 'Lib', to: 'Lib', title: 'used_by_lib, uses_lib' }]
         };
+        displayEdges = graph.edges;
       }
 
       // create vis DataSets
@@ -312,7 +339,8 @@ python main_common.py owl_visualizer ontologies/libraries.owl
         const color = randomDarkColor();
         return {
           id: n.id,
-          label: n.label,
+          label: isLargeOntology && n.label.length > 15 ? n.label.substring(0, 15) + '...' : n.label,
+          title: n.label, // Full label in tooltip
           shape: "box",
           color: {
             background: color,
@@ -322,38 +350,41 @@ python main_common.py owl_visualizer ontologies/libraries.owl
           },
           font: {
             color: "#fff",
-            size: 18,
+            size: isLargeOntology ? 14 : 18,
             face: 'Lucida Console',
-            bold: true
+            bold: !isLargeOntology // Remove bold for large ontologies
           },
           borderWidth: 0,
-          margin: 10
+          margin: isLargeOntology ? 5 : 10
         };
       }));
-      const edges = new vis.DataSet(graph.edges.map(e => ({
+      
+      // Only show edge labels for smaller ontologies or important edges
+      const edges = new vis.DataSet(displayEdges.map(e => ({
         from: e.from,
         to: e.to,
-        label: e.label,
-        title: e.title,
+        label: (isLargeOntology && e.label && e.label.length > 10) ? '' : e.label, // Hide labels for long text in large graphs
+        title: e.title || e.label, // Keep full label in tooltip
         font: {
-          color: "#90caf9", // light blue
-          strokeWidth: 0,   // no border/stroke
-          size: 12,
+          color: "#90caf9",
+          strokeWidth: 0,
+          size: isLargeOntology ? 10 : 12,
           face: 'Lucida Console',
           align: 'middle',
-          vadjust: -8 // move label slightly above the line
+          vadjust: -8
         },
         color: {
           color: "#b0bec5",
           highlight: "#90caf9",
           hover: "#90caf9"
         },
-        arrows: { to: { enabled: true, scaleFactor: 0.2, type: 'arrow' } },
+        arrows: { to: { enabled: true, scaleFactor: isLargeOntology ? 0.15 : 0.2, type: 'arrow' } },
         smooth: {
-          enabled: true,
-          type: "dynamic"
+          enabled: !isHugeOntology, // Disable smooth curves for huge graphs
+          type: isLargeOntology ? "continuous" : "dynamic"
         },
-        shadow: false
+        shadow: false,
+        width: isLargeOntology ? 1 : 2
       })));
       const html_container = document.getElementById('ontology_viz');
       const graph_data = { nodes: nodes, edges: edges };
@@ -361,40 +392,125 @@ python main_common.py owl_visualizer ontologies/libraries.owl
         nodes: {
           shape: "box",
           borderWidth: 0,
-          margin: 10,
+          margin: isLargeOntology ? 5 : 10,
           font: {
-            size: 18,
+            size: isLargeOntology ? 14 : 18,
             face: 'Lucida Console',
-            bold: true,
+            bold: !isLargeOntology,
             color: "#fff"
           }
         },
         edges: {
-          arrows: { to: { enabled: true, scaleFactor: 0.2, type: 'arrow' } },
+          arrows: { to: { enabled: true, scaleFactor: isLargeOntology ? 0.15 : 0.2, type: 'arrow' } },
           color: "#b0bec5",
           font: {
             color: "#90caf9",
-            strokeWidth: 0, // no border/stroke
-            size: 12,
+            strokeWidth: 0,
+            size: isLargeOntology ? 10 : 12,
             face: 'Lucida Console',
             align: 'middle',
-            vadjust: -8 // move label slightly above the line
+            vadjust: -8
           },
-          scaling: { label: true },
+          scaling: { label: !isLargeOntology }, // Disable label scaling for large graphs
           shadow: false,
           smooth: {
-            enabled: true,
-            type: "dynamic"
-          }
+            enabled: !isHugeOntology,
+            type: isLargeOntology ? "continuous" : "dynamic"
+          },
+          width: isLargeOntology ? 1 : 2
         },
-        physics: { enabled: true, repulsion: { centralGravity: 0.2, springLength: 200, springConstant: 0.05, nodeDistance: 200, damping: 0.09 } }
+        physics: { 
+          enabled: true, 
+          // Performance tuning for different graph sizes
+          repulsion: { 
+            centralGravity: isLargeOntology ? 0.1 : 0.2, 
+            springLength: isLargeOntology ? 150 : 200, 
+            springConstant: isLargeOntology ? 0.03 : 0.05, 
+            nodeDistance: isLargeOntology ? 150 : 200, 
+            damping: isLargeOntology ? 0.15 : 0.09 
+          },
+          // Stabilization options for large graphs
+          stabilization: {
+            enabled: true,
+            iterations: isLargeOntology ? 100 : 200, // Fewer iterations for large graphs
+            updateInterval: isLargeOntology ? 10 : 5, // Less frequent updates for large graphs
+            onlyDynamicEdges: false,
+            fit: true
+          },
+          // Adaptive timestep for better performance
+          adaptiveTimestep: isLargeOntology,
+          minVelocity: isLargeOntology ? 10 : 0.75,
+          maxVelocity: isLargeOntology ? 30 : 50
+        },
+        // Performance settings
+        interaction: {
+          dragNodes: !isHugeOntology, // Disable dragging for huge graphs
+          dragView: true,
+          zoomView: true,
+          selectConnectedEdges: !isLargeOntology, // Disable for performance in large graphs
+          hover: !isHugeOntology, // Disable hover effects for huge graphs
+          hoverConnectedEdges: false // Always disable for performance
+        },
+        layout: {
+          improvedLayout: !isHugeOntology, // Disable improved layout for huge graphs
+          randomSeed: isLargeOntology ? 42 : undefined // Consistent layout for large graphs
+        }
       };
 
-      // clear previous network if present
+      // Clear previous network if present
       if (window.__ontology_network) {
-        try { window.__ontology_network.destroy(); } catch (e) { }
+        try { 
+          window.__ontology_network.destroy(); 
+          // Allow garbage collection
+          window.__ontology_network = null;
+        } catch (e) { 
+          console.warn('Failed to destroy previous network:', e);
+        }
       }
+
+      // Create network with performance monitoring
+      const startTime = performance.now();
       window.__ontology_network = new vis.Network(html_container, graph_data, graph_options);
+      
+      // Performance monitoring and optimization
+      if (isLargeOntology) {
+        // Set up event listeners for performance monitoring
+        window.__ontology_network.on("stabilizationProgress", function(params) {
+          const progress = Math.round((params.iterations / params.total) * 100);
+          if (progress % 20 === 0) { // Log every 20%
+            console.log(`Stabilization progress: ${progress}%`);
+          }
+        });
+
+        window.__ontology_network.on("stabilized", function() {
+          const endTime = performance.now();
+          console.log(`Large ontology stabilized in ${Math.round(endTime - startTime)}ms`);
+        });
+
+        // Limit animation for large graphs
+        window.__ontology_network.setOptions({
+          physics: {
+            ...graph_options.physics,
+            // Stop physics after stabilization for large graphs
+            enabled: false
+          }
+        });
+        
+        // Enable physics only temporarily for initial layout
+        setTimeout(() => {
+          if (window.__ontology_network) {
+            window.__ontology_network.setOptions({
+              physics: { enabled: false }
+            });
+            console.log('Physics disabled for large ontology after initial layout');
+          }
+        }, 3000);
+      } else {
+        window.__ontology_network.on("stabilized", function() {
+          const endTime = performance.now();
+          console.log(`Ontology rendered in ${Math.round(endTime - startTime)}ms`);
+        });
+      }
     } catch (e) {
       console.error('Error rendering ontology graph:', e);
     }

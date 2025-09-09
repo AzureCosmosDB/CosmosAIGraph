@@ -25,6 +25,8 @@
     padding-top: 0 !important;
     padding-bottom: 0 !important;
   }
+
+
 </style>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
@@ -817,6 +819,31 @@
           const wrapper = document.getElementById('viz_wrapper');
           if (wrapper) wrapper.style.display = '';
 
+          // For large datasets, automatically disable link labels and node details by default
+          const LARGE_DATASET_THRESHOLD = 100;
+          const isLargeDataset = nodes.length > LARGE_DATASET_THRESHOLD;
+          
+          // Store original toggle states before potentially modifying them
+          const linkToggle = document.getElementById('toggle-link-labels');
+          const nodeToggle = document.getElementById('toggle-node-attributes');
+          
+          console.log(`Dataset size: ${nodes.length} nodes (large dataset threshold: ${LARGE_DATASET_THRESHOLD})`);
+          console.log('Original toggle states - Link:', linkToggle ? linkToggle.checked : 'not found', 'Node:', nodeToggle ? nodeToggle.checked : 'not found');
+          
+          if (isLargeDataset) {
+            console.log(`Large dataset detected (${nodes.length} nodes) - disabling labels by default for performance`);
+            
+            // Uncheck the toggle buttons for large datasets but DON'T prune the data
+            if (linkToggle && linkToggle.checked) {
+              linkToggle.checked = false;
+              console.log('Unchecked link toggle for large dataset');
+            }
+            if (nodeToggle && nodeToggle.checked) {
+              nodeToggle.checked = false; 
+              console.log('Unchecked node toggle for large dataset');
+            }
+          }
+
           // Clear any existing content including test circle
           d3.select("#graph-svg").selectAll("*").remove();
 
@@ -1002,18 +1029,67 @@
 
           // Add circles to nodes
           node.append("circle")
-            .attr("r", 6)
-            .style("fill", d => getNodeColor(d.name, d.depth))
-            .style("stroke", "none");
+            .attr("r", d => d.depth === 0 ? 8 : 6) // Larger circle for starting node
+            .style("fill", d => {
+              if (d.depth === 0) return "#ff6b35"; // Bright orange for starting node
+              return getNodeColor(d.name, d.depth);
+            })
+            .style("stroke", d => d.depth === 0 ? "#fff" : "none") // White stroke for starting node
+            .style("stroke-width", d => d.depth === 0 ? 2 : 0); // Thicker stroke for starting node
+
+          // Add background rectangles for starting node labels
+          node.filter(d => d.depth === 0)
+            .append("rect")
+            .attr("x", 6) // Position slightly before text
+            .attr("y", d => {
+              // Calculate height based on number of attribute lines
+              const attrCount = d.attributes ? Math.min(Object.keys(d.attributes).length, 3) : 0;
+              const totalLines = 1 + attrCount; // Primary name + attribute lines
+              const lineHeight = 11; // Reduced line height for more compact layout
+              const totalHeight = totalLines * lineHeight;
+              return -totalHeight/2; // Center vertically with no extra padding
+            })
+            .attr("width", d => {
+              // Calculate width based on primary label (which is larger and bold for starting nodes)
+              const primaryFontSize = 12; // 12px font for starting node
+              const primaryCharWidth = 8; // More accurate for 12px bold font
+              const primaryWidth = d.name.length * primaryCharWidth;
+              
+              // Calculate secondary attribute widths
+              const attrCount = d.attributes ? Math.min(Object.keys(d.attributes).length, 3) : 0;
+              let maxSecondaryWidth = 0;
+              
+              if (attrCount > 0) {
+                // Estimate width of attribute lines (11px font)
+                const secondaryCharWidth = 6.5; // For 11px font
+                const avgAttrLineLength = 20; // Reasonable estimate for "Type: Product" etc.
+                maxSecondaryWidth = avgAttrLineLength * secondaryCharWidth;
+              }
+              
+              // Use the wider of primary or secondary content, plus padding
+              const contentWidth = Math.max(primaryWidth, maxSecondaryWidth);
+              return contentWidth + 8; // Adequate horizontal padding
+            })
+            .attr("height", d => {
+              const attrCount = d.attributes ? Math.min(Object.keys(d.attributes).length, 3) : 0;
+              const totalLines = 1 + attrCount;
+              const lineHeight = 11; // Reduced line height
+              return totalLines * lineHeight; // No extra vertical padding
+            })
+            .attr("rx", 2) // Even smaller rounded corners
+            .attr("ry", 2)
+            .style("fill", "rgba(255, 107, 53, 0.2)") // Slightly more opaque for better visibility
+            .style("stroke", "none"); // Remove border completely
 
           // Add labels to nodes - multi-line with attributes
           const nodeLabels = node.append("text")
-            .style("font-size", "10px")
+            .style("font-size", d => d.depth === 0 ? "12px" : "10px") // Larger font for starting node
             .style("text-anchor", "start") // Left-align text to start right of circle
             .attr("dx", "8") // Position 8 pixels to the right of circle center
             .attr("dy", "-0.5em") // Start slightly above center for multi-line
             .style("fill", "white")
-            .style("text-shadow", "none");
+            .style("text-shadow", "none")
+            .style("font-weight", d => d.depth === 0 ? "bold" : "normal"); // Bold for starting node
 
           nodeLabels.each(function(d) {
             const textElement = d3.select(this);
@@ -1146,15 +1222,19 @@
             
             // Create tspan elements for each line
             lines.forEach((line, index) => {
+              const isStartingNode = d.depth === 0;
+              const primaryFontSize = isStartingNode ? "12px" : "10px";
+              const secondaryFontSize = isStartingNode ? "11px" : "9px";
+              
               const tspan = textElement.append("tspan")
                 .attr("x", 8) // Keep consistent x position
                 .attr("dy", index === 0 ? "0" : "1.1em") // Line spacing
                 .style("font-weight", index === 0 ? "bold" : "normal")
-                .style("font-size", index === 0 ? "10px" : "9px") // Slightly smaller for attributes
+                .style("font-size", index === 0 ? primaryFontSize : secondaryFontSize) // Larger fonts for starting node
                 .style("opacity", line.opacity) // Progressive dimming
                 .text(line.text);
               
-              console.log(`Created tspan ${index} for ${d.name}: "${line.text}"`);
+              console.log(`Created tspan ${index} for ${d.name}: "${line.text}" (starting node: ${isStartingNode})`);
             });
             
             console.log(`=== Finished creating ${lines.length} text lines for node ${d.name} ===\n`);
