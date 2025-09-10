@@ -109,21 +109,36 @@
       {% endif %}
       {% endif %}
 
-      <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center" style="padding: 8px 0;">
         <h5>{{ results_message}}</h5>
-        {% if computed_count and computed_count > 0 %}
-        <h6 class="text-muted mb-0">Total Results: {{ computed_count }}</h6>
-        {% elif results %}
-        <h6 class="text-muted mb-0">Results returned (count not provided)</h6>
-        {% endif %}
+        <div class="d-flex align-items-center gap-3">
+          {% if computed_count and computed_count > 0 %}
+          <h6 class="text-muted mb-0">Total: {{ computed_count }}</h6>
+          {% elif results %}
+          <h6 class="text-muted mb-0">Results returned (count not provided)</h6>
+          {% endif %}
+          {% if results %}
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="toggle-results-btn">
+            <span id="toggle-results-text">Hide</span>
+            <span id="toggle-results-icon">▲</span>
+          </button>
+          {% endif %}
+        </div>
       </div>
       {% if results %}
-      <pre><code class="language-json">{{ results | tojson | safe }}</code></pre> {% endif %}
-      <!-- Prism.js for JSON syntax highlighting -->
-      <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
-      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
+      <div id="results-content">
+        <!-- Results will be loaded here when needed -->
+        <div id="results-data" style="display: none;">{{ results | tojson | safe }}</div>
+        <div id="results-formatted"></div>
+      </div>
+      {% endif %}
+      <!-- Prism.js for JSON syntax highlighting - loaded conditionally -->
+      <div id="prism-resources" style="display: none;">
+        <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
+      </div>
     </div>
 
 
@@ -1390,7 +1405,7 @@
                 .attr("y2", d => d.target.y);
             }
 
-            if (linkLabels && (!isLargeDataset || linkToggle?.checked)) {
+            if (linkLabels) {
               linkLabels
                 .attr("x", d => (d.source.x + d.target.x) * 0.5)
                 .attr("y", d => (d.source.y + d.target.y) * 0.5)
@@ -1457,7 +1472,7 @@
               // Store the toggle state globally so zoom function can respect it
               window.linkLabelsToggleState = show;
               
-              // Apply visibility based on both toggle state and zoom level
+              // Apply visibility based on both toggle state and current zoom level
               if (linkLabels) {
                 const currentZoom = d3.zoomTransform(svg.node()).k;
                 const MIN_READABLE_SCALE = 0.8;
@@ -1590,7 +1605,126 @@
       loadFromLocalStorage();
       setupAutoSave();
     }, 100);
+    
+    // Set up results toggle functionality
+    setupResultsToggle();
   });
+
+  // Lazy load Prism.js for syntax highlighting
+  function loadPrismResources() {
+    return new Promise((resolve) => {
+      // Check if Prism is already loaded
+      if (window.Prism) {
+        resolve();
+        return;
+      }
+      
+      const prismContainer = document.getElementById('prism-resources');
+      if (prismContainer) {
+        // Make Prism resources visible to load them
+        prismContainer.style.display = 'block';
+        
+        // Wait for scripts to load
+        const checkPrism = () => {
+          if (window.Prism) {
+            resolve();
+          } else {
+            setTimeout(checkPrism, 100);
+          }
+        };
+        checkPrism();
+      } else {
+        resolve();
+      }
+    });
+  }
+
+  // Format and display JSON results with syntax highlighting
+  async function formatAndDisplayResults() {
+    const resultsData = document.getElementById('results-data');
+    const resultsFormatted = document.getElementById('results-formatted');
+    
+    if (!resultsData || !resultsFormatted) return;
+    
+    const jsonData = resultsData.textContent.trim();
+    if (!jsonData) return;
+    
+    // Load Prism for syntax highlighting
+    await loadPrismResources();
+    
+    // Create formatted output
+    const preElement = document.createElement('pre');
+    const codeElement = document.createElement('code');
+    codeElement.className = 'language-json';
+    codeElement.textContent = jsonData;
+    preElement.appendChild(codeElement);
+    
+    // Clear and append formatted content
+    resultsFormatted.innerHTML = '';
+    resultsFormatted.appendChild(preElement);
+    
+    // Apply syntax highlighting if Prism is available
+    if (window.Prism) {
+      Prism.highlightElement(codeElement);
+    }
+  }
+
+  // Results toggle functionality
+  function setupResultsToggle() {
+    const toggleBtn = document.getElementById('toggle-results-btn');
+    const resultsContent = document.getElementById('results-content');
+    const toggleText = document.getElementById('toggle-results-text');
+    const toggleIcon = document.getElementById('toggle-results-icon');
+    
+    if (!toggleBtn || !resultsContent || !toggleText || !toggleIcon) return;
+    
+    // Determine initial state based on whether BOM query was executed (graph is shown)
+    const vizWrapper = document.getElementById('viz_wrapper');
+    const bomQuery = "{{ bom_query }}";
+    const hasGraphVisualization = vizWrapper && vizWrapper.style.display !== 'none' && bomQuery.trim() !== '';
+    
+    // Default: hide results if graph is shown, show results if only SPARQL results
+    let isVisible = !hasGraphVisualization;
+    let resultsFormatted = false;
+    
+    // For SPARQL-only queries (no BOM), format results immediately
+    if (!hasGraphVisualization) {
+      formatAndDisplayResults();
+      resultsFormatted = true;
+    }
+    
+    // Apply initial state
+    if (isVisible) {
+      resultsContent.style.display = 'block';
+      toggleText.textContent = 'Hide';
+      toggleIcon.textContent = '▲';
+    } else {
+      resultsContent.style.display = 'none';
+      toggleText.textContent = 'Show';
+      toggleIcon.textContent = '▼';
+    }
+    
+    // Toggle button click handler
+    toggleBtn.addEventListener('click', async function() {
+      isVisible = !isVisible;
+      
+      if (isVisible) {
+        // Format results lazily when first shown (only for BOM queries)
+        if (!resultsFormatted) {
+          await formatAndDisplayResults();
+          resultsFormatted = true;
+        }
+        
+        resultsContent.style.display = 'block';
+        toggleText.textContent = 'Hide';
+        toggleIcon.textContent = '▲';
+      } else {
+        resultsContent.style.display = 'none';
+        toggleText.textContent = 'Show';
+        toggleIcon.textContent = '▼';
+      }
+    });
+  }
 </script>
 <script>
   // Patch insertion: Worker + WASM/SIMD infrastructure (guarded)
