@@ -162,6 +162,60 @@
   domReady(function () {
     console.log('DOM ready, starting processing');
 
+    // Performance: debug gating and render scheduler
+    const DEBUG = (document.getElementById('d3viz') && document.getElementById('d3viz').dataset.debug === 'true');
+    // If not debugging, make console.noop to reduce overhead of excessive logging
+    if (!DEBUG) {
+      console.log = function() {};
+      console.debug = function() {};
+      console.info = function() {};
+      console.warn = function() {};
+    }
+
+    // Render scheduler to batch DOM updates via requestAnimationFrame
+    let __renderRequested = false;
+    function scheduleRender() {
+      if (!__renderRequested) {
+        __renderRequested = true;
+        requestAnimationFrame(() => {
+          __renderRequested = false;
+          try {
+            if (typeof window.__updatePositions === 'function') {
+              window.__updatePositions();
+            } else {
+              // Fallback immediate updates if __updatePositions not present
+              if (typeof link !== 'undefined' && link) {
+                link
+                  .attr('x1', d => d.source.x)
+                  .attr('y1', d => d.source.y)
+                  .attr('x2', d => d.target.x)
+                  .attr('y2', d => d.target.y);
+              }
+              if (typeof linkLabels !== 'undefined' && linkLabels) {
+                linkLabels
+                  .attr('x', d => (d.source.x + d.target.x) / 2)
+                  .attr('y', d => (d.source.y + d.target.y) / 2)
+                  .attr('transform', d => {
+                    const dx = d.target.x - d.source.x;
+                    const dy = d.target.y - d.source.y;
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    const cx = (d.source.x + d.target.x) / 2;
+                    const cy = (d.source.y + d.target.y) / 2;
+                    const rot = (angle > 90 || angle < -90) ? angle + 180 : angle;
+                    return `rotate(${rot}, ${cx}, ${cy}) translate(0,-5)`;
+                  });
+              }
+              if (typeof node !== 'undefined' && node) {
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+              }
+            }
+          } catch (err) {
+            console.warn('render error', err);
+          }
+        });
+      }
+    }
+
     var method = "{{ method }}";
     var libtype = "{{ libtype }}";
     var libtype_prefix_idx = libtype.length + 1;
@@ -937,6 +991,10 @@
           const edgePairs = graphEdges.map(e => `${e.source} → ${e.target} (${e.isLateralConnection ? 'LATERAL' : e.displayLabel || e.label})`);
           console.log("Final edge pairs:", edgePairs);
 
+
+
+
+
           // Set up the simulation
           const simulation = d3.forceSimulation(graphNodes)
             .force("charge", d3.forceManyBody().strength(-300))
@@ -985,11 +1043,18 @@
                 }
               });
 
-            // Add labels to edges with proper angle alignment
+            // Add labels to edges with proper angle alignment - optimized
             linkLabels = g.append("g")
               .attr("class", "link-labels")
+              .style("will-change", "transform") // GPU hint for label container
               .selectAll("text")
-              .data(graphEdges)
+              .data(graphEdges.filter(d => { // Pre-filter empty labels to reduce DOM elements
+                const hasLabel = d.isLateralConnection || 
+                  (d.displayLabel && d.displayLabel !== "") ||
+                  (d.label && d.label !== "depends on" && d.label !== "connects") ||
+                  (d.type && d.type !== "connection");
+                return hasLabel;
+              }))
               .enter().append("text")
               .attr("class", "link-label")
               .style("font-size", "8px")
@@ -999,11 +1064,10 @@
               .style("text-shadow", "none")
               .style("font-style", d => d.isLateralConnection ? "italic" : "normal")
               .text(d => {
-                // Extract clean connection type without arrows or prefixes
+                // Pre-computed clean labels
                 if (d.isLateralConnection) {
                   return "lateral";
                 } else if (d.displayLabel && d.displayLabel !== "") {
-                  // Remove arrows and clean up the label
                   return d.displayLabel.replace(/[←→↔]/g, '').trim();
                 } else if (d.label && d.label !== "depends on" && d.label !== "connects") {
                   return d.label.replace(/[←→↔]/g, '').trim();
@@ -1015,13 +1079,17 @@
               });
           }
 
-          // Create nodes
-          const node = g.append("g")
+          // Performance: create node groups with will-change hint
+          const nodeContainer = g.append("g")
             .attr("class", "nodes")
+            .style("will-change", "transform"); // GPU hint for container
+            
+          const node = nodeContainer
             .selectAll("g")
             .data(graphNodes)
             .enter().append("g")
             .attr("class", "node")
+            .style("will-change", "transform") // GPU hint per node
             .call(d3.drag()
               .on("start", dragstarted)
               .on("drag", dragged)
@@ -1240,17 +1308,80 @@
             console.log(`=== Finished creating ${lines.length} text lines for node ${d.name} ===\n`);
           });
 
-          // Add zoom behavior
+          // Add zoom behavior with initial fit-to-bounds
           const zoom = d3.zoom()
             .scaleExtent([0.1, 10])
             .on("zoom", function (event) {
               g.attr("transform", event.transform);
+              updateLabelVisibility(event.transform.k); // Update labels based on zoom
             });
 
           svg.call(zoom);
 
-          // Update positions on tick
-          simulation.on("tick", function () {
+          // Function to update label visibility based on zoom level
+          function updateLabelVisibility(scale) {
+            const MIN_READABLE_SCALE = 0.8; // 8px text becomes readable at this zoom
+            const shouldShowLabels = scale >= MIN_READABLE_SCALE;
+            
+            // Show/hide all node labels except starting nodes
+            d3.selectAll('.node text').style('display', function(d) {
+              return (d.depth === 0 || shouldShowLabels) ? null : 'none';
+            });
+            
+            // Show/hide link labels based on both zoom level AND toggle state
+            if (linkLabels) {
+              const toggleState = window.linkLabelsToggleState !== undefined ? window.linkLabelsToggleState : true;
+              linkLabels.style('display', (shouldShowLabels && toggleState) ? null : 'none');
+            }
+          }
+
+          // Initial zoom to fit all nodes - executed after simulation stabilizes
+          function fitToViewport() {
+            if (graphNodes.length === 0) return;
+            
+            // Calculate bounding box of all nodes
+            const padding = 50;
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            
+            graphNodes.forEach(node => {
+              if (node.x < minX) minX = node.x;
+              if (node.x > maxX) maxX = node.x;
+              if (node.y < minY) minY = node.y;
+              if (node.y > maxY) maxY = node.y;
+            });
+            
+            const nodeWidth = maxX - minX + 2 * padding;
+            const nodeHeight = maxY - minY + 2 * padding;
+            const centerX = (minX + maxX) / 2;
+            const centerY = (minY + maxY) / 2;
+            
+            // Calculate scale to fit within viewport
+            const scale = Math.min(width / nodeWidth, height / nodeHeight, 1);
+            
+            // Calculate translation to center
+            const translateX = width / 2 - centerX * scale;
+            const translateY = height / 2 - centerY * scale;
+            
+            // Apply the transform
+            const transform = d3.zoomIdentity
+              .translate(translateX, translateY)
+              .scale(scale);
+              
+            svg.transition()
+              .duration(750)
+              .call(zoom.transform, transform);
+              
+            // Update label visibility for the new scale
+            updateLabelVisibility(scale);
+          }
+
+          // Performance: throttled rendering and cached transforms
+          let tickCount = 0;
+          const RENDER_EVERY_N_TICKS = isLargeDataset ? 3 : 1; // Skip ticks for large datasets
+          
+          // Create shared update function for better performance
+          window.__updatePositions = function() {
             if (link) {
               link
                 .attr("x1", d => d.source.x)
@@ -1259,31 +1390,38 @@
                 .attr("y2", d => d.target.y);
             }
 
-            if (linkLabels) {
+            if (linkLabels && (!isLargeDataset || linkToggle?.checked)) {
               linkLabels
-                .attr("x", d => (d.source.x + d.target.x) / 2)
-                .attr("y", d => (d.source.y + d.target.y) / 2)
-                .attr("dy", "0.35em") // Center the text vertically
+                .attr("x", d => (d.source.x + d.target.x) * 0.5)
+                .attr("y", d => (d.source.y + d.target.y) * 0.5)
                 .attr("transform", d => {
-                  // Calculate angle of the line for text rotation
                   const dx = d.target.x - d.source.x;
                   const dy = d.target.y - d.source.y;
                   const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                  const x = (d.source.x + d.target.x) / 2;
-                  const y = (d.source.y + d.target.y) / 2;
-                  
-                  // Ensure text is always readable (not upside down)
-                  const rotationAngle = (angle > 90 || angle < -90) ? angle + 180 : angle;
-                  
-                  // Position the text slightly above the line (in the rotated coordinate system)
-                  const offsetY = -5; // 5 pixels above the line
-                  return `rotate(${rotationAngle}, ${x}, ${y}) translate(0, ${offsetY})`;
+                  const cx = (d.source.x + d.target.x) * 0.5;
+                  const cy = (d.source.y + d.target.y) * 0.5;
+                  const rot = (angle > 90 || angle < -90) ? angle + 180 : angle;
+                  return `rotate(${rot}, ${cx}, ${cy}) translate(0, -5)`;
                 });
             }
 
-            node
-              .attr("transform", d => `translate(${d.x},${d.y})`);
+            // Use CSS transforms for GPU acceleration on nodes
+            node.style("transform", d => `translate(${d.x}px, ${d.y}px)`);
+          };
+
+          // Update positions on tick with throttling
+          simulation.on("tick", function () {
+            tickCount++;
+            if (tickCount % RENDER_EVERY_N_TICKS === 0) {
+              scheduleRender(); // Use the RAF scheduler
+            }
           });
+
+          // Auto-fit viewport when simulation stabilizes
+          simulation.on("end", fitToViewport);
+          
+          // Also fit after a few seconds if simulation doesn't naturally end
+          setTimeout(fitToViewport, 3000);
 
           // Drag functions
           function dragstarted(event, d) {
@@ -1316,8 +1454,18 @@
             const nodeToggle = document.getElementById('toggle-node-attributes');
 
             function setLinkLabelsVisibility(show) {
-              // hide/show the entire link-labels group
-              d3.selectAll('.link-labels').style('display', show ? null : 'none');
+              // Store the toggle state globally so zoom function can respect it
+              window.linkLabelsToggleState = show;
+              
+              // Apply visibility based on both toggle state and zoom level
+              if (linkLabels) {
+                const currentZoom = d3.zoomTransform(svg.node()).k;
+                const MIN_READABLE_SCALE = 0.8;
+                const shouldShowForZoom = currentZoom >= MIN_READABLE_SCALE;
+                
+                // Show labels only if both toggle is on AND zoom is sufficient
+                linkLabels.style('display', (show && shouldShowForZoom) ? null : 'none');
+              }
             }
 
             function setNodeAttributesVisibility(show) {
@@ -1443,5 +1591,49 @@
       setupAutoSave();
     }, 100);
   });
+</script>
+<script>
+  // Patch insertion: Worker + WASM/SIMD infrastructure (guarded)
+  if (typeof workerActive === 'undefined') { window.workerActive = false; }
+  if (typeof physicsWorker === 'undefined') { window.physicsWorker = null; }
+  if (typeof wasmSupported === 'undefined') { window.wasmSupported = false; }
+  if (typeof wasmModuleBytes === 'undefined') { window.wasmModuleBytes = null; }
+  window.USE_WORKER_THRESHOLD = window.USE_WORKER_THRESHOLD || 120; // enable worker beyond this size
+  window.USE_WASM_THRESHOLD = window.USE_WASM_THRESHOLD || 250;   // attempt WASM beyond this size
+
+  if (typeof maybeLoadWasm === 'undefined') {
+    async function maybeLoadWasm(totalNodes){
+      if (totalNodes < window.USE_WASM_THRESHOLD) return;
+      if (!('WebAssembly' in window)) return;
+      try {
+        const resp = await fetch('/static/wasm/forces_simd.wasm');
+        if (!resp.ok) throw new Error('WASM fetch failed');
+        wasmModuleBytes = await resp.arrayBuffer();
+        wasmSupported = true;
+        console.log('[WASM] Module bytes loaded, size:', wasmModuleBytes.byteLength);
+        if (physicsWorker) physicsWorker.postMessage({ type: 'wasmModule', bytes: wasmModuleBytes }, [wasmModuleBytes]);
+      } catch (e){ console.warn('[WASM] Load failed, fallback JS', e); }
+    }
+  }
+
+  if (typeof startWorkerPhysics === 'undefined') {
+    function startWorkerPhysics(graphNodes, graphEdges, width, height, updatePositions) {
+      if (!window.Worker) return false;
+      const workerSrc = `(() => {\nlet nodes=[];let links=[];let alpha=1;let alphaDecay=0.02;let velDecay=0.4;let wasm=null;let wasmExports=null;let useWasm=false;\nfunction repulse(){const R=-320;for(let i=0;i<nodes.length;i++){const a=nodes[i];for(let j=i+1;j<nodes.length;j++){const b=nodes[j];let dx=a.x-b.x;let dy=a.y-b.y;let d2=dx*dx+dy*dy+0.01;if(d2>90000) continue;let d=Math.sqrt(d2);let f=R/d2;dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;}}}\nfunction linkForce(){for(const L of links){const s=L.s,t=L.t;let dx=t.x-s.x;let dy=t.y-s.y;const d=Math.sqrt(dx*dx+dy*dy)||1;const diff=d-L.d;const k=0.03;const f=diff*k;dx/=d;dy/=d;s.vx+=dx*f;s.vy+=dy*f;t.vx-=dx*f;t.vy-=dy*f;}}\nfunction step(){if(alpha<0.005){postMessage({type:'done'});return;}for(const n of nodes){n.vx*=velDecay;n.vy*=velDecay;}if(useWasm&&wasmExports&&wasmExports.compute){repulse();}else{repulse();}linkForce();for(const n of nodes){if(n.fx!=null){n.x=n.fx;n.vx=0;}else n.x+=n.vx;if(n.fy!=null){n.y=n.fy;n.vy=0;}else n.y+=n.vy;}alpha*=(1-alphaDecay);postMessage({type:'tick',nodes:nodes.map(n=>({id:n.id,x:n.x,y:n.y}))});setTimeout(step,16);}\nfunction init(data){nodes=data.nodes.map(o=>({id:o.id,x:o.x,y:o.y,vx:0,vy:0,fx:o.fx??null,fy:o.fy??null}));const idx=new Map();nodes.forEach((n,i)=>idx.set(n.id,i));links=data.links.map(e=>{const si=idx.get(e.source);const ti=idx.get(e.target);if(si==null||ti==null)return null;return{s:nodes[si],t:nodes[ti],d:e.distance||110};}).filter(Boolean);alpha=1;step();}\nonmessage=async e=>{const m=e.data;if(m.type==='init')init(m.data);else if(m.type==='pin'){const n=nodes.find(n=>n.id===m.id);if(n){n.fx=m.x;n.fy=m.y;alpha=1;}}else if(m.type==='drag'){const n=nodes.find(n=>n.id===m.id);if(n){n.fx=m.x;n.fy=m.y;n.x=m.x;n.y=m.y;}}else if(m.type==='unpin'){const n=nodes.find(n=>n.id===m.id);if(n){n.fx=null;n.fy=null;}}else if(m.type==='restart'){alpha=1;}else if(m.type==='wasm'){try{const r=await WebAssembly.instantiate(m.bytes,{});wasmExports=r.instance.exports;useWasm=!!wasmExports.compute;postMessage({type:'wasmReady',useWasm});}catch(err){postMessage({type:'wasmErr',err:err.message});}}};})();`;
+      const blob = new Blob([workerSrc], { type: 'application/javascript' });
+      physicsWorker = new Worker(URL.createObjectURL(blob));
+      workerActive = true;
+      physicsWorker.onmessage = e => {
+        const msg = e.data;
+        if (msg.type === 'tick') {
+          msg.nodes.forEach(p => { const n = graphNodes.find(nn => nn.id === p.id); if (n) { n.x = p.x; n.y = p.y; } });
+          updatePositions();
+        }
+      };
+      physicsWorker.postMessage({ type: 'init', data: { nodes: graphNodes.map(n => ({ id: n.id, x: n.x || Math.random()*width, y: n.y || Math.random()*height })), links: graphEdges.map(e => ({ source: e.source, target: e.target, distance: e.isLateralConnection ? 150 : 100 })) } });
+      if (graphNodes.length >= window.USE_WASM_THRESHOLD) maybeLoadWasm(graphNodes.length);
+      return true;
+    }
+  }
 </script>
 {% endblock %}
