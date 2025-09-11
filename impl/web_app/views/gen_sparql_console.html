@@ -25,6 +25,25 @@
           <label for="sparql" class="form-label">Natural language request:</label>
           <textarea rows="1" class="form-control" id="natural_language" name="natural_language"
             placeholder="Triple-click for suggestions.">{{ natural_language }}</textarea>
+          <script>
+            function autoResizeTextarea(textarea) {
+              // Reset height to auto to get the correct scrollHeight
+              textarea.style.height = 'auto';
+              // Set height based on scrollHeight, with minimum of 1 row (approximately 38px)
+              const minHeight = 38; // Approximate height for 1 row
+              const newHeight = Math.max(minHeight, textarea.scrollHeight);
+              textarea.style.height = newHeight + 'px';
+            }
+            
+            // Auto-resize on page load
+            const nlTextarea = document.getElementById('natural_language');
+            autoResizeTextarea(nlTextarea);
+            
+            // Auto-resize on input
+            nlTextarea.addEventListener('input', function() {
+              autoResizeTextarea(this);
+            });
+          </script>
         </div>
         <div class="mb-6">
           <button type="submit" id="generate_button" name="generate_button"
@@ -646,7 +665,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
       owlDiv.style.display = newVisible ? '' : 'none';
       ontDiv.style.display = newVisible ? '' : 'none';
       actionCtrls.style.display = newVisible ? 'flex' : 'none';
-      toggleBtn.innerHTML = newVisible ? 'Hide Ontology &#9650;' : 'Show Ontology &#9660;';
+      toggleBtn.innerHTML = newVisible ? 'Hide &#9650;' : 'Show &#9660;';
       try { sessionStorage.setItem('ontologyVisible', newVisible.toString()); } catch(e){}
       if (newVisible) renderOntologyGraph();
     });
@@ -662,9 +681,9 @@ python main_common.py owl_visualizer ontologies/libraries.owl
         owlDiv.style.display = 'none';
         ontDiv.style.display = 'none';
         actionCtrls.style.display = 'none';
-        toggleBtn.innerHTML = 'Show Ontology &#9660;';
+        toggleBtn.innerHTML = 'Show &#9660;';
       } else {
-        toggleBtn.innerHTML = 'Hide Ontology &#9650;';
+        toggleBtn.innerHTML = 'Hide &#9650;';
       }
     })();
 

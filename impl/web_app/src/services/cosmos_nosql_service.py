@@ -322,27 +322,27 @@ class CosmosNoSQLService:
     async def fulltext_search(self, search_text, limit=4):
         """
         Perform full-text search using FullTextScore function
-        Search in the description field first, then expand if needed
+        Pass all tokenized words as a single string separated by commas for FullTextScore.
         """
         if not search_text:
             return []
-            
-        # Extract keywords from search text (split by spaces and remove empty strings)
-        keywords = [keyword.strip() for keyword in search_text.split() if keyword.strip()]
-        if not keywords:
+
+        # Tokenize the input text into words longer than one character
+        tokens = [word for word in search_text.split() if len(word) > 1]
+        if not tokens:
             return []
-            
-        # Build the FullTextScore query - start with description field only
-        keywords_str = str(keywords).replace("'", '"')  # Convert to JSON format with double quotes
-        
+
+        # Combine tokens into a single string separated by commas
+        search_expr = ','.join(f'"{token}"' for token in tokens)
+
         # Simplified query using just the description field
         sql = f"""
-        SELECT TOP {limit} *, FullTextScore(c.description, {keywords_str}) AS score 
+        SELECT TOP {limit} * 
         FROM c 
-        WHERE FullTextScore(c.description, {keywords_str}) > 0
-        ORDER BY FullTextScore(c.description, {keywords_str}) DESC
+        ORDER BY RANK FullTextScore(c.description, {search_expr})
         """
-        
+
+        logging.debug(f"Full-text search SQL: {sql}")
         docs = list()
         try:
             items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
@@ -354,11 +354,11 @@ class CosmosNoSQLService:
             logging.error(f"Full-text search on description failed: {e}")
             try:
                 sql = f"""
-                SELECT TOP {limit} *, FullTextScore(c.summary, {keywords_str}) AS score 
+                SELECT TOP {limit} * 
                 FROM c 
-                WHERE FullTextScore(c.summary, {keywords_str}) > 0
-                ORDER BY FullTextScore(c.summary, {keywords_str}) DESC
+                ORDER BY RANK FullTextScore(c.summary, {search_expr})
                 """
+                logging.debug(f"Full-text search SQL: {sql}")
                 items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
                 async for item in items_paged:
                     cdf = CosmosDocFilter(item)
@@ -367,65 +367,69 @@ class CosmosNoSQLService:
                 # If FullTextScore is not supported, fall back to CONTAINS
                 logging.error(f"Full-text search on summary also failed: {e2}")
                 docs = await self._fallback_text_search(search_text, limit)
-        
+
         return docs
     
     async def _fallback_text_search(self, search_text, limit=4):
         """
         Fallback text search using CONTAINS when FullTextScore is not available
+        Uses a parameterized query to avoid malformed SQL when the input contains quotes
         """
         docs = list()
         try:
-            # Use CONTAINS for basic text search
+            # Use parameterized CONTAINS for basic text search to avoid injection/errors
             sql = f"""
             SELECT TOP {limit} *
             FROM c 
-            WHERE CONTAINS(c.description, "{search_text}") OR 
-                  CONTAINS(c.summary, "{search_text}") OR 
-                  CONTAINS(c.name, "{search_text}")
+            WHERE CONTAINS(c.description, @search_text) OR 
+                  CONTAINS(c.summary, @search_text) OR 
+                  CONTAINS(c.name, @search_text)
             """
-            items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
+
+            params = [dict(name="@search_text", value=search_text)]
+            items_paged = self._ctrproxy.query_items(query=sql, parameters=params)
             async for item in items_paged:
                 cdf = CosmosDocFilter(item)
                 docs.append(cdf.filter_out_embedding("embedding"))
         except Exception as e:
             logging.error(f"Fallback text search also failed: {e}")
-            
+            logging.debug(traceback.format_exc())
+        
         return docs
 
     async def rrf_search(self, embedding_value, search_text, embedding_attr="embedding", limit=10):
         """
         Perform RRF (Reciprocal Rank Fusion) search combining vector and full-text search
-        If FullTextScore is not available, fall back to vector search only
+        Pass all tokenized words as a single string separated by commas for FullTextScore.
         """
         if not embedding_value or not search_text:
             return []
-            
-        # Extract keywords from search text
-        keywords = [keyword.strip() for keyword in search_text.split() if keyword.strip()]
-        if not keywords:
+
+        # Tokenize the input text into words longer than one character
+        tokens = [word for word in search_text.split() if len(word) > 1]
+        if not tokens:
             return []
-            
-        # Try RRF with FullTextScore first
-        keywords_str = str(keywords).replace("'", '"')  # Convert to JSON format with double quotes
-        
+
+        # Combine tokens into a single string separated by commas
+        search_expr = ','.join(f'"{token}"' for token in tokens)
+
         docs = list()
         try:
-            # Build the RRF query using simple FullTextScore
+            # Build the RRF query using FullTextScore and VectorDistance; use proper RANK(...) syntax
             sql = f"""
             SELECT TOP {limit} *
             FROM c
-            ORDER BY RANK RRF(
-                FullTextScore(c.description, {keywords_str}), 
+            ORDER BY RANK(RRF(
+                FullTextScore(c.description, {search_expr}), 
                 VectorDistance(c.{embedding_attr}, {str(embedding_value)})
-            )
+            ))
             """
-            
+
             items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
             async for item in items_paged:
                 cdf = CosmosDocFilter(item)
                 docs.append(cdf.filter_out_embedding(embedding_attr))
-                
+
         except Exception as e:
             logging.error(f"RRF search with FullTextScore failed: {e}")
             # Fall back to vector search only
@@ -441,7 +445,7 @@ class CosmosNoSQLService:
                     docs.append(cdf.filter_out_embedding(embedding_attr))
             except Exception as e2:
                 logging.error(f"Fallback vector search in RRF also failed: {e2}")
-        
+
         return docs
 
     def vector_search_sql(self, embedding_value, embedding_attr="embedding", limit=4):
