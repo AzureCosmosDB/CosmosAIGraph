@@ -849,8 +849,8 @@ public class AppGraph {
             return "literal";
         } else if (node.isResource()) {
             return "resource";
-        } else if (node.isStmtResource()) {
-            return "stmt_resource";
+        } else if (node.isStatementTerm()) {
+            return "statement_term";
         } else if (node.isURIResource()) {
             return "uri_resource";
         }
