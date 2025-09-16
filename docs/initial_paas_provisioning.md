@@ -48,6 +48,8 @@ Then select "Azure Cosmos DB for NoSQL" on the second page as shown below:
   <img src="img/cosmosdb-create.png" width="100%">
 </p>
 
+Note: this example uses Azure Cosmos DB for NoSQL with Capacity Mode: `Provisioned throughput`.
+
 ### Obtain/Set the Connection Parameters
 
 After the Azure Cosmos DB for NoSQL account has been created, 
