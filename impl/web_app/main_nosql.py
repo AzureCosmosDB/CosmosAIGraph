@@ -378,6 +378,8 @@ async def vector_search_words(natural_language):
 
         nosql_svc = CosmosNoSQLService()
         await nosql_svc.initialize()
+        nosql_svc.set_db(ConfigService.graph_source_db())
+        nosql_svc.set_container(ConfigService.graph_source_container())
 
         docs = await nosql_svc.vector_search(embedding, 4)
         for idx, doc in enumerate(docs):
