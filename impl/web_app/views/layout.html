@@ -260,9 +260,9 @@
     try {
       [
         'sparql_console_sparql_query','sparql_console_bom_query',
-        'gen_sparql_console_natural_language','conv_ai_console_user_text',
-        'conv_ai_console_conversation_id','vector_search_entrypoint',
-        'vector_search_limit','vector_search_type','vector_search_method',
+        'gen_sparql_console_natural_language','gen_sparql_console_sparql_query',
+        'conv_ai_console_user_text','conv_ai_console_conversation_id',
+        'vector_search_entrypoint','vector_search_limit','vector_search_type','vector_search_method',
         'ontologyVisible'
       ].forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
     } catch(e){}

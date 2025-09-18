@@ -189,12 +189,94 @@
   ];
 
 
+  // Local Storage Management for form inputs
+  const STORAGE_KEYS = {
+    naturalLanguage: 'gen_sparql_console_natural_language',
+    sparqlQuery: 'gen_sparql_console_sparql_query'
+  };
+
+  // Load saved values from localStorage
+  function loadFromLocalStorage() {
+    try {
+      // Check if we just submitted a form (new content from backend)
+      const formSubmitted = sessionStorage.getItem('gen_sparql_form_submitted');
+      
+      // Load natural language query (always restore this)
+      const savedNaturalLanguage = localStorage.getItem(STORAGE_KEYS.naturalLanguage);
+      if (savedNaturalLanguage && nl_form_field) {
+        nl_form_field.value = savedNaturalLanguage;
+        // Trigger auto-resize
+        if (typeof autoResizeTextarea === 'function') {
+          autoResizeTextarea(nl_form_field);
+        }
+      }
+
+      // Only load SPARQL query if we didn't just submit a form
+      // (to avoid overriding newly generated content from backend)
+      if (!formSubmitted) {
+        const savedSparqlQuery = localStorage.getItem(STORAGE_KEYS.sparqlQuery);
+        if (savedSparqlQuery && window.editor) {
+          window.editor.setValue(savedSparqlQuery);
+        }
+      } else {
+        // Clear the submission flag after handling it
+        sessionStorage.removeItem('gen_sparql_form_submitted');
+      }
+    } catch (e) {
+      console.warn('Error loading from localStorage:', e);
+    }
+  }
+
+  // Save values to localStorage
+  function saveToLocalStorage() {
+    try {
+      // Save natural language query
+      if (nl_form_field) {
+        localStorage.setItem(STORAGE_KEYS.naturalLanguage, nl_form_field.value);
+      }
+
+      // Save SPARQL query (CodeMirror editor)
+      if (window.editor) {
+        localStorage.setItem(STORAGE_KEYS.sparqlQuery, window.editor.getValue());
+      }
+    } catch (e) {
+      console.warn('Error saving to localStorage:', e);
+    }
+  }
+
+  // Set up event listeners for auto-saving
+  function setupAutoSave() {
+    // Auto-save natural language input changes
+    if (nl_form_field) {
+      nl_form_field.addEventListener('input', saveToLocalStorage);
+      nl_form_field.addEventListener('blur', saveToLocalStorage);
+    }
+
+    // Auto-save SPARQL editor changes
+    if (window.editor) {
+      window.editor.on('change', function() {
+        saveToLocalStorage();
+      });
+    }
+  }
+
+  // Initialize localStorage functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Wait a bit for CodeMirror to be fully initialized
+    setTimeout(function() {
+      loadFromLocalStorage();
+      setupAutoSave();
+    }, 100);
+  });
+
   generate_button.addEventListener('click',
     function (event) {
       event.preventDefault();
       generate_button.disabled = true;
       generate_button.textContent = "Processing...";
       execute_button.disabled = true;
+      // Save current values before submit
+      saveToLocalStorage();
       // Mark that we're submitting a form to prevent localStorage restoration
       sessionStorage.setItem('gen_sparql_form_submitted', 'true');
       generate_form.submit();
@@ -210,6 +292,8 @@
       execute_button.disabled = true;
       execute_button.textContent = "Processing...";
       generate_button.disabled = true;
+      // Save current values before submit
+      saveToLocalStorage();
       execute_form.submit();
     }
   );

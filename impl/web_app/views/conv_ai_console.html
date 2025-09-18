@@ -309,6 +309,17 @@
 
   // Local Storage Management for user input
   const STORAGE_KEY = 'conv_ai_console_user_text';
+  const CONVERSATION_ID_KEY = 'conv_ai_console_conversation_id';
+
+  // Store conversation ID in localStorage for session clearing
+  const conversationIdInput = document.getElementById('conversation_id');
+  if (conversationIdInput && conversationIdInput.value) {
+    try {
+      localStorage.setItem(CONVERSATION_ID_KEY, conversationIdInput.value);
+    } catch (e) {
+      console.warn('Error storing conversation ID:', e);
+    }
+  }
 
   // Load saved value from localStorage
   function loadFromLocalStorage() {
@@ -355,6 +366,7 @@
   triggerSubmit = function() {
     if (user_text && user_text.value.trim().length > 0) {
       // Clear the saved text before submitting since we're about to process it
+      // Note: We keep the conversation ID as the conversation continues
       try {
         localStorage.removeItem(STORAGE_KEY);
       } catch (e) {
