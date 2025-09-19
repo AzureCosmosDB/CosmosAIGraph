@@ -26,10 +26,20 @@
     padding-bottom: 0 !important;
   }
 
+  /* Remove white border from CodeMirror editors */
+  .CodeMirror {
+    border: none !important;
+  }
+  
+  .CodeMirror-focused {
+    border: none !important;
+    outline: none !important;
+  }
 
 </style>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/tomorrow-night-eighties.min.css">
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sparql/sparql.min.js"></script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -47,12 +57,12 @@
             var editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
               mode: "sparql",
               lineNumbers: true,
-              theme: "default"
+              theme: "tomorrow-night-eighties"
             });
             function resizeCodeMirrorToContent(cm) {
               var doc = cm.getDoc();
               var lineCount = doc.lineCount();
-              var newHeight = (lineCount + 1) * 24; // 24px is the default line height
+              var newHeight = Math.max((lineCount + 1) * 24, 120); // Minimum height of 120px (5 lines)
               cm.setSize(null, newHeight + "px");
             }
             resizeCodeMirrorToContent(editor);
@@ -62,13 +72,17 @@
           </script>
         </div>
         <div class="mb-3">
-          <label for="bom_query" class="form-label">Entity name, space and dependency depth:</label>
-          <input type="text" class="form-control" id="bom_query" name="bom_query" value="{{ bom_query }}"
-            placeholder="<Entity ID/name> <Depth>"></input>
+          <button type="button" id="sparql_submit_button" name="sparql_submit_button"
+            class="btn btn-outline-primary mb-3">Execute SPARQL</button>
         </div>
-        <div class="mb-6">
-          <button type="submit" id="submit_button" name="submit_button"
-            class="btn btn-outline-primary mb-3">Submit</button>
+        <div class="mb-3">
+          <label for="bom_query" class="form-label">Entity name, space and dependency depth:</label>
+          <div class="d-flex gap-2">
+            <input type="text" class="form-control" id="bom_query" name="bom_query" value="{{ bom_query }}"
+              placeholder="<Entity ID/name> <Depth>"></input>
+            <button type="button" id="entity_submit_button" name="entity_submit_button"
+              class="btn btn-outline-primary" style="white-space: nowrap;">Visualize Graph</button>
+          </div>
         </div>
         <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
       </form>
@@ -154,13 +168,65 @@
   console.log('jQuery available:', typeof $ !== 'undefined');
 
   const form = document.getElementById("form");
-  const submit_button = document.getElementById("submit_button");
+  const sparql_submit_button = document.getElementById("sparql_submit_button");
+  const entity_submit_button = document.getElementById("entity_submit_button");
+  const bom_query = document.getElementById("bom_query");
 
-  submit_button.addEventListener('click',
+  // Function to check if Visualize Graph button should be enabled
+  function updateVisualizeBtnState() {
+    const value = bom_query.value.trim();
+    // Disable if empty or contains only placeholder-like content
+    const isEmpty = value === "" || value === "<Entity ID/name> <Depth>";
+    entity_submit_button.disabled = isEmpty;
+    if (isEmpty) {
+      entity_submit_button.classList.add("disabled");
+    } else {
+      entity_submit_button.classList.remove("disabled");
+    }
+  }
+
+  // Check initial state
+  updateVisualizeBtnState();
+
+  // Add event listener to update button state when input changes
+  bom_query.addEventListener('input', updateVisualizeBtnState);
+  bom_query.addEventListener('change', updateVisualizeBtnState);
+
+  // SPARQL submit button - clears entity field and submits with SPARQL query
+  sparql_submit_button.addEventListener('click',
     function (event) {
       event.preventDefault();
-      submit_button.disabled = true;
-      submit_button.textContent = "Processing...";
+      // Clear the entity field to ensure SPARQL query takes precedence
+      const bom_query = document.getElementById("bom_query");
+      bom_query.value = "";
+      
+      sparql_submit_button.disabled = true;
+      entity_submit_button.disabled = true;
+      sparql_submit_button.textContent = "Processing...";
+      form.submit();
+    }
+  );
+
+  // Entity submit button - clears SPARQL field and submits with entity query
+  entity_submit_button.addEventListener('click',
+    function (event) {
+      event.preventDefault();
+      
+      // Don't proceed if button is disabled
+      if (entity_submit_button.disabled) {
+        return;
+      }
+      
+      // Update CodeMirror content to form field and then clear it
+      if (typeof editor !== 'undefined') {
+        editor.save(); // Sync CodeMirror content to textarea
+      }
+      const sparql_field = document.getElementById("sparql");
+      sparql_field.value = "";
+      
+      sparql_submit_button.disabled = true;
+      entity_submit_button.disabled = true;
+      entity_submit_button.textContent = "Processing...";
       form.submit();
     }
   );

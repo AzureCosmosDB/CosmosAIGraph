@@ -7,9 +7,20 @@
   #ontology_viz .vis-network .vis-label {
     font-family: "Lucida Console", "Courier New", monospace !important;
   }
+  
+  /* Remove white border from CodeMirror editors */
+  .CodeMirror {
+    border: none !important;
+  }
+  
+  .CodeMirror-focused {
+    border: none !important;
+    outline: none !important;
+  }
 </style>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/tomorrow-night-eighties.min.css">
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sparql/sparql.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/turtle/turtle.min.js"></script>
@@ -62,7 +73,7 @@
             window.editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
               mode: "sparql",
               lineNumbers: true,
-              theme: "default"
+              theme: "tomorrow-night-eighties"
             });
             function resizeCodeMirrorToContent(cm) {
               var doc = cm.getDoc();
@@ -671,7 +682,7 @@ python main_common.py owl_visualizer ontologies/libraries.owl
       owlEditor = CodeMirror.fromTextArea(ta, {
         mode: format === 'xml' ? 'xml' : 'turtle',
         lineNumbers: true,
-        theme: 'default'
+        theme: 'tomorrow-night-eighties'
       });
       resizeEditor(owlEditor);
       owlEditor.on('change', resizeEditor);
