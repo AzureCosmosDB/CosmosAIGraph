@@ -70,6 +70,11 @@
           </div>
         </div>
         <div class="row">
+          <div class="col">
+            <p class="text-danger fw-bold" id="error_message" name="error_message" style="display: none;"></p>
+          </div>
+        </div>
+        <div class="row">
           <div class="col"></div>
           <div class="col-auto text-end">
             <div class="btn-group btn-group-sm" role="group" aria-label="Conversation actions">
@@ -147,6 +152,7 @@
   const conversation_data = document.getElementById("conversation_data");
   const feedback_div = document.getElementById("feedback_div");
   const prompts_div = document.getElementById("prompts_div");
+  const error_message = document.getElementById("error_message");
 
   function scrollToBottom() {
     try {
@@ -161,6 +167,7 @@
   conversation_data.style.display = "none";
   feedback_div.style.display = "none";
   prompts_div.style.display = "none";
+  error_message.style.display = "none";
   // ensure latest completion is visible on render
   document.addEventListener('DOMContentLoaded', scrollToBottom);
 
@@ -206,6 +213,13 @@
       continue_button.classList.add('processing');
       continue_button.textContent = "Processing...";
       json_button.disabled = true;
+      error_message.style.display = "none"; // Hide any previous errors
+      
+      // Store the submission time to detect if the page takes too long
+      sessionStorage.setItem('conv_ai_form_submit_time', Date.now().toString());
+      
+      // Note: Removed timeout to allow long-running requests to complete naturally
+      
       form.submit();
     }
   }
@@ -359,12 +373,44 @@
   document.addEventListener('DOMContentLoaded', function() {
     loadFromLocalStorage();
     setupAutoSave();
+    
+    // Check if we just submitted a form and detect if it was successful
+    const submitTime = sessionStorage.getItem('conv_ai_form_submit_time');
+    const completionsBefore = sessionStorage.getItem('conv_ai_completions_before_submit');
+    
+    if (submitTime && completionsBefore) {
+      const timeDiff = Date.now() - parseInt(submitTime);
+      const currentCompletions = document.querySelectorAll('[style*="background-color: #2f3336"]').length;
+      const completionsBeforeCount = parseInt(completionsBefore);
+      
+      // If page reloaded quickly OR no new completions were added, likely an error
+      if (timeDiff < 3000 || currentCompletions <= completionsBeforeCount) {
+        let errorMsg = "An error occurred while processing your request.";
+        if (timeDiff < 1000) {
+          errorMsg += " The request failed very quickly - this may indicate a server configuration issue.";
+        } else if (currentCompletions <= completionsBeforeCount) {
+          errorMsg += " No response was generated - this may be due to rate limits or service errors.";
+        }
+        errorMsg += " Please try again in a few moments.";
+        
+        error_message.textContent = errorMsg;
+        error_message.style.display = "block";
+      }
+      
+      // Clear the submit tracking data
+      sessionStorage.removeItem('conv_ai_form_submit_time');
+      sessionStorage.removeItem('conv_ai_completions_before_submit');
+    }
   });
 
   // Clear localStorage when form is successfully submitted
   const originalTriggerSubmit = triggerSubmit;
   triggerSubmit = function() {
     if (user_text && user_text.value.trim().length > 0) {
+      // Store conversation state before submission to detect changes
+      const completionsCount = document.querySelectorAll('[style*="background-color: #2f3336"]').length;
+      sessionStorage.setItem('conv_ai_completions_before_submit', completionsCount.toString());
+      
       // Clear the saved text before submitting since we're about to process it
       // Note: We keep the conversation ID as the conversation continues
       try {

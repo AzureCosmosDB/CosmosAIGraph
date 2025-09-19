@@ -162,16 +162,19 @@ class RAGDataService:
             logging.warning("get_graph_rag_data - sparql:\n{}".format(sparql))
 
             # HTTP POST to the graph microservice to execute the generated SPARQL query
-            sqr: SparqlQueryResponse = await self.post_sparql_to_graph_microsvc(sparql)
-            FS.write_json(
-                sqr.response_obj,
-                "tmp/get_graph_rag_data_get_graph_rag_data_response_obj.json",
-            )
-            for doc in sqr.binding_values():
-                doc_copy = dict(doc)  # shallow copy
-                doc_copy.pop("embedding", None)
-                rdr.add_doc(doc_copy)
-            FS.write_json(rdr.get_data(), "tmp/rdr.json")
+            sqr: SparqlQueryResponse | None = await self.post_sparql_to_graph_microsvc(sparql)
+            if sqr is not None and sqr.response_obj is not None:
+                FS.write_json(
+                    sqr.response_obj,
+                    "tmp/get_graph_rag_data_get_graph_rag_data_response_obj.json",
+                )
+                for doc in sqr.binding_values():
+                    doc_copy = dict(doc)  # shallow copy
+                    doc_copy.pop("embedding", None)
+                    rdr.add_doc(doc_copy)
+                FS.write_json(rdr.get_data(), "tmp/rdr.json")
+            else:
+                logging.warning("Graph microservice call failed - sqr is None or has no response_obj")
         except Exception as e:
             logging.critical(
                 "Exception in RagDataService#get_graph_rag_data: {}".format(str(e))
@@ -180,28 +183,30 @@ class RAGDataService:
 
     # ========== private methods below ==========
 
-    async def post_sparql_to_graph_microsvc(self, sparql: str) -> list:
+    async def post_sparql_to_graph_microsvc(self, sparql: str) -> SparqlQueryResponse | None:
         """
         Execute a HTTP POST to the graph microservice with the given SPARQL query.
-        Return a list of dicts.
+        Return a SparqlQueryResponse object or None if the request fails.
         """
         sqr = None
         try:
             url = self.graph_microsvc_sparql_query_url()
             postdata = dict()
             postdata["sparql"] = sparql
+            
             async with httpx.AsyncClient() as client:
                 r = await client.post(
                     url,
                     headers=self.websvc_headers,
                     content=json.dumps(postdata),
-                    timeout=30.0,
                 )
                 sqr = SparqlQueryResponse(r)
                 sqr.parse()
+                    
         except Exception as e:
-            logging.critical((str(e)))
+            logging.error(f"Graph microservice error: {str(e)}")
             logging.exception(e, stack_info=True, exc_info=True)
+                
         return sqr
 
     def graph_microsvc_sparql_query_url(self):

@@ -328,7 +328,7 @@ class CosmosNoSQLService:
             return []
 
         # Tokenize the input text into words longer than one character
-        tokens = [word for word in search_text.split() if len(word) > 1]
+        tokens = [word for word in search_text.split() if len(word) > 1][-5:]
         if not tokens:
             return []
 
@@ -406,7 +406,7 @@ class CosmosNoSQLService:
             return []
 
         # Tokenize the input text into words longer than one character
-        tokens = [word for word in search_text.split() if len(word) > 1]
+        tokens = [word for word in search_text.split() if len(word) > 1][-5:]
         if not tokens:
             return []
 
@@ -414,24 +414,23 @@ class CosmosNoSQLService:
         search_expr = ','.join(f'"{token}"' for token in tokens)
 
         docs = list()
-        try:
-            # Build the RRF query using FullTextScore and VectorDistance; use proper RANK(...) syntax
-            sql = f"""
-            SELECT TOP {limit} *
-            FROM c
-            ORDER BY RANK(RRF(
-                FullTextScore(c.description, {search_expr}), 
-                VectorDistance(c.{embedding_attr}, {str(embedding_value)})
-            ))
-            """
 
+        # Build the RRF query using FullTextScore and VectorDistance; use proper RANK(...) syntax
+        sql = f"""
+        SELECT TOP {limit} *
+        FROM c
+        ORDER BY RANK RRF(
+            VectorDistance(c.{embedding_attr}, {str(embedding_value)}),
+            FullTextScore(c.description, {search_expr}))
+        """
+        try:
             items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
             async for item in items_paged:
                 cdf = CosmosDocFilter(item)
                 docs.append(cdf.filter_out_embedding(embedding_attr))
 
         except Exception as e:
-            logging.error(f"RRF search with FullTextScore failed: {e}")
+            logging.error(f"RRF search with FullTextScore failed: {e}\n Query was: {sql}")
             # Fall back to vector search only
             try:
                 sql = f"""
