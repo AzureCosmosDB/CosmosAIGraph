@@ -659,9 +659,17 @@ async def conv_ai_console(req: Request):
     view_data = dict()
     view_data["conv"] = conv.get_data()
     view_data["conversation_id"] = conv.conversation_id
-    view_data["conversation_data"] = ""
-    view_data["prompts_text"] = "no prompts yet"
-    view_data["last_user_question"] = ""
+    
+    # Populate conversation data and prompts if conversation has completions
+    if conv and conv.completions and len(conv.completions) > 0:
+        view_data["conversation_data"] = conv.serialize()
+        view_data["prompts_text"] = conv.formatted_prompts_text()
+        view_data["last_user_question"] = conv.get_last_user_message()
+    else:
+        view_data["conversation_data"] = ""
+        view_data["prompts_text"] = "no prompts yet"
+        view_data["last_user_question"] = ""
+    
     view_data["rag_strategy"] = "auto"
     view_data["current_page"] = "conv_ai_console"  # Set active page for navbar
     return views.TemplateResponse(

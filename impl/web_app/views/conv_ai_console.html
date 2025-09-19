@@ -35,6 +35,57 @@
           Total tokens: {{ comp["usage"]["total_tokens"] }},
           RAG strategy: {{ comp["rag_strategy"] }}
         </p>
+        
+        {# Toggle buttons for this specific completion #}
+        <div class="row mb-3">
+          <div class="col-auto text-end ms-auto">
+            <div class="btn-group btn-group-sm" role="group" aria-label="Completion actions">
+              <button type="button" class="btn btn-outline-secondary comp-feedback-button" 
+                data-comp-id="{{ comp['completion_id'] }}" data-comp-index="{{ loop.index0 }}">Feedback</button>
+              <button type="button" class="btn btn-outline-secondary comp-prompts-button" 
+                data-comp-id="{{ comp['completion_id'] }}" data-comp-index="{{ loop.index0 }}">Prompts</button>
+              <button type="button" class="btn btn-outline-secondary comp-json-button" 
+                data-comp-id="{{ comp['completion_id'] }}" data-comp-index="{{ loop.index0 }}">Session Log</button>
+            </div>
+          </div>
+        </div>
+
+        {# Feedback section for this completion #}
+        <div class="container comp-feedback-div" id="feedback_div_{{ loop.index0 }}" style="display: none;" data-comp-index="{{ loop.index0 }}">
+          <div style="background-color: #2f3336; padding: 20px; margin: 0 -1.25rem;">
+            <h6 class="text-light">Feedback for this response</h6>
+            <form method="post" class="comp-feedback-form" action="/conv_ai_feedback">
+              <input type="hidden" name="conversation_id" value="{{ conversation_id }}">
+              <input type="hidden" name="completion_id" value="{{ comp['completion_id'] }}">
+              <div>
+                <label class="form-label fs-6 text-light">Question: {{ comp["user_text"] }}</label><br />
+                <input class="form-control bg-dark text-light border-secondary" type="text" name="feedback_user_feedback"
+                  placeholder="Enter your feedback for this response:"><br />
+                <div>
+                  <button type="submit" class="btn btn-outline-primary comp-feedback-submit-button">Submit Feedback</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {# Prompts section for this completion #}
+        <div class="container comp-prompts-div" id="prompts_div_{{ loop.index0 }}" style="display: none;" data-comp-index="{{ loop.index0 }}">
+          <div style="background-color: #2f3336; padding: 20px; margin: 0 -1.25rem;">
+            <h6 class="text-light">Prompts for this response:</h6>
+            <pre style="background-color: #2f3336; color: #ffffff; border: none; padding: 0; margin: 0;"><code>{% if conv.prompts and conv.prompts|length > loop.index0 %}{{ conv.prompts[loop.index0] }}{% else %}No prompt available for this completion{% endif %}</code></pre>
+          </div>
+        </div>
+
+        {# Session log section for this completion #}
+        <div class="container comp-json-div" id="json_div_{{ loop.index0 }}" style="display: none;" data-comp-index="{{ loop.index0 }}">
+          <div style="background-color: #2f3336; padding: 20px; margin: 0 -1.25rem;">
+            <h6 class="text-light">Session log for this response:</h6>
+            <pre style="background-color: #2f3336; color: #ffffff; border: none; padding: 0; margin: 0;"><code class="language-json" id="json-code-{{ loop.index0 }}">{{ comp | tojson }}</code></pre>
+          </div>
+        </div>
+
+        {% if not loop.last %}<hr>{% endif %}
         {% endfor %}
         <hr>
         <div class="row align-items-end mb-3">
@@ -74,60 +125,18 @@
             <p class="text-danger fw-bold" id="error_message" name="error_message" style="display: none;"></p>
           </div>
         </div>
-        <div class="row">
-          <div class="col"></div>
-          <div class="col-auto text-end">
-            <div class="btn-group btn-group-sm" role="group" aria-label="Conversation actions">
-              <button type="button" class="btn btn-outline-secondary" id="feedback_button"
-                name="feedback_button">Feedback</button>
-              <button type="button" class="btn btn-outline-secondary" id="prompts_button"
-                name="prompts_button">Prompts</button>
-              <button type="button" class="btn btn-outline-secondary" id="json_button" name="json_button">Conversation JSON</button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </form>
-<div class="container" id="feedback_div" name="feedback_div">
-  <br />
-  <h5>Feedback</h5>
-  <form method="post" id="feedback_form" name="feedback_form" action="/conv_ai_feedback"
-    onsubmit="submitForm(); return false;">
-    <input type="hidden" id="conversation_id" name="conversation_id" value="{{ conversation_id }}">
-    <div>
-      <label class="form-label fs-6" for="user_text">Enter your feedback on the last response:</label><br />
-      <label class="form-label text-muted">Conversation ID: {{ conversation_id }}</label><br />
-      <label class="form-label text-muted">Question: {{ last_user_question }}</label><br />
-      <input class="form-control" type="text" id="feedback_user_feedback" name="feedback_user_feedback"
-        placeholder="enter your feedback here"><br />
-      <div>
-        <button type="submit" class="btn btn-outline-primary" id="feedback_submit_button"
-          name="feedback_submit_button">Submit</button>
-      </div>
-    </div>
-  </form>
-</div>
-<div class="container" id="prompts_div" name="prompts_div">
-  <hr>
-  <h5>Prompts</h5>
-  <pre>
-  <code>
-{{ prompts_text }}
-  </code>
-  </pre>
+
+<!-- Prism.js for JSON syntax highlighting - loaded conditionally -->
+<div id="prism-resources" style="display: none;">
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
 </div>
 
-<div class="container" id="conversation_data" name="conversation_data">
-  <hr>
-  <h5>Conversation JSON</h5>
-  <pre>
-  <code>
-{{ conversation_data }}
-  </code>
-  </pre>
-</div>
 {% endblock %}
 
 {% block js %}
@@ -148,11 +157,10 @@
   const form = document.getElementById("form");
   var user_text = document.getElementById("user_text");
   const continue_button = document.getElementById("continue_button");
-  const json_button = document.getElementById("json_button");
-  const conversation_data = document.getElementById("conversation_data");
-  const feedback_div = document.getElementById("feedback_div");
-  const prompts_div = document.getElementById("prompts_div");
   const error_message = document.getElementById("error_message");
+
+  // Session state keys for toggle persistence (per completion)
+  const CONVERSATION_ID = document.getElementById('conversation_id').value;
 
   function scrollToBottom() {
     try {
@@ -162,12 +170,118 @@
     }
   }
 
+  // Lazy load Prism.js for JSON syntax highlighting
+  function loadPrismResources() {
+    return new Promise((resolve) => {
+      // Check if Prism is already loaded
+      if (window.Prism) {
+        resolve();
+        return;
+      }
+      
+      const prismContainer = document.getElementById('prism-resources');
+      if (prismContainer) {
+        // Make Prism resources visible to load them
+        prismContainer.style.display = 'block';
+        
+        // Wait for scripts to load
+        const checkPrism = () => {
+          if (window.Prism) {
+            resolve();
+          } else {
+            setTimeout(checkPrism, 100);
+          }
+        };
+        checkPrism();
+      } else {
+        resolve();
+      }
+    });
+  }
+
+  // Apply JSON syntax highlighting to all visible code blocks
+  async function highlightJsonCode() {
+    // Load Prism for syntax highlighting
+    await loadPrismResources();
+    
+    // Apply syntax highlighting if Prism is available
+    if (window.Prism) {
+      const codeElements = document.querySelectorAll('code.language-json');
+      codeElements.forEach(codeElement => {
+        Prism.highlightElement(codeElement);
+      });
+    }
+  }
+
+  // Restore toggle states for all completions
+  function restoreToggleStates() {
+    try {
+      // Get all completion sections
+      const feedbackDivs = document.querySelectorAll('.comp-feedback-div');
+      const promptsDivs = document.querySelectorAll('.comp-prompts-div');
+      const jsonDivs = document.querySelectorAll('.comp-json-div');
+      
+      // Restore feedback states
+      feedbackDivs.forEach(div => {
+        const compIndex = div.dataset.compIndex;
+        const key = `conv_feedback_toggle_${CONVERSATION_ID}_${compIndex}`;
+        const state = sessionStorage.getItem(key);
+        const button = document.querySelector(`[data-comp-index="${compIndex}"].comp-feedback-button`);
+        
+        if (state === 'visible') {
+          div.style.display = "block";
+          if (button) button.classList.add('btn-toggle-active');
+        } else {
+          div.style.display = "none";
+          if (button) button.classList.remove('btn-toggle-active');
+        }
+      });
+
+      // Restore prompts states
+      promptsDivs.forEach(div => {
+        const compIndex = div.dataset.compIndex;
+        const key = `conv_prompts_toggle_${CONVERSATION_ID}_${compIndex}`;
+        const state = sessionStorage.getItem(key);
+        const button = document.querySelector(`[data-comp-index="${compIndex}"].comp-prompts-button`);
+        
+        if (state === 'visible') {
+          div.style.display = "block";
+          if (button) button.classList.add('btn-toggle-active');
+        } else {
+          div.style.display = "none";
+          if (button) button.classList.remove('btn-toggle-active');
+        }
+      });
+
+      // Restore JSON states
+      jsonDivs.forEach(div => {
+        const compIndex = div.dataset.compIndex;
+        const key = `conv_json_toggle_${CONVERSATION_ID}_${compIndex}`;
+        const state = sessionStorage.getItem(key);
+        const button = document.querySelector(`[data-comp-index="${compIndex}"].comp-json-button`);
+        
+        if (state === 'visible') {
+          div.style.display = "block";
+          if (button) button.classList.add('btn-toggle-active');
+        } else {
+          div.style.display = "none";
+          if (button) button.classList.remove('btn-toggle-active');
+        }
+      });
+      
+      // Apply JSON syntax highlighting to any visible JSON sections
+      highlightJsonCode();
+    } catch (e) {
+      console.warn('Error restoring toggle states:', e);
+    }
+  }
+
   user_text.focus();
   continue_button.disabled = true;
-  conversation_data.style.display = "none";
-  feedback_div.style.display = "none";
-  prompts_div.style.display = "none";
   error_message.style.display = "none";
+  
+  // Restore previous toggle states
+  restoreToggleStates();
   // ensure latest completion is visible on render
   document.addEventListener('DOMContentLoaded', scrollToBottom);
 
@@ -212,13 +326,10 @@
       continue_button.disabled = true;
       continue_button.classList.add('processing');
       continue_button.textContent = "Processing...";
-      json_button.disabled = true;
       error_message.style.display = "none"; // Hide any previous errors
       
       // Store the submission time to detect if the page takes too long
       sessionStorage.setItem('conv_ai_form_submit_time', Date.now().toString());
-      
-      // Note: Removed timeout to allow long-running requests to complete naturally
       
       form.submit();
     }
@@ -238,62 +349,104 @@
     }
   });
 
-  feedback_button.addEventListener('click',
-    function (event) {
-      console.log("feedback_button click");
+  // Event delegation for completion-specific toggle buttons
+  document.addEventListener('click', function(event) {
+    const target = event.target;
+    
+    // Handle feedback button clicks
+    if (target.classList.contains('comp-feedback-button')) {
       event.preventDefault();
-      if (feedback_div.style.display == "none") {
-        feedback_div.style.display = "block";
-        feedback_button.classList.add('btn-toggle-active');
-      }
-      else {
-        feedback_div.style.display = "none";
-        feedback_button.classList.remove('btn-toggle-active');
+      const compIndex = target.dataset.compIndex;
+      const feedbackDiv = document.getElementById(`feedback_div_${compIndex}`);
+      const key = `conv_feedback_toggle_${CONVERSATION_ID}_${compIndex}`;
+      
+      if (feedbackDiv.style.display === "none" || feedbackDiv.style.display === "") {
+        feedbackDiv.style.display = "block";
+        target.classList.add('btn-toggle-active');
+        sessionStorage.setItem(key, 'visible');
+      } else {
+        feedbackDiv.style.display = "none";
+        target.classList.remove('btn-toggle-active');
+        sessionStorage.setItem(key, 'hidden');
       }
     }
-  );
-
-  feedback_submit_button.addEventListener('click',
-    function (event) {
-      console.log("feedback_submit_button click");
+    
+    // Handle prompts button clicks
+    if (target.classList.contains('comp-prompts-button')) {
       event.preventDefault();
-      submitFeedbackForm();
-      feedback_div.style.display = "none";
-      feedback_button.classList.remove('btn-toggle-active');
-    }
-  );
-
-  prompts_button.addEventListener('click',
-    function (event) {
-      console.log("prompts_button click");
-      event.preventDefault();
-      if (prompts_div.style.display == "none") {
-        prompts_div.style.display = "block";
-        prompts_button.classList.add('btn-toggle-active');
-      }
-      else {
-        prompts_div.style.display = "none";
-        prompts_button.classList.remove('btn-toggle-active');
+      const compIndex = target.dataset.compIndex;
+      const promptsDiv = document.getElementById(`prompts_div_${compIndex}`);
+      const key = `conv_prompts_toggle_${CONVERSATION_ID}_${compIndex}`;
+      
+      if (promptsDiv.style.display === "none" || promptsDiv.style.display === "") {
+        promptsDiv.style.display = "block";
+        target.classList.add('btn-toggle-active');
+        sessionStorage.setItem(key, 'visible');
+      } else {
+        promptsDiv.style.display = "none";
+        target.classList.remove('btn-toggle-active');
+        sessionStorage.setItem(key, 'hidden');
       }
     }
-  );
-
-  json_button.addEventListener('click',
-    function (event) {
-      console.log("json_button click");
+    
+    // Handle JSON button clicks
+    if (target.classList.contains('comp-json-button')) {
       event.preventDefault();
-      if (conversation_data.style.display == "none") {
-        conversation_data.style.display = "block";
-        json_button.classList.add('btn-toggle-active');
-      }
-      else {
-        conversation_data.style.display = "none";
-        json_button.classList.remove('btn-toggle-active');
+      const compIndex = target.dataset.compIndex;
+      const jsonDiv = document.getElementById(`json_div_${compIndex}`);
+      const key = `conv_json_toggle_${CONVERSATION_ID}_${compIndex}`;
+      
+      if (jsonDiv.style.display === "none" || jsonDiv.style.display === "") {
+        jsonDiv.style.display = "block";
+        target.classList.add('btn-toggle-active');
+        sessionStorage.setItem(key, 'visible');
+        // Apply JSON syntax highlighting when section becomes visible
+        highlightJsonCode();
+      } else {
+        jsonDiv.style.display = "none";
+        target.classList.remove('btn-toggle-active');
+        sessionStorage.setItem(key, 'hidden');
       }
     }
-  );
-
-  // (kept single handler above)
+    
+    // Handle feedback form submission
+    if (target.classList.contains('comp-feedback-submit-button')) {
+      event.preventDefault();
+      const form = target.closest('.comp-feedback-form');
+      const formData = new FormData(form);
+      const postObj = {
+        conversation_id: formData.get('conversation_id'),
+        completion_id: formData.get('completion_id'),
+        feedback_user_feedback: formData.get('feedback_user_feedback')
+      };
+      
+      fetch('/conv_ai_feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postObj)
+      })
+      .then(response => response.text())
+      .then(data => {
+        console.log('Feedback submitted:', data);
+        // Clear the feedback input
+        const feedbackInput = form.querySelector('input[name="feedback_user_feedback"]');
+        if (feedbackInput) feedbackInput.value = "";
+        // Hide the feedback div
+        const compIndex = target.closest('.comp-feedback-div').dataset.compIndex;
+        const feedbackDiv = document.getElementById(`feedback_div_${compIndex}`);
+        const feedbackButton = document.querySelector(`[data-comp-index="${compIndex}"].comp-feedback-button`);
+        feedbackDiv.style.display = "none";
+        feedbackButton.classList.remove('btn-toggle-active');
+        const key = `conv_feedback_toggle_${CONVERSATION_ID}_${compIndex}`;
+        sessionStorage.setItem(key, 'hidden');
+      })
+      .catch(error => {
+        console.error('Error submitting feedback:', error);
+      });
+    }
+  });
 
   user_text.addEventListener("input", () => {
     console.log("user_text: " + user_text.value);
@@ -304,22 +457,6 @@
       continue_button.disabled = true;
     }
   });
-
-  function submitFeedbackForm() {
-    var http = new XMLHttpRequest();
-    http.open("POST", "/conv_ai_feedback", true);
-    http.setRequestHeader("Content-type", "application/json");
-    postObj = {};
-    postObj["conversation_id"] = document.getElementById('conversation_id').value;
-    postObj["feedback_last_question"] = "{{ last_user_question }}";
-    postObj["feedback_user_feedback"] = document.getElementById('feedback_user_feedback').value;
-    console.log("submitFeedbackForm: " + JSON.stringify(postObj));
-    http.send(JSON.stringify(postObj));
-    http.onload = function () {
-      console.log(http.responseText);
-      document.getElementById('feedback_user_feedback').value = "";
-    }
-  }
 
   // Local Storage Management for user input
   const STORAGE_KEY = 'conv_ai_console_user_text';
@@ -412,7 +549,6 @@
       sessionStorage.setItem('conv_ai_completions_before_submit', completionsCount.toString());
       
       // Clear the saved text before submitting since we're about to process it
-      // Note: We keep the conversation ID as the conversation continues
       try {
         localStorage.removeItem(STORAGE_KEY);
       } catch (e) {
