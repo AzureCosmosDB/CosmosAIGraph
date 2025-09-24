@@ -366,11 +366,11 @@ class ConfigService:
 
     @classmethod
     def get_completion_temperature(cls) -> float:
-        return cls.float_envvar("CAIG_GET_COMPLETION_TEMPERATURE", 0.1)
+        return cls.float_envvar("CAIG_GET_COMPLETION_TEMPERATURE", 0.0)
 
     @classmethod
     def invoke_kernel_top_p(cls) -> float:
-        return cls.float_envvar("CAIG_INVOKE_KERNEL_TOP_P", 0.5)
+        return cls.float_envvar("CAIG_INVOKE_KERNEL_TOP_P", 1.0)
 
     @classmethod
     def graph_namespace(cls):

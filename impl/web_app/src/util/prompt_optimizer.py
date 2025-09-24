@@ -46,7 +46,7 @@ class PromptOptimizer:
         continue_to_prune, ntokens = True, -1
 
         pruned_context: str = str(full_context)
-        pruned_history: str = str(full_history)
+        pruned_history = full_history  # Keep as original type (str or dict)
 
         result_obj = dict()
         result_obj["full_context"] = full_context
@@ -73,7 +73,7 @@ class PromptOptimizer:
                     result_obj["actual_prompt"] = self.merge_prompt_template(
                         prompt_template,
                         pruned_context,
-                        json.dumps(pruned_history),
+                        self.format_history_for_prompt(pruned_history),
                         user_query,
                     )
                     ntokens = len(
@@ -99,17 +99,44 @@ class PromptOptimizer:
                                 context_words_ratio
                             )
                         context_words = pruned_context.split()
-                        history_messages = json.loads(pruned_history)["messages"]
+                        
+                        # Handle both string and dict history formats
+                        if isinstance(pruned_history, str):
+                            history_messages = json.loads(pruned_history)["messages"]
+                        else:
+                            history_messages = pruned_history.get("messages", [])
 
-                        # retain the tail-end of the context words
+                        # retain the tail-end of the context, but preserve JSON structure
                         retain_index = int(
                             float(len(context_words)) * context_words_ratio
                         )
-                        retained_words_list = list()
-                        for idx, word in enumerate(context_words):
-                            if idx >= retain_index:
-                                retained_words_list.append(word)
-                        pruned_context = (" ".join(retained_words_list)).strip()
+                        
+                        # Check if context appears to be JSON
+                        context_text = pruned_context.strip()
+                        is_json_context = (context_text.startswith('{') and context_text.endswith('}')) or \
+                                         (context_text.startswith('[') and context_text.endswith(']'))
+                        
+                        if is_json_context:
+                            # For JSON context, truncate by characters instead of words to preserve structure
+                            char_ratio = context_words_ratio
+                            char_retain_index = int(float(len(context_text)) * char_ratio)
+                            # Find the last complete JSON object boundary before the retain index
+                            truncated_text = context_text[char_retain_index:]
+                            # Try to find the start of a complete JSON object
+                            brace_start = truncated_text.find('{')
+                            if brace_start >= 0:
+                                pruned_context = truncated_text[brace_start:]
+                            else:
+                                # Fallback to character truncation
+                                pruned_context = truncated_text
+                        else:
+                            # For non-JSON context, use word-based truncation as before
+                            retained_words_list = list()
+                            for idx, word in enumerate(context_words):
+                                if idx >= retain_index:
+                                    retained_words_list.append(word)
+                            pruned_context = (" ".join(retained_words_list)).strip()
+                        
                         result_obj["pruned_context"] = pruned_context
 
                         # retain the tail-end of the history messages
@@ -118,7 +145,13 @@ class PromptOptimizer:
                         )  # include more history than context
                         if result_obj["iteration_count"] == 1:
                             result_obj["initial_history_ratio"] = history_ratio
-                        history_messages = json.loads(pruned_history)["messages"]
+                        
+                        # Handle both string and dict history formats
+                        if isinstance(pruned_history, str):
+                            history_messages = json.loads(pruned_history)["messages"]
+                        else:
+                            history_messages = pruned_history.get("messages", [])
+                            
                         retain_index = int(float(len(history_messages)) * history_ratio)
                         if retain_index < 1:
                             retain_index = 2
@@ -130,7 +163,7 @@ class PromptOptimizer:
                         # the history is a json string with messages, not an array of messages
                         new_history = dict()
                         new_history["messages"] = retained_history_list
-                        pruned_history = json.dumps(new_history)
+                        pruned_history = new_history
                         result_obj["pruned_history"] = pruned_history
                     else:
                         continue_to_prune = False
@@ -168,3 +201,45 @@ class PromptOptimizer:
             )
             logging.exception(e, stack_info=True, exc_info=True)
             return "exception in merge_prompt_template"
+
+    def format_history_for_prompt(self, history_data):
+        """
+        Format chat history as readable conversation text instead of raw JSON.
+        """
+        try:
+            # If history_data is a string, parse it as JSON
+            if isinstance(history_data, str):
+                history_obj = json.loads(history_data)
+            else:
+                history_obj = history_data
+                
+            if not history_obj or "messages" not in history_obj:
+                return ""
+                
+            formatted_lines = []
+            for msg in history_obj["messages"]:
+                role = msg.get("role", "unknown")
+                
+                # Extract text content from the message items
+                text_content = ""
+                if "items" in msg:
+                    for item in msg["items"]:
+                        if item.get("content_type") == "text":
+                            text_content = item.get("text", "")
+                            break
+                
+                if text_content.strip():
+                    if role == "user":
+                        formatted_lines.append(f"User: {text_content}")
+                    elif role == "assistant":
+                        formatted_lines.append(f"Assistant: {text_content}")
+                    elif role == "system":
+                        formatted_lines.append(f"System: {text_content}")
+            
+            return "\n".join(formatted_lines)
+        except Exception as e:
+            logging.critical(
+                "Exception in PromptOptimizer#format_history_for_prompt: {}".format(str(e))
+            )
+            logging.exception(e, stack_info=True, exc_info=True)
+            return json.dumps(history_data) if isinstance(history_data, dict) else str(history_data)

@@ -776,7 +776,8 @@ async def conv_ai_console_post(req: Request):
 
             # Prepare context based on RAG strategy
             context = ""
-            completion_context = conv.last_completion_content()
+            # Remove completion_context - previous responses should only be in chat history
+            # completion_context = conv.last_completion_content()
             
             if rdr.has_db_rag_docs() == True:
                 for doc in rdr.get_rag_docs():
@@ -789,16 +790,16 @@ async def conv_ai_console_post(req: Request):
                                 line_parts.append("{}: {}".format(attr, value))
                     content_lines.append(".  ".join(line_parts))
                 
-                # For DB RAG, set the context but don't set completion content yet
+                # For DB RAG, set the context but don't include previous completion content
                 conv.set_context(rdr.get_context())
                 rag_data = "\n".join(content_lines)
                 
                 if conv.has_context():
-                    context = "Found context: {}\n{}\n{}".format(
-                        conv.get_context(), completion_context, rag_data
+                    context = "{}\n{}".format(
+                        conv.get_context(), rag_data
                     )
                 else:
-                    context = "{}\n{}".format(completion_context, rag_data)
+                    context = rag_data
                     
                 try:
                     logging.info("conv save (db path) completions: {}".format(len(conv.get_data().get("completions", []))))
@@ -809,27 +810,25 @@ async def conv_ai_console_post(req: Request):
                 for doc in rdr.get_rag_docs():
                     content_lines.append(json.dumps(doc))
                 
-                # For Graph RAG, set the context but don't set completion content yet
+                # For Graph RAG, set the context but don't include previous completion content
                 graph_content = ", ".join(content_lines)
                 conv.set_context(graph_content)
                 conv.add_diagnostic_message("sparql: {}".format(rdr.get_sparql()))
 
                 if conv.has_context():
-                    context = "Found context: {}\n{}\n".format(
-                        conv.get_context(), completion_context
-                    )
+                    context = conv.get_context()
                 else:
-                    context = "{}\n".format(completion_context)
+                    context = ""
             else:
                 # No specific RAG docs, use system prompt
                 rag_data = rdr.as_system_prompt_text()
 
                 if conv.has_context():
-                    context = "Found context: {}\n{}\n{}".format(
-                        conv.get_context(), completion_context, rag_data
+                    context = "{}\n{}".format(
+                        conv.get_context(), rag_data
                     )
                 else:
-                    context = "{}\n{}".format(completion_context, rag_data)
+                    context = rag_data
 
             # Always run AI inference to generate the actual response
             max_tokens = ConfigService.invoke_kernel_max_tokens()
