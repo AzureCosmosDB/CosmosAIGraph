@@ -7,6 +7,28 @@
 - [Frequently Asked Questions (FAQ)](docs/faq.md)
 - [Reference Dataset of Python libraries](data/pypi/wrangled_libs)
 
+## What is OmniRAG Pattern?
+
+OmniRAG pattern is advanced Retrieval Augmented Generation pattern, helping to acheieve maximum relevancy of the results in context retrieval by detecting the user inten, intellegently routing the reqest to multiple available data sources and collecting the results from them before calling the completion model. OmniRAR core tenets are:
+
+- Omni-source with data virtualization
+  - Not limited to vector store, utilizing ALL data sources that can bring value to the context for AI
+  - Use data wherever it is, in the original format, minimizing data movement and transformation
+- Knowledge graph
+  - Contains entities/relationships from existing data to make it readily available for AI to reason over (along with original data) 
+- User intent detection
+  - Allows automatic routing of user’s query to the right source, leverages AI
+- Runtime NL2Query conversion
+  - Converts user query to the source’s query language using simple utterance analysis and/or AI  
+- Session analytics
+  - Required to fine-tune golden dataset of questions + intent so the intent detection doesn't degrade as data variety and volume grows. Additionally, it could be used for semantic cache generation/curation.
+
+ 
+
+<p align="center">
+  <img src="docs/img/omnirag.png" width="100%">
+</p>
+
 
 ## CosmosAIGraph Deployment Architecture
 
