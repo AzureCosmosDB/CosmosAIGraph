@@ -9,7 +9,7 @@
 
 ## What is OmniRAG Pattern?
 
-OmniRAG pattern is advanced Retrieval Augmented Generation pattern, helping to acheieve maximum relevancy of the results in context retrieval by detecting the user inten, intellegently routing the reqest to multiple available data sources and collecting the results from them before calling the completion model. OmniRAR core tenets are:
+OmniRAG pattern is advanced Retrieval Augmented Generation pattern, helping to acheieve maximum relevancy of the results in context retrieval by detecting the user intent, intellegently routing the reqests to multiple available data sources and collecting the results from them before calling the completion model. OmniRAG core tenets are:
 
 - Omni-source with data virtualization
   - Not limited to vector store, utilizing ALL data sources that can bring value to the context for AI
