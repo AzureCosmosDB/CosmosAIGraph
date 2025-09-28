@@ -1184,15 +1184,27 @@
             console.log('✅ navigator.gpu available, requesting adapter...');
             
             try {
-              // Try high-performance first (should get NVIDIA 4070)
+              // Try high-performance GPU first 
+              console.log('🎯 Requesting high-performance GPU adapter...');
               let adapter = await navigator.gpu.requestAdapter({
-                powerPreference: 'high-performance'
+                powerPreference: 'high-performance',
+                forceFallbackAdapter: false
               });
               
               // If that doesn't work, try default adapter
               if (!adapter) {
-                console.log('High-performance adapter failed, trying default...');
-                adapter = await navigator.gpu.requestAdapter();
+                console.log('❌ High-performance adapter failed, trying default...');
+                adapter = await navigator.gpu.requestAdapter({
+                  powerPreference: 'default'
+                });
+              }
+              
+              // Last resort: try low-power adapter
+              if (!adapter) {
+                console.log('❌ Default adapter failed, trying low-power...');
+                adapter = await navigator.gpu.requestAdapter({
+                  powerPreference: 'low-power'
+                });
               }
               
               if (!adapter) {
@@ -1215,23 +1227,37 @@
                   description: adapter.info.description
                 });
                 
-                // Check if we got the desired NVIDIA GPU
+                // Check if we got the desired NVIDIA or AMD GPU
                 const isNVIDIA = adapter.info.vendor?.toLowerCase().includes('nvidia') || 
                                adapter.info.description?.toLowerCase().includes('nvidia');
+                const isAMD = adapter.info.vendor?.toLowerCase().includes('amd') || 
+                              adapter.info.description?.toLowerCase().includes('amd');
                 const isHighPerf = adapter.info.description?.toLowerCase().includes('rtx') ||
-                                 adapter.info.description?.toLowerCase().includes('gtx') ||
-                                 adapter.info.description?.toLowerCase().includes('4070');
+                                 adapter.info.description?.toLowerCase().includes('gtx') || 
+                                 adapter.info.description?.toLowerCase().includes('ryzen') ||
+                                 adapter.info.description?.toLowerCase().includes('radeon');
                 
                 if (isNVIDIA) {
-                  console.log('🚀 NVIDIA GPU detected! This should provide excellent performance.');
+                  console.log('🚀 NVIDIA GPU detected!');
+                } else if (isAMD) {
+                  console.log('🚀 AMD GPU detected!');
                 } else if (isHighPerf) {
                   console.log('⚡ High-performance GPU detected!');
                 } else {
-                  console.log('ℹ️ Using integrated/alternative GPU. For best performance, ensure Chrome uses your NVIDIA 4070.');
-                  console.log('💡 TIP: To force NVIDIA GPU usage:');
-                  console.log('   1. Go to chrome://settings/system');
-                  console.log('   2. Enable "Use hardware acceleration when available"');
-                  console.log('   3. Or set Chrome to use high-performance GPU in Windows Graphics Settings');
+                  console.log('ℹ️ Using integrated/alternative GPU. For best performance, ensure Chrome uses your NVIDIA/AMD GPU.');
+                  console.log('💡FOR EXAMPLE, TO FORCE NVIDIA GPU IN CHROME:');
+                  console.log('   Method 1 - Windows Graphics Settings:');
+                  console.log('   • Windows Settings → System → Display → Graphics Settings');
+                  console.log('   • Browse and select Chrome.exe');
+                  console.log('   • Set to "High Performance" (NVIDIA)');
+                  console.log('   Method 2 - NVIDIA Control Panel:');
+                  console.log('   • Right-click desktop → NVIDIA Control Panel');
+                  console.log('   • 3D Settings → Manage 3D Settings → Program Settings');
+                  console.log('   • Add Chrome → Set to "High-performance NVIDIA processor"');
+                  console.log('   Method 3 - Chrome Flags:');
+                  console.log('   • Go to chrome://flags/#use-angle');
+                  console.log('   • Set "Choose ANGLE graphics backend" to "D3D11on12"');
+                  console.log('   • Restart Chrome');
                 }
               }
               
@@ -1280,27 +1306,31 @@
               var fx: f32 = 0.0;
               var fy: f32 = 0.0;
               
-              // Many-body repulsion force
+              // Many-body repulsion force (similar to D3's forceManyBody)
               for (var i: u32 = 0u; i < nodeCount; i = i + 1u) {
                 if (i != index) {
                   let other = nodeBuffer.nodes[i];
                   let dx = node.x - other.x;
                   let dy = node.y - other.y;
-                  let distSq = dx * dx + dy * dy + 1.0; // Add small value to prevent division by zero
-                  let dist = sqrt(distSq);
-                  let force = strength / distSq;
-                  fx = fx + (dx / dist) * force;
-                  fy = fy + (dy / dist) * force;
+                  let distSq = dx * dx + dy * dy + 0.01; // Small epsilon to prevent division by zero
+                  
+                  // Only apply force if nodes are close enough (performance optimization)
+                  if (distSq < 10000.0) { // Within ~100 pixel radius
+                    let dist = sqrt(distSq);
+                    let force = strength / distSq;
+                    fx = fx + (dx / dist) * force;
+                    fy = fy + (dy / dist) * force;
+                  }
                 }
               }
               
-              // Center force
-              let centerForce = 0.01;
+              // Center force (similar to D3's forceCenter)
+              let centerForce = 0.03;
               fx = fx + (centerX - node.x) * centerForce;
               fy = fy + (centerY - node.y) * centerForce;
               
-              // Update velocity
-              let damping = 0.9;
+              // Update velocity with proper damping (similar to D3's velocity decay)
+              let damping = 0.4; // More aggressive damping to match D3 behavior
               node.vx = (node.vx + fx) * damping;
               node.vy = (node.vy + fy) * damping;
               
@@ -1333,8 +1363,34 @@
                   code: webgpuForceShader
                 });
                 
-                // Create compute pipeline
+                // Create bind group layout explicitly
+                const bindGroupLayout = this.device.createBindGroupLayout({
+                  entries: [
+                    {
+                      binding: 0,
+                      visibility: GPUShaderStage.COMPUTE,
+                      buffer: {
+                        type: 'storage'
+                      }
+                    },
+                    {
+                      binding: 1,
+                      visibility: GPUShaderStage.COMPUTE,
+                      buffer: {
+                        type: 'uniform'
+                      }
+                    }
+                  ]
+                });
+                
+                // Create pipeline layout
+                const pipelineLayout = this.device.createPipelineLayout({
+                  bindGroupLayouts: [bindGroupLayout]
+                });
+                
+                // Create compute pipeline with explicit layout
                 this.pipeline = this.device.createComputePipeline({
+                  layout: pipelineLayout,
                   compute: {
                     module: shaderModule,
                     entryPoint: 'computeForces'
@@ -1342,10 +1398,19 @@
                 });
                 
                 // Create node buffer (x, y, vx, vy for each node)
+                // Ensure nodes have random initial positions if not set
                 const nodeData = new Float32Array(this.nodes.length * 4);
                 this.nodes.forEach((node, i) => {
-                  nodeData[i * 4] = node.x || 0;
-                  nodeData[i * 4 + 1] = node.y || 0;
+                  // Initialize with random positions if not already set
+                  if (node.x === undefined || node.x === null) {
+                    node.x = Math.random() * this.width;
+                  }
+                  if (node.y === undefined || node.y === null) {
+                    node.y = Math.random() * this.height;
+                  }
+                  
+                  nodeData[i * 4] = node.x;
+                  nodeData[i * 4 + 1] = node.y;
                   nodeData[i * 4 + 2] = node.vx || 0;
                   nodeData[i * 4 + 3] = node.vy || 0;
                 });
@@ -1359,9 +1424,10 @@
                 this.nodeBuffer.unmap();
                 
                 // Create parameters buffer [nodeCount, strength, centerX, centerY]
+                // Use force strength similar to D3's default many-body force
                 const paramsData = new Float32Array([
                   this.nodes.length,
-                  -300.0, // Force strength
+                  -30.0, // Reduced force strength to match D3 behavior better
                   this.width / 2,
                   this.height / 2
                 ]);
@@ -1374,9 +1440,9 @@
                 new Float32Array(this.paramsBuffer.getMappedRange()).set(paramsData);
                 this.paramsBuffer.unmap();
                 
-                // Create bind group
+                // Create bind group using the explicit layout
                 this.bindGroup = this.device.createBindGroup({
-                  layout: this.pipeline.getBindGroupLayout(0),
+                  layout: bindGroupLayout,
                   entries: [
                     {
                       binding: 0,
@@ -1504,6 +1570,18 @@
             console.error('Basic simulation test failed with error:', e);
           }
           
+          // Ensure all nodes have initial positions before simulation
+          console.log('Initializing node positions...');
+          graphNodes.forEach(node => {
+            if (node.x === undefined || node.x === null || node.x === 0) {
+              node.x = Math.random() * width;
+            }
+            if (node.y === undefined || node.y === null || node.y === 0) {
+              node.y = Math.random() * height;
+            }
+            console.log(`Node ${node.id}: x=${node.x}, y=${node.y}`);
+          });
+
           // Create simulation with the node data
           try {
             console.log('Creating forceSimulation with', graphNodes.length, 'nodes');
@@ -1539,37 +1617,54 @@
             
             console.log('Simulation created successfully, setting up visualization');
             
+            console.log('🔧 Checking WebGPU device availability...');
+            console.log('webgpuDevice:', webgpuDevice);
+            console.log('useWebGPU flag:', useWebGPU);
+            
             // Initialize WebGPU force simulation if available
             let webgpuSim = null;
-            if (useWebGPU && webgpuDevice) {
-              console.log('🚀 Initializing WebGPU-accelerated force simulation...');
-              webgpuSim = new WebGPUForceSimulation(webgpuDevice, graphNodes, width, height);
+            
+            // Wait for WebGPU detection to complete before initializing
+            setTimeout(async () => {
+              console.log('⏱️ Delayed WebGPU initialization check...');
+              console.log('webgpuDevice after delay:', webgpuDevice);
+              console.log('useWebGPU after delay:', useWebGPU);
               
-              webgpuSim.initialize().then(initialized => {
+              if (useWebGPU && webgpuDevice && graphNodes.length > 50) { // Only use WebGPU for larger graphs
+                console.log('🚀 Initializing WebGPU-accelerated force simulation...');
+                webgpuSim = new WebGPUForceSimulation(webgpuDevice, graphNodes, width, height);
+                
+                const initialized = await webgpuSim.initialize();
                 if (initialized) {
                   console.log('✅ WebGPU force simulation ready for GPU-accelerated physics');
                   
-                  // Ensure useWebGPU flag is set correctly
-                  useWebGPU = true;
-                  updatePerformanceIndicator();
+                  // For now, let's keep D3 forces active and just log WebGPU availability
+                  // Instead of completely replacing D3, we'll use hybrid approach
+                  console.log('🎮 WebGPU available but keeping D3 forces for stability');
                   
-                  // Replace D3's internal force calculations with WebGPU
+                  // Optional: You can enable WebGPU replacement by uncommenting these lines:
+                  /*
+                  simulation
+                    .force("charge", null)  // Disable CPU many-body force
+                    .force("center", null)  // Disable CPU center force
+                    .force("collision", null); // Disable CPU collision force
+                  
+                  // Replace D3's tick calculations with WebGPU
                   simulation.on('tick', async () => {
                     if (webgpuSim && webgpuSim.isInitialized) {
                       await webgpuSim.computeStep();
                     }
                   });
-                } else {
-                  console.log('⚠️ WebGPU force simulation initialization failed, using CPU fallback');
-                  useWebGPU = false;
+                  */
+                  
                   updatePerformanceIndicator();
+                } else {
+                  console.log('❌ WebGPU force simulation initialization failed, using D3 forces');
                 }
-              }).catch(error => {
-                console.log('❌ WebGPU force simulation setup error:', error);
-                useWebGPU = false;
-                updatePerformanceIndicator();
-              });
-            }
+              } else {
+                console.log('💻 Using D3-only force simulation (WebGPU disabled or small graph)');
+              }
+            }, 1000); // Wait 1 second for WebGPU detection to complete
             
           } catch (error) {
             console.error('Error creating D3 simulation:', error);
