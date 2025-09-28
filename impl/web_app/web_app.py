@@ -1239,26 +1239,57 @@ def post_libraries_sparql_console(form_data):
         if len(bom_query) > 0:
             tokens = bom_query.split()
             if len(tokens) > 1:
-                bom_obj = None
-                url = graph_microsvc_bom_query_url()
-                logging.info("url: {}".format(url))
-                postdata = dict()
-                postdata["entrypoint"] = tokens[0]
-                postdata["max_depth"] = tokens[1]
-                logging.info("postdata: {}".format(postdata))
-                r = httpx.post(
-                    url,
-                    headers=websvc_headers,
-                    content=json.dumps(postdata),
-                )
-                bom_obj = json.loads(r.text)
-                
-                # Filter out numeric nodes that are likely measurement values
-                filtered_bom_obj = filter_numeric_nodes(bom_obj)
-                
-                view_data["results"] = filtered_bom_obj
-                view_data["inline_bom_json"] = view_data["results"]
-                view_data["visualization_message"] = "Graph Visualization"
+                try:
+                    bom_obj = None
+                    url = graph_microsvc_bom_query_url()
+                    logging.info("url: {}".format(url))
+                    postdata = dict()
+                    postdata["entrypoint"] = tokens[0]
+                    postdata["max_depth"] = tokens[1]
+                    logging.info("postdata: {}".format(postdata))
+                    r = httpx.post(
+                        url,
+                        headers=websvc_headers,
+                        content=json.dumps(postdata),
+                        timeout=60.0,  # 1 minute timeout for large graph processing
+                    )
+                    bom_obj = json.loads(r.text)
+                    
+                    # Filter out numeric nodes that are likely measurement values
+                    filtered_bom_obj = filter_numeric_nodes(bom_obj)
+                    
+                    view_data["results"] = filtered_bom_obj
+                    view_data["inline_bom_json"] = view_data["results"]
+                    view_data["visualization_message"] = "Graph Visualization"
+                except httpx.TimeoutException:
+                    error_msg = f"Graph processing timed out for query '{bom_query}'. Large graphs may take longer to process. Please try with a smaller depth or a more specific entity."
+                    logging.error(f"BOM query timeout: {error_msg}")
+                    view_data["results"] = {"error": error_msg}
+                    view_data["results_message"] = "Graph Processing Timeout"
+                    view_data["inline_bom_json"] = "{}"
+                    view_data["visualization_message"] = ""
+                except httpx.ConnectError:
+                    error_msg = "Unable to connect to the graph service. Please check if the graph microservice is running."
+                    logging.error(f"BOM query connection error: {error_msg}")
+                    view_data["results"] = {"error": error_msg}
+                    view_data["results_message"] = "Connection Error"
+                    view_data["inline_bom_json"] = "{}"
+                    view_data["visualization_message"] = ""
+                except httpx.HTTPStatusError as e:
+                    error_msg = f"Graph service returned an error (HTTP {e.response.status_code}). The query may be invalid or the service may be experiencing issues."
+                    logging.error(f"BOM query HTTP error: {error_msg}")
+                    view_data["results"] = {"error": error_msg}
+                    view_data["results_message"] = "Graph Service Error"
+                    view_data["inline_bom_json"] = "{}"
+                    view_data["visualization_message"] = ""
+                except Exception as e:
+                    error_msg = f"An unexpected error occurred while processing the graph query: {str(e)}"
+                    logging.error(f"BOM query unexpected error: {error_msg}")
+                    logging.exception(e, stack_info=True, exc_info=True)
+                    view_data["results"] = {"error": error_msg}
+                    view_data["results_message"] = "Processing Error"
+                    view_data["inline_bom_json"] = "{}"
+                    view_data["visualization_message"] = ""
                 # Derive a count for the header if possible
                 try:
                     count_val = 0
@@ -1286,7 +1317,8 @@ def post_libraries_sparql_console(form_data):
         else:
             sqr: SparqlQueryResponse = post_sparql_query_to_graph_microsvc(sparql)
             if sqr.has_errors():
-                view_data["results"] = dict()
+                error_msg = sqr.parse_exception if sqr.parse_exception else "Unknown SPARQL query error occurred"
+                view_data["results"] = {"error": error_msg}
                 view_data["results_message"] = "SPARQL Query Error"
             else:
                 view_data["results"] = sqr.response_obj# json.dumps(
@@ -1308,7 +1340,7 @@ def post_sparql_query_to_graph_microsvc(sparql: str) -> SparqlQueryResponse:
         postdata = dict()
         postdata["sparql"] = sparql
         r = httpx.post(
-            url, headers=websvc_headers, content=json.dumps(postdata)
+            url, headers=websvc_headers, content=json.dumps(postdata), timeout=60.0
         )
         resp_obj = json.loads(r.text)
         print(
@@ -1317,11 +1349,37 @@ def post_sparql_query_to_graph_microsvc(sparql: str) -> SparqlQueryResponse:
         sqr = SparqlQueryResponse(r)
         sqr.parse()
         return sqr
-    except Exception as e:
-        logging.critical((str(e)))
+    except httpx.TimeoutException as e:
+        error_msg = "SPARQL query timed out. The query may be too complex or the dataset too large."
+        logging.error(f"SPARQL query timeout: {error_msg}")
         logging.exception(e, stack_info=True, exc_info=True)
         sqr = SparqlQueryResponse(None)
         sqr.parse()
+        sqr.parse_exception = error_msg
+        return sqr
+    except httpx.ConnectError as e:
+        error_msg = "Unable to connect to the graph service. Please check if the graph microservice is running."
+        logging.error(f"SPARQL query connection error: {error_msg}")
+        logging.exception(e, stack_info=True, exc_info=True)
+        sqr = SparqlQueryResponse(None)
+        sqr.parse()
+        sqr.parse_exception = error_msg
+        return sqr
+    except httpx.HTTPStatusError as e:
+        error_msg = f"Graph service returned an error (HTTP {e.response.status_code}). The SPARQL query may be invalid."
+        logging.error(f"SPARQL query HTTP error: {error_msg}")
+        logging.exception(e, stack_info=True, exc_info=True)
+        sqr = SparqlQueryResponse(None)
+        sqr.parse()
+        sqr.parse_exception = error_msg
+        return sqr
+    except Exception as e:
+        error_msg = f"An unexpected error occurred while executing the SPARQL query: {str(e)}"
+        logging.error(f"SPARQL query unexpected error: {error_msg}")
+        logging.exception(e, stack_info=True, exc_info=True)
+        sqr = SparqlQueryResponse(None)
+        sqr.parse()
+        sqr.parse_exception = error_msg
         return sqr
 
 

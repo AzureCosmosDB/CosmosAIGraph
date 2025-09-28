@@ -141,18 +141,42 @@
       </div>
       {% if results %}
       <div id="results-content">
-        <!-- Results will be loaded here when needed -->
+        <!-- Check if results contain an error -->
+        {% if results.error %}
+        <div class="alert alert-danger" role="alert">
+          <h6 class="alert-heading">
+            <i class="bi bi-exclamation-triangle-fill"></i> 
+            {% if "timeout" in results.error.lower() %}
+              Request Timeout
+            {% elif "connect" in results.error.lower() %}
+              Connection Error  
+            {% elif "http" in results.error.lower() %}
+              Service Error
+            {% else %}
+              Processing Error
+            {% endif %}
+          </h6>
+          <p class="mb-0">{{ results.error }}</p>
+          {% if "timeout" in results.error.lower() %}
+          <hr>
+          <p class="mb-0 small">
+            <strong>Tips:</strong> Try reducing the depth parameter, using a more specific entity name, or running the query during off-peak hours.
+          </p>
+          {% elif "connect" in results.error.lower() %}
+          <hr>
+          <p class="mb-0 small">
+            <strong>Solution:</strong> Please contact the system administrator to ensure the graph microservice is running and accessible.
+          </p>
+          {% endif %}
+        </div>
+        {% else %}
+        <!-- Normal results display -->
         <div id="results-data" style="display: none;">{{ results | tojson | safe }}</div>
         <div id="results-formatted"></div>
+        {% endif %}
       </div>
       {% endif %}
-      <!-- Prism.js for JSON syntax highlighting - loaded conditionally -->
-      <div id="prism-resources" style="display: none;">
-        <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
-      </div>
+      <!-- Prism.js resources will be loaded dynamically when needed -->
     </div>
 
 
@@ -200,6 +224,12 @@
       const bom_query = document.getElementById("bom_query");
       bom_query.value = "";
       
+      // Show loading indicator
+      const errorMsg = document.getElementById("error_message");
+      if (errorMsg) {
+        errorMsg.innerHTML = '<div class="text-info"><i class="bi bi-hourglass-split"></i> Executing SPARQL query...</div>';
+      }
+      
       sparql_submit_button.disabled = true;
       entity_submit_button.disabled = true;
       sparql_submit_button.textContent = "Processing...";
@@ -223,6 +253,12 @@
       }
       const sparql_field = document.getElementById("sparql");
       sparql_field.value = "";
+      
+      // Show loading indicator
+      const errorMsg = document.getElementById("error_message");
+      if (errorMsg) {
+        errorMsg.innerHTML = '<div class="text-info"><i class="bi bi-hourglass-split"></i> Processing graph visualization... This may take a moment for large graphs.</div>';
+      }
       
       sparql_submit_button.disabled = true;
       entity_submit_button.disabled = true;
@@ -323,6 +359,17 @@
 
     // Test basic D3 functionality
     console.log('Testing D3.js...');
+    console.log('Window.d3:', typeof window.d3);
+    console.log('Global d3:', typeof d3);
+    
+    // Check if D3 is available
+    if (typeof d3 === 'undefined') {
+      console.error('D3.js is not loaded! Cannot proceed with visualization.');
+      const wrapper = document.getElementById('viz_wrapper');
+      if (wrapper) wrapper.style.display = 'none';
+      return;
+    }
+    
     try {
       d3.select("#graph-svg")
         .append("circle")
@@ -333,6 +380,7 @@
       console.log('D3 test circle added successfully');
     } catch (e) {
       console.error('D3 test failed:', e);
+      return;
     }
 
     // Get the Bill-of-Materials (BOM) data that is embedded in the page.
@@ -361,6 +409,46 @@
 
       console.log('Trimmed BOM content first 500 chars:', bom_json.substring(0, 500));
 
+      // Convert Python dictionary format to valid JSON using eval in a safe context
+      function convertPythonDictToJson(pythonStr) {
+        console.log('Converting Python dict to JSON using safe evaluation...');
+        
+        try {
+          // Create a safe evaluation context that converts Python literals to JavaScript
+          const pythonToJs = pythonStr
+            .replaceAll('None', 'null')
+            .replaceAll('False', 'false')
+            .replaceAll('True', 'true');
+          
+          // Use Function constructor instead of eval for safer execution
+          const jsObject = (new Function('return ' + pythonToJs))();
+          
+          // Convert back to JSON string
+          const jsonString = JSON.stringify(jsObject);
+          console.log('Python to JSON conversion completed successfully');
+          return jsonString;
+          
+        } catch (error) {
+          console.warn('Safe evaluation failed, falling back to regex conversion:', error);
+          
+          // Fallback to regex-based conversion
+          let s = pythonStr
+            .replaceAll(': None', ': null')
+            .replaceAll(':None', ':null')
+            .replaceAll(': False', ': false')
+            .replaceAll(':False', ':false')
+            .replaceAll(': True', ': true')
+            .replaceAll(':True', ':true');
+          
+          // Replace single quotes with double quotes more carefully
+          // This regex targets single quotes that are likely to be string delimiters
+          s = s.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, '"$1"');
+          
+          console.log('Regex-based Python to JSON conversion completed');
+          return s;
+        }
+      }
+
       // Safer BOM JSON parser: detect non-JSON (TTL/plain text) and avoid eval fallback
       function tolerantParseBom(raw) {
         const original = raw;
@@ -386,14 +474,8 @@
           s = s.substring(firstBrace, lastBrace + 1);
         }
 
-        // Normalize common Python literals into JSON equivalents
-        s = s
-          .replaceAll(': None', ': null')
-          .replaceAll(':None', ':null')
-          .replaceAll(': False', ': false')
-          .replaceAll(':False', ':false')
-          .replaceAll(': True', ': true')
-          .replaceAll(':True', ':true');
+        // Convert Python dictionary format to JSON
+        s = convertPythonDictToJson(s);
 
         // Try strict JSON.parse first
         try {
@@ -421,6 +503,15 @@
         var bom_obj = tolerantParseBom(bom_json);
         console.log('BOM data parsed successfully');
         console.log('BOM object keys:', Object.keys(bom_obj));
+        
+        // Check if the BOM object contains an error (handle both null and None)
+        if (bom_obj.hasOwnProperty('error') && bom_obj.error !== null && bom_obj.error !== undefined) {
+          console.log('BOM object contains error:', bom_obj.error);
+          // Hide visualization on error - error will be shown in results section
+          const wrapper = document.getElementById('viz_wrapper');
+          if (wrapper) wrapper.style.display = 'none';
+          return;
+        }
         
         // Clear any debug info; we'll render only if nodes exist
         d3.select("#graph-svg").selectAll("*").remove();
@@ -1076,20 +1167,466 @@
 
 
 
-          // Set up the simulation
-          const simulation = d3.forceSimulation(graphNodes)
-            .force("charge", d3.forceManyBody().strength(-300))
-            .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(20));
-
-          // Add link force only if we have edges
-          if (graphEdges.length > 0) {
-            // Different distances for lateral vs direct connections
-            simulation.force("link", d3.forceLink(graphEdges)
-              .id(d => d.id)
-              .distance(d => d.isLateralConnection ? 150 : 100));
+          // Create the simulation with WebGPU detection
+          let simulation;
+          let useWebGPU = false;
+          let webgpuDevice = null;
+          
+          // Detect WebGPU support
+          async function detectWebGPU() {
+            console.log('🔍 Detecting WebGPU support...');
+            
+            if (!navigator.gpu) {
+              console.log('❌ WebGPU not supported: navigator.gpu not available');
+              return false;
+            }
+            
+            console.log('✅ navigator.gpu available, requesting adapter...');
+            
+            try {
+              // Try high-performance first (should get NVIDIA 4070)
+              let adapter = await navigator.gpu.requestAdapter({
+                powerPreference: 'high-performance'
+              });
+              
+              // If that doesn't work, try default adapter
+              if (!adapter) {
+                console.log('High-performance adapter failed, trying default...');
+                adapter = await navigator.gpu.requestAdapter();
+              }
+              
+              if (!adapter) {
+                console.log('❌ WebGPU adapter request failed');
+                return false;
+              }
+              
+              console.log('✅ WebGPU adapter obtained:', {
+                features: Array.from(adapter.features),
+                limits: adapter.limits,
+                info: adapter.info
+              });
+              
+              // Log detailed GPU information to identify which GPU we're using
+              if (adapter.info) {
+                console.log('🎮 GPU Details:', {
+                  vendor: adapter.info.vendor,
+                  architecture: adapter.info.architecture,
+                  device: adapter.info.device,
+                  description: adapter.info.description
+                });
+                
+                // Check if we got the desired NVIDIA GPU
+                const isNVIDIA = adapter.info.vendor?.toLowerCase().includes('nvidia') || 
+                               adapter.info.description?.toLowerCase().includes('nvidia');
+                const isHighPerf = adapter.info.description?.toLowerCase().includes('rtx') ||
+                                 adapter.info.description?.toLowerCase().includes('gtx') ||
+                                 adapter.info.description?.toLowerCase().includes('4070');
+                
+                if (isNVIDIA) {
+                  console.log('🚀 NVIDIA GPU detected! This should provide excellent performance.');
+                } else if (isHighPerf) {
+                  console.log('⚡ High-performance GPU detected!');
+                } else {
+                  console.log('ℹ️ Using integrated/alternative GPU. For best performance, ensure Chrome uses your NVIDIA 4070.');
+                  console.log('💡 TIP: To force NVIDIA GPU usage:');
+                  console.log('   1. Go to chrome://settings/system');
+                  console.log('   2. Enable "Use hardware acceleration when available"');
+                  console.log('   3. Or set Chrome to use high-performance GPU in Windows Graphics Settings');
+                }
+              }
+              
+              const device = await adapter.requestDevice();
+              console.log('✅ WebGPU device obtained:', device);
+              
+              webgpuDevice = device;
+              return true;
+              
+            } catch (error) {
+              console.log('❌ WebGPU detection failed:', error);
+              return false;
+            }
           }
+          
+          // WebGPU-accelerated force calculation compute shader
+          const webgpuForceShader = `
+            struct Node {
+              x: f32,
+              y: f32,
+              vx: f32,
+              vy: f32,
+            };
+            
+            struct NodeBuffer {
+              nodes: array<Node>,
+            };
+            
+            @group(0) @binding(0) var<storage, read_write> nodeBuffer: NodeBuffer;
+            @group(0) @binding(1) var<uniform> params: vec4<f32>; // [nodeCount, strength, centerX, centerY]
+            
+            @compute @workgroup_size(64)
+            fn computeForces(@builtin(global_invocation_id) global_id: vec3<u32>) {
+              let index = global_id.x;
+              let nodeCount = u32(params.x);
+              
+              if (index >= nodeCount) {
+                return;
+              }
+              
+              let strength = params.y;
+              let centerX = params.z;
+              let centerY = params.w;
+              
+              var node = nodeBuffer.nodes[index];
+              var fx: f32 = 0.0;
+              var fy: f32 = 0.0;
+              
+              // Many-body repulsion force
+              for (var i: u32 = 0u; i < nodeCount; i = i + 1u) {
+                if (i != index) {
+                  let other = nodeBuffer.nodes[i];
+                  let dx = node.x - other.x;
+                  let dy = node.y - other.y;
+                  let distSq = dx * dx + dy * dy + 1.0; // Add small value to prevent division by zero
+                  let dist = sqrt(distSq);
+                  let force = strength / distSq;
+                  fx = fx + (dx / dist) * force;
+                  fy = fy + (dy / dist) * force;
+                }
+              }
+              
+              // Center force
+              let centerForce = 0.01;
+              fx = fx + (centerX - node.x) * centerForce;
+              fy = fy + (centerY - node.y) * centerForce;
+              
+              // Update velocity
+              let damping = 0.9;
+              node.vx = (node.vx + fx) * damping;
+              node.vy = (node.vy + fy) * damping;
+              
+              // Update position
+              node.x = node.x + node.vx;
+              node.y = node.y + node.vy;
+              
+              nodeBuffer.nodes[index] = node;
+            }
+          `;
+          
+          // WebGPU force calculation manager
+          class WebGPUForceSimulation {
+            constructor(device, nodes, width, height) {
+              this.device = device;
+              this.nodes = nodes;
+              this.width = width;
+              this.height = height;
+              this.pipeline = null;
+              this.nodeBuffer = null;
+              this.paramsBuffer = null;
+              this.bindGroup = null;
+              this.isInitialized = false;
+            }
+            
+            async initialize() {
+              try {
+                // Create compute shader module
+                const shaderModule = this.device.createShaderModule({
+                  code: webgpuForceShader
+                });
+                
+                // Create compute pipeline
+                this.pipeline = this.device.createComputePipeline({
+                  compute: {
+                    module: shaderModule,
+                    entryPoint: 'computeForces'
+                  }
+                });
+                
+                // Create node buffer (x, y, vx, vy for each node)
+                const nodeData = new Float32Array(this.nodes.length * 4);
+                this.nodes.forEach((node, i) => {
+                  nodeData[i * 4] = node.x || 0;
+                  nodeData[i * 4 + 1] = node.y || 0;
+                  nodeData[i * 4 + 2] = node.vx || 0;
+                  nodeData[i * 4 + 3] = node.vy || 0;
+                });
+                
+                this.nodeBuffer = this.device.createBuffer({
+                  size: nodeData.byteLength,
+                  usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
+                  mappedAtCreation: true
+                });
+                new Float32Array(this.nodeBuffer.getMappedRange()).set(nodeData);
+                this.nodeBuffer.unmap();
+                
+                // Create parameters buffer [nodeCount, strength, centerX, centerY]
+                const paramsData = new Float32Array([
+                  this.nodes.length,
+                  -300.0, // Force strength
+                  this.width / 2,
+                  this.height / 2
+                ]);
+                
+                this.paramsBuffer = this.device.createBuffer({
+                  size: paramsData.byteLength,
+                  usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+                  mappedAtCreation: true
+                });
+                new Float32Array(this.paramsBuffer.getMappedRange()).set(paramsData);
+                this.paramsBuffer.unmap();
+                
+                // Create bind group
+                this.bindGroup = this.device.createBindGroup({
+                  layout: this.pipeline.getBindGroupLayout(0),
+                  entries: [
+                    {
+                      binding: 0,
+                      resource: {
+                        buffer: this.nodeBuffer
+                      }
+                    },
+                    {
+                      binding: 1,
+                      resource: {
+                        buffer: this.paramsBuffer
+                      }
+                    }
+                  ]
+                });
+                
+                this.isInitialized = true;
+                console.log('✅ WebGPU force simulation initialized');
+                return true;
+                
+              } catch (error) {
+                console.error('❌ WebGPU force simulation initialization failed:', error);
+                return false;
+              }
+            }
+            
+            async computeStep() {
+              if (!this.isInitialized) return false;
+              
+              try {
+                const commandEncoder = this.device.createCommandEncoder();
+                const passEncoder = commandEncoder.beginComputePass();
+                
+                passEncoder.setPipeline(this.pipeline);
+                passEncoder.setBindGroup(0, this.bindGroup);
+                
+                const workgroupCount = Math.ceil(this.nodes.length / 64);
+                passEncoder.dispatchWorkgroups(workgroupCount);
+                passEncoder.end();
+                
+                // Copy results back to CPU
+                const stagingBuffer = this.device.createBuffer({
+                  size: this.nodes.length * 4 * 4,
+                  usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST
+                });
+                
+                commandEncoder.copyBufferToBuffer(
+                  this.nodeBuffer, 0,
+                  stagingBuffer, 0,
+                  this.nodes.length * 4 * 4
+                );
+                
+                this.device.queue.submit([commandEncoder.finish()]);
+                
+                // Read back the results
+                await stagingBuffer.mapAsync(GPUMapMode.READ);
+                const resultData = new Float32Array(stagingBuffer.getMappedRange());
+                
+                // Update D3 nodes with GPU-calculated positions
+                this.nodes.forEach((node, i) => {
+                  node.x = resultData[i * 4];
+                  node.y = resultData[i * 4 + 1];
+                  node.vx = resultData[i * 4 + 2];
+                  node.vy = resultData[i * 4 + 3];
+                });
+                
+                stagingBuffer.unmap();
+                stagingBuffer.destroy();
+                
+                return true;
+                
+              } catch (error) {
+                console.error('❌ WebGPU compute step failed:', error);
+                return false;
+              }
+            }
+            
+            destroy() {
+              if (this.nodeBuffer) this.nodeBuffer.destroy();
+              if (this.paramsBuffer) this.paramsBuffer.destroy();
+            }
+          }
+          
+          // Initialize WebGPU detection synchronously
+          console.log('🚀 Starting WebGPU detection for enhanced performance');
+          
+          // Run WebGPU detection immediately and update UI when complete
+          detectWebGPU().then(gpuSupported => {
+            useWebGPU = gpuSupported;
+            console.log(useWebGPU ? 
+              '🎮 WebGPU acceleration detected and enabled!' : 
+              '💻 WebGPU not available, using CPU mode');
+            
+            // Update performance indicator immediately when detection completes
+            updatePerformanceIndicator();
+            
+          }).catch(error => {
+            console.log('⚠️ WebGPU detection failed, using CPU mode:', error);
+            useWebGPU = false;
+            webgpuDevice = null;
+            updatePerformanceIndicator();
+          });
+          
+          // Debug D3 availability
+          console.log('D3 version:', d3.version);
+          console.log('d3.forceSimulation available:', typeof d3.forceSimulation);
+          console.log('d3.forceManyBody available:', typeof d3.forceManyBody);
+          console.log('d3.forceCenter available:', typeof d3.forceCenter);
+          console.log('d3.forceCollide available:', typeof d3.forceCollide);
+          console.log('d3.forceLink available:', typeof d3.forceLink);
+          
+          // Test basic simulation creation
+          console.log('Testing basic simulation creation...');
+          try {
+            const testSim = d3.forceSimulation();
+            console.log('Basic simulation created successfully:', typeof testSim);
+            console.log('Basic simulation has .force method:', typeof testSim.force);
+            if (typeof testSim.force === 'function') {
+              testSim.stop(); // Stop the test simulation
+              console.log('Basic simulation test passed');
+            } else {
+              console.error('Basic simulation test failed - no .force method');
+            }
+          } catch (e) {
+            console.error('Basic simulation test failed with error:', e);
+          }
+          
+          // Create simulation with the node data
+          try {
+            console.log('Creating forceSimulation with', graphNodes.length, 'nodes');
+            simulation = d3.forceSimulation(graphNodes);
+            console.log('Simulation created, type:', typeof simulation);
+            console.log('Simulation object:', simulation);
+            console.log('Simulation.force method:', typeof simulation.force);
+            
+            // Check if simulation has the expected methods
+            console.log('Simulation methods available:', Object.getOwnPropertyNames(simulation).filter(name => typeof simulation[name] === 'function'));
+            
+            if (typeof simulation.force !== 'function') {
+              console.error('Simulation does not have .force method!');
+              console.error('Simulation prototype:', Object.getPrototypeOf(simulation));
+              console.error('Constructor name:', simulation.constructor.name);
+              throw new Error('d3.forceSimulation did not return a valid simulation object');
+            }
+            
+            console.log('Simulation created, adding forces...');
+            
+            simulation
+              .force("charge", d3.forceManyBody().strength(-300))
+              .force("center", d3.forceCenter(width / 2, height / 2))
+              .force("collision", d3.forceCollide().radius(20));
 
+            // Add link force only if we have edges
+            if (graphEdges.length > 0) {
+              console.log('Adding link force for', graphEdges.length, 'edges');
+              simulation.force("link", d3.forceLink(graphEdges)
+                .id(d => d.id)
+                .distance(d => d.isLateralConnection ? 150 : 100));
+            }
+            
+            console.log('Simulation created successfully, setting up visualization');
+            
+            // Initialize WebGPU force simulation if available
+            let webgpuSim = null;
+            if (useWebGPU && webgpuDevice) {
+              console.log('🚀 Initializing WebGPU-accelerated force simulation...');
+              webgpuSim = new WebGPUForceSimulation(webgpuDevice, graphNodes, width, height);
+              
+              webgpuSim.initialize().then(initialized => {
+                if (initialized) {
+                  console.log('✅ WebGPU force simulation ready for GPU-accelerated physics');
+                  
+                  // Ensure useWebGPU flag is set correctly
+                  useWebGPU = true;
+                  updatePerformanceIndicator();
+                  
+                  // Replace D3's internal force calculations with WebGPU
+                  simulation.on('tick', async () => {
+                    if (webgpuSim && webgpuSim.isInitialized) {
+                      await webgpuSim.computeStep();
+                    }
+                  });
+                } else {
+                  console.log('⚠️ WebGPU force simulation initialization failed, using CPU fallback');
+                  useWebGPU = false;
+                  updatePerformanceIndicator();
+                }
+              }).catch(error => {
+                console.log('❌ WebGPU force simulation setup error:', error);
+                useWebGPU = false;
+                updatePerformanceIndicator();
+              });
+            }
+            
+          } catch (error) {
+            console.error('Error creating D3 simulation:', error);
+            console.error('Error details:', error.message);
+            throw error;
+          }
+          
+          // Add performance indicator to the UI
+          const perfIndicator = document.createElement('div');
+          perfIndicator.id = 'perf-indicator';
+          perfIndicator.style.cssText = `
+            position: absolute;
+            top: 55px;
+            right: 10px;
+            background: ${useWebGPU ? '#28a745' : '#6c757d'};
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: monospace;
+            z-index: 1000;
+            opacity: 0.8;
+          `;
+          perfIndicator.textContent = useWebGPU ? 
+            `⚡ WebGPU (${graphNodes.length}N, ${graphEdges.length}E)` : 
+            `🖥️ CPU (${graphNodes.length}N, ${graphEdges.length}E)`;
+          
+          const vizWrapper = document.getElementById('viz_wrapper');
+          if (vizWrapper) {
+            vizWrapper.style.position = 'relative';
+            vizWrapper.appendChild(perfIndicator);
+            
+            // Auto-hide indicator after 8 seconds (give WebGPU time to initialize)
+            setTimeout(() => {
+              perfIndicator.style.opacity = '0.3';
+            }, 8000);
+          }
+          
+          // Function to update performance indicator
+          function updatePerformanceIndicator() {
+            if (perfIndicator) {
+              perfIndicator.style.background = useWebGPU ? '#28a745' : '#6c757d';
+              perfIndicator.textContent = useWebGPU ? 
+                `⚡ WebGPU (${graphNodes.length}N, ${graphEdges.length}E)` : 
+                `🖥️ CPU (${graphNodes.length}N, ${graphEdges.length}E)`;
+            }
+          }
+          
+          // Update indicator when WebGPU status changes
+          setTimeout(() => {
+            updatePerformanceIndicator();
+          }, 100); // Small delay to ensure WebGPU detection completes
+          
+          // Now set up the rest of the visualization
+          setupVisualization();
+          
+          function setupVisualization() {
           // Create links only if we have edges
           let link = null;
           let linkLabels = null;
@@ -1459,7 +1996,10 @@
 
           // Performance: throttled rendering and cached transforms
           let tickCount = 0;
-          const RENDER_EVERY_N_TICKS = isLargeDataset ? 3 : 1; // Skip ticks for large datasets
+          // Adjust render throttling based on GPU acceleration and dataset size
+          const RENDER_EVERY_N_TICKS = useWebGPU ? 
+            (isLargeDataset ? 2 : 1) :  // WebGPU can handle more frequent updates
+            (isLargeDataset ? 3 : 1);   // CPU needs more throttling for large datasets
           
           // Create shared update function for better performance
           window.__updatePositions = function() {
@@ -1490,16 +2030,40 @@
             node.style("transform", d => `translate(${d.x}px, ${d.y}px)`);
           };
 
-          // Update positions on tick with throttling
+          // Performance monitoring variables for WebGPU comparison
+          let performanceStartTime = performance.now();
+          let lastPerformanceLog = performanceStartTime;
+          const PERFORMANCE_LOG_INTERVAL = 100; // Log performance every 100 ticks
+          
+          // Update positions on tick with throttling and performance monitoring
           simulation.on("tick", function () {
             tickCount++;
+            
+            // Performance logging for WebGPU vs CPU comparison
+            if (tickCount % PERFORMANCE_LOG_INTERVAL === 0) {
+              const currentTime = performance.now();
+              const ticksPerSecond = PERFORMANCE_LOG_INTERVAL * 1000 / (currentTime - lastPerformanceLog);
+              const totalTime = currentTime - performanceStartTime;
+              
+              console.log(`${useWebGPU ? 'WebGPU' : 'CPU'} Performance - Tick: ${tickCount}, ` +
+                         `TPS: ${ticksPerSecond.toFixed(1)}, Total: ${(totalTime/1000).toFixed(1)}s, ` +
+                         `Alpha: ${simulation.alpha().toFixed(4)}`);
+              
+              lastPerformanceLog = currentTime;
+            }
+            
             if (tickCount % RENDER_EVERY_N_TICKS === 0) {
               scheduleRender(); // Use the RAF scheduler
             }
           });
 
           // Auto-fit viewport when simulation stabilizes
-          simulation.on("end", fitToViewport);
+          simulation.on("end", () => {
+            const totalTime = (performance.now() - performanceStartTime) / 1000;
+            console.log(`${useWebGPU ? 'WebGPU' : 'CPU'} simulation completed in ${totalTime.toFixed(2)}s ` +
+                       `(${tickCount} ticks, ${(tickCount/totalTime).toFixed(1)} TPS avg)`);
+            fitToViewport();
+          });
           
           // Also fit after a few seconds if simulation doesn't naturally end
           setTimeout(fitToViewport, 3000);
@@ -1579,7 +2143,9 @@
             // Initialize visibility according to default checked state
             if (linkToggle) setLinkLabelsVisibility(linkToggle.checked);
             if (nodeToggle) setNodeAttributesVisibility(nodeToggle.checked);
-          })();
+          })(); // End of async initAndRender function
+          
+          } // End of setupVisualization function
         } else {
           console.log('No nodes found to visualize');
           const wrapper = document.getElementById('viz_wrapper');
@@ -1685,23 +2251,38 @@
         return;
       }
       
-      const prismContainer = document.getElementById('prism-resources');
-      if (prismContainer) {
-        // Make Prism resources visible to load them
-        prismContainer.style.display = 'block';
+      console.log('Loading Prism.js resources dynamically...');
+      
+      // Load CSS first
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css';
+      document.head.appendChild(link);
+      
+      // Load main Prism.js
+      const script1 = document.createElement('script');
+      script1.src = 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js';
+      script1.onload = () => {
+        console.log('Prism.js core loaded');
         
-        // Wait for scripts to load
-        const checkPrism = () => {
-          if (window.Prism) {
-            resolve();
-          } else {
-            setTimeout(checkPrism, 100);
-          }
+        // Load JSON component
+        const script2 = document.createElement('script');
+        script2.src = 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js';
+        script2.onload = () => {
+          console.log('Prism.js JSON component loaded successfully');
+          resolve();
         };
-        checkPrism();
-      } else {
+        script2.onerror = () => {
+          console.warn('Failed to load Prism JSON component, continuing without syntax highlighting');
+          resolve();
+        };
+        document.head.appendChild(script2);
+      };
+      script1.onerror = () => {
+        console.warn('Failed to load Prism.js, continuing without syntax highlighting');
         resolve();
-      }
+      };
+      document.head.appendChild(script1);
     });
   }
 
@@ -1749,12 +2330,15 @@
     const bomQuery = "{{ bom_query }}";
     const hasGraphVisualization = vizWrapper && vizWrapper.style.display !== 'none' && bomQuery.trim() !== '';
     
-    // Default: hide results if graph is shown, show results if only SPARQL results
-    let isVisible = !hasGraphVisualization;
+    // Check if there's an error (error alerts are always visible)
+    const hasError = resultsContent && resultsContent.querySelector('.alert-danger');
+    
+    // Default: hide results if graph is shown, show results if only SPARQL results or if there's an error
+    let isVisible = !hasGraphVisualization || hasError;
     let resultsFormatted = false;
     
-    // For SPARQL-only queries (no BOM), format results immediately
-    if (!hasGraphVisualization) {
+    // For SPARQL-only queries (no BOM) or errors, format results immediately (skip formatting for errors)
+    if ((!hasGraphVisualization || hasError) && !hasError) {
       formatAndDisplayResults();
       resultsFormatted = true;
     }
