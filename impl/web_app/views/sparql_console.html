@@ -7,6 +7,9 @@
   .link-label {
     font-family: "Lucida Console", "Courier New", monospace !important;
     text-shadow: none !important;
+    stroke: rgba(33, 37, 41, 0.95) !important; /* Dark background color with high opacity */
+    stroke-width: 4px !important;
+    paint-order: stroke fill !important;
   }
 
   /* Style for node labels - D3.js specific */
@@ -1132,24 +1135,96 @@
             drawingNumber: d.drawingNumber || ""
           }));
 
-          // Deduplicate edges - only keep one edge per unique source-target pair
-          const edgeMap = new Map();
+          // Process edges to remove true duplicates and handle multiple connections
+          const edgeGroups = new Map();
+          const edgeMap = new Map(); // Track unique edges by source-target-label
+          
+          // First pass: deduplicate edges based on source, target, and meaningful label
           allGraphEdges.forEach(edge => {
-            // Simple key: just source-target, no bidirectional deduplication
-            const key = `${edge.source}-${edge.target}`;
+            // Create a key that includes meaningful distinguishing information
+            let edgeKey = `${edge.source}-${edge.target}`;
             
-            // Only add if this exact source->target doesn't exist yet
-            if (!edgeMap.has(key)) {
-              edgeMap.set(key, edge);
+            // Add label information to make edges with different labels distinct
+            if (edge.isLateralConnection) {
+              edgeKey += "-lateral";
+            } else if (edge.displayLabel && edge.displayLabel !== "" && edge.displayLabel !== "depends on" && edge.displayLabel !== "connects") {
+              edgeKey += `-${edge.displayLabel.replace(/[←→↔]/g, '').trim()}`;
+            } else if (edge.label && edge.label !== "depends on" && edge.label !== "connects") {
+              edgeKey += `-${edge.label.replace(/[←→↔]/g, '').trim()}`;
+            } else if (edge.type && edge.type !== "connection") {
+              edgeKey += `-${edge.type}`;
+            }
+            
+            // Only keep one edge per unique key (removes true duplicates)
+            if (!edgeMap.has(edgeKey)) {
+              edgeMap.set(edgeKey, edge);
+              
+              // Group by node pair for offset calculation
+              const pairKey = `${edge.source}-${edge.target}`;
+              if (!edgeGroups.has(pairKey)) {
+                edgeGroups.set(pairKey, []);
+              }
+              edgeGroups.get(pairKey).push(edge);
             }
           });
           
-          // Use the deduplicated edges
-          const graphEdges = Array.from(edgeMap.values());
+          // Apply offsets to multiple connections between same nodes
+          const graphEdges = [];
+          edgeGroups.forEach((edges, key) => {
+            if (edges.length === 1) {
+              // Single connection - no offset needed
+              edges[0].connectionOffset = 0;
+              edges[0].connectionIndex = 0;
+              edges[0].connectionTotal = 1;
+              edges[0].labelPositionRatio = 0.5; // Center position for single connection
+              graphEdges.push(edges[0]);
+            } else {
+              // Multiple connections - apply offsets and label positions
+              edges.forEach((edge, index) => {
+                const totalConnections = edges.length;
+                const offsetStep = 2; // 2px offset between connections
+                const centerOffset = (totalConnections - 1) * offsetStep / 2;
+                edge.connectionOffset = (index * offsetStep) - centerOffset;
+                edge.connectionIndex = index;
+                edge.connectionTotal = totalConnections;
+                
+                // Position labels at different points along the connection line
+                // First label at 40%, second at 60%, third at 30%, fourth at 70%, etc.
+                const labelPositions = [0.4, 0.6, 0.3, 0.7, 0.25, 0.75, 0.2, 0.8];
+                edge.labelPositionRatio = labelPositions[index % labelPositions.length] || (0.5 + (index - 4) * 0.1);
+                
+                graphEdges.push(edge);
+              });
+            }
+          });
 
           console.log("Graph nodes for D3:", graphNodes);
-          console.log("Graph edges for D3 (deduplicated):", graphEdges);
+          console.log("Graph edges for D3 (deduplicated with offsets):", graphEdges);
           console.log("Original edges count:", allGraphEdges.length, "Deduplicated count:", graphEdges.length);
+          
+          // Log deduplication and multiple connection information
+          const multipleConnections = [];
+          const deduplicationSummary = [];
+          edgeGroups.forEach((edges, key) => {
+            if (edges.length > 1) {
+              multipleConnections.push(`${key}: ${edges.length} unique connections`);
+              
+              // Show what types of connections exist for this node pair
+              const connectionTypes = edges.map(edge => {
+                if (edge.isLateralConnection) return "lateral";
+                if (edge.displayLabel && edge.displayLabel !== "") return edge.displayLabel.replace(/[←→↔]/g, '').trim();
+                if (edge.label && edge.label !== "depends on" && edge.label !== "connects") return edge.label.replace(/[←→↔]/g, '').trim();
+                if (edge.type && edge.type !== "connection") return edge.type;
+                return "connection";
+              });
+              deduplicationSummary.push(`${key}: [${connectionTypes.join(', ')}]`);
+            }
+          });
+          if (multipleConnections.length > 0) {
+            console.log("Multiple connections found:", multipleConnections);
+            console.log("Connection types per node pair:", deduplicationSummary);
+          }
+          console.log(`Edge deduplication: ${allGraphEdges.length} original → ${graphEdges.length} unique edges`);
           const lateralCount = graphEdges.filter(e => e.isLateralConnection).length;
           console.log("Lateral edges count:", lateralCount);
           
@@ -1677,7 +1752,7 @@
           perfIndicator.id = 'perf-indicator';
           perfIndicator.style.cssText = `
             position: absolute;
-            top: 55px;
+            bottom: 10px;
             right: 10px;
             background: ${useWebGPU ? '#28a745' : '#6c757d'};
             color: white;
@@ -1756,7 +1831,7 @@
                 }
               });
 
-            // Add labels to edges with proper angle alignment - optimized
+            // Add labels to edges with proper angle alignment - using filtered edges
             linkLabels = g.append("g")
               .attr("class", "link-labels")
               .style("will-change", "transform") // GPU hint for label container
@@ -1776,6 +1851,9 @@
               .style("pointer-events", "none")
               .style("text-shadow", "none")
               .style("font-style", d => d.isLateralConnection ? "italic" : "normal")
+              .style("stroke", "rgba(33, 37, 41, 0.95)") /* Dark background color with high opacity */
+              .style("stroke-width", "4px")
+              .style("paint-order", "stroke fill")
               .text(d => {
                 // Pre-computed clean labels
                 if (d.isLateralConnection) {
@@ -2022,9 +2100,15 @@
           });
 
           // Add zoom behavior with initial fit-to-bounds
+          let userHasInteracted = false; // Flag to prevent auto-recentering after user interaction
+          
           const zoom = d3.zoom()
             .scaleExtent([0.1, 10])
             .on("zoom", function (event) {
+              // Mark that user has interacted with the graph
+              if (event.sourceEvent) {
+                userHasInteracted = true;
+              }
               g.attr("transform", event.transform);
               updateLabelVisibility(event.transform.k); // Update labels based on zoom
             });
@@ -2100,24 +2184,66 @@
           window.__updatePositions = function() {
             if (link) {
               link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
+                .attr("x1", d => {
+                  if (d.connectionOffset === 0) return d.source.x;
+                  // Calculate perpendicular offset
+                  const dx = d.target.x - d.source.x;
+                  const dy = d.target.y - d.source.y;
+                  const length = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const perpX = -dy / length; // Perpendicular vector
+                  return d.source.x + perpX * d.connectionOffset;
+                })
+                .attr("y1", d => {
+                  if (d.connectionOffset === 0) return d.source.y;
+                  const dx = d.target.x - d.source.x;
+                  const dy = d.target.y - d.source.y;
+                  const length = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const perpY = dx / length; // Perpendicular vector
+                  return d.source.y + perpY * d.connectionOffset;
+                })
+                .attr("x2", d => {
+                  if (d.connectionOffset === 0) return d.target.x;
+                  const dx = d.target.x - d.source.x;
+                  const dy = d.target.y - d.source.y;
+                  const length = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const perpX = -dy / length;
+                  return d.target.x + perpX * d.connectionOffset;
+                })
+                .attr("y2", d => {
+                  if (d.connectionOffset === 0) return d.target.y;
+                  const dx = d.target.x - d.source.x;
+                  const dy = d.target.y - d.source.y;
+                  const length = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const perpY = dx / length;
+                  return d.target.y + perpY * d.connectionOffset;
+                });
             }
 
             if (linkLabels) {
               linkLabels
-                .attr("x", d => (d.source.x + d.target.x) * 0.5)
-                .attr("y", d => (d.source.y + d.target.y) * 0.5)
+                .attr("x", d => {
+                  // Position labels at different points along the connection line
+                  const ratio = d.labelPositionRatio || 0.5;
+                  return d.source.x + (d.target.x - d.source.x) * ratio;
+                })
+                .attr("y", d => {
+                  // Position labels at different points along the connection line
+                  const ratio = d.labelPositionRatio || 0.5;
+                  return d.source.y + (d.target.y - d.source.y) * ratio;
+                })
                 .attr("transform", d => {
                   const dx = d.target.x - d.source.x;
                   const dy = d.target.y - d.source.y;
                   const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                  const cx = (d.source.x + d.target.x) * 0.5;
-                  const cy = (d.source.y + d.target.y) * 0.5;
+                  
+                  // Calculate position along the line based on labelPositionRatio
+                  const ratio = d.labelPositionRatio || 0.5;
+                  const cx = d.source.x + dx * ratio;
+                  const cy = d.source.y + dy * ratio;
+                  
                   const rot = (angle > 90 || angle < -90) ? angle + 180 : angle;
-                  return `rotate(${rot}, ${cx}, ${cy}) translate(0, -5)`;
+                  
+                  return `rotate(${rot}, ${cx}, ${cy}) translate(0, 2)`;
                 });
             }
 
@@ -2157,20 +2283,28 @@
             const totalTime = (performance.now() - performanceStartTime) / 1000;
             console.log(`${useWebGPU ? 'WebGPU' : 'CPU'} simulation completed in ${totalTime.toFixed(2)}s ` +
                        `(${tickCount} ticks, ${(tickCount/totalTime).toFixed(1)} TPS avg)`);
-            fitToViewport();
+            if (!userHasInteracted) {
+              fitToViewport();
+            }
           });
           
-          // Also fit after a few seconds if simulation doesn't naturally end
-          setTimeout(fitToViewport, 3000);
+          // Also fit after a few seconds if simulation doesn't naturally end (only if user hasn't interacted)
+          setTimeout(() => {
+            if (!userHasInteracted) {
+              fitToViewport();
+            }
+          }, 3000);
 
           // Drag functions
           function dragstarted(event, d) {
+            userHasInteracted = true; // Mark user interaction
             if (!event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
             d.fy = d.y;
           }
 
           function dragged(event, d) {
+            userHasInteracted = true; // Mark user interaction
             d.fx = event.x;
             d.fy = event.y;
           }
