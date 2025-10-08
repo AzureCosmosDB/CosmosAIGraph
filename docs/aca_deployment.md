@@ -1,25 +1,33 @@
-# CosmosAIGraph : Deploying the Azure Container Apps
+# CosmosAIGraph : Deploying to the Azure Container Apps
 
-The **recommended deployment** for this reference application is in 
+The **recommended deployment** for this reference implementation is in 
 [Azure Container Apps (ACA)](https://learn.microsoft.com/en-us/azure/container-apps/).
 
-ACA offers a very mature and easy to use runtime environment for your applications
-that are packaged and deployed as Docker containers. Several interesting features
+ACA offers a very mature and easy way to use runtime environment for your applications
+that are packaged and deployed as Docker containers. Several relevant features
 include the following:
 
 - [Environments](https://learn.microsoft.com/en-us/azure/container-apps/environment)
-- [CPU and Memory sizes](https://learn.microsoft.com/en-us/azure/container-apps/containers)
-- [Workload Profile Types](https://learn.microsoft.com/en-us/azure/container-apps/workload-profiles-overview#profile-types)
+- [CPU and memory sizes](https://learn.microsoft.com/en-us/azure/container-apps/containers)
+- [Workload profile types](https://learn.microsoft.com/en-us/azure/container-apps/workload-profiles-overview#profile-types)
 - [Networking and VNets](https://learn.microsoft.com/en-us/azure/container-apps/networking?tabs=workload-profiles-env%2Cazure-cli)
-- [Scaling Rules](https://learn.microsoft.com/en-us/azure/container-apps/scale-app?pivots=azure-cli)
+- [Scaling rules](https://learn.microsoft.com/en-us/azure/container-apps/scale-app?pivots=azure-cli)
 
 ### Deployment with Bicep
 
+**Important:** First, make sure that your environment variables are set as described in the
+[Environment Variables](environment_variables.md) document. Deployement scripts below use the environment variables to set them in ACA containers.
+
 See the **/deployment** folder for working deployment scripts which use the [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) deployment syntax.
 
-You can execute the **az_bicep_deploy.ps1** script which uses the 
+Then, execute **az_bicep_deploy.ps1** (on Windows) or **az_bicep_deploy.sh** (on macOS/Linux) script which uses the
 [az CLI](https://learn.microsoft.com/en-us/cli/azure/) to deploy
 the ACA application.
+
+(**Note:** Make sure to set executable permissions with: 
+chmod +x ./deployment/az_bicep_deploy.sh)
+
+
 
 The Bicep file is named **caig.bicep** and it uses the **caig.bicepparam**
 parameters file.

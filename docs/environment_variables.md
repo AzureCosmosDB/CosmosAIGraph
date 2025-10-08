@@ -1,4 +1,4 @@
-# CosmosAIGraph Implementation 1 : Environment Variables
+# CosmosAIGraph: Environment Variables
 
 Per the [Twelve-Factor App methodology](https://12factor.net/config),
 configuration is stored in environment variables.  

@@ -3,7 +3,7 @@
 # so as to allow the development and fine-tuning of the prompt
 # without requiring a code change or restarting the web app.
 #
-# Chris Joakim, Aleksey Savateyev, Microsoft, 2025
+# Chris Joakim, Aleksey Savateyev, 2025
 
 
 import logging
@@ -17,7 +17,7 @@ class Prompts:
 
     def generate_sparql_system_prompt(self, minimized_owl) -> str | None:
         try:
-            template = FS.read("prompts/gen_sparql_v2.txt")
+            template = FS.read("prompts/gen_sparql_generic.txt")
             return template.format(minimized_owl)
         except Exception as e:
             logging.critical(
