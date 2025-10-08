@@ -73,13 +73,13 @@ class RAGDataService:
             name = strategy_obj["name"]
             rdr.set_attr("name", name)
             await self.get_database_rag_data(user_text, name, rdr, max_doc_count)
-            if rdr.has_no_docs():
+            if rdr.has_no_docs() and not (strategy_override and strategy_override in valid_choices): #don't fall back if was overridden
                 rdr.add_strategy("vector")
                 await self.get_vector_rag_data(user_text, rdr, max_doc_count)
 
         elif strategy == "graph":
             await self.get_graph_rag_data(user_text, rdr, max_doc_count)
-            if rdr.has_no_docs():
+            if rdr.has_no_docs() and not (strategy_override and strategy_override in valid_choices): #don't fall back if was overridden
                 rdr.add_strategy("vector")
                 await self.get_vector_rag_data(user_text, rdr, max_doc_count)
         else:

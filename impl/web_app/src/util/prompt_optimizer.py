@@ -98,7 +98,6 @@ class PromptOptimizer:
                             result_obj["initial_context_words_ratio"] = (
                                 context_words_ratio
                             )
-                        context_words = pruned_context.split()
                         
                         # Handle both string and dict history formats
                         if isinstance(pruned_history, str):
@@ -106,31 +105,78 @@ class PromptOptimizer:
                         else:
                             history_messages = pruned_history.get("messages", [])
 
-                        # retain the tail-end of the context, but preserve JSON structure
-                        retain_index = int(
-                            float(len(context_words)) * context_words_ratio
-                        )
-                        
-                        # Check if context appears to be JSON
+                        # Check if context appears to be JSON FIRST, before splitting by words
                         context_text = pruned_context.strip()
                         is_json_context = (context_text.startswith('{') and context_text.endswith('}')) or \
                                          (context_text.startswith('[') and context_text.endswith(']'))
                         
                         if is_json_context:
-                            # For JSON context, truncate by characters instead of words to preserve structure
-                            char_ratio = context_words_ratio
-                            char_retain_index = int(float(len(context_text)) * char_ratio)
-                            # Find the last complete JSON object boundary before the retain index
-                            truncated_text = context_text[char_retain_index:]
-                            # Try to find the start of a complete JSON object
-                            brace_start = truncated_text.find('{')
-                            if brace_start >= 0:
-                                pruned_context = truncated_text[brace_start:]
-                            else:
-                                # Fallback to character truncation
-                                pruned_context = truncated_text
+                            # For JSON context, try to parse and intelligently truncate
+                            try:
+                                parsed_json = json.loads(context_text)
+                                
+                                # If it's an array of objects, remove items from the beginning
+                                if isinstance(parsed_json, list):
+                                    # Calculate how many items to keep based on ITEM COUNT, not token ratio
+                                    # This ensures we always keep complete objects
+                                    if len(parsed_json) > 1:
+                                        # Remove items one by one until we fit, but always keep at least 1
+                                        target_size = max(1, int(float(len(parsed_json)) * context_words_ratio))
+                                        start_index = len(parsed_json) - target_size
+                                        pruned_json = parsed_json[start_index:]
+                                        pruned_context = json.dumps(pruned_json, indent=2)
+                                    else:
+                                        # Single item, keep as-is (will be handled by breaking the loop if too large)
+                                        pruned_context = json.dumps(parsed_json, indent=2)
+                                
+                                # If it's a single object with array properties, truncate the arrays
+                                elif isinstance(parsed_json, dict):
+                                    pruned_json = {}
+                                    for key, value in parsed_json.items():
+                                        if isinstance(value, list) and len(value) > 1:
+                                            # Truncate array values, keep tail end
+                                            target_size = max(1, int(float(len(value)) * context_words_ratio))
+                                            start_index = len(value) - target_size
+                                            pruned_json[key] = value[start_index:]
+                                        else:
+                                            # Keep non-array or single-item values as-is
+                                            pruned_json[key] = value
+                                    pruned_context = json.dumps(pruned_json, indent=2)
+                                else:
+                                    # For primitive JSON values, convert to string
+                                    pruned_context = json.dumps(parsed_json)
+                            except (json.JSONDecodeError, Exception) as json_err:
+                                # If JSON parsing fails, DO NOT use character-based truncation that breaks JSON
+                                # Instead, try to extract complete JSON objects from the string
+                                char_ratio = context_words_ratio
+                                char_retain_index = int(float(len(context_text)) * char_ratio)
+                                truncated_text = context_text[char_retain_index:]
+                                
+                                # Try to find the start of a complete JSON object or array
+                                # Look for newline followed by object/array start for pretty-printed JSON
+                                best_start = -1
+                                for delimiter in ['\n  {', '\n{', '\n[']:  # Check for indented objects first
+                                    pos = truncated_text.find(delimiter)
+                                    if pos >= 0:
+                                        if best_start < 0 or pos < best_start:
+                                            best_start = pos + 1  # Skip the newline
+                                
+                                if best_start >= 0:
+                                    pruned_context = truncated_text[best_start:]
+                                    # Ensure we have valid JSON by checking structure
+                                    if not (pruned_context.strip().startswith(('{', '['))):
+                                        # Still broken, just keep original
+                                        pruned_context = truncated_text
+                                else:
+                                    # Can't find safe boundary, keep original truncated text
+                                    # This will likely fail validation, but better than breaking mid-object
+                                    pruned_context = truncated_text
                         else:
                             # For non-JSON context, use word-based truncation as before
+                            context_words = pruned_context.split()
+                            retain_index = int(
+                                float(len(context_words)) * context_words_ratio
+                            )
                             retained_words_list = list()
                             for idx, word in enumerate(context_words):
                                 if idx >= retain_index:

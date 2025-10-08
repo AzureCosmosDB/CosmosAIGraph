@@ -1896,50 +1896,6 @@
             .style("stroke", d => d.depth === 0 ? "#fff" : "none") // White stroke for starting node
             .style("stroke-width", d => d.depth === 0 ? 2 : 0); // Thicker stroke for starting node
 
-          // Add background rectangles for starting node labels
-          node.filter(d => d.depth === 0)
-            .append("rect")
-            .attr("x", 6) // Position slightly before text
-            .attr("y", d => {
-              // Calculate height based on number of attribute lines
-              const attrCount = d.attributes ? Math.min(Object.keys(d.attributes).length, 3) : 0;
-              const totalLines = 1 + attrCount; // Primary name + attribute lines
-              const lineHeight = 11; // Reduced line height for more compact layout
-              const totalHeight = totalLines * lineHeight;
-              return -totalHeight/2; // Center vertically with no extra padding
-            })
-            .attr("width", d => {
-              // Calculate width based on primary label (which is larger and bold for starting nodes)
-              const primaryFontSize = 12; // 12px font for starting node
-              const primaryCharWidth = 8; // More accurate for 12px bold font
-              const primaryWidth = d.name.length * primaryCharWidth;
-              
-              // Calculate secondary attribute widths
-              const attrCount = d.attributes ? Math.min(Object.keys(d.attributes).length, 3) : 0;
-              let maxSecondaryWidth = 0;
-              
-              if (attrCount > 0) {
-                // Estimate width of attribute lines (11px font)
-                const secondaryCharWidth = 6.5; // For 11px font
-                const avgAttrLineLength = 20; // Reasonable estimate for "Type: Product" etc.
-                maxSecondaryWidth = avgAttrLineLength * secondaryCharWidth;
-              }
-              
-              // Use the wider of primary or secondary content, plus padding
-              const contentWidth = Math.max(primaryWidth, maxSecondaryWidth);
-              return contentWidth + 8; // Adequate horizontal padding
-            })
-            .attr("height", d => {
-              const attrCount = d.attributes ? Math.min(Object.keys(d.attributes).length, 3) : 0;
-              const totalLines = 1 + attrCount;
-              const lineHeight = 11; // Reduced line height
-              return totalLines * lineHeight; // No extra vertical padding
-            })
-            .attr("rx", 2) // Even smaller rounded corners
-            .attr("ry", 2)
-            .style("fill", "rgba(255, 107, 53, 0.2)") // Slightly more opaque for better visibility
-            .style("stroke", "none"); // Remove border completely
-
           // Add labels to nodes - multi-line with attributes
           const nodeLabels = node.append("text")
             .style("font-size", d => d.depth === 0 ? "12px" : "10px") // Larger font for starting node
@@ -2097,6 +2053,27 @@
             });
             
             console.log(`=== Finished creating ${lines.length} text lines for node ${d.name} ===\n`);
+          });
+
+          // Add background rectangles for starting nodes based on actual text bounding box
+          node.filter(d => d.depth === 0).each(function() {
+            const nodeGroup = d3.select(this);
+            const textElement = nodeGroup.select("text");
+            
+            // Get the actual bounding box of the rendered text
+            const bbox = textElement.node().getBBox();
+            
+            // Insert rectangle before the text element with padding
+            const padding = 4;
+            nodeGroup.insert("rect", "text")
+              .attr("x", bbox.x - padding)
+              .attr("y", bbox.y - padding)
+              .attr("width", bbox.width + padding * 2)
+              .attr("height", bbox.height + padding * 2)
+              .attr("rx", 2)
+              .attr("ry", 2)
+              .style("fill", "rgba(255, 107, 53, 0.2)")
+              .style("stroke", "none");
           });
 
           // Add zoom behavior with initial fit-to-bounds

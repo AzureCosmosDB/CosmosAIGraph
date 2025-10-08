@@ -348,7 +348,16 @@ class AiService:
             return None
 
     def generic_prompt_template(self) -> str:
-        ptxt = """You can respond to any user queries. If there's anything in the context below, use it in favor of any general knowledge. If the context is JSON, use the values of it field(s) to answer the question as these are pre-processed with the same question in mind. If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible. Use bullet points if multiple items are mentioned in the context.
+        """Load the generic RAG prompt template from file."""
+        try:
+            from src.util.fs import FS
+            prompt_path = os.getenv("CAIG_COMPLETION_PROMPT_PATH", "prompts/gen_rag_generic.txt")
+            logging.info(f"Loading completion prompt from: {os.path.abspath(prompt_path)}")
+            template = FS.read(prompt_path)
+            if template is None:
+                logging.error(f"Failed to read completion prompt file: {prompt_path}, using fallback")
+                # Fallback to hardcoded prompt if file read fails
+                return """You can respond to any user queries. If there's anything in the context below, use it in favor of any general knowledge. If the context is JSON, use the values of it field(s) to answer the question as these are pre-processed with the same question in mind. If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible. Use bullet points if multiple items are mentioned in the context.
 
 User: {{$user_query}}
 
@@ -358,7 +367,22 @@ Context:
 Chat history:
 {{$history}}
 """
-        return ptxt
+            logging.info(f"RAG prompt loaded successfully, length: {len(template)} chars")
+            return template
+        except Exception as e:
+            logging.critical("Exception in AiService#generic_prompt_template: {}".format(str(e)))
+            logging.exception(e, stack_info=True, exc_info=True)
+            # Return fallback prompt
+            return """You can respond to any user queries. If there's anything in the context below, use it in favor of any general knowledge. If the context is JSON, use the values of it field(s) to answer the question as these are pre-processed with the same question in mind. If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible. Use bullet points if multiple items are mentioned in the context.
+
+User: {{$user_query}}
+
+Context:
+{{$context}}
+
+Chat history:
+{{$history}}
+"""
 
     def get_completion(self, user_prompt, system_prompt):
         # await asyncio.wait(0.1)
