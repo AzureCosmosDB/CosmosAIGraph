@@ -17,7 +17,15 @@ class Prompts:
 
     def generate_sparql_system_prompt(self, minimized_owl) -> str | None:
         try:
-            template = FS.read("prompts/gen_sparql_generic.txt")
+            # Force fresh file read on every call - no caching
+            import os
+            prompt_path = "prompts/gen_sparql_generic.txt"
+            logging.info(f"Loading SPARQL prompt from: {os.path.abspath(prompt_path)}")
+            template = FS.read(prompt_path)
+            if template is None:
+                logging.error(f"Failed to read prompt file: {prompt_path}")
+                return None
+            logging.info(f"Prompt loaded successfully, length: {len(template)} chars")
             return template.format(minimized_owl)
         except Exception as e:
             logging.critical(
