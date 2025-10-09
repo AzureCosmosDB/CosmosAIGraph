@@ -133,9 +133,9 @@ class ConfigService:
         )
         d["CAIG_GRAPH_NAMESPACE"] = "The custom namespace for the RED graph.  (GRAPH RUNTIME)"
         d["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "The input RDF OWL ontology file.  (GRAPH RUNTIME)"
-        # d["CAIG_GRAPH_SOURCE_PATH"] = (
-        #     "The RDF input file, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.  (GRAPH RUNTIME)"
-        # )
+        d["CAIG_GRAPH_SOURCE_PATH"] = (
+            "The RDF input file or folder, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.  (GRAPH RUNTIME)"
+        )
         d["CAIG_GRAPH_SOURCE_DB"] = (
             "The graph Cosmos DB database name, if CAIG_GRAPH_SOURCE_TYPE is 'cosmos_nosql'.  (GRAPH RUNTIME)"
         )
@@ -163,6 +163,7 @@ class ConfigService:
 
         d["CAIG_AZURE_OPENAI_URL"] = "The URL of your Azure OpenAI account.  (WEB RUNTIME)"
         d["CAIG_AZURE_OPENAI_KEY"] = "The Key of your Azure OpenAI account.  (WEB RUNTIME)"
+        d["CAIG_AZURE_OPENAI_VERSION"] = "The Version of your Azure OpenAI account.  (WEB RUNTIME)"
         d["CAIG_AZURE_OPENAI_COMPLETIONS_DEP"] = (
             "The name of your Azure OpenAI completions deployment.  (WEB RUNTIME)"
         )
@@ -186,6 +187,8 @@ class ConfigService:
         d["CAIG_LOG_LEVEL"] = (
             "A standard python or java logging level name.  (RUNTIME)"
         )
+        d["CAIG_PROMPT_SPARQL_PATH"] = "Path to SPARQL generation prompt .txt file. (WEB RUNTIME)"
+        d["CAIG_PROMPT_COMPLETION_PATH"] = "Path to completion prompt .txt file. (WEB RUNTIME)"
         return d
 
     @classmethod
@@ -240,6 +243,8 @@ class ConfigService:
         d["CAIG_GRAPH_SERVICE_URL"] = "http://127.0.0.1"
         d["CAIG_GRAPH_SERVICE_PORT"] = "8001"
         d["CAIG_LOG_LEVEL"] = "info"
+        d["CAIG_PROMPT_SPARQL_PATH"] = "prompts/gen_sparql_generic.txt"
+        d["CAIG_PROMPT_COMPLETION_PATH"] = "prompts/gen_completion_generic.txt"
         return d
 
     @classmethod
@@ -279,6 +284,14 @@ class ConfigService:
         return cls.envvar("CAIG_GRAPH_SERVICE_URL", "http://127.0.0.1")
 
     @classmethod
+    def prompt_sparql(cls) -> str:
+        return cls.envvar("CAIG_PROMPT_SPARQL_PATH", "prompts/gen_sparql_generic.txt")
+
+    @classmethod
+    def prompt_completion(cls) -> str:
+        return cls.envvar("CAIG_PROMPT_COMPLETION_PATH", "prompts/gen_completion_generic.txt")
+
+    @classmethod
     def graph_service_ontology_url(cls) -> str:
         return "{}:{}/ontology".format(
             cls.graph_service_url(), cls.graph_service_port()
@@ -292,9 +305,9 @@ class ConfigService:
     def graph_source_owl_filename(cls) -> str:
         return cls.envvar("CAIG_GRAPH_SOURCE_OWL_FILENAME", "ontologies/extracted_ontology.ttl")
 
-    # @classmethod
-    # def graph_source_rdf_filename(cls) -> str:
-    #     return cls.envvar("CAIG_GRAPH_SOURCE_PATH", "")
+    @classmethod
+    def graph_source_path(cls) -> str:
+        return cls.envvar("CAIG_GRAPH_SOURCE_PATH", "")
 
     @classmethod
     def graph_source_db(cls) -> str:

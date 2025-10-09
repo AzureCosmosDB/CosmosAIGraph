@@ -9,7 +9,7 @@
 import logging
 
 from src.util.fs import FS
-
+from src.services.config_service import ConfigService
 
 class Prompts:
     def __init__(self, opts={}):
@@ -19,7 +19,7 @@ class Prompts:
         try:
             # Force fresh file read on every call - no caching
             import os
-            prompt_path = os.getenv("CAIG_SPARQL_PROMPT_PATH", "prompts/gen_sparql_generic.txt")
+            prompt_path = ConfigService.prompt_sparql()
             logging.info(f"Loading SPARQL prompt from: {os.path.abspath(prompt_path)}")
             template = FS.read(prompt_path)
             if template is None:

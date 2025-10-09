@@ -16,9 +16,9 @@ include the following:
 ### Deployment with Bicep
 
 **Important:** First, make sure that your environment variables are set as described in the
-[Environment Variables](environment_variables.md) document. Deployement scripts below use the environment variables to set them in ACA containers.
+[Environment Variables](environment_variables.md) document. The Deployment scripts below use the environment variables to set them in ACA containers.
 
-See the **/deployment** folder for working deployment scripts which use the [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) deployment syntax.
+See the **/deployment** folder for the deployment scripts which use the [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) deployment syntax.
 
 Then, execute **az_bicep_deploy.ps1** (on Windows) or **az_bicep_deploy.sh** (on macOS/Linux) script which uses the
 [az CLI](https://learn.microsoft.com/en-us/cli/azure/) to deploy
@@ -32,8 +32,8 @@ chmod +x ./deployment/az_bicep_deploy.sh)
 The Bicep file is named **caig.bicep** and it uses the **caig.bicepparam**
 parameters file.
 
-If you add/delete some of your environment variables, there is a script to generate the **caig.bicepparam** file
-and the top of your **caig.bicep** file, per the **CAIG_xxx** environment variables that you have set on your workstation. To use it, run the following command in the **impl\web_app** folder:
+If you add/delete some of your environment variables, run the following command **impl\web_app** folder to generate the **caig.bicepparam** file
+and the top of your **caig.bicep** file, per the **CAIG_xxx** environment variables that you have set on your workstation:
 
 ```
 (venv) PS ...\web_app> python main_common.py gen_all

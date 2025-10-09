@@ -351,7 +351,7 @@ class AiService:
         """Load the generic RAG prompt template from file."""
         try:
             from src.util.fs import FS
-            prompt_path = os.getenv("CAIG_COMPLETION_PROMPT_PATH", "prompts/gen_rag_generic.txt")
+            prompt_path = ConfigService.prompt_completion()
             logging.info(f"Loading completion prompt from: {os.path.abspath(prompt_path)}")
             template = FS.read(prompt_path)
             if template is None:

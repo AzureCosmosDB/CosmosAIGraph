@@ -93,3 +93,10 @@ export CAIG_WEB_APP_PORT="8000"
 
 echo 'setting CAIG_WEB_APP_URL'
 export CAIG_WEB_APP_URL="http://127.0.0.1"
+
+############### Prompts
+echo 'setting CAIG_PROMPT_SPARQL_PATH'
+export CAIG_PROMPT_SPARQL_PATH="prompts/gen_sparql_generic.txt"
+
+echo 'setting CAIG_PROMPT_COMPLETION_PATH'
+export CAIG_PROMPT_COMPLETION_PATH="prompts/gen_completion_generic.txt"

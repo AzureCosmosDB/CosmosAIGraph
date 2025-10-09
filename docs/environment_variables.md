@@ -1,4 +1,4 @@
-# CosmosAIGraph: Environment Variables
+# CosmosAIGraph Implementation 1 : Environment Variables
 
 Per the [Twelve-Factor App methodology](https://12factor.net/config),
 configuration is stored in environment variables.  
@@ -16,6 +16,7 @@ All of these begin with the prefix `CAIG_`.
 | CAIG_AZURE_OPENAI_EMBEDDINGS_DEP | The name of your Azure OpenAI embeddings deployment.   | WEB RUNTIME |
 | CAIG_AZURE_OPENAI_KEY | The Key of your Azure OpenAI account.   | WEB RUNTIME |
 | CAIG_AZURE_OPENAI_URL | The URL of your Azure OpenAI account.   | WEB RUNTIME |
+| CAIG_AZURE_OPENAI_VERSION | The Version of your Azure OpenAI account.   | WEB RUNTIME |
 | CAIG_CONFIG_CONTAINER | The Cosmos DB container for configuration JSON values.   | RUNTIME |
 | CAIG_CONVERSATIONS_CONTAINER | The Cosmos DB container where the chat conversations and history are persisted.   | WEB RUNTIME |
 | CAIG_COSMOSDB_NOSQL_ACCT | The Name of your Cosmos DB NoSQL account.   | RUNTIME |
@@ -33,10 +34,12 @@ All of these begin with the prefix `CAIG_`.
 | CAIG_GRAPH_SOURCE_CONTAINER | The graph Cosmos DB container name, if CAIG_GRAPH_SOURCE_TYPE is 'cosmos_nosql'.   | GRAPH RUNTIME |
 | CAIG_GRAPH_SOURCE_DB | The graph Cosmos DB database name, if CAIG_GRAPH_SOURCE_TYPE is 'cosmos_nosql'.   | GRAPH RUNTIME |
 | CAIG_GRAPH_SOURCE_OWL_FILENAME | The input RDF OWL ontology file.   | GRAPH RUNTIME |
-| CAIG_GRAPH_SOURCE_PATH | The RDF input file, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.   | GRAPH RUNTIME |
+| CAIG_GRAPH_SOURCE_PATH | The RDF input file or folder, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.   | GRAPH RUNTIME |
 | CAIG_GRAPH_SOURCE_TYPE | The RDF graph data source type, either 'cosmos_nosql', or 'json_docs_file' or 'rdf_file'.   | GRAPH RUNTIME |
 | CAIG_HOME | Root directory of the CosmosAIGraph GitHub repository on your system.   | DEV ENV |
 | CAIG_LOG_LEVEL | A standard python or java logging level name.   | RUNTIME |
+| CAIG_PROMPT_COMPLETION_PATH | Path to completion prompt .txt file.  | WEB RUNTIME |
+| CAIG_PROMPT_SPARQL_PATH | Path to SPARQL generation prompt .txt file.  | WEB RUNTIME |
 | CAIG_WEBSVC_AUTH_HEADER | Name of the custom HTTP authentication header; defaults to 'x-caig-auth'.   | RUNTIME |
 | CAIG_WEBSVC_AUTH_VALUE | your-secret-value   | RUNTIME |
 | CAIG_WEB_APP_NAME | Logical name.   | DEV ENV |
