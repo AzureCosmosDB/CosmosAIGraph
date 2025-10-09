@@ -12,10 +12,10 @@ These are required to simply execute the solution on your workstation:
   - Enables you to **git clone** this GitHub repository
 - [Python3](https://www.python.org/downloads/)
   - This solution uses Python command-line and web application programs, not Jupyter Notebooks
-  - Python version 3.12.x or later is recommended
+  - Python version 3.13.x or later is recommended
   - Conda is not recommended for this solution
 - **OpenJDK Java 21 or later**
-  - The new graph microservice is implemented in Java 21, Spring Boot, and Apache Jena
+  - The graph microservice is implemented in Java 21, Spring Boot, and Apache Jena
   - Download from: https://learn.microsoft.com/en-us/java/openjdk/download#openjdk-21
   - See [Understanding the Code](understanding_the_code.md)
 - A **Java IDE**, such as:
