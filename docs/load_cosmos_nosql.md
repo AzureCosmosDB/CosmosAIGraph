@@ -127,11 +127,7 @@ This step will load the main dataset into a libraries container:
 
 ### Execute a Vector Search with the loaded data
 
-First generate an embedding value from the words:
-"asynchronous web framework with pydantic".
-Then use that embedding in a vector search vs the Cosmos DB
-libraries container.
-
+To test the correctness of loaded dataset and the embeddings generated, run the following command: 
 ```
 > python main_nosql.py vector_search_words asynchronous web framework with pydantic
 
@@ -142,5 +138,6 @@ doc 2: {'pk': 'pypi', 'id': 'pypi_falcon', 'name': 'falcon', 'libtype': 'pypi', 
 doc 3: {'pk': 'pypi', 'id': 'pypi_async_asgi_testclient', 'name': 'async-asgi-testclient', 'libtype': 'pypi', 'score': 0.8090871851235626}
 ...
 ```
+It first generates an embedding value from the phrase "asynchronous web framework with pydantic" and then uses that embedding in a vector search against the libraries container.
 
 Notice that the **FastAPI** library is correctly identified as the top semantic search result.
