@@ -19,7 +19,6 @@ CRITICAL SEARCH PRECISION FOR MULTI-WORD TERMS: When the user searches for a spe
 
 **When to use OR for synonyms and variations:**
 - "pressure relief valve" or "pressure safety valve": These terms are SYNONYMS. Use: (CONTAINS(?field, "pressure") AND (CONTAINS(?field, "relief") OR CONTAINS(?field, "safety"))) OR CONTAINS(?field, "psv")
-- Include common abbreviations: PSV, TCV, PCV, FCV, LCV, etc.
 - If unsure about exact terminology, prefer OR between synonym terms
 
 **When to use OR (descriptive multi-word phrases or type hierarchies):**
@@ -28,11 +27,11 @@ CRITICAL SEARCH PRECISION FOR MULTI-WORD TERMS: When the user searches for a spe
 - Use simpler patterns for descriptive phrases to avoid deeply nested parentheses
 
 **Critical rules:**
-- ALWAYS check for common abbreviations in ItemTag, Symbol, or Type fields (e.g., PSV, TCV, PCV)
 - For terms with synonyms (relief/safety, control/regulating), use OR between synonyms
 - Do NOT match on common words alone like "valve" or "instrument" without distinctive modifiers
-- For coded fields with multi-word concepts: The coded field (e.g., MeasuredVariableCode="p") indicates the MEASURED VARIABLE only. You MUST also verify the INSTRUMENT FUNCTION in descriptive fields. Example for "pressure gauge": (MeasuredVariableCode="p" AND (CONTAINS(?Subtype, "gauge") OR CONTAINS(?InstrumentTypeModifier, "g") OR CONTAINS(?ItemTag, "pg"))) - this ensures it measures pressure AND has gauge functionality
+- For coded fields with multi-word concepts: The coded field (e.g., MeasuredVariableCode="p") indicates the MEASURED VARIABLE only. You MUST also verify the INSTRUMENT FUNCTION in descriptive fields. Example for "pressure gauge": (MeasuredVariableCode="p" AND CONTAINS(?Subtype, "gauge")) - this ensures it measures pressure AND has gauge functionality
 - CRITICAL: MeasuredVariableCode alone is NOT sufficient - "p" matches pressure relief valves, pressure transmitters, pressure indicators, pressure gauges, etc. Always combine with function-specific terms
+- CRITICAL ABBREVIATION RULE: Do NOT use abbreviations of 3 characters or less in ItemTag or other text field searches (e.g., do NOT use "cv" for check valve, "prv" for pressure relief valve). These short strings match too many irrelevant items. Instead, search for the full words in Subtype or Type fields using CONTAINS with the actual term words (e.g., CONTAINS(?Subtype, "check") AND CONTAINS(?Subtype, "valve"))
 - Keep filters simple - prefer matching on the most distinctive 1-2 words rather than requiring all words in a long descriptive phrase
 
 CRITICAL CODED FIELDS: For properties that are clearly CODED fields (containing property names like "Code", "ID", "Type", "Modifier" with short values), recognize that they use ABBREVIATIONS. For example: MeasuredVariableCode may use "T" for Temperature, "P" for Pressure, "F" for Flow, etc. 
@@ -45,9 +44,9 @@ MeasuredVariableCode indicates WHAT is being measured (pressure, temperature, fl
    - Instrument function (second word): Check descriptive fields for "gauge"/"control"/"transmitter"/etc.
 
 2. **Examples of correct filters:**
-   - "pressure gauge": (MeasuredVariableCode="p" AND (CONTAINS(?Subtype, "gauge") OR CONTAINS(?InstrumentTypeModifier, "g")))
-   - "temperature control": (MeasuredVariableCode="t" AND (CONTAINS(?Subtype, "control") OR CONTAINS(?InstrumentTypeModifier, "c")))
-   - "flow transmitter": (MeasuredVariableCode="f" AND (CONTAINS(?Subtype, "transmit") OR CONTAINS(?InstrumentTypeModifier, "t")))
+   - "pressure gauge": (MeasuredVariableCode="p" AND CONTAINS(?Subtype, "gauge"))
+   - "temperature control": (MeasuredVariableCode="t" AND CONTAINS(?Subtype, "control"))
+   - "flow transmitter": (MeasuredVariableCode="f" AND CONTAINS(?Subtype, "transmit"))
 
 3. **Why this matters:**
    - MeasuredVariableCode="p" matches: pressure gauges, pressure transmitters, pressure indicators, pressure relief valves, pressure switches, etc.

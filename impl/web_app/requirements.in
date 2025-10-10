@@ -6,7 +6,7 @@
 Faker
 Jinja2
 markdown
-azure-cosmos
+azure-cosmos>=4.14.0b4
 azure-identity
 azure-storage-blob
 beautifulsoup4

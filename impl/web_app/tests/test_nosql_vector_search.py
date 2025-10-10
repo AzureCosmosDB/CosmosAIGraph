@@ -52,7 +52,7 @@ async def test_vector_search():
         # as the first search result with a score approaching 1.0
         for libname in "flask,pydantic,m26".split(","):
             embedding = embedding_for_library(libname)
-            docs = await nosql_svc.vector_search(embedding, "embedding", 4)
+            docs = await nosql_svc.vector_search(embedding, "embedding", limit=4)
             FS.write_json(docs, "tmp/vector_search_results_{}.txt".format(libname))
             assert len(docs) == 4
             doc = docs[0]

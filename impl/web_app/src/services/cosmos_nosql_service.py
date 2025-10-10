@@ -451,9 +451,9 @@ class CosmosNoSQLService:
         parts = list()
         parts.append("SELECT TOP {}".format(limit))
         parts.append(
-            #"c, VectorDistance(c.{}, {}) AS score".format(
+            # "c, VectorDistance(c.{}, {}) AS score".format(
             #    embedding_attr, str(embedding_value)
-            #)
+            # )
             "*"
         )
         parts.append(
