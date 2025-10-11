@@ -41,8 +41,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web:4.0.0-M2'
 	implementation 'org.springframework.session:spring-session-core:4.0.0-M2'
 	compileOnly 'org.projectlombok:lombok:1.18.+'
-	implementation 'com.azure:azure-cosmos:4.+'
-	implementation 'org.apache.jena:apache-jena-libs:5.+'
+	implementation 'com.azure:azure-cosmos:4.74.+'
+	implementation 'org.apache.jena:apache-jena-libs:5.5.+'
 	annotationProcessor 'org.projectlombok:lombok:1.18.+'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test:4.0.0-M2'
 

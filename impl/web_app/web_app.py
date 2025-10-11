@@ -506,7 +506,7 @@ async def post_vector_search_console(req: Request):
                 vector = ai_svc_resp.data[0].embedding
                 view_data["embedding_message"] = "Embedding from Text"
                 view_data["embedding"] = json.dumps(vector, sort_keys=False, indent=2)
-                logging.warning(f"post_vector_search_console; vector: {vector}")
+                logging.info(f"post_vector_search_console; vector: {vector}")
                 
                 results_obj = await nosql_svc.vector_search(embedding_value=vector, search_text=text, search_method="rrf", limit=search_limit)
                 view_data["results_message"] = "RRF (Hybrid) Search Results"
@@ -522,7 +522,7 @@ async def post_vector_search_console(req: Request):
                 vector = ai_svc_resp.data[0].embedding
                 view_data["embedding_message"] = "Embedding from Text"
                 view_data["embedding"] = json.dumps(vector, sort_keys=False, indent=2)
-                logging.warning(f"post_vector_search_console; vector: {vector}")
+                logging.info(f"post_vector_search_console; vector: {vector}")
                 
                 results_obj = await nosql_svc.vector_search(embedding_value=vector, search_method="vector", limit=search_limit)
                 view_data["results_message"] = "Vector Search Results"

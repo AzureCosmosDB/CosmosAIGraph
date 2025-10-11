@@ -298,7 +298,7 @@ class CosmosNoSQLService:
                 lib = cdf.filter_library()
         return lib
 
-    async def vector_search(self, embedding_value=None, search_text=None, search_method="vector", embedding_attr="embedding", limit=4):
+    async def vector_search(self, embedding_value=None, search_text=None, search_method="vector", embedding_attr="embedding", limit=1):
         """
         Perform search using different methods:
         - vector: Traditional vector similarity search
@@ -315,8 +315,8 @@ class CosmosNoSQLService:
             docs = list()
             items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
             async for item in items_paged:
-                cdf = CosmosDocFilter(item)
-                docs.append(cdf.filter_out_embedding(embedding_attr))
+                cdf = CosmosDocFilter(item["c"])
+                docs.append([cdf.filter_out_embedding(embedding_attr), item["score"]])
             return docs
 
     async def fulltext_search(self, search_text, limit=4):
@@ -447,14 +447,14 @@ class CosmosNoSQLService:
 
         return docs
 
-    def vector_search_sql(self, embedding_value, embedding_attr="embedding", limit=4):
+    def vector_search_sql(self, embedding_value, embedding_attr="embedding", limit=1):
         parts = list()
         parts.append("SELECT TOP {}".format(limit))
         parts.append(
-            # "c, VectorDistance(c.{}, {}) AS score".format(
-            #    embedding_attr, str(embedding_value)
-            # )
-            "*"
+            "c, VectorDistance(c.{}, {}) AS score".format(
+               embedding_attr, str(embedding_value)
+            )
+            #"*"
         )
         parts.append(
             "FROM c ORDER BY VectorDistance(c.{}, {})".format(
