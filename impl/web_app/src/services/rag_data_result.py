@@ -113,10 +113,10 @@ class RAGDataResult:
                 "Each Document starts and ends with '###' to make it easy to parse."
             )
 
-        for doc in self.data["rag_docs"]:
-            prompt_lines.append("\nDocument ###")
-            prompt_lines.append(json.dumps(doc))
+        for idx, doc in enumerate(self.data["rag_docs"], start=1):
+            prompt_lines.append(f"\nDocument {idx}")
+            prompt_lines.append(json.dumps(doc, indent=2))
             prompt_lines.append("")
-            prompt_lines.append("###")
+            prompt_lines.append("________________________________________________________________________")
 
         return "\n".join(prompt_lines)

@@ -407,7 +407,7 @@ Chat history:
         max_tokens: int = ConfigService.optimize_context_and_history_max_tokens(),
     ):
         try:
-            optimizer = PromptOptimizer()
+            optimizer = PromptOptimizer(model_name=self.completions_deployment)
             return optimizer.generate_and_truncate(
                 prompt_template, full_context, full_history, user_query, max_tokens
             )

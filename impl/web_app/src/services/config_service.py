@@ -366,8 +366,62 @@ class ConfigService:
         return cls.int_envvar("CAIG_OPTIMIZE_CONTEXT_AND_HISTORY_MAX_TOKENS", 10000)
 
     @classmethod
+    def get_model_context_window(cls, deployment_name: str | None = None) -> int:
+        """
+        Get the context window size for a given model/deployment.
+        Returns the token limit based on the model name.
+        """
+        if deployment_name is None:
+            deployment_name = cls.azure_openai_completions_deployment()
+        
+        # Normalize the deployment name to lowercase for comparison
+        model_name = deployment_name.lower()
+        
+        # Map model names to their context windows
+        # Source: https://platform.openai.com/docs/models
+        if "gpt-4o" in model_name or "gpt4o" in model_name:
+            return 128000  # GPT-4o and GPT-4o-mini: 128K tokens
+        elif "gpt-4-turbo" in model_name or "gpt4turbo" in model_name:
+            return 128000  # GPT-4 Turbo: 128K tokens
+        elif "gpt-4-32k" in model_name:
+            return 32768   # GPT-4-32K: 32K tokens
+        elif "gpt-4" in model_name or "gpt4" in model_name:
+            # Check for GPT-4.1 (1M tokens) or standard GPT-4 (8K)
+            if "4.1" in model_name or "41" in model_name:
+                return 1000000  # GPT-4.1: 1M tokens
+            return 8192    # Standard GPT-4: 8K tokens
+        elif "gpt-35-turbo-16k" in model_name or "gpt-3.5-turbo-16k" in model_name:
+            return 16384   # GPT-3.5-Turbo-16K: 16K tokens
+        elif "gpt-35-turbo" in model_name or "gpt-3.5-turbo" in model_name:
+            return 16384   # GPT-3.5-Turbo: 16K tokens (updated models)
+        else:
+            # Default fallback for unknown models
+            return 8192
+
+    @classmethod
     def invoke_kernel_max_tokens(cls) -> int:
-        return cls.int_envvar("CAIG_INVOKE_KERNEL_MAX_TOKENS", 4096)
+        """
+        Calculate the maximum tokens for invoke_kernel based on the model's context window.
+        Uses env var if set, otherwise auto-calculates from model context window.
+        Reserves space for: system prompt (~1K), response (~4K), and safety margin (10%).
+        """
+        # Allow override via environment variable
+        env_value = cls.int_envvar("CAIG_INVOKE_KERNEL_MAX_TOKENS", -1)
+        if env_value > 0:
+            return env_value
+        
+        # Auto-calculate based on model's context window
+        context_window = cls.get_model_context_window()
+        
+        # Reserve tokens for response and other prompt parts
+        response_tokens = 4096      # Reserve for LLM response
+        system_prompt_tokens = 1024 # Reserve for system prompt
+        safety_margin = int(context_window * 0.1)  # 10% safety margin
+        
+        max_tokens = context_window - response_tokens - system_prompt_tokens - safety_margin
+        
+        # Ensure we have a reasonable minimum
+        return max(max_tokens, 4096)
 
     @classmethod
     def invoke_kernel_temperature(cls) -> float:

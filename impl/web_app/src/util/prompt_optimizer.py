@@ -13,7 +13,7 @@
 # - actual_prompt - The final prompt rendered with the pruned context and history.
 # - actual_tokens - The token count of the actual_prompt, calculated by tiktoken.
 #
-# Chris Joakim, Microsoft, 2025
+# Chris Joakim, Aleksey Savateyev, 2025
 
 import json
 import logging
@@ -25,10 +25,22 @@ MAX_ITERATIONS = 8
 
 class PromptOptimizer:
 
-    def __init__(self):
+    def __init__(self, model_name: str | None = None):
         self.jinja_env = jinja2.Environment()
-        # tiktoken, for token estimation, doesn't work with gpt-4 at this time
-        self.tiktoken_encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+        
+        # Get tiktoken encoding with fallback for unknown models
+        # GPT-4, GPT-4 Turbo, GPT-4.1, and GPT-3.5-Turbo all use cl100k_base encoding
+        try:
+            if model_name:
+                self.tiktoken_encoding = tiktoken.encoding_for_model(model_name)
+            else:
+                # Use cl100k_base as default - works for all GPT-4 and GPT-3.5-turbo models
+                self.tiktoken_encoding = tiktoken.get_encoding("cl100k_base")
+        except KeyError:
+            # Fallback to cl100k_base if model is not recognized by tiktoken
+            # This is the correct encoding for GPT-4, GPT-4-turbo, and GPT-3.5-turbo variants
+            self.tiktoken_encoding = tiktoken.get_encoding("cl100k_base")
+        
         self.enc = tiktoken.get_encoding("cl100k_base")
 
     def generate_and_truncate(
@@ -120,10 +132,10 @@ class PromptOptimizer:
                                     # Calculate how many items to keep based on ITEM COUNT, not token ratio
                                     # This ensures we always keep complete objects
                                     if len(parsed_json) > 1:
-                                        # Remove items one by one until we fit, but always keep at least 1
+                                        # Keep the beginning items (most relevant for search results), remove from end
+                                        # Always keep at least 1 item
                                         target_size = max(1, int(float(len(parsed_json)) * context_words_ratio))
-                                        start_index = len(parsed_json) - target_size
-                                        pruned_json = parsed_json[start_index:]
+                                        pruned_json = parsed_json[:target_size]
                                         pruned_context = json.dumps(pruned_json, indent=2)
                                     else:
                                         # Single item, keep as-is (will be handled by breaking the loop if too large)
