@@ -24,7 +24,7 @@ Capture the values of the endpoint URL and Key 1.  You will later
 set your **CAIG_AZURE_OPENAI_URL** and **CAIG_AZURE_OPENAI_KEY**
 environment variables with these values.
 
-Create model deployments for the **gpt-4.1** and **text-embedding-small-003** models.
+Create model deployments for the **gpt-4.1** and **text-embedding-ada-002** models.
 It is expected that, over time, the names of these models will change,
 so use the current version of each.
 

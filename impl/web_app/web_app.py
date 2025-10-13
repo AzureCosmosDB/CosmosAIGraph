@@ -505,7 +505,9 @@ async def post_vector_search_console(req: Request):
                 ai_svc_resp = ai_svc.generate_embeddings(text)
                 vector = ai_svc_resp.data[0].embedding
                 view_data["embedding_message"] = "Embedding from Text"
-                view_data["embedding"] = json.dumps(vector, sort_keys=False, indent=2)
+                # Truncate embedding display to avoid ERR_RESPONSE_HEADERS_TOO_BIG
+                display_vector = vector[:20] if len(vector) > 20 else vector
+                view_data["embedding"] = json.dumps(display_vector, sort_keys=False, indent=2) + ("\n... (truncated)" if len(vector) > 20 else "")
                 logging.info(f"post_vector_search_console; vector: {vector}")
                 
                 results_obj = await nosql_svc.vector_search(embedding_value=vector, search_text=text, search_method="rrf", limit=search_limit)
@@ -519,12 +521,23 @@ async def post_vector_search_console(req: Request):
             try:
                 logging.info("vectorize: {}".format(text))
                 ai_svc_resp = ai_svc.generate_embeddings(text)
+                if ai_svc_resp is None or not hasattr(ai_svc_resp, 'data') or len(ai_svc_resp.data) == 0:
+                    raise ValueError("Failed to generate embeddings - empty response from AI service")
                 vector = ai_svc_resp.data[0].embedding
                 view_data["embedding_message"] = "Embedding from Text"
-                view_data["embedding"] = json.dumps(vector, sort_keys=False, indent=2)
-                logging.info(f"post_vector_search_console; vector: {vector}")
+                # Truncate embedding display to avoid ERR_RESPONSE_HEADERS_TOO_BIG
+                display_vector = vector[:20] if len(vector) > 20 else vector
+                view_data["embedding"] = json.dumps(display_vector, sort_keys=False, indent=2) + ("\n... (truncated)" if len(vector) > 20 else "")
+                logging.warning(f"post_vector_search_console; TEXT: '{text}', vector length: {len(vector)}, first 5 values: {vector[:5]}")
+                
+                db_name = ConfigService.graph_source_db()
+                container_name = ConfigService.graph_source_container()
+                logging.warning(f"post_vector_search_console; setting DB: '{db_name}', container: '{container_name}'")
+                nosql_svc.set_db(db_name)
+                nosql_svc.set_container(container_name)
                 
                 results_obj = await nosql_svc.vector_search(embedding_value=vector, search_method="vector", limit=search_limit)
+                logging.warning(f"post_vector_search_console; results count: {len(results_obj)}, first 3 doc names: {[doc.get('name', 'N/A') for doc in results_obj[:3]]}")
                 view_data["results_message"] = "Vector Search Results"
             except Exception as e:
                 logging.critical((str(e)))
@@ -561,6 +574,12 @@ async def post_vector_search_console(req: Request):
     if "results_message" not in view_data:
         view_data["results_message"] = "Search Results"
     
+    # Convert results to properly formatted JSON string for display
+    if results_obj:
+        view_data["results_json"] = json.dumps(results_obj, indent=2)
+    else:
+        view_data["results_json"] = None
+    
     view_data["results"] = results_obj
     view_data["current_page"] = "vector_search_console"  # Set active page for navbar
     
@@ -570,11 +589,23 @@ async def post_vector_search_console(req: Request):
         req.session["vector_search_method"] = search_method
         req.session["vector_search_limit"] = search_limit
         
-        # Convert results to JSON serializable format
+        # Convert results to JSON serializable format and truncate large fields for session storage
         if results_obj:
-            # Convert to list if it's not already, and ensure it's JSON serializable
-            serializable_results = list(results_obj) if results_obj else []
-            req.session["vector_search_results"] = serializable_results
+            # Truncate large fields to avoid cookie size limits (4KB typical browser limit)
+            truncated_results = []
+            for doc in results_obj:
+                truncated_doc = {}
+                for key, value in doc.items():
+                    if isinstance(value, str) and len(value) > 500:
+                        # Truncate long strings to 500 chars
+                        truncated_doc[key] = value[:500] + "... (truncated)"
+                    elif isinstance(value, list) and len(str(value)) > 500:
+                        # Truncate long lists
+                        truncated_doc[key] = str(value)[:500] + "... (truncated)"
+                    else:
+                        truncated_doc[key] = value
+                truncated_results.append(truncated_doc)
+            req.session["vector_search_results"] = truncated_results
         else:
             req.session["vector_search_results"] = []
             
@@ -776,8 +807,7 @@ async def conv_ai_console_post(req: Request):
 
             # Prepare context based on RAG strategy
             context = ""
-            # Remove completion_context - previous responses should only be in chat history
-            # completion_context = conv.last_completion_content()
+            completion_context = conv.last_completion_content()
             
             if rdr.has_db_rag_docs() == True:
                 for doc in rdr.get_rag_docs():
@@ -790,16 +820,16 @@ async def conv_ai_console_post(req: Request):
                                 line_parts.append("{}: {}".format(attr, value))
                     content_lines.append(".  ".join(line_parts))
                 
-                # For DB RAG, set the context but don't include previous completion content
+                # For DB RAG, set the context but don't set completion content yet
                 conv.set_context(rdr.get_context())
                 rag_data = "\n".join(content_lines)
                 
                 if conv.has_context():
-                    context = "{}\n{}".format(
-                        conv.get_context(), rag_data
+                    context = "Found context: {}\n{}\n{}".format(
+                        conv.get_context(), completion_context, rag_data
                     )
                 else:
-                    context = rag_data
+                    context = "{}\n{}".format(completion_context, rag_data)
                     
                 try:
                     logging.info("conv save (db path) completions: {}".format(len(conv.get_data().get("completions", []))))
@@ -810,25 +840,27 @@ async def conv_ai_console_post(req: Request):
                 for doc in rdr.get_rag_docs():
                     content_lines.append(json.dumps(doc))
                 
-                # For Graph RAG, set the context but don't include previous completion content
+                # For Graph RAG, set the context but don't set completion content yet
                 graph_content = ", ".join(content_lines)
                 conv.set_context(graph_content)
                 conv.add_diagnostic_message("sparql: {}".format(rdr.get_sparql()))
 
                 if conv.has_context():
-                    context = conv.get_context()
+                    context = "Found context: {}\n{}\n".format(
+                        conv.get_context(), completion_context
+                    )
                 else:
-                    context = ""
+                    context = "{}\n".format(completion_context)
             else:
                 # No specific RAG docs, use system prompt
                 rag_data = rdr.as_system_prompt_text()
 
                 if conv.has_context():
-                    context = "{}\n{}".format(
-                        conv.get_context(), rag_data
+                    context = "Found context: {}\n{}\n{}".format(
+                        conv.get_context(), completion_context, rag_data
                     )
                 else:
-                    context = rag_data
+                    context = "{}\n{}".format(completion_context, rag_data)
 
             # Always run AI inference to generate the actual response
             max_tokens = ConfigService.invoke_kernel_max_tokens()
@@ -1239,57 +1271,26 @@ def post_libraries_sparql_console(form_data):
         if len(bom_query) > 0:
             tokens = bom_query.split()
             if len(tokens) > 1:
-                try:
-                    bom_obj = None
-                    url = graph_microsvc_bom_query_url()
-                    logging.info("url: {}".format(url))
-                    postdata = dict()
-                    postdata["entrypoint"] = tokens[0]
-                    postdata["max_depth"] = tokens[1]
-                    logging.info("postdata: {}".format(postdata))
-                    r = httpx.post(
-                        url,
-                        headers=websvc_headers,
-                        content=json.dumps(postdata),
-                        timeout=60.0,  # 1 minute timeout for large graph processing
-                    )
-                    bom_obj = json.loads(r.text)
-                    
-                    # Filter out numeric nodes that are likely measurement values
-                    filtered_bom_obj = filter_numeric_nodes(bom_obj)
-                    
-                    view_data["results"] = filtered_bom_obj
-                    view_data["inline_bom_json"] = view_data["results"]
-                    view_data["visualization_message"] = "Graph Visualization"
-                except httpx.TimeoutException:
-                    error_msg = f"Graph processing timed out for query '{bom_query}'. Large graphs may take longer to process. Please try with a smaller depth or a more specific entity."
-                    logging.error(f"BOM query timeout: {error_msg}")
-                    view_data["results"] = {"error": error_msg}
-                    view_data["results_message"] = "Graph Processing Timeout"
-                    view_data["inline_bom_json"] = "{}"
-                    view_data["visualization_message"] = ""
-                except httpx.ConnectError:
-                    error_msg = "Unable to connect to the graph service. Please check if the graph microservice is running."
-                    logging.error(f"BOM query connection error: {error_msg}")
-                    view_data["results"] = {"error": error_msg}
-                    view_data["results_message"] = "Connection Error"
-                    view_data["inline_bom_json"] = "{}"
-                    view_data["visualization_message"] = ""
-                except httpx.HTTPStatusError as e:
-                    error_msg = f"Graph service returned an error (HTTP {e.response.status_code}). The query may be invalid or the service may be experiencing issues."
-                    logging.error(f"BOM query HTTP error: {error_msg}")
-                    view_data["results"] = {"error": error_msg}
-                    view_data["results_message"] = "Graph Service Error"
-                    view_data["inline_bom_json"] = "{}"
-                    view_data["visualization_message"] = ""
-                except Exception as e:
-                    error_msg = f"An unexpected error occurred while processing the graph query: {str(e)}"
-                    logging.error(f"BOM query unexpected error: {error_msg}")
-                    logging.exception(e, stack_info=True, exc_info=True)
-                    view_data["results"] = {"error": error_msg}
-                    view_data["results_message"] = "Processing Error"
-                    view_data["inline_bom_json"] = "{}"
-                    view_data["visualization_message"] = ""
+                bom_obj = None
+                url = graph_microsvc_bom_query_url()
+                logging.info("url: {}".format(url))
+                postdata = dict()
+                postdata["entrypoint"] = tokens[0]
+                postdata["max_depth"] = tokens[1]
+                logging.info("postdata: {}".format(postdata))
+                r = httpx.post(
+                    url,
+                    headers=websvc_headers,
+                    content=json.dumps(postdata),
+                )
+                bom_obj = json.loads(r.text)
+                
+                # Filter out numeric nodes that are likely measurement values
+                filtered_bom_obj = filter_numeric_nodes(bom_obj)
+                
+                view_data["results"] = filtered_bom_obj
+                view_data["inline_bom_json"] = view_data["results"]
+                view_data["visualization_message"] = "Graph Visualization"
                 # Derive a count for the header if possible
                 try:
                     count_val = 0
@@ -1317,8 +1318,7 @@ def post_libraries_sparql_console(form_data):
         else:
             sqr: SparqlQueryResponse = post_sparql_query_to_graph_microsvc(sparql)
             if sqr.has_errors():
-                error_msg = sqr.parse_exception if sqr.parse_exception else "Unknown SPARQL query error occurred"
-                view_data["results"] = {"error": error_msg}
+                view_data["results"] = dict()
                 view_data["results_message"] = "SPARQL Query Error"
             else:
                 view_data["results"] = sqr.response_obj# json.dumps(
@@ -1340,7 +1340,7 @@ def post_sparql_query_to_graph_microsvc(sparql: str) -> SparqlQueryResponse:
         postdata = dict()
         postdata["sparql"] = sparql
         r = httpx.post(
-            url, headers=websvc_headers, content=json.dumps(postdata), timeout=60.0
+            url, headers=websvc_headers, content=json.dumps(postdata)
         )
         resp_obj = json.loads(r.text)
         print(
@@ -1349,37 +1349,11 @@ def post_sparql_query_to_graph_microsvc(sparql: str) -> SparqlQueryResponse:
         sqr = SparqlQueryResponse(r)
         sqr.parse()
         return sqr
-    except httpx.TimeoutException as e:
-        error_msg = "SPARQL query timed out. The query may be too complex or the dataset too large."
-        logging.error(f"SPARQL query timeout: {error_msg}")
-        logging.exception(e, stack_info=True, exc_info=True)
-        sqr = SparqlQueryResponse(None)
-        sqr.parse()
-        sqr.parse_exception = error_msg
-        return sqr
-    except httpx.ConnectError as e:
-        error_msg = "Unable to connect to the graph service. Please check if the graph microservice is running."
-        logging.error(f"SPARQL query connection error: {error_msg}")
-        logging.exception(e, stack_info=True, exc_info=True)
-        sqr = SparqlQueryResponse(None)
-        sqr.parse()
-        sqr.parse_exception = error_msg
-        return sqr
-    except httpx.HTTPStatusError as e:
-        error_msg = f"Graph service returned an error (HTTP {e.response.status_code}). The SPARQL query may be invalid."
-        logging.error(f"SPARQL query HTTP error: {error_msg}")
-        logging.exception(e, stack_info=True, exc_info=True)
-        sqr = SparqlQueryResponse(None)
-        sqr.parse()
-        sqr.parse_exception = error_msg
-        return sqr
     except Exception as e:
-        error_msg = f"An unexpected error occurred while executing the SPARQL query: {str(e)}"
-        logging.error(f"SPARQL query unexpected error: {error_msg}")
+        logging.critical((str(e)))
         logging.exception(e, stack_info=True, exc_info=True)
         sqr = SparqlQueryResponse(None)
         sqr.parse()
-        sqr.parse_exception = error_msg
         return sqr
 
 

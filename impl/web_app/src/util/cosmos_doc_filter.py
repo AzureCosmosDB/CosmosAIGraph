@@ -72,9 +72,10 @@ class CosmosDocFilter:
             "release_count",
         ]
 
-    def filter_out_embedding(self, embedding_attr = "embedding"):
+    def filter_out_embedding(self, embedding_attr = "embedding", truncate=True):
         """
-        Remove embedding fromCosmos DB documents and truncate some known ones.
+        Remove embedding from Cosmos DB documents and optionally truncate some known ones.
+        Set truncate=False to get full text content for display purposes.
         """
         filtered = dict()
         #filtered_attrs = self.rag_attributes()
@@ -87,14 +88,16 @@ class CosmosDocFilter:
                             filtered[attr].append(
                                 dep_id[5:]
                             )  # 'pypi_jinja2' becomes 'jinja2'
-                    elif attr == "description":
+                    elif truncate and attr == "description":
                         filtered[attr] = self.cosmos_doc[attr][:255]#.replace("\n", " ")
-                    elif attr == "summary":
+                    elif truncate and attr == "summary":
                         filtered[attr] = self.cosmos_doc[attr][:255]#.replace("\n", " ")
-                    elif attr == "documentation_summary":
+                    elif truncate and attr == "documentation_summary":
                         filtered[attr] = self.cosmos_doc[attr][:1024]#.replace("\n", " ")
+                    elif truncate and isinstance(self.cosmos_doc[attr], str):
+                        filtered[attr] = self.cosmos_doc[attr][:1024]
                     else:
-                        filtered[attr] = self.cosmos_doc[attr][:1024] if isinstance(self.cosmos_doc[attr], str) else self.cosmos_doc[attr]
+                        filtered[attr] = self.cosmos_doc[attr]
 
         return filtered
 

@@ -410,7 +410,7 @@ async def vector_search_words(natural_language):
         for idx, doc in enumerate(docs):
             # cdf = CosmosDocFilter(doc["c"])
             # print("doc {}: {} Score: {}".format(idx, cdf.filter_out_embedding("embedding"), doc["score"]))
-            print("doc {}: {}".format(idx, doc))
+            print("doc {}:\n{}\n".format(idx, json.dumps(doc, indent=2)))
     except Exception as e:
         logging.info(str(e))
         logging.info(traceback.format_exc())

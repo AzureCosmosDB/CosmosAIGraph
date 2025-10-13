@@ -127,18 +127,33 @@ class RAGDataService:
     ) -> None:
         try:
             logging.warning(
-                "RagDataService#get_vector_rag_data, user_text: {}".format(user_text)
+                "RagDataService#get_vector_rag_data, user_text: '{}', max_doc_count: {}".format(user_text, max_doc_count)
             )
             create_embedding_response = self.ai_svc.generate_embeddings(user_text)
             embedding = create_embedding_response.data[0].embedding
-            self.nosql_svc.set_db(ConfigService.graph_source_db())
-            self.nosql_svc.set_container(ConfigService.graph_source_container())
+            logging.warning(
+                "RagDataService#get_vector_rag_data, embedding length: {}, first 5 values: {}".format(
+                    len(embedding), embedding[:5]
+                )
+            )
+            db_name = ConfigService.graph_source_db()
+            container_name = ConfigService.graph_source_container()
+            logging.warning(f"RagDataService#get_vector_rag_data, setting DB: '{db_name}', container: '{container_name}'")
+            self.nosql_svc.set_db(db_name)
+            self.nosql_svc.set_container(container_name)
             vs_result = await self.nosql_svc.vector_search(
-                embedding_value=embedding, search_text=user_text, search_method="rrf", embedding_attr="embedding", limit=max_doc_count
+                embedding_value=embedding, search_text=user_text, search_method="vector", embedding_attr="embedding", limit=max_doc_count
+            )
+            logging.warning(
+                "RagDataService#get_vector_rag_data, vs_result count: {}, first 3 doc names: {}".format(
+                    len(vs_result), [doc.get("name", "N/A") for doc in vs_result[:3]]
+                )
             )
             for vs_doc in vs_result:
+                # Vector search now returns documents with _score field embedded
                 doc_copy = dict(vs_doc)  # shallow copy
                 doc_copy.pop("embedding", None)
+                doc_copy.pop("_score", None)  # Remove score field for RAG context
                 rdr.add_doc(doc_copy)
         except Exception as e:
             logging.critical(
