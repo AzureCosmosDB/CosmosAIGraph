@@ -1,7 +1,7 @@
-# CosmosAIGraph Implementation 1 : Environment Variables
+# CosmosAIGraph Deployment : Environment Variables
 
 Per the [Twelve-Factor App methodology](https://12factor.net/config),
-configuration is stored in environment variables.  
+configuration is stored in the environment variables.  
 This is the standard practice for Docker-containerized applications deployed to orchestrators
 such as Azure Kubernetes Service (AKS) and Azure Container Apps (ACA).
 
@@ -48,8 +48,8 @@ All of these begin with the prefix `CAIG_`.
 
 ## Setting these Environment Variables
 
-The repo contains generated PowerShell script **impl/set-caig-env-vars-sample.ps1**
-which sets all of these CAIG_ environment values.
+The repo contains generated PowerShell script **impl/set-caig-env-vars-sample.ps1** and bash script **impl/set-caig-env-vars-sample.sh**
+which set all of these CAIG_ environment values in their respective environments.
 You may find it useful to edit and execute this script rather than set them manually on your system
 
 
@@ -60,7 +60,7 @@ in each subapplication of this implementation.
 It allows you to define environment variables in a file named **`.env`**
 and thus can make it easier to use this project during local development.
 
-Please see the **dotenv_example** files in each subapplication for examples.
+Please see the **sample.env** files in each subapplication for examples.
 
 It is important for you to have a **.gitignore** entry for the **.env** file
 so that application secrets don't get leaked into your source control system.
@@ -70,5 +70,5 @@ so that application secrets don't get leaked into your source control system.
 
 The Java codebase in this repo implements similar logic to the python-dotenv described above.
 
-See file **example-override.properties** in the **impl/graph_app/** directory.
+See file **sample.override.properties** in the **impl/graph_app/** directory.
 
