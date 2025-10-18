@@ -505,8 +505,10 @@ async def post_vector_search_console(req: Request):
                 ai_svc_resp = ai_svc.generate_embeddings(text)
                 vector = ai_svc_resp.data[0].embedding
                 view_data["embedding_message"] = "Embedding from Text"
-                view_data["embedding"] = json.dumps(vector, sort_keys=False, indent=2)
-                logging.warning(f"post_vector_search_console; vector: {vector}")
+                # Truncate embedding display to avoid ERR_RESPONSE_HEADERS_TOO_BIG
+                display_vector = vector[:20] if len(vector) > 20 else vector
+                view_data["embedding"] = json.dumps(display_vector, sort_keys=False, indent=2) + ("\n... (truncated)" if len(vector) > 20 else "")
+                logging.info(f"post_vector_search_console; vector: {vector}")
                 
                 results_obj = await nosql_svc.vector_search(embedding_value=vector, search_text=text, search_method="rrf", limit=search_limit)
                 view_data["results_message"] = "RRF (Hybrid) Search Results"
@@ -519,12 +521,23 @@ async def post_vector_search_console(req: Request):
             try:
                 logging.info("vectorize: {}".format(text))
                 ai_svc_resp = ai_svc.generate_embeddings(text)
+                if ai_svc_resp is None or not hasattr(ai_svc_resp, 'data') or len(ai_svc_resp.data) == 0:
+                    raise ValueError("Failed to generate embeddings - empty response from AI service")
                 vector = ai_svc_resp.data[0].embedding
                 view_data["embedding_message"] = "Embedding from Text"
-                view_data["embedding"] = json.dumps(vector, sort_keys=False, indent=2)
-                logging.warning(f"post_vector_search_console; vector: {vector}")
+                # Truncate embedding display to avoid ERR_RESPONSE_HEADERS_TOO_BIG
+                display_vector = vector[:20] if len(vector) > 20 else vector
+                view_data["embedding"] = json.dumps(display_vector, sort_keys=False, indent=2) + ("\n... (truncated)" if len(vector) > 20 else "")
+                logging.warning(f"post_vector_search_console; TEXT: '{text}', vector length: {len(vector)}, first 5 values: {vector[:5]}")
+                
+                db_name = ConfigService.graph_source_db()
+                container_name = ConfigService.graph_source_container()
+                logging.warning(f"post_vector_search_console; setting DB: '{db_name}', container: '{container_name}'")
+                nosql_svc.set_db(db_name)
+                nosql_svc.set_container(container_name)
                 
                 results_obj = await nosql_svc.vector_search(embedding_value=vector, search_method="vector", limit=search_limit)
+                logging.warning(f"post_vector_search_console; results count: {len(results_obj)}, first 3 doc names: {[doc.get('name', 'N/A') for doc in results_obj[:3]]}")
                 view_data["results_message"] = "Vector Search Results"
             except Exception as e:
                 logging.critical((str(e)))
@@ -561,6 +574,12 @@ async def post_vector_search_console(req: Request):
     if "results_message" not in view_data:
         view_data["results_message"] = "Search Results"
     
+    # Convert results to properly formatted JSON string for display
+    if results_obj:
+        view_data["results_json"] = json.dumps(results_obj, indent=2)
+    else:
+        view_data["results_json"] = None
+    
     view_data["results"] = results_obj
     view_data["current_page"] = "vector_search_console"  # Set active page for navbar
     
@@ -570,11 +589,23 @@ async def post_vector_search_console(req: Request):
         req.session["vector_search_method"] = search_method
         req.session["vector_search_limit"] = search_limit
         
-        # Convert results to JSON serializable format
+        # Convert results to JSON serializable format and truncate large fields for session storage
         if results_obj:
-            # Convert to list if it's not already, and ensure it's JSON serializable
-            serializable_results = list(results_obj) if results_obj else []
-            req.session["vector_search_results"] = serializable_results
+            # Truncate large fields to avoid cookie size limits (4KB typical browser limit)
+            truncated_results = []
+            for doc in results_obj:
+                truncated_doc = {}
+                for key, value in doc.items():
+                    if isinstance(value, str) and len(value) > 500:
+                        # Truncate long strings to 500 chars
+                        truncated_doc[key] = value[:500] + "... (truncated)"
+                    elif isinstance(value, list) and len(str(value)) > 500:
+                        # Truncate long lists
+                        truncated_doc[key] = str(value)[:500] + "... (truncated)"
+                    else:
+                        truncated_doc[key] = value
+                truncated_results.append(truncated_doc)
+            req.session["vector_search_results"] = truncated_results
         else:
             req.session["vector_search_results"] = []
             
@@ -659,9 +690,17 @@ async def conv_ai_console(req: Request):
     view_data = dict()
     view_data["conv"] = conv.get_data()
     view_data["conversation_id"] = conv.conversation_id
-    view_data["conversation_data"] = ""
-    view_data["prompts_text"] = "no prompts yet"
-    view_data["last_user_question"] = ""
+    
+    # Populate conversation data and prompts if conversation has completions
+    if conv and conv.completions and len(conv.completions) > 0:
+        view_data["conversation_data"] = conv.serialize()
+        view_data["prompts_text"] = conv.formatted_prompts_text()
+        view_data["last_user_question"] = conv.get_last_user_message()
+    else:
+        view_data["conversation_data"] = ""
+        view_data["prompts_text"] = "no prompts yet"
+        view_data["last_user_question"] = ""
+    
     view_data["rag_strategy"] = "auto"
     view_data["current_page"] = "conv_ai_console"  # Set active page for navbar
     return views.TemplateResponse(
@@ -751,95 +790,112 @@ async def conv_ai_console_post(req: Request):
         )
 
     if len(user_text) > 0:
-        # Always record the user's message first so each turn shows in order
-        conv.add_user_message(user_text)
-        prompt_text = ai_svc.generic_prompt_template()
+        try:
+            # Always record the user's message first so each turn shows in order
+            conv.add_user_message(user_text)
+            prompt_text = ai_svc.generic_prompt_template()
 
-        override = None if rag_strategy_choice in ("", "auto") else rag_strategy_choice
-        rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 20, override)
-        if (LoggingLevelService.get_level() == logging.DEBUG):
-            FS.write_json(rdr.get_data(), "tmp/ai_conv_rdr.json")
+            override = None if rag_strategy_choice in ("", "auto") else rag_strategy_choice
+            rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 20, override)
+            if (LoggingLevelService.get_level() == logging.DEBUG):
+                FS.write_json(rdr.get_data(), "tmp/ai_conv_rdr.json")
 
-        completion: Optional[AiCompletion] = AiCompletion(conv.conversation_id, None)
-        completion.set_user_text(user_text)
-        completion.set_rag_strategy(rdr.get_strategy())
-        content_lines = list()
-
-        # Prepare context based on RAG strategy
-        context = ""
-        completion_context = conv.last_completion_content()
-        
-        if rdr.has_db_rag_docs() == True:
-            for doc in rdr.get_rag_docs():
-                logging.debug("doc: {}".format(doc))
-                line_parts = list()
-                for attr in ["id", "fileName", "text"]:
-                    if attr in doc.keys():
-                        value = doc[attr].strip()
-                        if len(value) > 0:
-                            line_parts.append("{}: {}".format(attr, value))
-                content_lines.append(".  ".join(line_parts))
-            
-            # For DB RAG, set the context but don't set completion content yet
-            conv.set_context(rdr.get_context())
-            rag_data = "\n".join(content_lines)
-            
-            if conv.has_context():
-                context = "Found context: {}\n{}\n{}".format(
-                    conv.get_context(), completion_context, rag_data
-                )
-            else:
-                context = "{}\n{}".format(completion_context, rag_data)
-                
-            try:
-                logging.info("conv save (db path) completions: {}".format(len(conv.get_data().get("completions", []))))
-            except Exception:
-                pass
-                
-        elif rdr.has_graph_rag_docs() == True:
-            for doc in rdr.get_rag_docs():
-                content_lines.append(json.dumps(doc))
-            
-            # For Graph RAG, set the context but don't set completion content yet
-            graph_content = ", ".join(content_lines)
-            conv.set_context(graph_content)
-            conv.add_diagnostic_message("sparql: {}".format(rdr.get_sparql()))
-
-            if conv.has_context():
-                context = "Found context: {}\n{}\n".format(
-                    conv.get_context(), completion_context
-                )
-            else:
-                context = "{}\n".format(completion_context)
-        else:
-            # No specific RAG docs, use system prompt
-            rag_data = rdr.as_system_prompt_text()
-
-            if conv.has_context():
-                context = "Found context: {}\n{}\n{}".format(
-                    conv.get_context(), completion_context, rag_data
-                )
-            else:
-                context = "{}\n{}".format(completion_context, rag_data)
-
-        # Always run AI inference to generate the actual response
-        max_tokens = ConfigService.invoke_kernel_max_tokens()
-        temperature = ConfigService.invoke_kernel_temperature()
-        top_p = ConfigService.invoke_kernel_top_p()
-        comp_result = await ai_svc.invoke_kernel(
-            conv,
-            prompt_text,
-            user_text,
-            context=context,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            top_p=top_p,
-        )
-        if comp_result is not None:
-            completion = comp_result
+            completion: Optional[AiCompletion] = AiCompletion(conv.conversation_id, None)
+            completion.set_user_text(user_text)
             completion.set_rag_strategy(rdr.get_strategy())
-        else:
-            completion.set_content("No results found")
+            content_lines = list()
+
+            # Prepare context based on RAG strategy
+            context = ""
+            completion_context = conv.last_completion_content()
+            
+            if rdr.has_db_rag_docs() == True:
+                for doc in rdr.get_rag_docs():
+                    logging.debug("doc: {}".format(doc))
+                    line_parts = list()
+                    for attr in ["id", "fileName", "text"]:
+                        if attr in doc.keys():
+                            value = doc[attr].strip()
+                            if len(value) > 0:
+                                line_parts.append("{}: {}".format(attr, value))
+                    content_lines.append(".  ".join(line_parts))
+                
+                # For DB RAG, set the context but don't set completion content yet
+                conv.set_context(rdr.get_context())
+                rag_data = "\n".join(content_lines)
+                
+                if conv.has_context():
+                    context = "Found context: {}\n{}\n{}".format(
+                        conv.get_context(), completion_context, rag_data
+                    )
+                else:
+                    context = "{}\n{}".format(completion_context, rag_data)
+                    
+                try:
+                    logging.info("conv save (db path) completions: {}".format(len(conv.get_data().get("completions", []))))
+                except Exception:
+                    pass
+                    
+            elif rdr.has_graph_rag_docs() == True:
+                for doc in rdr.get_rag_docs():
+                    content_lines.append(json.dumps(doc))
+                
+                # For Graph RAG, set the context but don't set completion content yet
+                graph_content = ", ".join(content_lines)
+                conv.set_context(graph_content)
+                conv.add_diagnostic_message("sparql: {}".format(rdr.get_sparql()))
+
+                if conv.has_context():
+                    context = "Found context: {}\n{}\n".format(
+                        conv.get_context(), completion_context
+                    )
+                else:
+                    context = "{}\n".format(completion_context)
+            else:
+                # No specific RAG docs, use system prompt
+                rag_data = rdr.as_system_prompt_text()
+
+                if conv.has_context():
+                    context = "Found context: {}\n{}\n{}".format(
+                        conv.get_context(), completion_context, rag_data
+                    )
+                else:
+                    context = "{}\n{}".format(completion_context, rag_data)
+
+            # Always run AI inference to generate the actual response
+            max_tokens = ConfigService.invoke_kernel_max_tokens()
+            temperature = ConfigService.invoke_kernel_temperature()
+            top_p = ConfigService.invoke_kernel_top_p()
+            
+            try:
+                comp_result = await ai_svc.invoke_kernel(
+                    conv,
+                    prompt_text,
+                    user_text,
+                    context=context,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    top_p=top_p,
+                )
+                if comp_result is not None:
+                    completion = comp_result
+                    completion.set_rag_strategy(rdr.get_strategy())
+                else:
+                    completion.set_content("I apologize, but I couldn't generate a response. Please try again later.")
+            except Exception as ai_error:
+                logging.error(f"AI service error: {str(ai_error)}")
+                logging.exception(ai_error, stack_info=True, exc_info=True)
+                completion.set_content("I apologize, but I encountered an error while processing your request. Please try again later.")
+                completion.set_rag_strategy(rdr.get_strategy())
+
+        except Exception as main_error:
+            logging.error(f"Main processing error: {str(main_error)}")
+            logging.exception(main_error, stack_info=True, exc_info=True)
+            # Create a fallback completion
+            completion: Optional[AiCompletion] = AiCompletion(conv.conversation_id, None)
+            completion.set_user_text(user_text)
+            completion.set_content("I apologize, but I encountered an error while processing your request. Please try again later.")
+            completion.set_rag_strategy("error")
 
         # Add completion exactly once at the end
         conv.add_completion(completion)
@@ -1226,7 +1282,6 @@ def post_libraries_sparql_console(form_data):
                     url,
                     headers=websvc_headers,
                     content=json.dumps(postdata),
-                    timeout=120.0,
                 )
                 bom_obj = json.loads(r.text)
                 
@@ -1285,7 +1340,7 @@ def post_sparql_query_to_graph_microsvc(sparql: str) -> SparqlQueryResponse:
         postdata = dict()
         postdata["sparql"] = sparql
         r = httpx.post(
-            url, headers=websvc_headers, content=json.dumps(postdata), timeout=120.0
+            url, headers=websvc_headers, content=json.dumps(postdata)
         )
         resp_obj = json.loads(r.text)
         print(

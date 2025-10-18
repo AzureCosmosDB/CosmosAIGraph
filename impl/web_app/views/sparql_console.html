@@ -7,6 +7,9 @@
   .link-label {
     font-family: "Lucida Console", "Courier New", monospace !important;
     text-shadow: none !important;
+    stroke: rgba(33, 37, 41, 0.95) !important; /* Dark background color with high opacity */
+    stroke-width: 4px !important;
+    paint-order: stroke fill !important;
   }
 
   /* Style for node labels - D3.js specific */
@@ -26,10 +29,20 @@
     padding-bottom: 0 !important;
   }
 
+  /* Remove white border from CodeMirror editors */
+  .CodeMirror {
+    border: none !important;
+  }
+  
+  .CodeMirror-focused {
+    border: none !important;
+    outline: none !important;
+  }
 
 </style>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/tomorrow-night-eighties.min.css">
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/sparql/sparql.min.js"></script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -47,12 +60,12 @@
             var editor = CodeMirror.fromTextArea(document.getElementById("sparql"), {
               mode: "sparql",
               lineNumbers: true,
-              theme: "default"
+              theme: "tomorrow-night-eighties"
             });
             function resizeCodeMirrorToContent(cm) {
               var doc = cm.getDoc();
               var lineCount = doc.lineCount();
-              var newHeight = (lineCount + 1) * 24; // 24px is the default line height
+              var newHeight = Math.max((lineCount + 1) * 24, 120); // Minimum height of 120px (5 lines)
               cm.setSize(null, newHeight + "px");
             }
             resizeCodeMirrorToContent(editor);
@@ -62,13 +75,17 @@
           </script>
         </div>
         <div class="mb-3">
-          <label for="bom_query" class="form-label">Entity name, space and dependency depth:</label>
-          <input type="text" class="form-control" id="bom_query" name="bom_query" value="{{ bom_query }}"
-            placeholder="<Entity ID/name> <Depth>"></input>
+          <button type="button" id="sparql_submit_button" name="sparql_submit_button"
+            class="btn btn-outline-primary mb-3">Execute SPARQL</button>
         </div>
-        <div class="mb-6">
-          <button type="submit" id="submit_button" name="submit_button"
-            class="btn btn-outline-primary mb-3">Submit</button>
+        <div class="mb-3">
+          <label for="bom_query" class="form-label">Entity name, space and dependency depth:</label>
+          <div class="d-flex gap-2">
+            <input type="text" class="form-control" id="bom_query" name="bom_query" value="{{ bom_query }}"
+              placeholder="<Entity ID/name> <Depth>"></input>
+            <button type="button" id="entity_submit_button" name="entity_submit_button"
+              class="btn btn-outline-primary" style="white-space: nowrap;">Visualize Graph</button>
+          </div>
         </div>
         <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
       </form>
@@ -127,18 +144,42 @@
       </div>
       {% if results %}
       <div id="results-content">
-        <!-- Results will be loaded here when needed -->
+        <!-- Check if results contain an error -->
+        {% if results.error %}
+        <div class="alert alert-danger" role="alert">
+          <h6 class="alert-heading">
+            <i class="bi bi-exclamation-triangle-fill"></i> 
+            {% if "timeout" in results.error.lower() %}
+              Request Timeout
+            {% elif "connect" in results.error.lower() %}
+              Connection Error  
+            {% elif "http" in results.error.lower() %}
+              Service Error
+            {% else %}
+              Processing Error
+            {% endif %}
+          </h6>
+          <p class="mb-0">{{ results.error }}</p>
+          {% if "timeout" in results.error.lower() %}
+          <hr>
+          <p class="mb-0 small">
+            <strong>Tips:</strong> Try reducing the depth parameter, using a more specific entity name, or running the query during off-peak hours.
+          </p>
+          {% elif "connect" in results.error.lower() %}
+          <hr>
+          <p class="mb-0 small">
+            <strong>Solution:</strong> Please contact the system administrator to ensure the graph microservice is running and accessible.
+          </p>
+          {% endif %}
+        </div>
+        {% else %}
+        <!-- Normal results display -->
         <div id="results-data" style="display: none;">{{ results | tojson | safe }}</div>
         <div id="results-formatted"></div>
+        {% endif %}
       </div>
       {% endif %}
-      <!-- Prism.js for JSON syntax highlighting - loaded conditionally -->
-      <div id="prism-resources" style="display: none;">
-        <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sparql.min.js"></script>
-      </div>
+      <!-- Prism.js resources will be loaded dynamically when needed -->
     </div>
 
 
@@ -154,13 +195,77 @@
   console.log('jQuery available:', typeof $ !== 'undefined');
 
   const form = document.getElementById("form");
-  const submit_button = document.getElementById("submit_button");
+  const sparql_submit_button = document.getElementById("sparql_submit_button");
+  const entity_submit_button = document.getElementById("entity_submit_button");
+  const bom_query = document.getElementById("bom_query");
 
-  submit_button.addEventListener('click',
+  // Function to check if Visualize Graph button should be enabled
+  function updateVisualizeBtnState() {
+    const value = bom_query.value.trim();
+    // Disable if empty or contains only placeholder-like content
+    const isEmpty = value === "" || value === "<Entity ID/name> <Depth>";
+    entity_submit_button.disabled = isEmpty;
+    if (isEmpty) {
+      entity_submit_button.classList.add("disabled");
+    } else {
+      entity_submit_button.classList.remove("disabled");
+    }
+  }
+
+  // Check initial state
+  updateVisualizeBtnState();
+
+  // Add event listener to update button state when input changes
+  bom_query.addEventListener('input', updateVisualizeBtnState);
+  bom_query.addEventListener('change', updateVisualizeBtnState);
+
+  // SPARQL submit button - clears entity field and submits with SPARQL query
+  sparql_submit_button.addEventListener('click',
     function (event) {
       event.preventDefault();
-      submit_button.disabled = true;
-      submit_button.textContent = "Processing...";
+      // Clear the entity field to ensure SPARQL query takes precedence
+      const bom_query = document.getElementById("bom_query");
+      bom_query.value = "";
+      
+      // Show loading indicator
+      const errorMsg = document.getElementById("error_message");
+      if (errorMsg) {
+        errorMsg.innerHTML = '<div class="text-info"><i class="bi bi-hourglass-split"></i> Executing SPARQL query...</div>';
+      }
+      
+      sparql_submit_button.disabled = true;
+      entity_submit_button.disabled = true;
+      sparql_submit_button.textContent = "Processing...";
+      form.submit();
+    }
+  );
+
+  // Entity submit button - clears SPARQL field and submits with entity query
+  entity_submit_button.addEventListener('click',
+    function (event) {
+      event.preventDefault();
+      
+      // Don't proceed if button is disabled
+      if (entity_submit_button.disabled) {
+        return;
+      }
+      
+      // Update CodeMirror content to form field and then clear it
+      if (typeof editor !== 'undefined') {
+        editor.save(); // Sync CodeMirror content to textarea
+      }
+      const sparql_field = document.getElementById("sparql");
+      sparql_field.value = "";
+      
+      // Show loading indicator
+      const errorMsg = document.getElementById("error_message");
+      if (errorMsg) {
+        errorMsg.innerHTML = '<div class="text-info"><i class="bi bi-hourglass-split"></i> Processing graph visualization... This may take a moment for large graphs.</div>';
+      }
+      
+      sparql_submit_button.disabled = true;
+      entity_submit_button.disabled = true;
+      entity_submit_button.textContent = "Processing...";
       form.submit();
     }
   );
@@ -257,6 +362,17 @@
 
     // Test basic D3 functionality
     console.log('Testing D3.js...');
+    console.log('Window.d3:', typeof window.d3);
+    console.log('Global d3:', typeof d3);
+    
+    // Check if D3 is available
+    if (typeof d3 === 'undefined') {
+      console.error('D3.js is not loaded! Cannot proceed with visualization.');
+      const wrapper = document.getElementById('viz_wrapper');
+      if (wrapper) wrapper.style.display = 'none';
+      return;
+    }
+    
     try {
       d3.select("#graph-svg")
         .append("circle")
@@ -267,6 +383,7 @@
       console.log('D3 test circle added successfully');
     } catch (e) {
       console.error('D3 test failed:', e);
+      return;
     }
 
     // Get the Bill-of-Materials (BOM) data that is embedded in the page.
@@ -295,6 +412,46 @@
 
       console.log('Trimmed BOM content first 500 chars:', bom_json.substring(0, 500));
 
+      // Convert Python dictionary format to valid JSON using eval in a safe context
+      function convertPythonDictToJson(pythonStr) {
+        console.log('Converting Python dict to JSON using safe evaluation...');
+        
+        try {
+          // Create a safe evaluation context that converts Python literals to JavaScript
+          const pythonToJs = pythonStr
+            .replaceAll('None', 'null')
+            .replaceAll('False', 'false')
+            .replaceAll('True', 'true');
+          
+          // Use Function constructor instead of eval for safer execution
+          const jsObject = (new Function('return ' + pythonToJs))();
+          
+          // Convert back to JSON string
+          const jsonString = JSON.stringify(jsObject);
+          console.log('Python to JSON conversion completed successfully');
+          return jsonString;
+          
+        } catch (error) {
+          console.warn('Safe evaluation failed, falling back to regex conversion:', error);
+          
+          // Fallback to regex-based conversion
+          let s = pythonStr
+            .replaceAll(': None', ': null')
+            .replaceAll(':None', ':null')
+            .replaceAll(': False', ': false')
+            .replaceAll(':False', ':false')
+            .replaceAll(': True', ': true')
+            .replaceAll(':True', ':true');
+          
+          // Replace single quotes with double quotes more carefully
+          // This regex targets single quotes that are likely to be string delimiters
+          s = s.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, '"$1"');
+          
+          console.log('Regex-based Python to JSON conversion completed');
+          return s;
+        }
+      }
+
       // Safer BOM JSON parser: detect non-JSON (TTL/plain text) and avoid eval fallback
       function tolerantParseBom(raw) {
         const original = raw;
@@ -320,14 +477,8 @@
           s = s.substring(firstBrace, lastBrace + 1);
         }
 
-        // Normalize common Python literals into JSON equivalents
-        s = s
-          .replaceAll(': None', ': null')
-          .replaceAll(':None', ':null')
-          .replaceAll(': False', ': false')
-          .replaceAll(':False', ':false')
-          .replaceAll(': True', ': true')
-          .replaceAll(':True', ':true');
+        // Convert Python dictionary format to JSON
+        s = convertPythonDictToJson(s);
 
         // Try strict JSON.parse first
         try {
@@ -355,6 +506,15 @@
         var bom_obj = tolerantParseBom(bom_json);
         console.log('BOM data parsed successfully');
         console.log('BOM object keys:', Object.keys(bom_obj));
+        
+        // Check if the BOM object contains an error (handle both null and None)
+        if (bom_obj.hasOwnProperty('error') && bom_obj.error !== null && bom_obj.error !== undefined) {
+          console.log('BOM object contains error:', bom_obj.error);
+          // Hide visualization on error - error will be shown in results section
+          const wrapper = document.getElementById('viz_wrapper');
+          if (wrapper) wrapper.style.display = 'none';
+          return;
+        }
         
         // Clear any debug info; we'll render only if nodes exist
         d3.select("#graph-svg").selectAll("*").remove();
@@ -975,24 +1135,96 @@
             drawingNumber: d.drawingNumber || ""
           }));
 
-          // Deduplicate edges - only keep one edge per unique source-target pair
-          const edgeMap = new Map();
+          // Process edges to remove true duplicates and handle multiple connections
+          const edgeGroups = new Map();
+          const edgeMap = new Map(); // Track unique edges by source-target-label
+          
+          // First pass: deduplicate edges based on source, target, and meaningful label
           allGraphEdges.forEach(edge => {
-            // Simple key: just source-target, no bidirectional deduplication
-            const key = `${edge.source}-${edge.target}`;
+            // Create a key that includes meaningful distinguishing information
+            let edgeKey = `${edge.source}-${edge.target}`;
             
-            // Only add if this exact source->target doesn't exist yet
-            if (!edgeMap.has(key)) {
-              edgeMap.set(key, edge);
+            // Add label information to make edges with different labels distinct
+            if (edge.isLateralConnection) {
+              edgeKey += "-lateral";
+            } else if (edge.displayLabel && edge.displayLabel !== "" && edge.displayLabel !== "depends on" && edge.displayLabel !== "connects") {
+              edgeKey += `-${edge.displayLabel.replace(/[←→↔]/g, '').trim()}`;
+            } else if (edge.label && edge.label !== "depends on" && edge.label !== "connects") {
+              edgeKey += `-${edge.label.replace(/[←→↔]/g, '').trim()}`;
+            } else if (edge.type && edge.type !== "connection") {
+              edgeKey += `-${edge.type}`;
+            }
+            
+            // Only keep one edge per unique key (removes true duplicates)
+            if (!edgeMap.has(edgeKey)) {
+              edgeMap.set(edgeKey, edge);
+              
+              // Group by node pair for offset calculation
+              const pairKey = `${edge.source}-${edge.target}`;
+              if (!edgeGroups.has(pairKey)) {
+                edgeGroups.set(pairKey, []);
+              }
+              edgeGroups.get(pairKey).push(edge);
             }
           });
           
-          // Use the deduplicated edges
-          const graphEdges = Array.from(edgeMap.values());
+          // Apply offsets to multiple connections between same nodes
+          const graphEdges = [];
+          edgeGroups.forEach((edges, key) => {
+            if (edges.length === 1) {
+              // Single connection - no offset needed
+              edges[0].connectionOffset = 0;
+              edges[0].connectionIndex = 0;
+              edges[0].connectionTotal = 1;
+              edges[0].labelPositionRatio = 0.5; // Center position for single connection
+              graphEdges.push(edges[0]);
+            } else {
+              // Multiple connections - apply offsets and label positions
+              edges.forEach((edge, index) => {
+                const totalConnections = edges.length;
+                const offsetStep = 2; // 2px offset between connections
+                const centerOffset = (totalConnections - 1) * offsetStep / 2;
+                edge.connectionOffset = (index * offsetStep) - centerOffset;
+                edge.connectionIndex = index;
+                edge.connectionTotal = totalConnections;
+                
+                // Position labels at different points along the connection line
+                // First label at 40%, second at 60%, third at 30%, fourth at 70%, etc.
+                const labelPositions = [0.4, 0.6, 0.3, 0.7, 0.25, 0.75, 0.2, 0.8];
+                edge.labelPositionRatio = labelPositions[index % labelPositions.length] || (0.5 + (index - 4) * 0.1);
+                
+                graphEdges.push(edge);
+              });
+            }
+          });
 
           console.log("Graph nodes for D3:", graphNodes);
-          console.log("Graph edges for D3 (deduplicated):", graphEdges);
+          console.log("Graph edges for D3 (deduplicated with offsets):", graphEdges);
           console.log("Original edges count:", allGraphEdges.length, "Deduplicated count:", graphEdges.length);
+          
+          // Log deduplication and multiple connection information
+          const multipleConnections = [];
+          const deduplicationSummary = [];
+          edgeGroups.forEach((edges, key) => {
+            if (edges.length > 1) {
+              multipleConnections.push(`${key}: ${edges.length} unique connections`);
+              
+              // Show what types of connections exist for this node pair
+              const connectionTypes = edges.map(edge => {
+                if (edge.isLateralConnection) return "lateral";
+                if (edge.displayLabel && edge.displayLabel !== "") return edge.displayLabel.replace(/[←→↔]/g, '').trim();
+                if (edge.label && edge.label !== "depends on" && edge.label !== "connects") return edge.label.replace(/[←→↔]/g, '').trim();
+                if (edge.type && edge.type !== "connection") return edge.type;
+                return "connection";
+              });
+              deduplicationSummary.push(`${key}: [${connectionTypes.join(', ')}]`);
+            }
+          });
+          if (multipleConnections.length > 0) {
+            console.log("Multiple connections found:", multipleConnections);
+            console.log("Connection types per node pair:", deduplicationSummary);
+          }
+          console.log(`Edge deduplication: ${allGraphEdges.length} original → ${graphEdges.length} unique edges`);
           const lateralCount = graphEdges.filter(e => e.isLateralConnection).length;
           console.log("Lateral edges count:", lateralCount);
           
@@ -1010,20 +1242,561 @@
 
 
 
-          // Set up the simulation
-          const simulation = d3.forceSimulation(graphNodes)
-            .force("charge", d3.forceManyBody().strength(-300))
-            .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(20));
-
-          // Add link force only if we have edges
-          if (graphEdges.length > 0) {
-            // Different distances for lateral vs direct connections
-            simulation.force("link", d3.forceLink(graphEdges)
-              .id(d => d.id)
-              .distance(d => d.isLateralConnection ? 150 : 100));
+          // Create the simulation with WebGPU detection
+          let simulation;
+          let useWebGPU = false;
+          let webgpuDevice = null;
+          
+          // Detect WebGPU support
+          async function detectWebGPU() {
+            console.log('🔍 Detecting WebGPU support...');
+            
+            if (!navigator.gpu) {
+              console.log('❌ WebGPU not supported: navigator.gpu not available');
+              return false;
+            }
+            
+            console.log('✅ navigator.gpu available, requesting adapter...');
+            
+            try {
+              // Try high-performance GPU first 
+              console.log('🎯 Requesting high-performance GPU adapter...');
+              let adapter = await navigator.gpu.requestAdapter({
+                powerPreference: 'high-performance',
+                forceFallbackAdapter: false
+              });
+              
+              // If that doesn't work, try default adapter
+              if (!adapter) {
+                console.log('❌ High-performance adapter failed, trying default...');
+                adapter = await navigator.gpu.requestAdapter({
+                  powerPreference: 'default'
+                });
+              }
+              
+              // Last resort: try low-power adapter
+              if (!adapter) {
+                console.log('❌ Default adapter failed, trying low-power...');
+                adapter = await navigator.gpu.requestAdapter({
+                  powerPreference: 'low-power'
+                });
+              }
+              
+              if (!adapter) {
+                console.log('❌ WebGPU adapter request failed');
+                return false;
+              }
+              
+              console.log('✅ WebGPU adapter obtained:', {
+                features: Array.from(adapter.features),
+                limits: adapter.limits,
+                info: adapter.info
+              });
+              
+              // Log detailed GPU information to identify which GPU we're using
+              if (adapter.info) {
+                console.log('🎮 GPU Details:', {
+                  vendor: adapter.info.vendor,
+                  architecture: adapter.info.architecture,
+                  device: adapter.info.device,
+                  description: adapter.info.description
+                });
+                
+                // Check if we got the desired NVIDIA or AMD GPU
+                const isNVIDIA = adapter.info.vendor?.toLowerCase().includes('nvidia') || 
+                               adapter.info.description?.toLowerCase().includes('nvidia');
+                const isAMD = adapter.info.vendor?.toLowerCase().includes('amd') || 
+                              adapter.info.description?.toLowerCase().includes('amd');
+                const isHighPerf = adapter.info.description?.toLowerCase().includes('rtx') ||
+                                 adapter.info.description?.toLowerCase().includes('gtx') || 
+                                 adapter.info.description?.toLowerCase().includes('ryzen') ||
+                                 adapter.info.description?.toLowerCase().includes('radeon');
+                
+                if (isNVIDIA) {
+                  console.log('🚀 NVIDIA GPU detected!');
+                } else if (isAMD) {
+                  console.log('🚀 AMD GPU detected!');
+                } else if (isHighPerf) {
+                  console.log('⚡ High-performance GPU detected!');
+                } else {
+                  console.log('ℹ️ Using integrated/alternative GPU. For best performance, ensure Chrome uses your NVIDIA/AMD GPU.');
+                  console.log('💡FOR EXAMPLE, TO FORCE NVIDIA GPU IN CHROME:');
+                  console.log('   Method 1 - Windows Graphics Settings:');
+                  console.log('   • Windows Settings → System → Display → Graphics Settings');
+                  console.log('   • Browse and select Chrome.exe');
+                  console.log('   • Set to "High Performance" (NVIDIA)');
+                  console.log('   Method 2 - NVIDIA Control Panel:');
+                  console.log('   • Right-click desktop → NVIDIA Control Panel');
+                  console.log('   • 3D Settings → Manage 3D Settings → Program Settings');
+                  console.log('   • Add Chrome → Set to "High-performance NVIDIA processor"');
+                  console.log('   Method 3 - Chrome Flags:');
+                  console.log('   • Go to chrome://flags/#use-angle');
+                  console.log('   • Set "Choose ANGLE graphics backend" to "D3D11on12"');
+                  console.log('   • Restart Chrome');
+                }
+              }
+              
+              const device = await adapter.requestDevice();
+              console.log('✅ WebGPU device obtained:', device);
+              
+              webgpuDevice = device;
+              return true;
+              
+            } catch (error) {
+              console.log('❌ WebGPU detection failed:', error);
+              return false;
+            }
           }
+          
+          // WebGPU-accelerated force calculation compute shader
+          const webgpuForceShader = `
+            struct Node {
+              x: f32,
+              y: f32,
+              vx: f32,
+              vy: f32,
+            };
+            
+            struct NodeBuffer {
+              nodes: array<Node>,
+            };
+            
+            @group(0) @binding(0) var<storage, read_write> nodeBuffer: NodeBuffer;
+            @group(0) @binding(1) var<uniform> params: vec4<f32>; // [nodeCount, strength, centerX, centerY]
+            
+            @compute @workgroup_size(64)
+            fn computeForces(@builtin(global_invocation_id) global_id: vec3<u32>) {
+              let index = global_id.x;
+              let nodeCount = u32(params.x);
+              
+              if (index >= nodeCount) {
+                return;
+              }
+              
+              let strength = params.y;
+              let centerX = params.z;
+              let centerY = params.w;
+              
+              var node = nodeBuffer.nodes[index];
+              var fx: f32 = 0.0;
+              var fy: f32 = 0.0;
+              
+              // Many-body repulsion force (similar to D3's forceManyBody)
+              for (var i: u32 = 0u; i < nodeCount; i = i + 1u) {
+                if (i != index) {
+                  let other = nodeBuffer.nodes[i];
+                  let dx = node.x - other.x;
+                  let dy = node.y - other.y;
+                  let distSq = dx * dx + dy * dy + 0.01; // Small epsilon to prevent division by zero
+                  
+                  // Only apply force if nodes are close enough (performance optimization)
+                  if (distSq < 10000.0) { // Within ~100 pixel radius
+                    let dist = sqrt(distSq);
+                    let force = strength / distSq;
+                    fx = fx + (dx / dist) * force;
+                    fy = fy + (dy / dist) * force;
+                  }
+                }
+              }
+              
+              // Center force (similar to D3's forceCenter)
+              let centerForce = 0.03;
+              fx = fx + (centerX - node.x) * centerForce;
+              fy = fy + (centerY - node.y) * centerForce;
+              
+              // Update velocity with proper damping (similar to D3's velocity decay)
+              let damping = 0.4; // More aggressive damping to match D3 behavior
+              node.vx = (node.vx + fx) * damping;
+              node.vy = (node.vy + fy) * damping;
+              
+              // Update position
+              node.x = node.x + node.vx;
+              node.y = node.y + node.vy;
+              
+              nodeBuffer.nodes[index] = node;
+            }
+          `;
+          
+          // WebGPU force calculation manager
+          class WebGPUForceSimulation {
+            constructor(device, nodes, width, height) {
+              this.device = device;
+              this.nodes = nodes;
+              this.width = width;
+              this.height = height;
+              this.pipeline = null;
+              this.nodeBuffer = null;
+              this.paramsBuffer = null;
+              this.bindGroup = null;
+              this.isInitialized = false;
+            }
+            
+            async initialize() {
+              try {
+                // Create compute shader module
+                const shaderModule = this.device.createShaderModule({
+                  code: webgpuForceShader
+                });
+                
+                // Create bind group layout explicitly
+                const bindGroupLayout = this.device.createBindGroupLayout({
+                  entries: [
+                    {
+                      binding: 0,
+                      visibility: GPUShaderStage.COMPUTE,
+                      buffer: {
+                        type: 'storage'
+                      }
+                    },
+                    {
+                      binding: 1,
+                      visibility: GPUShaderStage.COMPUTE,
+                      buffer: {
+                        type: 'uniform'
+                      }
+                    }
+                  ]
+                });
+                
+                // Create pipeline layout
+                const pipelineLayout = this.device.createPipelineLayout({
+                  bindGroupLayouts: [bindGroupLayout]
+                });
+                
+                // Create compute pipeline with explicit layout
+                this.pipeline = this.device.createComputePipeline({
+                  layout: pipelineLayout,
+                  compute: {
+                    module: shaderModule,
+                    entryPoint: 'computeForces'
+                  }
+                });
+                
+                // Create node buffer (x, y, vx, vy for each node)
+                // Ensure nodes have random initial positions if not set
+                const nodeData = new Float32Array(this.nodes.length * 4);
+                this.nodes.forEach((node, i) => {
+                  // Initialize with random positions if not already set
+                  if (node.x === undefined || node.x === null) {
+                    node.x = Math.random() * this.width;
+                  }
+                  if (node.y === undefined || node.y === null) {
+                    node.y = Math.random() * this.height;
+                  }
+                  
+                  nodeData[i * 4] = node.x;
+                  nodeData[i * 4 + 1] = node.y;
+                  nodeData[i * 4 + 2] = node.vx || 0;
+                  nodeData[i * 4 + 3] = node.vy || 0;
+                });
+                
+                this.nodeBuffer = this.device.createBuffer({
+                  size: nodeData.byteLength,
+                  usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
+                  mappedAtCreation: true
+                });
+                new Float32Array(this.nodeBuffer.getMappedRange()).set(nodeData);
+                this.nodeBuffer.unmap();
+                
+                // Create parameters buffer [nodeCount, strength, centerX, centerY]
+                // Use force strength similar to D3's default many-body force
+                const paramsData = new Float32Array([
+                  this.nodes.length,
+                  -30.0, // Reduced force strength to match D3 behavior better
+                  this.width / 2,
+                  this.height / 2
+                ]);
+                
+                this.paramsBuffer = this.device.createBuffer({
+                  size: paramsData.byteLength,
+                  usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+                  mappedAtCreation: true
+                });
+                new Float32Array(this.paramsBuffer.getMappedRange()).set(paramsData);
+                this.paramsBuffer.unmap();
+                
+                // Create bind group using the explicit layout
+                this.bindGroup = this.device.createBindGroup({
+                  layout: bindGroupLayout,
+                  entries: [
+                    {
+                      binding: 0,
+                      resource: {
+                        buffer: this.nodeBuffer
+                      }
+                    },
+                    {
+                      binding: 1,
+                      resource: {
+                        buffer: this.paramsBuffer
+                      }
+                    }
+                  ]
+                });
+                
+                this.isInitialized = true;
+                console.log('✅ WebGPU force simulation initialized');
+                return true;
+                
+              } catch (error) {
+                console.error('❌ WebGPU force simulation initialization failed:', error);
+                return false;
+              }
+            }
+            
+            async computeStep() {
+              if (!this.isInitialized) return false;
+              
+              try {
+                const commandEncoder = this.device.createCommandEncoder();
+                const passEncoder = commandEncoder.beginComputePass();
+                
+                passEncoder.setPipeline(this.pipeline);
+                passEncoder.setBindGroup(0, this.bindGroup);
+                
+                const workgroupCount = Math.ceil(this.nodes.length / 64);
+                passEncoder.dispatchWorkgroups(workgroupCount);
+                passEncoder.end();
+                
+                // Copy results back to CPU
+                const stagingBuffer = this.device.createBuffer({
+                  size: this.nodes.length * 4 * 4,
+                  usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST
+                });
+                
+                commandEncoder.copyBufferToBuffer(
+                  this.nodeBuffer, 0,
+                  stagingBuffer, 0,
+                  this.nodes.length * 4 * 4
+                );
+                
+                this.device.queue.submit([commandEncoder.finish()]);
+                
+                // Read back the results
+                await stagingBuffer.mapAsync(GPUMapMode.READ);
+                const resultData = new Float32Array(stagingBuffer.getMappedRange());
+                
+                // Update D3 nodes with GPU-calculated positions
+                this.nodes.forEach((node, i) => {
+                  node.x = resultData[i * 4];
+                  node.y = resultData[i * 4 + 1];
+                  node.vx = resultData[i * 4 + 2];
+                  node.vy = resultData[i * 4 + 3];
+                });
+                
+                stagingBuffer.unmap();
+                stagingBuffer.destroy();
+                
+                return true;
+                
+              } catch (error) {
+                console.error('❌ WebGPU compute step failed:', error);
+                return false;
+              }
+            }
+            
+            destroy() {
+              if (this.nodeBuffer) this.nodeBuffer.destroy();
+              if (this.paramsBuffer) this.paramsBuffer.destroy();
+            }
+          }
+          
+          // Initialize WebGPU detection synchronously
+          console.log('🚀 Starting WebGPU detection for enhanced performance');
+          
+          // Run WebGPU detection immediately and update UI when complete
+          detectWebGPU().then(gpuSupported => {
+            useWebGPU = gpuSupported;
+            console.log(useWebGPU ? 
+              '🎮 WebGPU acceleration detected and enabled!' : 
+              '💻 WebGPU not available, using CPU mode');
+            
+            // Update performance indicator immediately when detection completes
+            updatePerformanceIndicator();
+            
+          }).catch(error => {
+            console.log('⚠️ WebGPU detection failed, using CPU mode:', error);
+            useWebGPU = false;
+            webgpuDevice = null;
+            updatePerformanceIndicator();
+          });
+          
+          // Debug D3 availability
+          console.log('D3 version:', d3.version);
+          console.log('d3.forceSimulation available:', typeof d3.forceSimulation);
+          console.log('d3.forceManyBody available:', typeof d3.forceManyBody);
+          console.log('d3.forceCenter available:', typeof d3.forceCenter);
+          console.log('d3.forceCollide available:', typeof d3.forceCollide);
+          console.log('d3.forceLink available:', typeof d3.forceLink);
+          
+          // Test basic simulation creation
+          console.log('Testing basic simulation creation...');
+          try {
+            const testSim = d3.forceSimulation();
+            console.log('Basic simulation created successfully:', typeof testSim);
+            console.log('Basic simulation has .force method:', typeof testSim.force);
+            if (typeof testSim.force === 'function') {
+              testSim.stop(); // Stop the test simulation
+              console.log('Basic simulation test passed');
+            } else {
+              console.error('Basic simulation test failed - no .force method');
+            }
+          } catch (e) {
+            console.error('Basic simulation test failed with error:', e);
+          }
+          
+          // Ensure all nodes have initial positions before simulation
+          console.log('Initializing node positions...');
+          graphNodes.forEach(node => {
+            if (node.x === undefined || node.x === null || node.x === 0) {
+              node.x = Math.random() * width;
+            }
+            if (node.y === undefined || node.y === null || node.y === 0) {
+              node.y = Math.random() * height;
+            }
+            console.log(`Node ${node.id}: x=${node.x}, y=${node.y}`);
+          });
 
+          // Create simulation with the node data
+          try {
+            console.log('Creating forceSimulation with', graphNodes.length, 'nodes');
+            simulation = d3.forceSimulation(graphNodes);
+            console.log('Simulation created, type:', typeof simulation);
+            console.log('Simulation object:', simulation);
+            console.log('Simulation.force method:', typeof simulation.force);
+            
+            // Check if simulation has the expected methods
+            console.log('Simulation methods available:', Object.getOwnPropertyNames(simulation).filter(name => typeof simulation[name] === 'function'));
+            
+            if (typeof simulation.force !== 'function') {
+              console.error('Simulation does not have .force method!');
+              console.error('Simulation prototype:', Object.getPrototypeOf(simulation));
+              console.error('Constructor name:', simulation.constructor.name);
+              throw new Error('d3.forceSimulation did not return a valid simulation object');
+            }
+            
+            console.log('Simulation created, adding forces...');
+            
+            simulation
+              .force("charge", d3.forceManyBody().strength(-300))
+              .force("center", d3.forceCenter(width / 2, height / 2))
+              .force("collision", d3.forceCollide().radius(20));
+
+            // Add link force only if we have edges
+            if (graphEdges.length > 0) {
+              console.log('Adding link force for', graphEdges.length, 'edges');
+              simulation.force("link", d3.forceLink(graphEdges)
+                .id(d => d.id)
+                .distance(d => d.isLateralConnection ? 150 : 100));
+            }
+            
+            console.log('Simulation created successfully, setting up visualization');
+            
+            console.log('🔧 Checking WebGPU device availability...');
+            console.log('webgpuDevice:', webgpuDevice);
+            console.log('useWebGPU flag:', useWebGPU);
+            
+            // Initialize WebGPU force simulation if available
+            let webgpuSim = null;
+            
+            // Wait for WebGPU detection to complete before initializing
+            setTimeout(async () => {
+              console.log('⏱️ Delayed WebGPU initialization check...');
+              console.log('webgpuDevice after delay:', webgpuDevice);
+              console.log('useWebGPU after delay:', useWebGPU);
+              
+              if (useWebGPU && webgpuDevice && graphNodes.length > 50) { // Only use WebGPU for larger graphs
+                console.log('🚀 Initializing WebGPU-accelerated force simulation...');
+                webgpuSim = new WebGPUForceSimulation(webgpuDevice, graphNodes, width, height);
+                
+                const initialized = await webgpuSim.initialize();
+                if (initialized) {
+                  console.log('✅ WebGPU force simulation ready for GPU-accelerated physics');
+                  
+                  // For now, let's keep D3 forces active and just log WebGPU availability
+                  // Instead of completely replacing D3, we'll use hybrid approach
+                  console.log('🎮 WebGPU available but keeping D3 forces for stability');
+                  
+                  // Optional: You can enable WebGPU replacement by uncommenting these lines:
+                  /*
+                  simulation
+                    .force("charge", null)  // Disable CPU many-body force
+                    .force("center", null)  // Disable CPU center force
+                    .force("collision", null); // Disable CPU collision force
+                  
+                  // Replace D3's tick calculations with WebGPU
+                  simulation.on('tick', async () => {
+                    if (webgpuSim && webgpuSim.isInitialized) {
+                      await webgpuSim.computeStep();
+                    }
+                  });
+                  */
+                  
+                  updatePerformanceIndicator();
+                } else {
+                  console.log('❌ WebGPU force simulation initialization failed, using D3 forces');
+                }
+              } else {
+                console.log('💻 Using D3-only force simulation (WebGPU disabled or small graph)');
+              }
+            }, 1000); // Wait 1 second for WebGPU detection to complete
+            
+          } catch (error) {
+            console.error('Error creating D3 simulation:', error);
+            console.error('Error details:', error.message);
+            throw error;
+          }
+          
+          // Add performance indicator to the UI
+          const perfIndicator = document.createElement('div');
+          perfIndicator.id = 'perf-indicator';
+          perfIndicator.style.cssText = `
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: ${useWebGPU ? '#28a745' : '#6c757d'};
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: monospace;
+            z-index: 1000;
+            opacity: 0.8;
+          `;
+          perfIndicator.textContent = useWebGPU ? 
+            `⚡ WebGPU (${graphNodes.length}N, ${graphEdges.length}E)` : 
+            `🖥️ CPU (${graphNodes.length}N, ${graphEdges.length}E)`;
+          
+          const vizWrapper = document.getElementById('viz_wrapper');
+          if (vizWrapper) {
+            vizWrapper.style.position = 'relative';
+            vizWrapper.appendChild(perfIndicator);
+            
+            // Auto-hide indicator after 8 seconds (give WebGPU time to initialize)
+            setTimeout(() => {
+              perfIndicator.style.opacity = '0.3';
+            }, 8000);
+          }
+          
+          // Function to update performance indicator
+          function updatePerformanceIndicator() {
+            if (perfIndicator) {
+              perfIndicator.style.background = useWebGPU ? '#28a745' : '#6c757d';
+              perfIndicator.textContent = useWebGPU ? 
+                `⚡ WebGPU (${graphNodes.length}N, ${graphEdges.length}E)` : 
+                `🖥️ CPU (${graphNodes.length}N, ${graphEdges.length}E)`;
+            }
+          }
+          
+          // Update indicator when WebGPU status changes
+          setTimeout(() => {
+            updatePerformanceIndicator();
+          }, 100); // Small delay to ensure WebGPU detection completes
+          
+          // Now set up the rest of the visualization
+          setupVisualization();
+          
+          function setupVisualization() {
           // Create links only if we have edges
           let link = null;
           let linkLabels = null;
@@ -1058,7 +1831,7 @@
                 }
               });
 
-            // Add labels to edges with proper angle alignment - optimized
+            // Add labels to edges with proper angle alignment - using filtered edges
             linkLabels = g.append("g")
               .attr("class", "link-labels")
               .style("will-change", "transform") // GPU hint for label container
@@ -1078,6 +1851,9 @@
               .style("pointer-events", "none")
               .style("text-shadow", "none")
               .style("font-style", d => d.isLateralConnection ? "italic" : "normal")
+              .style("stroke", "rgba(33, 37, 41, 0.95)") /* Dark background color with high opacity */
+              .style("stroke-width", "4px")
+              .style("paint-order", "stroke fill")
               .text(d => {
                 // Pre-computed clean labels
                 if (d.isLateralConnection) {
@@ -1119,50 +1895,6 @@
             })
             .style("stroke", d => d.depth === 0 ? "#fff" : "none") // White stroke for starting node
             .style("stroke-width", d => d.depth === 0 ? 2 : 0); // Thicker stroke for starting node
-
-          // Add background rectangles for starting node labels
-          node.filter(d => d.depth === 0)
-            .append("rect")
-            .attr("x", 6) // Position slightly before text
-            .attr("y", d => {
-              // Calculate height based on number of attribute lines
-              const attrCount = d.attributes ? Math.min(Object.keys(d.attributes).length, 3) : 0;
-              const totalLines = 1 + attrCount; // Primary name + attribute lines
-              const lineHeight = 11; // Reduced line height for more compact layout
-              const totalHeight = totalLines * lineHeight;
-              return -totalHeight/2; // Center vertically with no extra padding
-            })
-            .attr("width", d => {
-              // Calculate width based on primary label (which is larger and bold for starting nodes)
-              const primaryFontSize = 12; // 12px font for starting node
-              const primaryCharWidth = 8; // More accurate for 12px bold font
-              const primaryWidth = d.name.length * primaryCharWidth;
-              
-              // Calculate secondary attribute widths
-              const attrCount = d.attributes ? Math.min(Object.keys(d.attributes).length, 3) : 0;
-              let maxSecondaryWidth = 0;
-              
-              if (attrCount > 0) {
-                // Estimate width of attribute lines (11px font)
-                const secondaryCharWidth = 6.5; // For 11px font
-                const avgAttrLineLength = 20; // Reasonable estimate for "Type: Product" etc.
-                maxSecondaryWidth = avgAttrLineLength * secondaryCharWidth;
-              }
-              
-              // Use the wider of primary or secondary content, plus padding
-              const contentWidth = Math.max(primaryWidth, maxSecondaryWidth);
-              return contentWidth + 8; // Adequate horizontal padding
-            })
-            .attr("height", d => {
-              const attrCount = d.attributes ? Math.min(Object.keys(d.attributes).length, 3) : 0;
-              const totalLines = 1 + attrCount;
-              const lineHeight = 11; // Reduced line height
-              return totalLines * lineHeight; // No extra vertical padding
-            })
-            .attr("rx", 2) // Even smaller rounded corners
-            .attr("ry", 2)
-            .style("fill", "rgba(255, 107, 53, 0.2)") // Slightly more opaque for better visibility
-            .style("stroke", "none"); // Remove border completely
 
           // Add labels to nodes - multi-line with attributes
           const nodeLabels = node.append("text")
@@ -1323,10 +2055,37 @@
             console.log(`=== Finished creating ${lines.length} text lines for node ${d.name} ===\n`);
           });
 
+          // Add background rectangles for starting nodes based on actual text bounding box
+          node.filter(d => d.depth === 0).each(function() {
+            const nodeGroup = d3.select(this);
+            const textElement = nodeGroup.select("text");
+            
+            // Get the actual bounding box of the rendered text
+            const bbox = textElement.node().getBBox();
+            
+            // Insert rectangle before the text element with padding
+            const padding = 4;
+            nodeGroup.insert("rect", "text")
+              .attr("x", bbox.x - padding)
+              .attr("y", bbox.y - padding)
+              .attr("width", bbox.width + padding * 2)
+              .attr("height", bbox.height + padding * 2)
+              .attr("rx", 2)
+              .attr("ry", 2)
+              .style("fill", "rgba(255, 107, 53, 0.2)")
+              .style("stroke", "none");
+          });
+
           // Add zoom behavior with initial fit-to-bounds
+          let userHasInteracted = false; // Flag to prevent auto-recentering after user interaction
+          
           const zoom = d3.zoom()
             .scaleExtent([0.1, 10])
             .on("zoom", function (event) {
+              // Mark that user has interacted with the graph
+              if (event.sourceEvent) {
+                userHasInteracted = true;
+              }
               g.attr("transform", event.transform);
               updateLabelVisibility(event.transform.k); // Update labels based on zoom
             });
@@ -1393,30 +2152,75 @@
 
           // Performance: throttled rendering and cached transforms
           let tickCount = 0;
-          const RENDER_EVERY_N_TICKS = isLargeDataset ? 3 : 1; // Skip ticks for large datasets
+          // Adjust render throttling based on GPU acceleration and dataset size
+          const RENDER_EVERY_N_TICKS = useWebGPU ? 
+            (isLargeDataset ? 2 : 1) :  // WebGPU can handle more frequent updates
+            (isLargeDataset ? 3 : 1);   // CPU needs more throttling for large datasets
           
           // Create shared update function for better performance
           window.__updatePositions = function() {
             if (link) {
               link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
+                .attr("x1", d => {
+                  if (d.connectionOffset === 0) return d.source.x;
+                  // Calculate perpendicular offset
+                  const dx = d.target.x - d.source.x;
+                  const dy = d.target.y - d.source.y;
+                  const length = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const perpX = -dy / length; // Perpendicular vector
+                  return d.source.x + perpX * d.connectionOffset;
+                })
+                .attr("y1", d => {
+                  if (d.connectionOffset === 0) return d.source.y;
+                  const dx = d.target.x - d.source.x;
+                  const dy = d.target.y - d.source.y;
+                  const length = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const perpY = dx / length; // Perpendicular vector
+                  return d.source.y + perpY * d.connectionOffset;
+                })
+                .attr("x2", d => {
+                  if (d.connectionOffset === 0) return d.target.x;
+                  const dx = d.target.x - d.source.x;
+                  const dy = d.target.y - d.source.y;
+                  const length = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const perpX = -dy / length;
+                  return d.target.x + perpX * d.connectionOffset;
+                })
+                .attr("y2", d => {
+                  if (d.connectionOffset === 0) return d.target.y;
+                  const dx = d.target.x - d.source.x;
+                  const dy = d.target.y - d.source.y;
+                  const length = Math.sqrt(dx * dx + dy * dy) || 1;
+                  const perpY = dx / length;
+                  return d.target.y + perpY * d.connectionOffset;
+                });
             }
 
             if (linkLabels) {
               linkLabels
-                .attr("x", d => (d.source.x + d.target.x) * 0.5)
-                .attr("y", d => (d.source.y + d.target.y) * 0.5)
+                .attr("x", d => {
+                  // Position labels at different points along the connection line
+                  const ratio = d.labelPositionRatio || 0.5;
+                  return d.source.x + (d.target.x - d.source.x) * ratio;
+                })
+                .attr("y", d => {
+                  // Position labels at different points along the connection line
+                  const ratio = d.labelPositionRatio || 0.5;
+                  return d.source.y + (d.target.y - d.source.y) * ratio;
+                })
                 .attr("transform", d => {
                   const dx = d.target.x - d.source.x;
                   const dy = d.target.y - d.source.y;
                   const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                  const cx = (d.source.x + d.target.x) * 0.5;
-                  const cy = (d.source.y + d.target.y) * 0.5;
+                  
+                  // Calculate position along the line based on labelPositionRatio
+                  const ratio = d.labelPositionRatio || 0.5;
+                  const cx = d.source.x + dx * ratio;
+                  const cy = d.source.y + dy * ratio;
+                  
                   const rot = (angle > 90 || angle < -90) ? angle + 180 : angle;
-                  return `rotate(${rot}, ${cx}, ${cy}) translate(0, -5)`;
+                  
+                  return `rotate(${rot}, ${cx}, ${cy}) translate(0, 2)`;
                 });
             }
 
@@ -1424,28 +2228,60 @@
             node.style("transform", d => `translate(${d.x}px, ${d.y}px)`);
           };
 
-          // Update positions on tick with throttling
+          // Performance monitoring variables for WebGPU comparison
+          let performanceStartTime = performance.now();
+          let lastPerformanceLog = performanceStartTime;
+          const PERFORMANCE_LOG_INTERVAL = 100; // Log performance every 100 ticks
+          
+          // Update positions on tick with throttling and performance monitoring
           simulation.on("tick", function () {
             tickCount++;
+            
+            // Performance logging for WebGPU vs CPU comparison
+            if (tickCount % PERFORMANCE_LOG_INTERVAL === 0) {
+              const currentTime = performance.now();
+              const ticksPerSecond = PERFORMANCE_LOG_INTERVAL * 1000 / (currentTime - lastPerformanceLog);
+              const totalTime = currentTime - performanceStartTime;
+              
+              console.log(`${useWebGPU ? 'WebGPU' : 'CPU'} Performance - Tick: ${tickCount}, ` +
+                         `TPS: ${ticksPerSecond.toFixed(1)}, Total: ${(totalTime/1000).toFixed(1)}s, ` +
+                         `Alpha: ${simulation.alpha().toFixed(4)}`);
+              
+              lastPerformanceLog = currentTime;
+            }
+            
             if (tickCount % RENDER_EVERY_N_TICKS === 0) {
               scheduleRender(); // Use the RAF scheduler
             }
           });
 
           // Auto-fit viewport when simulation stabilizes
-          simulation.on("end", fitToViewport);
+          simulation.on("end", () => {
+            const totalTime = (performance.now() - performanceStartTime) / 1000;
+            console.log(`${useWebGPU ? 'WebGPU' : 'CPU'} simulation completed in ${totalTime.toFixed(2)}s ` +
+                       `(${tickCount} ticks, ${(tickCount/totalTime).toFixed(1)} TPS avg)`);
+            if (!userHasInteracted) {
+              fitToViewport();
+            }
+          });
           
-          // Also fit after a few seconds if simulation doesn't naturally end
-          setTimeout(fitToViewport, 3000);
+          // Also fit after a few seconds if simulation doesn't naturally end (only if user hasn't interacted)
+          setTimeout(() => {
+            if (!userHasInteracted) {
+              fitToViewport();
+            }
+          }, 3000);
 
           // Drag functions
           function dragstarted(event, d) {
+            userHasInteracted = true; // Mark user interaction
             if (!event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
             d.fy = d.y;
           }
 
           function dragged(event, d) {
+            userHasInteracted = true; // Mark user interaction
             d.fx = event.x;
             d.fy = event.y;
           }
@@ -1513,7 +2349,9 @@
             // Initialize visibility according to default checked state
             if (linkToggle) setLinkLabelsVisibility(linkToggle.checked);
             if (nodeToggle) setNodeAttributesVisibility(nodeToggle.checked);
-          })();
+          })(); // End of async initAndRender function
+          
+          } // End of setupVisualization function
         } else {
           console.log('No nodes found to visualize');
           const wrapper = document.getElementById('viz_wrapper');
@@ -1619,23 +2457,38 @@
         return;
       }
       
-      const prismContainer = document.getElementById('prism-resources');
-      if (prismContainer) {
-        // Make Prism resources visible to load them
-        prismContainer.style.display = 'block';
+      console.log('Loading Prism.js resources dynamically...');
+      
+      // Load CSS first
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css';
+      document.head.appendChild(link);
+      
+      // Load main Prism.js
+      const script1 = document.createElement('script');
+      script1.src = 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js';
+      script1.onload = () => {
+        console.log('Prism.js core loaded');
         
-        // Wait for scripts to load
-        const checkPrism = () => {
-          if (window.Prism) {
-            resolve();
-          } else {
-            setTimeout(checkPrism, 100);
-          }
+        // Load JSON component
+        const script2 = document.createElement('script');
+        script2.src = 'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js';
+        script2.onload = () => {
+          console.log('Prism.js JSON component loaded successfully');
+          resolve();
         };
-        checkPrism();
-      } else {
+        script2.onerror = () => {
+          console.warn('Failed to load Prism JSON component, continuing without syntax highlighting');
+          resolve();
+        };
+        document.head.appendChild(script2);
+      };
+      script1.onerror = () => {
+        console.warn('Failed to load Prism.js, continuing without syntax highlighting');
         resolve();
-      }
+      };
+      document.head.appendChild(script1);
     });
   }
 
@@ -1683,12 +2536,15 @@
     const bomQuery = "{{ bom_query }}";
     const hasGraphVisualization = vizWrapper && vizWrapper.style.display !== 'none' && bomQuery.trim() !== '';
     
-    // Default: hide results if graph is shown, show results if only SPARQL results
-    let isVisible = !hasGraphVisualization;
+    // Check if there's an error (error alerts are always visible)
+    const hasError = resultsContent && resultsContent.querySelector('.alert-danger');
+    
+    // Default: hide results if graph is shown, show results if only SPARQL results or if there's an error
+    let isVisible = !hasGraphVisualization || hasError;
     let resultsFormatted = false;
     
-    // For SPARQL-only queries (no BOM), format results immediately
-    if (!hasGraphVisualization) {
+    // For SPARQL-only queries (no BOM) or errors, format results immediately (skip formatting for errors)
+    if ((!hasGraphVisualization || hasError) && !hasError) {
       formatAndDisplayResults();
       resultsFormatted = true;
     }

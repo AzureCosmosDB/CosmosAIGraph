@@ -7,6 +7,7 @@
             rel="stylesheet"
             integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
             crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.js"></script>  
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
@@ -260,9 +261,9 @@
     try {
       [
         'sparql_console_sparql_query','sparql_console_bom_query',
-        'gen_sparql_console_natural_language','conv_ai_console_user_text',
-        'conv_ai_console_conversation_id','vector_search_entrypoint',
-        'vector_search_limit','vector_search_type','vector_search_method',
+        'gen_sparql_console_natural_language','gen_sparql_console_sparql_query',
+        'conv_ai_console_user_text','conv_ai_console_conversation_id',
+        'vector_search_entrypoint','vector_search_limit','vector_search_type','vector_search_method',
         'ontologyVisible'
       ].forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
     } catch(e){}

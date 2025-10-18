@@ -1,46 +1,83 @@
 # CosmosAIGraph
 
-**AI-Powered Graph and RAG implementation of OmniRAG pattern, utilizing Azure Cosmos DB and other sources**
+**AI-Powered implementation of OmniRAG pattern, utilizing Azure Cosmos DB with DiskANN Vector/Hybrid Search and Apache Jena in-memory graph database**
 
-- [Presentations](presentations/)
-- [Reference Application Documentation](docs/readme.md)
+- [OmniRAG Pattern Overview](presentations/OmniRAG%20Pattern%20and%20CosmosAIGraph%20Implementation.pdf)
+- [Quickstart and deployment](docs/readme.md)
 - [Frequently Asked Questions (FAQ)](docs/faq.md)
-- [Reference Dataset of Python libraries, pre-vectorized](data/pypi/wrangled_libs)
+- [Reference Dataset of Python libraries](data/pypi/wrangled_libs)
 
-<pre>
+## What is OmniRAG Pattern?
 
-</pre>
+OmniRAG pattern is advanced Retrieval Augmented Generation pattern, helping to acheieve maximum relevancy of the results in context retrieval by detecting the user intent, intellegently routing the reqests to multiple available data sources and collecting the results from them before calling the completion model. OmniRAG core tenets are:
+
+- Omni-source with data virtualization
+  - Not limited to vector store, utilizing ALL data sources that can bring value to the context for AI
+  - Use data wherever it is, in the original format, minimizing data movement and transformation
+- Knowledge graph
+  - Contains entities/relationships from existing data to make it readily available for AI to reason over (along with original data) 
+- User intent detection
+  - Allows automatic routing of user’s query to the right source, leverages AI
+- Runtime NL2Query conversion
+  - Converts user query to the source’s query language using simple utterance analysis and/or AI  
+- Session analytics
+  - Required to fine-tune golden dataset of questions + intent so the intent detection doesn't degrade as data variety and volume grows. Additionally, it could be used for semantic cache generation/curation.
+
+ 
+
+<p align="center">
+  <img src="docs/img/omnirag.png" width="100%">
+</p>
+
+
+## CosmosAIGraph Deployment Architecture
 
 <p align="center">
   <img src="docs/img/deployment-architecture.png" width="100%">
 </p>
 
+## CosmosAIGraph Solution Architecture
+
+<p align="center">
+  <img src="docs/img/solution-architecture.png" width="100%">
+</p>
+
+
 ---
 
-## Change Log
+## Release Notes (September 2025)
+- Rich conversation history with auto or manual source selection and with local/database session state persistence:
+ 
+<p align="center">
+  <img src="docs/img/sep25-omnirag-chat.png" width="100%">
+</p>
 
-- March 2025
-  - Version 3.0 codebase
-  - Now focused on Azure Cosmos DB for NoSQL
-    - Eliminated vCore support
-  - Now focused on Apache Jena implementation (Java) for the in-memory RDF graph
-    - Eliminated rdflib support
-  - New DockerHub images created
-  - Presentations updated - see the v3 files
-  - Docs are being updated, target completion date 3/31/2025
+- Generic graph visualization (takes into account loaded custom ontology/graph data):
 
-- January 2025
-  - Added the **Java and Apache Jena** implementation of the in-memory graph
-  - See https://jena.apache.org/index.html
+<p align="center">
+  <img src="docs/img/sep25-graph-visualization.png" width="100%">
+</p>
 
-- September 2024
-  - Added support for the **Azure Cosmos DB for NoSQL** in addition to Azure Cosmos DB for MongoDB vCore
+- Generic ontology visualization:
 
-## Roadmap
+<p align="center">
+  <img src="docs/img/sep25-ontology-visualization.png" width="100%">
+</p>
 
-- Add RBAC and Microsoft Entra ID/AAD authentication support for the **Azure Cosmos DB for NoSQL**
-- Update AI model to gpt-4.5
-- Generic graph examples with graph generation solution
+- Rich editors for OWL/TTL/SPARQL with color syntax highlighting:
+ 
+<p align="center">
+  <img src="docs/img/sep25-sparql-editor.png" width="100%">
+</p>
+
+
+ Comprehensive vector/full-text/hybrid search to cover semi-structured data:
+ 
+<p align="center">
+  <img src="docs/img/sep25-vector-search.png" width="100%">
+</p>
+
+
 
 ## Contributing
 

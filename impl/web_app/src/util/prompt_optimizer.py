@@ -13,7 +13,7 @@
 # - actual_prompt - The final prompt rendered with the pruned context and history.
 # - actual_tokens - The token count of the actual_prompt, calculated by tiktoken.
 #
-# Chris Joakim, Microsoft, 2025
+# Chris Joakim, Aleksey Savateyev, 2025
 
 import json
 import logging
@@ -25,10 +25,22 @@ MAX_ITERATIONS = 8
 
 class PromptOptimizer:
 
-    def __init__(self):
+    def __init__(self, model_name: str | None = None):
         self.jinja_env = jinja2.Environment()
-        # tiktoken, for token estimation, doesn't work with gpt-4 at this time
-        self.tiktoken_encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+        
+        # Get tiktoken encoding with fallback for unknown models
+        # GPT-4, GPT-4 Turbo, GPT-4.1, and GPT-3.5-Turbo all use cl100k_base encoding
+        try:
+            if model_name:
+                self.tiktoken_encoding = tiktoken.encoding_for_model(model_name)
+            else:
+                # Use cl100k_base as default - works for all GPT-4 and GPT-3.5-turbo models
+                self.tiktoken_encoding = tiktoken.get_encoding("cl100k_base")
+        except KeyError:
+            # Fallback to cl100k_base if model is not recognized by tiktoken
+            # This is the correct encoding for GPT-4, GPT-4-turbo, and GPT-3.5-turbo variants
+            self.tiktoken_encoding = tiktoken.get_encoding("cl100k_base")
+        
         self.enc = tiktoken.get_encoding("cl100k_base")
 
     def generate_and_truncate(
@@ -46,7 +58,7 @@ class PromptOptimizer:
         continue_to_prune, ntokens = True, -1
 
         pruned_context: str = str(full_context)
-        pruned_history: str = str(full_history)
+        pruned_history = full_history  # Keep as original type (str or dict)
 
         result_obj = dict()
         result_obj["full_context"] = full_context
@@ -73,7 +85,7 @@ class PromptOptimizer:
                     result_obj["actual_prompt"] = self.merge_prompt_template(
                         prompt_template,
                         pruned_context,
-                        json.dumps(pruned_history),
+                        self.format_history_for_prompt(pruned_history),
                         user_query,
                     )
                     ntokens = len(
@@ -98,18 +110,91 @@ class PromptOptimizer:
                             result_obj["initial_context_words_ratio"] = (
                                 context_words_ratio
                             )
-                        context_words = pruned_context.split()
-                        history_messages = json.loads(pruned_history)["messages"]
+                        
+                        # Handle both string and dict history formats
+                        if isinstance(pruned_history, str):
+                            history_messages = json.loads(pruned_history)["messages"]
+                        else:
+                            history_messages = pruned_history.get("messages", [])
 
-                        # retain the tail-end of the context words
-                        retain_index = int(
-                            float(len(context_words)) * context_words_ratio
-                        )
-                        retained_words_list = list()
-                        for idx, word in enumerate(context_words):
-                            if idx >= retain_index:
-                                retained_words_list.append(word)
-                        pruned_context = (" ".join(retained_words_list)).strip()
+                        # Check if context appears to be JSON FIRST, before splitting by words
+                        context_text = pruned_context.strip()
+                        is_json_context = (context_text.startswith('{') and context_text.endswith('}')) or \
+                                         (context_text.startswith('[') and context_text.endswith(']'))
+                        
+                        if is_json_context:
+                            # For JSON context, try to parse and intelligently truncate
+                            try:
+                                parsed_json = json.loads(context_text)
+                                
+                                # If it's an array of objects, remove items from the beginning
+                                if isinstance(parsed_json, list):
+                                    # Calculate how many items to keep based on ITEM COUNT, not token ratio
+                                    # This ensures we always keep complete objects
+                                    if len(parsed_json) > 1:
+                                        # Keep the beginning items (most relevant for search results), remove from end
+                                        # Always keep at least 1 item
+                                        target_size = max(1, int(float(len(parsed_json)) * context_words_ratio))
+                                        pruned_json = parsed_json[:target_size]
+                                        pruned_context = json.dumps(pruned_json, indent=2)
+                                    else:
+                                        # Single item, keep as-is (will be handled by breaking the loop if too large)
+                                        pruned_context = json.dumps(parsed_json, indent=2)
+                                
+                                # If it's a single object with array properties, truncate the arrays
+                                elif isinstance(parsed_json, dict):
+                                    pruned_json = {}
+                                    for key, value in parsed_json.items():
+                                        if isinstance(value, list) and len(value) > 1:
+                                            # Truncate array values, keep tail end
+                                            target_size = max(1, int(float(len(value)) * context_words_ratio))
+                                            start_index = len(value) - target_size
+                                            pruned_json[key] = value[start_index:]
+                                        else:
+                                            # Keep non-array or single-item values as-is
+                                            pruned_json[key] = value
+                                    pruned_context = json.dumps(pruned_json, indent=2)
+                                else:
+                                    # For primitive JSON values, convert to string
+                                    pruned_context = json.dumps(parsed_json)
+                            except (json.JSONDecodeError, Exception) as json_err:
+                                # If JSON parsing fails, DO NOT use character-based truncation that breaks JSON
+                                # Instead, try to extract complete JSON objects from the string
+                                char_ratio = context_words_ratio
+                                char_retain_index = int(float(len(context_text)) * char_ratio)
+                                truncated_text = context_text[char_retain_index:]
+                                
+                                # Try to find the start of a complete JSON object or array
+                                # Look for newline followed by object/array start for pretty-printed JSON
+                                best_start = -1
+                                for delimiter in ['\n  {', '\n{', '\n[']:  # Check for indented objects first
+                                    pos = truncated_text.find(delimiter)
+                                    if pos >= 0:
+                                        if best_start < 0 or pos < best_start:
+                                            best_start = pos + 1  # Skip the newline
+                                
+                                if best_start >= 0:
+                                    pruned_context = truncated_text[best_start:]
+                                    # Ensure we have valid JSON by checking structure
+                                    if not (pruned_context.strip().startswith(('{', '['))):
+                                        # Still broken, just keep original
+                                        pruned_context = truncated_text
+                                else:
+                                    # Can't find safe boundary, keep original truncated text
+                                    # This will likely fail validation, but better than breaking mid-object
+                                    pruned_context = truncated_text
+                        else:
+                            # For non-JSON context, use word-based truncation as before
+                            context_words = pruned_context.split()
+                            retain_index = int(
+                                float(len(context_words)) * context_words_ratio
+                            )
+                            retained_words_list = list()
+                            for idx, word in enumerate(context_words):
+                                if idx >= retain_index:
+                                    retained_words_list.append(word)
+                            pruned_context = (" ".join(retained_words_list)).strip()
+                        
                         result_obj["pruned_context"] = pruned_context
 
                         # retain the tail-end of the history messages
@@ -118,7 +203,13 @@ class PromptOptimizer:
                         )  # include more history than context
                         if result_obj["iteration_count"] == 1:
                             result_obj["initial_history_ratio"] = history_ratio
-                        history_messages = json.loads(pruned_history)["messages"]
+                        
+                        # Handle both string and dict history formats
+                        if isinstance(pruned_history, str):
+                            history_messages = json.loads(pruned_history)["messages"]
+                        else:
+                            history_messages = pruned_history.get("messages", [])
+                            
                         retain_index = int(float(len(history_messages)) * history_ratio)
                         if retain_index < 1:
                             retain_index = 2
@@ -130,7 +221,7 @@ class PromptOptimizer:
                         # the history is a json string with messages, not an array of messages
                         new_history = dict()
                         new_history["messages"] = retained_history_list
-                        pruned_history = json.dumps(new_history)
+                        pruned_history = new_history
                         result_obj["pruned_history"] = pruned_history
                     else:
                         continue_to_prune = False
@@ -168,3 +259,45 @@ class PromptOptimizer:
             )
             logging.exception(e, stack_info=True, exc_info=True)
             return "exception in merge_prompt_template"
+
+    def format_history_for_prompt(self, history_data):
+        """
+        Format chat history as readable conversation text instead of raw JSON.
+        """
+        try:
+            # If history_data is a string, parse it as JSON
+            if isinstance(history_data, str):
+                history_obj = json.loads(history_data)
+            else:
+                history_obj = history_data
+                
+            if not history_obj or "messages" not in history_obj:
+                return ""
+                
+            formatted_lines = []
+            for msg in history_obj["messages"]:
+                role = msg.get("role", "unknown")
+                
+                # Extract text content from the message items
+                text_content = ""
+                if "items" in msg:
+                    for item in msg["items"]:
+                        if item.get("content_type") == "text":
+                            text_content = item.get("text", "")
+                            break
+                
+                if text_content.strip():
+                    if role == "user":
+                        formatted_lines.append(f"User: {text_content}")
+                    elif role == "assistant":
+                        formatted_lines.append(f"Assistant: {text_content}")
+                    elif role == "system":
+                        formatted_lines.append(f"System: {text_content}")
+            
+            return "\n".join(formatted_lines)
+        except Exception as e:
+            logging.critical(
+                "Exception in PromptOptimizer#format_history_for_prompt: {}".format(str(e))
+            )
+            logging.exception(e, stack_info=True, exc_info=True)
+            return json.dumps(history_data) if isinstance(history_data, dict) else str(history_data)

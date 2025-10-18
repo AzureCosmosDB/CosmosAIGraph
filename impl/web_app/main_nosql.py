@@ -35,6 +35,7 @@ from dotenv import load_dotenv
 
 from faker import Faker
 
+from src.util.cosmos_doc_filter import CosmosDocFilter
 from src.services.ai_service import AiService
 from src.services.config_service import ConfigService
 from src.services.cosmos_nosql_service import CosmosNoSQLService
@@ -326,6 +327,8 @@ async def load_docs_from_directory(nosql_svc, wrangled_libs_dir, max_docs):
                             nosql_svc, load_counter, batch_number, batch_operations, pk
                         )
                         batch_operations = list()
+                        # Small delay between batches to avoid overwhelming the database
+                        await asyncio.sleep(0.1)
                 except Exception as e:
                     logging.info("error processing {}: {}".format(fq_name, str(e)))
                     logging.info(traceback.format_exc())
@@ -345,19 +348,41 @@ async def load_docs_from_directory(nosql_svc, wrangled_libs_dir, max_docs):
 
 async def load_batch(nosql_svc, load_counter, batch_number, batch_operations, pk):
     batch_counter = Counter()
-    results = await nosql_svc.execute_item_batch(batch_operations, pk)
-    for result in results:
+    max_retries = 3
+    retry_delay = 2  # seconds
+    
+    for attempt in range(max_retries):
         try:
-            status_code = str(result["statusCode"])
-            batch_counter.increment(status_code)
-        except:
-            batch_counter.increment("exceptions")
-    load_counter.merge(batch_counter)
-    logging.info(
-        "load_batch {} with {} documents, results: {}".format(
-            batch_number, len(batch_operations), json.dumps(batch_counter.get_data())
-        )
-    )
+            results = await nosql_svc.execute_item_batch(batch_operations, pk)
+            for result in results:
+                try:
+                    status_code = str(result["statusCode"])
+                    batch_counter.increment(status_code)
+                except:
+                    batch_counter.increment("exceptions")
+            load_counter.merge(batch_counter)
+            logging.info(
+                "load_batch {} with {} documents, results: {}".format(
+                    batch_number, len(batch_operations), json.dumps(batch_counter.get_data())
+                )
+            )
+            return  # Success, exit retry loop
+        except Exception as e:
+            if attempt < max_retries - 1:
+                wait_time = retry_delay * (2 ** attempt)  # Exponential backoff
+                logging.warning(
+                    "Batch {} failed (attempt {}/{}), retrying in {} seconds: {}".format(
+                        batch_number, attempt + 1, max_retries, wait_time, str(e)
+                    )
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logging.error(
+                    "Batch {} failed after {} attempts: {}".format(
+                        batch_number, max_retries, str(e)
+                    )
+                )
+                raise  # Re-raise after all retries exhausted
     logging.info("current totals: {}".format(json.dumps(load_counter.get_data())))
     time.sleep(1.0)
 
@@ -378,11 +403,14 @@ async def vector_search_words(natural_language):
 
         nosql_svc = CosmosNoSQLService()
         await nosql_svc.initialize()
+        nosql_svc.set_db(ConfigService.graph_source_db())
+        nosql_svc.set_container(ConfigService.graph_source_container())
 
-        docs = await nosql_svc.vector_search(embedding, 4)
+        docs = await nosql_svc.vector_search(embedding_value=embedding, limit=4)
         for idx, doc in enumerate(docs):
-            print("doc {}: {}".format(idx, doc))
-
+            # cdf = CosmosDocFilter(doc["c"])
+            # print("doc {}: {} Score: {}".format(idx, cdf.filter_out_embedding("embedding"), doc["score"]))
+            print("doc {}:\n{}\n".format(idx, json.dumps(doc, indent=2)))
     except Exception as e:
         logging.info(str(e))
         logging.info(traceback.format_exc())

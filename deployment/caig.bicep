@@ -26,7 +26,7 @@ param graphServicePort string
 param graphSourceContainer string
 param graphSourceDb string
 param graphSourceOwlFilename string
-param graphSourceRdfFilename string
+param graphSourcePath string
 param graphSourceType string
 param laWorkspaceName string
 param logLevel string
@@ -172,7 +172,7 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
             }
             {
               name: 'CAIG_GRAPH_SOURCE_PATH'
-              value: graphSourceRdfFilename
+              value: graphSourcePath
             }
             {
               name: 'CAIG_GRAPH_SOURCE_TYPE'
@@ -344,7 +344,7 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
             }
             {
               name: 'CAIG_GRAPH_SOURCE_PATH'
-              value: graphSourceRdfFilename
+              value: graphSourcePath
             }
             {
               name: 'CAIG_GRAPH_SOURCE_TYPE'

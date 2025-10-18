@@ -2,38 +2,116 @@
 {% block title %} About {% endblock %}
 {% block content %}
 <div class="container">
+  <div class="row">
+    <div class="col-lg-10 mx-auto">
+      
+      <!-- Main Description -->
+      <div class="mb-5">
+        <h2 class="text-primary mb-4">About CosmosAIGraph</h2>
+        <p class="lead text-muted">
+          CosmosAIGraph implements the <strong>OmniRAG pattern</strong> using a powerful combination of Azure services and open-source technologies:
+        </p>
+        
+        <ul class="list-group list-group-flush mb-4">
+          <li class="list-group-item d-flex align-items-start bg-transparent border-0 px-0">
+            <i class="bi bi-database text-primary me-3 mt-1"></i>
+            <div class="text-muted">
+              <strong>Azure Cosmos DB for NoSQL</strong> - Reliably stores and searches source data and session state/feedback
+            </div>
+          </li>
+          <li class="list-group-item d-flex align-items-start bg-transparent border-0 px-0">
+            <i class="bi bi-vector-pen text-primary me-3 mt-1"></i>
+            <div class="text-muted">
+              <strong>Azure Cosmos DB Vector Index with DiskANN</strong> - Stores and searches source data embeddings
+            </div>
+          </li>
+          <li class="list-group-item d-flex align-items-start bg-transparent border-0 px-0">
+            <i class="bi bi-diagram-3 text-primary me-3 mt-1"></i>
+            <div class="text-muted">
+              <strong>Apache Jena</strong> - Stores entities and relationships in a graph structure
+            </div>
+          </li>
+        </ul>
+        
+        <p class="text-muted">
+          The solution orchestrates the flow between these three components based on detected user intent and provides 
+          <strong>Natural Language to Query (NL2Query)</strong> capability for graph queries with full SPARQL 1.1 support.
+        </p>
+      </div>
 
-<pre>
+      <!-- Solution Architecture -->
+      <div class="mb-5">
+        <h3 class="text-primary mb-3">
+          <i class="bi bi-diagram-2 me-2"></i>
+          Solution Architecture
+        </h3>
+        <div class="text-center">
+          <img src="static/solution-architecture.png" 
+               class="img-fluid rounded shadow-sm" 
+               style="max-width: 90%;" 
+               alt="CosmosAIGraph Solution Architecture">
+        </div>
+      </div>
 
-</pre>
-<img src="static/omnirag-pattern-v3.png" class="rounded mx-auto d-block" width="80%" alt="...">
+      <!-- Deployment Architecture -->
+      <div class="mb-5">
+        <h3 class="text-primary mb-3">
+          <i class="bi bi-cloud-arrow-up me-2"></i>
+          Deployment Architecture
+        </h3>
+        <div class="text-center">
+          <img src="static/deployment-architecture.png" 
+               class="img-fluid rounded shadow-sm" 
+               style="max-width: 90%;" 
+               alt="CosmosAIGraph Deployment Architecture">
+        </div>
+      </div>
 
+      <!-- System Information -->
+      <div class="mb-4">
+        <h3 class="text-primary mb-3">
+          <i class="bi bi-info-circle me-2"></i>
+          System Information
+        </h3>
+        <div class="card bg-transparent border-secondary">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                  <strong class="text-muted me-2">Build:</strong>
+                  <code class="bg-secondary bg-opacity-25 text-muted px-2 py-1 rounded">{{ application_build }}</code>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                  <strong class="text-muted me-2">Version:</strong>
+                  <code class="bg-secondary bg-opacity-25 text-muted px-2 py-1 rounded">{{ application_version }}</code>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                  <strong class="text-muted me-2">Source:</strong>
+                  <code class="bg-secondary bg-opacity-25 text-muted px-2 py-1 rounded">{{ graph_source }}</code>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                  <strong class="text-muted me-2">Database:</strong>
+                  <code class="bg-secondary bg-opacity-25 text-muted px-2 py-1 rounded">{{ graph_source_db }}</code>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="d-flex align-items-center">
+                  <strong class="text-muted me-2">Container:</strong>
+                  <code class="bg-secondary bg-opacity-25 text-muted px-2 py-1 rounded">{{ graph_source_container }}</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<pre>
-
-
-
-    
-
-    
-</pre>
-
-<img src="static/deployment-architecture.png" class="rounded mx-auto d-block" width="80%" alt="...">
-
-<pre>
-
-
-
-    build:     {{ application_build }}
-    version:   {{ application_version }}
-    source:    {{ graph_source }}
-    db:        {{ graph_source_db }}
-    container: {{ graph_source_container }}
-</pre>
-
-{% endblock %}
-
-{% block js %}
-<script>
-</script>
+    </div>
+  </div>
+</div>
 {% endblock %}

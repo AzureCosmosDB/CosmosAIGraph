@@ -320,6 +320,11 @@ public class AppGraph {
 
                 // Get the target node
                 Resource targetNode = solution.getResource("targetNode");
+                
+                // Get the edge node (might be same as target for direct connections, or intermediate edge for connections through edge nodes)
+                Resource edgeNodeResource = solution.getResource("edgeNode");
+                String edgeNodeUri = edgeNodeResource != null ? edgeNodeResource.getURI() : null;
+                
                 if (targetNode != null) {
                     String targetUri = targetNode.getURI();
                     allConnections.add(targetUri);
@@ -341,12 +346,26 @@ public class AppGraph {
                         richDep.addProperty("EdgeLabel", edgeLabel + " →");
                     }
                     
+                    // If we have an intermediate edge node (different from target), add its properties too
+                    if (edgeNodeUri != null && !edgeNodeUri.equals(targetUri)) {
+                        logger.info("Found connection through intermediate edge node: " + edgeNodeUri);
+                        RichDependency edgeNodeDep = fetchRichDependencyProperties(edgeNodeUri);
+                        richDep.addProperty("IntermediateEdgeNode", edgeNodeUri);
+                        richDep.addProperty("EdgeNodeProperties", edgeNodeDep.getProperties());
+                        
+                        // Also add the intermediate edge node to traversal if not already present
+                        if (!tLibs.containsKey(edgeNodeUri)) {
+                            tLibs.put(edgeNodeUri, new TraversedNode(edgeNodeUri, loopDepth));
+                            logger.info("Added intermediate edge node: " + edgeNodeUri + " with depth " + loopDepth);
+                        }
+                    }
+                    
                     richDependencies.add(richDep);
 
-                    // Add the discovered node to the traversal map if not already present
+                    // Add the discovered target node to the traversal map if not already present
                     if (!tLibs.containsKey(targetUri)) {
                         tLibs.put(targetUri, new TraversedNode(targetUri, loopDepth));
-                        logger.info("Added new node: " + targetUri + " with depth " + loopDepth);
+                        logger.info("Added new target node: " + targetUri + " with depth " + loopDepth);
                     }
                 }
             }
@@ -376,7 +395,7 @@ public class AppGraph {
 
     /**
      * Generates a SPARQL query to find ALL edges (object properties) connected to a given URI.
-     * This is completely generic and works with any RDF ontology structure.
+     * This handles both direct connections and connections through intermediate edge nodes.
      */
     private String sparqlGenericEdgesQuery(String nodeUri) {
         try {
@@ -384,6 +403,7 @@ public class AppGraph {
             sb.append("PREFIX owl: <http://www.w3.org/2002/07/owl#>\n");
             sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
             sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n");
+            sb.append("PREFIX c: <").append(namespaceWithSeparator()).append(">\n");
             
             String formattedNodeUri = formatUri(nodeUri);
             logger.debug("sparqlGenericEdgesQuery - formatted URI: " + formattedNodeUri);
@@ -393,13 +413,14 @@ public class AppGraph {
                 return createFallbackGenericEdgesQuery(nodeUri);
             }
             
-            // Query for all object property relationships (edges)
-            sb.append("SELECT DISTINCT ?edgeProperty ?targetNode ?direction\n");
+            // Query for all connections including intermediate edge nodes
+            sb.append("SELECT DISTINCT ?edgeProperty ?targetNode ?direction ?edgeNode\n");
             sb.append("WHERE {\n");
             sb.append("  {\n");
-            sb.append("    # Outbound edges: this node -> other nodes\n");
+            sb.append("    # Direct outbound edges: this node -> other nodes\n");
             sb.append("    ").append(formattedNodeUri).append(" ?edgeProperty ?targetNode .\n");
             sb.append("    BIND(\"outbound\" AS ?direction)\n");
+            sb.append("    BIND(?targetNode AS ?edgeNode)\n");
             sb.append("    # Filter to only URI resources (nodes, not literals)\n");
             sb.append("    FILTER(isURI(?targetNode))\n");
             sb.append("    # Optionally filter out system properties if needed\n");
@@ -408,13 +429,36 @@ public class AppGraph {
             sb.append("  }\n");
             sb.append("  UNION\n");
             sb.append("  {\n");
-            sb.append("    # Inbound edges: other nodes -> this node\n");
+            sb.append("    # Direct inbound edges: other nodes -> this node\n");
             sb.append("    ?targetNode ?edgeProperty ").append(formattedNodeUri).append(" .\n");
             sb.append("    BIND(\"inbound\" AS ?direction)\n");
+            sb.append("    BIND(?targetNode AS ?edgeNode)\n");
             sb.append("    FILTER(isURI(?targetNode))\n");
             sb.append("    # Optionally filter out system properties if needed\n");
             sb.append("    FILTER(!STRSTARTS(STR(?edgeProperty), \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\"))\n");
             sb.append("    FILTER(!STRSTARTS(STR(?edgeProperty), \"http://www.w3.org/2000/01/rdf-schema#subClassOf\"))\n");
+            sb.append("  }\n");
+            sb.append("  UNION\n");
+            sb.append("  {\n");
+            sb.append("    # Connections through intermediate edge nodes - outbound via StartNode\n");
+            sb.append("    ?edgeNode c:StartNode ").append(formattedNodeUri).append(" .\n");
+            sb.append("    ?edgeNode c:EndNode ?targetNode .\n");
+            sb.append("    ?edgeNode rdf:type ?edgeType .\n");
+            sb.append("    BIND(?edgeType AS ?edgeProperty)\n");
+            sb.append("    BIND(\"outbound\" AS ?direction)\n");
+            sb.append("    FILTER(isURI(?targetNode))\n");
+            sb.append("    FILTER(isURI(?edgeNode))\n");
+            sb.append("  }\n");
+            sb.append("  UNION\n");
+            sb.append("  {\n");
+            sb.append("    # Connections through intermediate edge nodes - inbound via EndNode\n");
+            sb.append("    ?edgeNode c:EndNode ").append(formattedNodeUri).append(" .\n");
+            sb.append("    ?edgeNode c:StartNode ?targetNode .\n");
+            sb.append("    ?edgeNode rdf:type ?edgeType .\n");
+            sb.append("    BIND(?edgeType AS ?edgeProperty)\n");
+            sb.append("    BIND(\"inbound\" AS ?direction)\n");
+            sb.append("    FILTER(isURI(?targetNode))\n");
+            sb.append("    FILTER(isURI(?edgeNode))\n");
             sb.append("  }\n");
             sb.append("}\n");
             sb.append("LIMIT 100");
@@ -438,17 +482,20 @@ public class AppGraph {
             formattedUri = "<http://example.org/unknown>";
         }
         
-        return "SELECT DISTINCT ?edgeProperty ?targetNode ?direction\n" +
+        return "PREFIX c: <" + namespaceWithSeparator() + ">\n" +
+               "SELECT DISTINCT ?edgeProperty ?targetNode ?direction ?edgeNode\n" +
                "WHERE {\n" +
                "  {\n" +
                "    " + formattedUri + " ?edgeProperty ?targetNode .\n" +
                "    BIND(\"outbound\" AS ?direction)\n" +
+               "    BIND(?targetNode AS ?edgeNode)\n" +
                "    FILTER(isURI(?targetNode))\n" +
                "  }\n" +
                "  UNION\n" +
                "  {\n" +
                "    ?targetNode ?edgeProperty " + formattedUri + " .\n" +
                "    BIND(\"inbound\" AS ?direction)\n" +
+               "    BIND(?targetNode AS ?edgeNode)\n" +
                "    FILTER(isURI(?targetNode))\n" +
                "  }\n" +
                "}\n" +

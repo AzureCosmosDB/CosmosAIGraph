@@ -57,6 +57,8 @@ services:
       CAIG_WEBSVC_AUTH_VALUE:             $CAIG_WEBSVC_AUTH_VALUE
       CAIG_WEB_APP_PORT:                  $CAIG_WEB_APP_PORT
       CAIG_WEB_APP_URL:                   $CAIG_WEB_APP_URL
+      CAIG_PROMPT_SPARQL_PATH:           $CAIG_PROMPT_SPARQL_PATH
+      CAIG_PROMPT_COMPLETION_PATH:        $CAIG_PROMPT_COMPLETION_PATH
       CAIG_GRAPH_SERVICE_URL:             http://graph
       PORT:                               8000
       WEB_CONCURRENCY:                    1

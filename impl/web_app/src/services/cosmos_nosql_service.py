@@ -98,8 +98,13 @@ class CosmosNoSQLService:
         """Set the current database to the given dbname."""
         self.validate_client()
         try:
-            self._dbname = dbname
-            self._dbproxy = self._client.get_database_client(dbname)
+            # Only create a new proxy if the database name has changed or proxy doesn't exist
+            if self._dbname != dbname or self._dbproxy is None:
+                logging.warning(f"set_db: Creating NEW database proxy for '{dbname}' (previous: '{self._dbname}')")
+                self._dbname = dbname
+                self._dbproxy = self._client.get_database_client(dbname)
+            else:
+                logging.warning(f"set_db: REUSING existing database proxy for '{dbname}' (id: {id(self._dbproxy)})")
         except Exception as e:
             logging.critical("Failed to set database: %s", e)
             raise
@@ -108,14 +113,19 @@ class CosmosNoSQLService:
     def get_current_cname(self):
         return self._cname
 
-    def set_container(self, cname: str) -> ContainerProxy:
+    def set_container(self, cname) -> object:
         """Set the current container in the current database to the given cname."""
         self.validate_dbproxy()
         if cname is None:
             raise ValueError("Container name cannot be None.")
         try:
-            self._cname = cname
-            self._ctrproxy = self._dbproxy.get_container_client(cname)
+            # Only create a new proxy if the container name has changed or proxy doesn't exist
+            if self._cname != cname or self._ctrproxy is None:
+                logging.warning(f"set_container: Creating NEW container proxy for '{cname}' (previous: '{self._cname}')")
+                self._cname = cname
+                self._ctrproxy = self._dbproxy.get_container_client(cname)
+            else:
+                logging.warning(f"set_container: REUSING existing container proxy for '{cname}' (id: {id(self._ctrproxy)})")
         except Exception as e:
             logging.critical("Failed to set container: %s", e)
             raise
@@ -310,13 +320,30 @@ class CosmosNoSQLService:
         elif search_method == "rrf":
             return await self.rrf_search(embedding_value, search_text, embedding_attr, limit)
         else:
-            # Default vector search
+            # Default vector search - don't truncate for display purposes
+            import hashlib
+            import json
+            from datetime import datetime
+            embedding_hash = hashlib.md5(json.dumps(embedding_value, sort_keys=True).encode()).hexdigest()
+            timestamp = datetime.now().strftime("%H:%M:%S.%f")
             sql = self.vector_search_sql(embedding_value, embedding_attr, limit)
+            logging.warning(f"vector_search [{timestamp}] SQL (first 200 chars): {sql[:200]}")
+            logging.warning(f"vector_search [{timestamp}] embedding hash: {embedding_hash}, length: {len(embedding_value)}")
+            logging.warning(f"vector_search [{timestamp}] using DB: '{self._dbname}', container: '{self._cname}', limit: {limit}, ctrproxy id: {id(self._ctrproxy)}")
             docs = list()
             items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
             async for item in items_paged:
-                cdf = CosmosDocFilter(item)
-                docs.append(cdf.filter_out_embedding(embedding_attr))
+                cdf = CosmosDocFilter(item["c"])
+                doc_dict = cdf.filter_out_embedding(embedding_attr, truncate=False)
+                doc_dict["_score"] = item["score"]
+                docs.append(doc_dict)
+            
+            # Get Cosmos DB activity ID from response headers
+            activity_id = self.last_response_header('x-ms-activity-id') or 'N/A'
+            request_charge = self.last_request_charge()
+            
+            logging.warning(f"vector_search returned {len(docs)} docs, first 3 doc names with scores: {[(doc.get('name', 'N/A'), doc.get('_score', 'N/A')) for doc in docs[:3]]}")
+            logging.warning(f"vector_search [{timestamp}] Cosmos DB activity-id: {activity_id}, request-charge: {request_charge} RU")
             return docs
 
     async def fulltext_search(self, search_text, limit=4):
@@ -328,16 +355,16 @@ class CosmosNoSQLService:
             return []
 
         # Tokenize the input text into words longer than one character
-        tokens = [word for word in search_text.split() if len(word) > 1]
+        tokens = [word for word in search_text.split() if len(word) > 1][-5:]
         if not tokens:
             return []
 
         # Combine tokens into a single string separated by commas
         search_expr = ','.join(f'"{token}"' for token in tokens)
 
-        # Simplified query using just the description field
+        # Simplified query using just the description field - include score
         sql = f"""
-        SELECT TOP {limit} * 
+        SELECT TOP {limit} c, FullTextScore(c.description, {search_expr}) AS score
         FROM c 
         ORDER BY RANK FullTextScore(c.description, {search_expr})
         """
@@ -347,22 +374,26 @@ class CosmosNoSQLService:
         try:
             items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
             async for item in items_paged:
-                cdf = CosmosDocFilter(item)
-                docs.append(cdf.filter_out_embedding("embedding"))
+                cdf = CosmosDocFilter(item["c"])
+                doc_dict = cdf.filter_out_embedding("embedding", truncate=False)
+                doc_dict["_score"] = item.get("score", 0.0)
+                docs.append(doc_dict)
         except Exception as e:
             # If description field doesn't support FullTextScore, try summary field
             logging.error(f"Full-text search on description failed: {e}")
             try:
                 sql = f"""
-                SELECT TOP {limit} * 
+                SELECT TOP {limit} c, FullTextScore(c.summary, {search_expr}) AS score
                 FROM c 
                 ORDER BY RANK FullTextScore(c.summary, {search_expr})
                 """
                 logging.debug(f"Full-text search SQL: {sql}")
                 items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
                 async for item in items_paged:
-                    cdf = CosmosDocFilter(item)
-                    docs.append(cdf.filter_out_embedding("embedding"))
+                    cdf = CosmosDocFilter(item["c"])
+                    doc_dict = cdf.filter_out_embedding("embedding", truncate=False)
+                    doc_dict["_score"] = item.get("score", 0.0)
+                    docs.append(doc_dict)
             except Exception as e2:
                 # If FullTextScore is not supported, fall back to CONTAINS
                 logging.error(f"Full-text search on summary also failed: {e2}")
@@ -406,7 +437,7 @@ class CosmosNoSQLService:
             return []
 
         # Tokenize the input text into words longer than one character
-        tokens = [word for word in search_text.split() if len(word) > 1]
+        tokens = [word for word in search_text.split() if len(word) > 1][-5:]
         if not tokens:
             return []
 
@@ -414,35 +445,39 @@ class CosmosNoSQLService:
         search_expr = ','.join(f'"{token}"' for token in tokens)
 
         docs = list()
-        try:
-            # Build the RRF query using FullTextScore and VectorDistance; use proper RANK(...) syntax
-            sql = f"""
-            SELECT TOP {limit} *
-            FROM c
-            ORDER BY RANK(RRF(
-                FullTextScore(c.description, {search_expr}), 
-                VectorDistance(c.{embedding_attr}, {str(embedding_value)})
-            ))
-            """
 
+        # Build the RRF query using FullTextScore and VectorDistance; use proper RANK(...) syntax
+        sql = f"""
+        SELECT TOP {limit} *
+        FROM c
+        ORDER BY RANK RRF(
+            VectorDistance(c.{embedding_attr}, {str(embedding_value)}),
+            FullTextScore(c.description, {search_expr}))
+        """
+        try:
             items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
             async for item in items_paged:
                 cdf = CosmosDocFilter(item)
-                docs.append(cdf.filter_out_embedding(embedding_attr))
+                doc_dict = cdf.filter_out_embedding(embedding_attr, truncate=False)
+                # RRF doesn't expose a numerical score, use 0.0 as placeholder
+                doc_dict["_score"] = 0.0
+                docs.append(doc_dict)
 
         except Exception as e:
-            logging.error(f"RRF search with FullTextScore failed: {e}")
+            logging.error(f"RRF search with FullTextScore failed: {e}\n Query was: {sql}")
             # Fall back to vector search only
             try:
                 sql = f"""
-                SELECT TOP {limit} *
+                SELECT TOP {limit} c, VectorDistance(c.{embedding_attr}, {str(embedding_value)}) AS score
                 FROM c
-                ORDER BY VectorDistance(c.{embedding_attr}, {str(embedding_value)})
+                ORDER BY VectorDistance(c.{embedding_attr}, {str(embedding_value)}) ASC
                 """
                 items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
                 async for item in items_paged:
-                    cdf = CosmosDocFilter(item)
-                    docs.append(cdf.filter_out_embedding(embedding_attr))
+                    cdf = CosmosDocFilter(item["c"])
+                    doc_dict = cdf.filter_out_embedding(embedding_attr, truncate=False)
+                    doc_dict["_score"] = item.get("score", 0.0)
+                    docs.append(doc_dict)
             except Exception as e2:
                 logging.error(f"Fallback vector search in RRF also failed: {e2}")
 
@@ -452,10 +487,10 @@ class CosmosNoSQLService:
         parts = list()
         parts.append("SELECT TOP {}".format(limit))
         parts.append(
-            #"c, VectorDistance(c.{}, {}) AS score".format(
-            #    embedding_attr, str(embedding_value)
-            #)
-            "*"
+            "c, VectorDistance(c.{}, {}) AS score".format(
+               embedding_attr, str(embedding_value)
+            )
+            #"*"
         )
         parts.append(
             "FROM c ORDER BY VectorDistance(c.{}, {})".format(

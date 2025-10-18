@@ -73,13 +73,13 @@ class RAGDataService:
             name = strategy_obj["name"]
             rdr.set_attr("name", name)
             await self.get_database_rag_data(user_text, name, rdr, max_doc_count)
-            if rdr.has_no_docs():
+            if rdr.has_no_docs() and not (strategy_override and strategy_override in valid_choices): #don't fall back if was overridden
                 rdr.add_strategy("vector")
                 await self.get_vector_rag_data(user_text, rdr, max_doc_count)
 
         elif strategy == "graph":
             await self.get_graph_rag_data(user_text, rdr, max_doc_count)
-            if rdr.has_no_docs():
+            if rdr.has_no_docs() and not (strategy_override and strategy_override in valid_choices): #don't fall back if was overridden
                 rdr.add_strategy("vector")
                 await self.get_vector_rag_data(user_text, rdr, max_doc_count)
         else:
@@ -127,18 +127,33 @@ class RAGDataService:
     ) -> None:
         try:
             logging.warning(
-                "RagDataService#get_vector_rag_data, user_text: {}".format(user_text)
+                "RagDataService#get_vector_rag_data, user_text: '{}', max_doc_count: {}".format(user_text, max_doc_count)
             )
             create_embedding_response = self.ai_svc.generate_embeddings(user_text)
             embedding = create_embedding_response.data[0].embedding
-            self.nosql_svc.set_db(ConfigService.graph_source_db())
-            self.nosql_svc.set_container(ConfigService.graph_source_container())
+            logging.warning(
+                "RagDataService#get_vector_rag_data, embedding length: {}, first 5 values: {}".format(
+                    len(embedding), embedding[:5]
+                )
+            )
+            db_name = ConfigService.graph_source_db()
+            container_name = ConfigService.graph_source_container()
+            logging.warning(f"RagDataService#get_vector_rag_data, setting DB: '{db_name}', container: '{container_name}'")
+            self.nosql_svc.set_db(db_name)
+            self.nosql_svc.set_container(container_name)
             vs_result = await self.nosql_svc.vector_search(
-                embedding_value=embedding, search_text=user_text, search_method="rrf", embedding_attr="embedding", limit=max_doc_count
+                embedding_value=embedding, search_text=user_text, search_method="vector", embedding_attr="embedding", limit=max_doc_count
+            )
+            logging.warning(
+                "RagDataService#get_vector_rag_data, vs_result count: {}, first 3 doc names: {}".format(
+                    len(vs_result), [doc.get("name", "N/A") for doc in vs_result[:3]]
+                )
             )
             for vs_doc in vs_result:
+                # Vector search now returns documents with _score field embedded
                 doc_copy = dict(vs_doc)  # shallow copy
                 doc_copy.pop("embedding", None)
+                doc_copy.pop("_score", None)  # Remove score field for RAG context
                 rdr.add_doc(doc_copy)
         except Exception as e:
             logging.critical(
@@ -162,16 +177,19 @@ class RAGDataService:
             logging.warning("get_graph_rag_data - sparql:\n{}".format(sparql))
 
             # HTTP POST to the graph microservice to execute the generated SPARQL query
-            sqr: SparqlQueryResponse = await self.post_sparql_to_graph_microsvc(sparql)
-            FS.write_json(
-                sqr.response_obj,
-                "tmp/get_graph_rag_data_get_graph_rag_data_response_obj.json",
-            )
-            for doc in sqr.binding_values():
-                doc_copy = dict(doc)  # shallow copy
-                doc_copy.pop("embedding", None)
-                rdr.add_doc(doc_copy)
-            FS.write_json(rdr.get_data(), "tmp/rdr.json")
+            sqr: SparqlQueryResponse | None = await self.post_sparql_to_graph_microsvc(sparql)
+            if sqr is not None and sqr.response_obj is not None:
+                FS.write_json(
+                    sqr.response_obj,
+                    "tmp/get_graph_rag_data_get_graph_rag_data_response_obj.json",
+                )
+                for doc in sqr.binding_values():
+                    doc_copy = dict(doc)  # shallow copy
+                    doc_copy.pop("embedding", None)
+                    rdr.add_doc(doc_copy)
+                FS.write_json(rdr.get_data(), "tmp/rdr.json")
+            else:
+                logging.warning("Graph microservice call failed - sqr is None or has no response_obj")
         except Exception as e:
             logging.critical(
                 "Exception in RagDataService#get_graph_rag_data: {}".format(str(e))
@@ -180,28 +198,30 @@ class RAGDataService:
 
     # ========== private methods below ==========
 
-    async def post_sparql_to_graph_microsvc(self, sparql: str) -> list:
+    async def post_sparql_to_graph_microsvc(self, sparql: str) -> SparqlQueryResponse | None:
         """
         Execute a HTTP POST to the graph microservice with the given SPARQL query.
-        Return a list of dicts.
+        Return a SparqlQueryResponse object or None if the request fails.
         """
         sqr = None
         try:
             url = self.graph_microsvc_sparql_query_url()
             postdata = dict()
             postdata["sparql"] = sparql
+            
             async with httpx.AsyncClient() as client:
                 r = await client.post(
                     url,
                     headers=self.websvc_headers,
                     content=json.dumps(postdata),
-                    timeout=30.0,
                 )
                 sqr = SparqlQueryResponse(r)
                 sqr.parse()
+                    
         except Exception as e:
-            logging.critical((str(e)))
+            logging.error(f"Graph microservice error: {str(e)}")
             logging.exception(e, stack_info=True, exc_info=True)
+                
         return sqr
 
     def graph_microsvc_sparql_query_url(self):

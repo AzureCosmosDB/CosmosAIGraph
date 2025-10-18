@@ -1,4 +1,4 @@
-FROM    python:3.11-alpine
+FROM    python:3.13-alpine
 WORKDIR /app
 RUN     mkdir -p /app/tmp
 RUN     mkdir -p /app/uploads

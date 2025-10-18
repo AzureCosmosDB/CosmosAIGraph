@@ -66,7 +66,7 @@
         <h6 class="text-muted mb-0">Results returned (count not provided)</h6>
         {% endif %}
       </div>
-      <pre><code class="language-json">{{ results | tojson | safe }}</code></pre>
+      <pre><code class="language-json">{{ results_json | safe }}</code></pre>
           <!-- Prism.js for JSON syntax highlighting -->
           <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css" rel="stylesheet" />
           <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.js"></script>

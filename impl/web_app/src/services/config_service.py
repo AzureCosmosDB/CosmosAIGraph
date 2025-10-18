@@ -133,9 +133,9 @@ class ConfigService:
         )
         d["CAIG_GRAPH_NAMESPACE"] = "The custom namespace for the RED graph.  (GRAPH RUNTIME)"
         d["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "The input RDF OWL ontology file.  (GRAPH RUNTIME)"
-        # d["CAIG_GRAPH_SOURCE_PATH"] = (
-        #     "The RDF input file, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.  (GRAPH RUNTIME)"
-        # )
+        d["CAIG_GRAPH_SOURCE_PATH"] = (
+            "The RDF input file or folder, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.  (GRAPH RUNTIME)"
+        )
         d["CAIG_GRAPH_SOURCE_DB"] = (
             "The graph Cosmos DB database name, if CAIG_GRAPH_SOURCE_TYPE is 'cosmos_nosql'.  (GRAPH RUNTIME)"
         )
@@ -163,6 +163,7 @@ class ConfigService:
 
         d["CAIG_AZURE_OPENAI_URL"] = "The URL of your Azure OpenAI account.  (WEB RUNTIME)"
         d["CAIG_AZURE_OPENAI_KEY"] = "The Key of your Azure OpenAI account.  (WEB RUNTIME)"
+        d["CAIG_AZURE_OPENAI_VERSION"] = "The Version of your Azure OpenAI account.  (WEB RUNTIME)"
         d["CAIG_AZURE_OPENAI_COMPLETIONS_DEP"] = (
             "The name of your Azure OpenAI completions deployment.  (WEB RUNTIME)"
         )
@@ -186,6 +187,8 @@ class ConfigService:
         d["CAIG_LOG_LEVEL"] = (
             "A standard python or java logging level name.  (RUNTIME)"
         )
+        d["CAIG_PROMPT_SPARQL_PATH"] = "Path to SPARQL generation prompt .txt file. (WEB RUNTIME)"
+        d["CAIG_PROMPT_COMPLETION_PATH"] = "Path to completion prompt .txt file. (WEB RUNTIME)"
         return d
 
     @classmethod
@@ -240,6 +243,8 @@ class ConfigService:
         d["CAIG_GRAPH_SERVICE_URL"] = "http://127.0.0.1"
         d["CAIG_GRAPH_SERVICE_PORT"] = "8001"
         d["CAIG_LOG_LEVEL"] = "info"
+        d["CAIG_PROMPT_SPARQL_PATH"] = "prompts/gen_sparql_generic.txt"
+        d["CAIG_PROMPT_COMPLETION_PATH"] = "prompts/gen_completion_generic.txt"
         return d
 
     @classmethod
@@ -279,6 +284,14 @@ class ConfigService:
         return cls.envvar("CAIG_GRAPH_SERVICE_URL", "http://127.0.0.1")
 
     @classmethod
+    def prompt_sparql(cls) -> str:
+        return cls.envvar("CAIG_PROMPT_SPARQL_PATH", "prompts/gen_sparql_generic.txt")
+
+    @classmethod
+    def prompt_completion(cls) -> str:
+        return cls.envvar("CAIG_PROMPT_COMPLETION_PATH", "prompts/gen_completion_generic.txt")
+
+    @classmethod
     def graph_service_ontology_url(cls) -> str:
         return "{}:{}/ontology".format(
             cls.graph_service_url(), cls.graph_service_port()
@@ -292,9 +305,9 @@ class ConfigService:
     def graph_source_owl_filename(cls) -> str:
         return cls.envvar("CAIG_GRAPH_SOURCE_OWL_FILENAME", "ontologies/extracted_ontology.ttl")
 
-    # @classmethod
-    # def graph_source_rdf_filename(cls) -> str:
-    #     return cls.envvar("CAIG_GRAPH_SOURCE_PATH", "")
+    @classmethod
+    def graph_source_path(cls) -> str:
+        return cls.envvar("CAIG_GRAPH_SOURCE_PATH", "")
 
     @classmethod
     def graph_source_db(cls) -> str:
@@ -353,8 +366,62 @@ class ConfigService:
         return cls.int_envvar("CAIG_OPTIMIZE_CONTEXT_AND_HISTORY_MAX_TOKENS", 10000)
 
     @classmethod
+    def get_model_context_window(cls, deployment_name: str | None = None) -> int:
+        """
+        Get the context window size for a given model/deployment.
+        Returns the token limit based on the model name.
+        """
+        if deployment_name is None:
+            deployment_name = cls.azure_openai_completions_deployment()
+        
+        # Normalize the deployment name to lowercase for comparison
+        model_name = deployment_name.lower()
+        
+        # Map model names to their context windows
+        # Source: https://platform.openai.com/docs/models
+        if "gpt-4o" in model_name or "gpt4o" in model_name:
+            return 128000  # GPT-4o and GPT-4o-mini: 128K tokens
+        elif "gpt-4-turbo" in model_name or "gpt4turbo" in model_name:
+            return 128000  # GPT-4 Turbo: 128K tokens
+        elif "gpt-4-32k" in model_name:
+            return 32768   # GPT-4-32K: 32K tokens
+        elif "gpt-4" in model_name or "gpt4" in model_name:
+            # Check for GPT-4.1 (1M tokens) or standard GPT-4 (8K)
+            if "4.1" in model_name or "41" in model_name:
+                return 1000000  # GPT-4.1: 1M tokens
+            return 8192    # Standard GPT-4: 8K tokens
+        elif "gpt-35-turbo-16k" in model_name or "gpt-3.5-turbo-16k" in model_name:
+            return 16384   # GPT-3.5-Turbo-16K: 16K tokens
+        elif "gpt-35-turbo" in model_name or "gpt-3.5-turbo" in model_name:
+            return 16384   # GPT-3.5-Turbo: 16K tokens (updated models)
+        else:
+            # Default fallback for unknown models
+            return 8192
+
+    @classmethod
     def invoke_kernel_max_tokens(cls) -> int:
-        return cls.int_envvar("CAIG_INVOKE_KERNEL_MAX_TOKENS", 4096)
+        """
+        Calculate the maximum tokens for invoke_kernel based on the model's context window.
+        Uses env var if set, otherwise auto-calculates from model context window.
+        Reserves space for: system prompt (~1K), response (~4K), and safety margin (10%).
+        """
+        # Allow override via environment variable
+        env_value = cls.int_envvar("CAIG_INVOKE_KERNEL_MAX_TOKENS", -1)
+        if env_value > 0:
+            return env_value
+        
+        # Auto-calculate based on model's context window
+        context_window = cls.get_model_context_window()
+        
+        # Reserve tokens for response and other prompt parts
+        response_tokens = 4096      # Reserve for LLM response
+        system_prompt_tokens = 1024 # Reserve for system prompt
+        safety_margin = int(context_window * 0.1)  # 10% safety margin
+        
+        max_tokens = context_window - response_tokens - system_prompt_tokens - safety_margin
+        
+        # Ensure we have a reasonable minimum
+        return max(max_tokens, 4096)
 
     @classmethod
     def invoke_kernel_temperature(cls) -> float:
@@ -366,11 +433,11 @@ class ConfigService:
 
     @classmethod
     def get_completion_temperature(cls) -> float:
-        return cls.float_envvar("CAIG_GET_COMPLETION_TEMPERATURE", 0.1)
+        return cls.float_envvar("CAIG_GET_COMPLETION_TEMPERATURE", 0.0)
 
     @classmethod
     def invoke_kernel_top_p(cls) -> float:
-        return cls.float_envvar("CAIG_INVOKE_KERNEL_TOP_P", 0.5)
+        return cls.float_envvar("CAIG_INVOKE_KERNEL_TOP_P", 1.0)
 
     @classmethod
     def graph_namespace(cls):

@@ -253,10 +253,12 @@ class AiService:
                     user_query, len(user_query)
                 )
             )
+            # Pass the deserialized chat history object, not a pretty-printed string
+            chat_history_obj = json.loads(conversation.get_chat_history().serialize())
             result_obj = self.optimize_context_and_history(
                 prompt_template,
                 context,
-                conversation.get_chat_history().serialize(),
+                chat_history_obj,
                 user_query,
                 max_tokens,
             )
@@ -311,10 +313,10 @@ class AiService:
                         is_required=True,
                     ),
                 ],
-                execution_settings=execution_settings,
             )
 
             if self.chat_function is None:
+                # Restore previous logic: use add_function directly
                 self.chat_function = self.sk_kernel.add_function(
                     function_name="chat",
                     plugin_name="chatPlugin",
@@ -327,8 +329,15 @@ class AiService:
                 history=pruned_history,
             )
 
+            # Defensive: if result_obj is None, abort and log
+            if result_obj is None:
+                conversation.add_assistant_message("exception: PromptOptimizer returned None")
+                logging.critical("PromptOptimizer returned None in invoke_kernel")
+                return None
+
             invoke_result = await self.sk_kernel.invoke(self.chat_function, kernel_args)
 
+            # Always add the assistant message after kernel invocation
             conversation.add_assistant_message(str(invoke_result))
             # Create completion but don't persist or append here; let the caller handle it
             return AiCompletion(conversation.get_conversation_id(), invoke_result)
@@ -339,16 +348,41 @@ class AiService:
             return None
 
     def generic_prompt_template(self) -> str:
-        ptxt = """You can respond to any user queries. If there's anything in the context below, use it in favor of any general knowledge.
+        """Load the generic RAG prompt template from file."""
+        try:
+            from src.util.fs import FS
+            prompt_path = ConfigService.prompt_completion()
+            logging.info(f"Loading completion prompt from: {os.path.abspath(prompt_path)}")
+            template = FS.read(prompt_path)
+            if template is None:
+                logging.error(f"Failed to read completion prompt file: {prompt_path}, using fallback")
+                # Fallback to hardcoded prompt if file read fails
+                return """You can respond to any user queries. If there's anything in the context below, use it in favor of any general knowledge. If the context is JSON, use the values of it field(s) to answer the question as these are pre-processed with the same question in mind. If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible. Use bullet points if multiple items are mentioned in the context.
+
+User: {{$user_query}}
+
 Context:
 {{$context}}
 
 Chat history:
 {{$history}}
+"""
+            logging.info(f"RAG prompt loaded successfully, length: {len(template)} chars")
+            return template
+        except Exception as e:
+            logging.critical("Exception in AiService#generic_prompt_template: {}".format(str(e)))
+            logging.exception(e, stack_info=True, exc_info=True)
+            # Return fallback prompt
+            return """You can respond to any user queries. If there's anything in the context below, use it in favor of any general knowledge. If the context is JSON, use the values of it field(s) to answer the question as these are pre-processed with the same question in mind. If you don't know the answer, just say that you don't know, don't try to make up an answer. Keep the answer as concise as possible. Use bullet points if multiple items are mentioned in the context.
 
 User: {{$user_query}}
-ChatBot: """
-        return ptxt
+
+Context:
+{{$context}}
+
+Chat history:
+{{$history}}
+"""
 
     def get_completion(self, user_prompt, system_prompt):
         # await asyncio.wait(0.1)
@@ -373,7 +407,7 @@ ChatBot: """
         max_tokens: int = ConfigService.optimize_context_and_history_max_tokens(),
     ):
         try:
-            optimizer = PromptOptimizer()
+            optimizer = PromptOptimizer(model_name=self.completions_deployment)
             return optimizer.generate_and_truncate(
                 prompt_template, full_context, full_history, user_query, max_tokens
             )

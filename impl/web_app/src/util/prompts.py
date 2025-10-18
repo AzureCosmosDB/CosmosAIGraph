@@ -3,13 +3,13 @@
 # so as to allow the development and fine-tuning of the prompt
 # without requiring a code change or restarting the web app.
 #
-# Chris Joakim, Aleksey Savateyev, Microsoft, 2025
+# Chris Joakim, Aleksey Savateyev, 2025
 
 
 import logging
 
 from src.util.fs import FS
-
+from src.services.config_service import ConfigService
 
 class Prompts:
     def __init__(self, opts={}):
@@ -17,7 +17,15 @@ class Prompts:
 
     def generate_sparql_system_prompt(self, minimized_owl) -> str | None:
         try:
-            template = FS.read("prompts/gen_sparql_v2.txt")
+            # Force fresh file read on every call - no caching
+            import os
+            prompt_path = ConfigService.prompt_sparql()
+            logging.info(f"Loading SPARQL prompt from: {os.path.abspath(prompt_path)}")
+            template = FS.read(prompt_path)
+            if template is None:
+                logging.error(f"Failed to read prompt file: {prompt_path}")
+                return None
+            logging.info(f"Prompt loaded successfully, length: {len(template)} chars")
             return template.format(minimized_owl)
         except Exception as e:
             logging.critical(
