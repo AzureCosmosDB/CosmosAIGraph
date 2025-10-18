@@ -34,14 +34,14 @@ container that contains data embeddings.
 
 ### Other Containers
 
-Also manually create these three containers in the **caig** database.
+Also, manually create these three containers in the **caig** database.
 
 | Container        | Partition Key Attribute | Request Units   |
 | --------------   | ----------------------- | --------------- |
 | config           | /pk                     | 4000 autoscale  |
 | conversations    | /pk                     | 4000 autoscale  |
 | feedback         | /conversation_id        | 4000 autoscale  |
-| libraries(above) | /pk                     | 10000 autoscale |
+
 
 The **config** container will contain one document which identifies
 the entities in this system.  This is used by classes **EntitiesService**

@@ -1,0 +1,141 @@
+@prefix : <http://schema.org/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://schema.org/ontology#> a owl:Ontology .
+
+:ConnectToProcess a owl:Class ;
+    rdfs:subClassOf :Edge .
+
+:DirectConnection a owl:Class ;
+    rdfs:subClassOf :Edge .
+
+:DrawingID a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+:DrawingNumber a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+:EndNode a owl:ObjectProperty ;
+    rdfs:domain :Edge ;
+    rdfs:range :Node .
+
+:Equipment a owl:Class ;
+    rdfs:subClassOf :Node .
+
+:Equipment%20Component a owl:Class ;
+    rdfs:subClassOf :Node .
+
+:FlowDir a owl:DatatypeProperty ;
+    rdfs:domain :Edge ;
+    rdfs:range xsd:string .
+
+:ID a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+:Instrument a owl:Class ;
+    rdfs:subClassOf :Node .
+
+:InstrumentTypeModifier a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:string .
+
+:InternalDiameter a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:decimal .
+
+:ItemTag a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+:Junction a owl:Class ;
+    rdfs:subClassOf :Node .
+
+:LoopFunction a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:string .
+
+:LoopTagSequenceNo a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:string .
+
+:MeasuredVariableCode a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:string .
+
+:NominalDiameter a owl:DatatypeProperty ;
+    rdfs:domain :Edge,
+        :Node ;
+    rdfs:range xsd:decimal .
+
+:Nozzle a owl:Class ;
+    rdfs:subClassOf :Node .
+
+:OPC a owl:Class ;
+    rdfs:subClassOf :Node .
+
+:OriginalEndNode a owl:ObjectProperty ;
+    rdfs:domain :Edge ;
+    rdfs:range :Node .
+
+:OriginalFlowDir a owl:DatatypeProperty ;
+    rdfs:domain :Edge ;
+    rdfs:range xsd:string .
+
+:OriginalStartNode a owl:ObjectProperty ;
+    rdfs:domain :Edge ;
+    rdfs:range :Node .
+
+:Piping a owl:Class ;
+    rdfs:subClassOf :Edge .
+
+:Piping%20Component a owl:Class ;
+    rdfs:subClassOf :Node .
+
+:RunID a owl:DatatypeProperty ;
+    rdfs:domain :Edge ;
+    rdfs:range xsd:string .
+
+:Signal a owl:Class ;
+    rdfs:subClassOf :Edge .
+
+:StartNode a owl:ObjectProperty ;
+    rdfs:domain :Edge ;
+    rdfs:range :Node .
+
+:Subtype a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:string .
+
+:Symbol a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:string .
+
+:TagPrefix a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:string .
+
+:TagSequenceNo a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:decimal .
+
+:TagSuffix a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:string .
+
+:Type a owl:DatatypeProperty ;
+    rdfs:range xsd:string .
+
+:XCoordinate a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:decimal .
+
+:YCoordinate a owl:DatatypeProperty ;
+    rdfs:domain :Node ;
+    rdfs:range xsd:decimal .
+
+:Edge a owl:Class .
+
+:Node a owl:Class .
+
