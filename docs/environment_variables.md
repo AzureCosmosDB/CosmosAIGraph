@@ -45,6 +45,10 @@ All of these begin with the prefix `CAIG_`.
 | CAIG_WEB_APP_NAME | Logical name.   | DEV ENV |
 | CAIG_WEB_APP_PORT | 8000   | WEB RUNTIME |
 | CAIG_WEB_APP_URL | http://127.0.0.1 or determined by ACA.   | WEB RUNTIME |
+| CAIG_ACA_ENVIRONMENT_NAME |  The name of your Azure Container Apps environment.   | DEPLOYMENT |
+| CAIG_DEFINED_AUTH_USERS |  The list of defined Azure Container Apps users.   | DEPLOYMENT |
+| CAIG_AZURE_REGION |  The Azure region where your resources are deployed.   | DEPLOYMENT |
+| CAIG_LA_WORKSPACE_NAME |  The name of your Azure Logic Apps workspace.   | DEPLOYMENT |
 
 ## Setting these Environment Variables
 

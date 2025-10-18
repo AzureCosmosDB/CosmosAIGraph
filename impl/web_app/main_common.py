@@ -168,7 +168,7 @@ def excluded_bicep_envvars():
 
 
 def gen_envvars_master_entries():
-    """generate a partial config file for my personal envvar solution - cj"""
+    """generate a partial config file from local environment"""
     samples = ConfigService.sample_environment_variable_values()
     env_var_names = sorted(ConfigService.defined_environment_variables().keys())
     lines = list()
@@ -177,7 +177,7 @@ def gen_envvars_master_entries():
         if len(value) == 0:
             if name in samples.keys():
                 value = samples[name]
-        padded = name.ljust(35)
+        padded = name.ljust(55)
         lines.append("{} ||| {}".format(padded, value))
     FS.write_lines(lines, "tmp/caig-envvars-master.txt")
 
@@ -193,85 +193,6 @@ def camel_case(env_var_name):
             else:
                 words.append(lcword.capitalize())
     return "".join(words)
-
-
-def gen_environment_variables_md():
-    lines = list()
-    lines.append("# CosmosAIGraph Implementation 1 : Environment Variables")
-    lines.append("")
-    lines.append("The configuration is stored in environment variables.  ")
-    lines.append(
-        "This is the standard practice for Docker-containerized applications deployed to orchestrators"
-    )
-    lines.append(
-        "such as Azure Kubernetes Service (AKS) and Azure Container Apps (ACA)."
-    )
-    lines.append("")
-
-    lines.append("## Defined Variables")
-    lines.append("")
-    lines.append("This reference implementation uses the following environment variables.")
-    lines.append("All of these begin with the prefix `CAIG_`.")
-    lines.append("")
-
-    lines.append("| Name | Description | Where Used |")
-    lines.append(
-        "| --------------------------------- | --------------------------------- | ---------- |"
-    )
-    env_var_names = sorted(ConfigService.defined_environment_variables().keys())
-    for name in env_var_names:
-        full_desc = ConfigService.defined_environment_variables()[name]
-        short_desc = full_desc.split("(")[0]
-        where_used = full_desc.split("(")[1].replace("(","").replace(")","")
-        lines.append("| {} | {} | {} |".format(name, short_desc, where_used))
-
-    lines.append("")
-    lines.append("## Setting these Environment Variables")
-    lines.append("")
-    lines.append(
-        "The repo contains generated PowerShell script **impl/set-caig-env-vars-sample.ps1**"
-    )
-    lines.append("which sets all of these CAIG_ environment values.")
-    lines.append(
-        "You may find it useful to edit and execute this script rather than set them manually on your system"
-    )
-    lines.append("")
-
-    lines.append("")
-    lines.append("## python-dotenv")
-    lines.append("")
-    lines.append(
-        "The [python-dotenv](https://pypi.org/project/python-dotenv/) library is used"
-    )
-    lines.append("in each subapplication of this implementation.")
-    lines.append(
-        "It allows you to define environment variables in a file named **`.env`**"
-    )
-    lines.append(
-        "and thus can make it easier to use this project during local development."
-    )
-    lines.append("")
-    lines.append(
-        "Please see the **dotenv_example** files in each subapplication for examples."
-    )
-    lines.append("")
-    lines.append(
-        "It is important for you to have a **.gitignore** entry for the **.env** file"
-    )
-    lines.append(
-        "so that application secrets don't get leaked into your source control system."
-    )
-    lines.append("")
-
-    lines.append("")
-    lines.append("## Java .override.properties file")
-    lines.append("")
-    lines.append("The Java codebase in this repo implements similar logic to the python-dotenv described above.")
-    lines.append("")
-    lines.append("See file **example-override.properties** in the **impl/graph_app/** directory.")
-    lines.append("")
-
-    FS.write_lines(lines, "../../docs/environment_variables.md")
 
 def gen_alpine_requirements_txt():
     in_lines = FS.read_lines("requirements.txt")
@@ -295,9 +216,7 @@ def gen_alpine_requirements_txt():
 def gen_all():
     log_defined_env_vars()
     gen_envvars_master_entries()
-    gen_ps1_env_var_script()
     gen_bicep_and_compose_file_fragments()
-    gen_environment_variables_md()
     gen_alpine_requirements_txt()
 
 
@@ -347,12 +266,8 @@ if __name__ == "__main__":
             func = sys.argv[1].lower()
             if func == "log_defined_env_vars":
                 log_defined_env_vars()
-            elif func == "gen_ps1_env_var_script":
-                gen_ps1_env_var_script()
             elif func == "gen_bicep_and_compose_file_fragments":
                 gen_bicep_and_compose_file_fragments()
-            elif func == "gen_environment_variables_md":
-                gen_environment_variables_md()
             elif func == "gen_alpine_requirements_txt":
                 gen_alpine_requirements_txt()
             elif func == "gen_all":
