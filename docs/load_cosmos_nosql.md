@@ -36,12 +36,12 @@ container that contains data embeddings.
 
 Also manually create these three containers in the **caig** database.
 
-| Container      | Partition Key Attribute | Request Units   |
-| -------------- | ----------------------- | --------------- |
-| config         | /pk                     | 4000 autoscale  |
-| conversations  | /pk                     | 4000 autoscale  |
-| feedback       | /conversation_id        | 4000 autoscale  |
-| libraries      | /pk                     | 10000 autoscale |
+| Container        | Partition Key Attribute | Request Units   |
+| --------------   | ----------------------- | --------------- |
+| config           | /pk                     | 4000 autoscale  |
+| conversations    | /pk                     | 4000 autoscale  |
+| feedback         | /conversation_id        | 4000 autoscale  |
+| libraries(above) | /pk                     | 10000 autoscale |
 
 The **config** container will contain one document which identifies
 the entities in this system.  This is used by classes **EntitiesService**
@@ -55,7 +55,7 @@ solution.
 
 ---
 
-Navigate to the **impl\app** directory of this repo and execute
+Navigate to the **impl\web-app** directory of this repo and execute
 the following commands:
 
 ```
@@ -104,7 +104,6 @@ For your CosmosAIGraph implementation, create and upload a similar file.
 This step will load the main dataset into a libraries container:
 
 ```
-
 > python main_nosql.py load_libraries caig libraries 999999
 
 2024-09-05 12:27:28,239 - load_libraries, dbname: caig, cname: libraries, max_docs: 999999
@@ -126,6 +125,11 @@ This step will load the main dataset into a libraries container:
 ```
 
 ### Execute a Vector Search with the loaded data
+
+First generate an embedding value from the words:
+"asynchronous web framework with pydantic".
+Then use that embedding in a vector search against the Cosmos DB
+libraries container.
 
 To test the correctness of loaded dataset and the embeddings generated, run the following command: 
 ```
