@@ -6,22 +6,22 @@
 #    but you should instead use your private Azure Container Registry
 #    for your images.
 #
-# Chris Joakim, Microsoft, 2025
+# Chris Joakim, Aleksey Savateyev
 
 Write-Host 'compiling ...'
 .\build.ps1 
 
-Write-Host 'building caig_graph_v3 image ...'
-docker build -f Dockerfile -t cjoakim/caig_graph_v3 .
+Write-Host 'building caig_graph image ...'
+docker build -f Dockerfile -t omnirag/caig_graph .
 
 Write-Host 'next steps:'
-Write-Host '  docker push cjoakim/caig_graph_v3:latest'
+Write-Host '  docker push omnirag/caig_graph:latest'
 
 Write-Host 'done'
 
 
 # Developer Notes:
-# docker build -f Dockerfile -t cjoakim/caig_graph_v3 .
+# docker build -f Dockerfile -t omnirag/caig_graph .
 # docker image ls
 # docker ps
 # docker stop -t 2 008038664a58
@@ -30,4 +30,4 @@ Write-Host 'done'
 # docker images | grep v3
 #
 # DockerHub:
-# docker push cjoakim/caig_graph_v3:latest
+# docker push omnirag/caig_graph:latest

@@ -2,11 +2,11 @@
 # Use of this script:
 #   docker compose -f docker/docker-compose.yml up
 #   docker compose -f docker/docker-compose.yml down   (in a second terminal window)
-# Chris Joakim, Microsoft, 2025
+# Chris Joakim, Aleksey Savateyev
 
 services:
   graph:
-    image: cjoakim/caig_graph_v3:latest
+    image: omnirag/caig_graph:latest
     ports:
       - "8001:8001"
     volumes:
@@ -31,7 +31,7 @@ services:
       PORT:                               8001
 
   web:
-    image: cjoakim/caig_web_v3:latest
+    image: omnirag/caig_web:latest
     ports:
       - "8000:8000"
     volumes:

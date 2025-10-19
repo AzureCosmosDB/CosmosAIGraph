@@ -263,10 +263,6 @@ async def load_entities(dbname, cname):
         resp = await nosql_svc.upsert_item(doc)
         print(resp)
 
-        # impl/app/src/services/entities_service.py
-        # impl/app/tests/test_entities_service.py
-        # impl/data/entities/entities_doc.json
-
     except Exception as e:
         logging.info(str(e))
         logging.info(traceback.format_exc())

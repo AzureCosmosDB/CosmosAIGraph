@@ -50,8 +50,7 @@ Subsequent data wrangling fetched referenced HTML documentation, produced
 **text summarization with Azure OpenAI and semantic-kernel** and produced
 a **vectorized embedding value** from several concatenated text attributes
 within each library JSON document.  A full description of this data wrangling
-process is beyond the scope of this documentation, but the process itself
-is in file 'impl/app/wrangle.py'.
+process is beyond the scope of this documentation.
 
 ## Next Steps: Load Cosmos DB with Library Documents
 

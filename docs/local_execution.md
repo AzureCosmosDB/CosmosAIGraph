@@ -22,8 +22,8 @@ If you'd like to load the graph data from local file, follow these steps. Otherw
 
 The full-size libraries-graph.nt (N-triples) file is too large for GitHub.
 Therefore it has been zipped and added to this repo as a file 
-impl/app/rdf/libraries-graph.zip.  Navigate to this directory
-and unzip this file to **impl/app/rdf/libraries-graph.nt**
+impl/graph_app/rdf/libraries-graph.zip.  Navigate to this directory
+and unzip this file to **impl/graph_app/rdf/libraries-graph.nt**
 .
 
 ## Modes of Execution
@@ -63,7 +63,7 @@ The following docker-compose YAML file is provided:
   - This also uses the Python-based web application
   - This uses the Java-based graph microservice using Apache Jena
 
-Create two PowerShell Terminal windows, and navigate to the **impl/app/** directory in each.
+Create two PowerShell Terminal windows, and navigate to the **impl/web_app/** and **impl/graph_app/** folders respectively.
 
 In the first terminal window, execute the following command to start the application (both microservices).
 
@@ -95,11 +95,10 @@ You should see similar verbose output that includes the following:
 
 ### The Docker Containers
 
-These three pre-built Docker containers exist on **DockerHub**:
+These two pre-built Docker containers are available on **DockerHub**:
 
-- cjoakim/caig_web_v3:latest
-- cjoakim/caig_graph_v3:latest
-- cjoakim/caig_graph_java_jena_v1:latest
+- omnirag/caig_web:latest
+- omnirag/caig_graph:latest
 
 These are used by default by the above **docker-compose** scripts
 and also by the **Azure Container Apps** deployment process.
@@ -107,8 +106,7 @@ and also by the **Azure Container Apps** deployment process.
 If you wish to rebuild these containers and deploy them to your own
 Container Registry, please see the following Dockerfiles in this repo.
 You're free to modify these as necessary.
-Please change the **cjoakim** prefix to your own identifier.
+Please change the **omnirag** prefix to your own identifier.
 
-- impl/app/docker/Dockerfile_graph
-- impl/app/docker/Dockerfile_web
-- impl/java_jena_graph_websvc/Dockerfile
+- impl/graph_app/docker/Dockerfile_graph
+- impl/web_app/docker/Dockerfile_web
