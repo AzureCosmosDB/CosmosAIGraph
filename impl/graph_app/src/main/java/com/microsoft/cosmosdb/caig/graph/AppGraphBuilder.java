@@ -228,9 +228,14 @@ public class AppGraphBuilder {
         logger.warn("populateFromCosmosDbNoSQL, dbname: " + dbname);
         logger.warn("populateFromCosmosDbNoSQL, cname:  " + cname);
 
+        // Use Gateway mode for Java 21 compatibility
+        // Direct mode with Java 21 has SSL hostname verification issues with regional endpoint redirects
+        // Gateway mode adds ~5-10ms latency but is fully compatible and reliable
+        // See: https://github.com/Azure/azure-sdk-for-java/issues/31847
         CosmosAsyncClient cosmosAsyncClient = new CosmosClientBuilder()
                 .endpoint(uri)
                 .key(key)
+                .gatewayMode()
                 .buildAsyncClient();
 
         CosmosAsyncDatabase database = cosmosAsyncClient.getDatabase(dbname);

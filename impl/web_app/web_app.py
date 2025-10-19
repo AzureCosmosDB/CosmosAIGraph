@@ -1282,6 +1282,7 @@ def post_libraries_sparql_console(form_data):
                     url,
                     headers=websvc_headers,
                     content=json.dumps(postdata),
+                    timeout=120.0,  # BOM queries can take time, especially with depth
                 )
                 bom_obj = json.loads(r.text)
                 
@@ -1340,7 +1341,7 @@ def post_sparql_query_to_graph_microsvc(sparql: str) -> SparqlQueryResponse:
         postdata = dict()
         postdata["sparql"] = sparql
         r = httpx.post(
-            url, headers=websvc_headers, content=json.dumps(postdata)
+            url, headers=websvc_headers, content=json.dumps(postdata), timeout=120.0
         )
         resp_obj = json.loads(r.text)
         print(
