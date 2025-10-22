@@ -1092,15 +1092,23 @@ def gen_sparql_console_view_data():
 
 
 def graph_microsvc_sparql_query_url():
-    return "{}:{}/sparql_query".format(
-        ConfigService.graph_service_url(), ConfigService.graph_service_port()
-    )
+    url = ConfigService.graph_service_url()
+    port = ConfigService.graph_service_port()
+    # Don't include standard ports (80 for http, 443 for https) in the URL
+    if port in ["80", "443"]:
+        return "{}/sparql_query".format(url)
+    else:
+        return "{}:{}/sparql_query".format(url, port)
 
 
 def graph_microsvc_bom_query_url():
-    return "{}:{}/sparql_bom_query".format(
-        ConfigService.graph_service_url(), ConfigService.graph_service_port()
-    )
+    url = ConfigService.graph_service_url()
+    port = ConfigService.graph_service_port()
+    # Don't include standard ports (80 for http, 443 for https) in the URL
+    if port in ["80", "443"]:
+        return "{}/sparql_bom_query".format(url)
+    else:
+        return "{}:{}/sparql_bom_query".format(url, port)
 
 
 def get_sparql_console_view_data() -> dict:

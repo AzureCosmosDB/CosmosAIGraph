@@ -11,6 +11,8 @@
 **/samples/
 **/src/
 **/tmp/
+**/ontologies/
+**/rdf/
 
 **/.override.properties
 **/example-override.properties

@@ -3,6 +3,7 @@
 // It will deploy the web application and supporting web services
 // from public container images on DockerHub.
 // Cosmos DB and OpenAI deployment is NOT handled by this script, only ACA.
+// This version includes Azure Storage for hosting RDF/ontology assets.
 
 param acaEnvironmentName string
 param azureOpenaiCompletionsDep string
@@ -33,6 +34,8 @@ param logLevel string
 param websvcAuthHeader string
 param websvcAuthValue string
 param webAppName string
+param storageAccountName string = 'caigstore${uniqueString(resourceGroup().id)}'
+param storageContainerName string = 'data'
 
 
 resource law 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
@@ -41,6 +44,37 @@ resource law 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
   properties: any({
     retentionInDays: 30
   })
+}
+
+// Storage account for hosting RDF/ontology assets
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+  name: storageAccountName
+  location: azureRegion
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    accessTier: 'Hot'
+    allowBlobPublicAccess: true
+    minimumTlsVersion: 'TLS1_2'
+    supportsHttpsTrafficOnly: true
+  }
+}
+
+// Blob service for the storage account
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-01-01' = {
+  parent: storageAccount
+  name: 'default'
+}
+
+// Container for RDF and ontology assets
+resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-01-01' = {
+  parent: blobService
+  name: storageContainerName
+  properties: {
+    publicAccess: 'Blob'
+  }
 }
 
 resource acaEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
@@ -251,7 +285,7 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
           env: [
             {
               name: 'CAIG_GRAPH_SERVICE_URL'
-              value: 'http://${graph.properties.latestRevisionFqdn}'
+              value: 'http://${graph.properties.configuration.ingress.fqdn}'
             }
             {
               name: 'CAIG_GRAPH_SERVICE_PORT'
@@ -396,3 +430,12 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
     }
   }
 }
+
+// Outputs for reference and deployment scripts
+output storageAccountName string = storageAccount.name
+output storageAccountId string = storageAccount.id
+output storageBlobEndpoint string = storageAccount.properties.primaryEndpoints.blob
+output storageContainerName string = storageContainerName
+output storageContainerUrl string = '${storageAccount.properties.primaryEndpoints.blob}${storageContainerName}'
+output graphServiceFqdn string = graph.properties.latestRevisionFqdn
+output webAppFqdn string = web.properties.latestRevisionFqdn

@@ -5,6 +5,8 @@
 **/htmlcov/
 **/tests/
 **/tmp/
+**/ontologies/
+**/rdf/
 **/venv/
 
 **/*.http

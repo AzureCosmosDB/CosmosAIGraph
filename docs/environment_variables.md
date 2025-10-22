@@ -33,8 +33,8 @@ All of these begin with the prefix `CAIG_`.
 | CAIG_GRAPH_SERVICE_URL | http://127.0.0.1 or determined by ACA.   | WEB RUNTIME |
 | CAIG_GRAPH_SOURCE_CONTAINER | The graph Cosmos DB container name, if CAIG_GRAPH_SOURCE_TYPE is 'cosmos_nosql'.   | GRAPH RUNTIME |
 | CAIG_GRAPH_SOURCE_DB | The graph Cosmos DB database name, if CAIG_GRAPH_SOURCE_TYPE is 'cosmos_nosql'.   | GRAPH RUNTIME |
-| CAIG_GRAPH_SOURCE_OWL_FILENAME | The input RDF OWL ontology file.   | GRAPH RUNTIME |
-| CAIG_GRAPH_SOURCE_PATH | The RDF input file or folder, if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'.   | GRAPH RUNTIME |
+| CAIG_GRAPH_SOURCE_OWL_FILENAME | The input RDF OWL ontology file path or HTTPS URL (e.g., Azure Blob Storage). Supports both local files for dev and blob URLs for production.   | GRAPH RUNTIME |
+| CAIG_GRAPH_SOURCE_PATH | The RDF input file/folder path or HTTPS URL (e.g., Azure Blob Storage), if CAIG_GRAPH_SOURCE_TYPE is 'rdf_file'. Supports both local paths for dev and blob URLs for production. Can be a directory path (local or blob URL ending with /) to load multiple RDF files.   | GRAPH RUNTIME |
 | CAIG_GRAPH_SOURCE_TYPE | The RDF graph data source type, either 'cosmos_nosql', or 'json_docs_file' or 'rdf_file'.   | GRAPH RUNTIME |
 | CAIG_HOME | Root directory of the CosmosAIGraph GitHub repository on your system.   | DEV ENV |
 | CAIG_LOG_LEVEL | A standard python or java logging level name.   | RUNTIME |
@@ -68,6 +68,60 @@ Please see the **sample.env** files in each subapplication for examples.
 
 It is important for you to have a **.gitignore** entry for the **.env** file
 so that application secrets don't get leaked into your source control system.
+
+
+## Azure Blob Storage for RDF/Ontology Assets
+
+Starting with version 3.0, the deployment architecture supports hosting RDF and ontology files
+in **Azure Blob Storage** rather than embedding them in Docker images. This approach:
+
+- **Reduces image size** and build times
+- **Enhances security** by keeping sensitive ontology definitions separate from application code
+- **Simplifies updates** - modify RDF/ontology assets without rebuilding containers
+- **Supports development workflows** - use local files during development, blob URLs in production
+
+### Configuration
+
+The `CAIG_GRAPH_SOURCE_PATH` and `CAIG_GRAPH_SOURCE_OWL_FILENAME` environment variables now support:
+
+- **Local file paths** (for development): `ontologies/libraries.owl` or `rdf/libraries-graph.nt`
+- **Local directory paths** (for development): `rdf/` or `ontologies/` to load all RDF files in the directory
+- **HTTPS blob URLs** (for production): `https://<storage-account>.blob.core.windows.net/data/ontologies/libraries.owl`
+- **HTTPS blob directory URLs** (for production): `https://<storage-account>.blob.core.windows.net/data/rdf/` to load all RDF files with that prefix
+
+The runtime code automatically detects whether the path is:
+- A local file or directory
+- An HTTPS URL to a single blob file
+- An HTTPS URL to a "directory" of blobs (ending with `/` or without a file extension)
+
+When a directory path or URL is provided, the system will:
+1. List all `.ttl`, `.nt`, `.rdf`, and `.owl` files in that location
+2. Load each file sequentially into the RDF graph model
+3. Automatically detect the RDF format from the file extension
+
+### Deployment Process
+
+1. **Bicep provisions** a storage account and blob container (`data` by default)
+2. **Upload script** (`az_upload_rdf_assets.ps1`) uploads RDF/ontology files from `data/rdf/` and `data/ontologies/`
+3. **Container apps** reference the blob URLs via environment variables
+
+### Example Blob URLs
+
+```bash
+# For single ontology file
+CAIG_GRAPH_SOURCE_OWL_FILENAME=https://caigstore<unique-id>.blob.core.windows.net/data/ontologies/extracted_ontology.ttl
+
+# For single RDF graph file
+CAIG_GRAPH_SOURCE_PATH=https://caigstore<unique-id>.blob.core.windows.net/data/rdf/libraries-graph.nt
+
+# For directory of RDF files (note the trailing slash)
+CAIG_GRAPH_SOURCE_PATH=https://caigstore<unique-id>.blob.core.windows.net/data/rdf/
+
+# For blob prefix/virtual directory (all files starting with "libraries-")
+CAIG_GRAPH_SOURCE_PATH=https://caigstore<unique-id>.blob.core.windows.net/data/rdf/libraries-
+```
+
+See `deployment/az_upload_rdf_assets.ps1` for the upload script and `deployment/az_bicep_deploy.ps1` for the integrated deployment workflow.
 
 
 ## Java .override.properties file

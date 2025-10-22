@@ -4,9 +4,12 @@ import logging
 import os
 
 from typing import Iterator
+import httpx
+from src.util.blob_storage import BlobStorageUtil
 
-# This class is used to interact with the local filesystem,
+# This class is used to interact with the local filesystem and remote HTTP resources,
 # such as reading and writing text, csv, and json files.
+# It supports both local file paths and HTTPS URLs (e.g., Azure Blob Storage).
 #
 # Chris Joakim, Microsoft, 2025
 
@@ -21,11 +24,91 @@ class FS:
 
     @classmethod
     def read(cls, infile: str) -> str | None:
-        """Read the given file, return the file contents str or None."""
+        """
+        Read the given file or URL, return the file contents str or None.
+        Supports both local file paths and HTTP/HTTPS URLs.
+        """
+        if infile.startswith("http://") or infile.startswith("https://"):
+            return cls._read_from_url(infile)
+        
         if os.path.isfile(infile):
             with open(file=infile, encoding="utf-8", mode="rt") as file:
                 return file.read()
         return None
+
+    @classmethod
+    def read_multiple(cls, path: str) -> list[tuple[str, str]]:
+        """
+        Read multiple files from a directory path or blob URL directory.
+        For local paths: reads all .ttl, .nt, .rdf, .owl files in the directory.
+        For blob URLs: lists and reads all RDF files with the given prefix.
+        
+        Returns:
+            List of tuples (filename/url, content)
+        """
+        results = []
+        
+        try:
+            if path.startswith("http://") or path.startswith("https://"):
+                # Blob storage directory
+                if BlobStorageUtil.is_blob_directory_url(path):
+                    logging.warning(f"FS: Reading multiple files from blob directory: {path}")
+                    blob_urls = BlobStorageUtil.list_blobs_in_directory(path)
+                    
+                    for blob_url in blob_urls:
+                        content = cls._read_from_url(blob_url)
+                        if content:
+                            results.append((blob_url, content))
+                        else:
+                            logging.warning(f"FS: Failed to read blob: {blob_url}")
+                else:
+                    # Single blob URL
+                    content = cls._read_from_url(path)
+                    if content:
+                        results.append((path, content))
+            else:
+                # Local filesystem
+                if os.path.isdir(path):
+                    logging.warning(f"FS: Reading multiple files from local directory: {path}")
+                    for filename in os.listdir(path):
+                        if filename.endswith((".ttl", ".nt", ".rdf", ".owl")):
+                            filepath = os.path.join(path, filename)
+                            content = cls.read(filepath)
+                            if content:
+                                results.append((filepath, content))
+                            else:
+                                logging.warning(f"FS: Failed to read file: {filepath}")
+                elif os.path.isfile(path):
+                    # Single file
+                    content = cls.read(path)
+                    if content:
+                        results.append((path, content))
+        except Exception as e:
+            logging.error(f"FS: Error reading multiple files from {path}: {str(e)}")
+            logging.exception(e, stack_info=True, exc_info=True)
+        
+        return results
+
+    @classmethod
+    def _read_from_url(cls, url: str) -> str | None:
+        """
+        Read content from an HTTP/HTTPS URL (e.g., Azure Blob Storage).
+        Returns the content as a string or None on error.
+        """
+        try:
+            logging.warning(f"FS: fetching content from URL: {url}")
+            with httpx.Client(timeout=60.0) as client:
+                response = client.get(url)
+                response.raise_for_status()
+                content = response.text
+                logging.warning(f"FS: successfully fetched {len(content)} characters from URL")
+                return content
+        except httpx.HTTPError as e:
+            logging.error(f"FS: HTTP error fetching URL {url}: {str(e)}")
+            return None
+        except Exception as e:
+            logging.error(f"FS: error fetching URL {url}: {str(e)}")
+            return None
 
     @classmethod
     def readr(cls, infile: str) -> str | None:

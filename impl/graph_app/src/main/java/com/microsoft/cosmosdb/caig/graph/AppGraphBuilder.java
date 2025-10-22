@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.cosmosdb.caig.models.SparqlQueryRequest;
 import com.microsoft.cosmosdb.caig.models.SparqlQueryResponse;
 import com.microsoft.cosmosdb.caig.util.AppConfig;
+import com.microsoft.cosmosdb.caig.util.BlobStorageUtil;
 import com.microsoft.cosmosdb.caig.util.FileUtil;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
@@ -145,9 +146,15 @@ public class AppGraphBuilder {
                 String owlFile = AppConfig.getGraphOwlFilename();
                 FileUtil fileUtil = new FileUtil();
                 String ontology = fileUtil.readUnicode(owlFile);
+                
+                if (ontology == null || ontology.isEmpty()) {
+                    logger.error("Failed to load OWL ontology from: " + owlFile);
+                    return ModelFactory.createDefaultModel();
+                }
+                
                 InputStream byteStream = new ByteArrayInputStream(ontology.getBytes(StandardCharsets.UTF_8));
                 logger.warn("owlFile:  " + owlFile);
-                logger.warn("ontology: " + ontology);
+                logger.warn("ontology length: " + ontology.length());
 
                 
                 OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
@@ -279,7 +286,8 @@ public class AppGraphBuilder {
 
     /**
      * This method is used for initial development, using a previously captured *.ttl
-     * triples file.
+     * triples file or an HTTPS URL to RDF content (e.g., Azure Blob Storage).
+     * Supports both single file URLs and directory URLs for loading multiple files.
      */
     private static void populateFromRdfFile(AppGraph g) throws Exception {
         try {
@@ -287,29 +295,86 @@ public class AppGraphBuilder {
             logger.warn("populateFromRdfFile - " + graphPath);
             Model ontology = g.getModel();
             Model model = ModelFactory.createDefaultModel();
-            java.io.File fileOrDir = new java.io.File(graphPath);
-            if (fileOrDir.isDirectory()) {
-                java.io.File[] files = fileOrDir.listFiles((dir, name) -> name.endsWith(".ttl") || name.endsWith(".nt") || name.endsWith(".rdf") || name.endsWith(".owl"));
-                if (files != null) {
-                    for (java.io.File f : files) {
-                        logger.warn("Loading RDF file: " + f.getAbsolutePath());
-                        // Try to guess the language from the extension
-                        String fname = f.getName().toLowerCase();
+            
+            // Check if graphPath is a URL or a file/directory path
+            if (graphPath.startsWith("http://") || graphPath.startsWith("https://")) {
+                // Load from URL (single file or directory)
+                FileUtil fileUtil = new FileUtil();
+                
+                // Check if this is a directory URL (ends with / or no extension)
+                if (BlobStorageUtil.isBlobDirectoryUrl(graphPath)) {
+                    // List all RDF files in the blob directory
+                    logger.warn("Loading RDF from blob directory: " + graphPath);
+                    List<String> blobUrls = BlobStorageUtil.listBlobsInDirectory(graphPath);
+                    
+                    if (blobUrls.isEmpty()) {
+                        logger.error("No RDF files found in blob directory: " + graphPath);
+                    } else {
+                        for (String blobUrl : blobUrls) {
+                            logger.warn("Loading RDF from blob: " + blobUrl);
+                            String rdfContent = fileUtil.readUnicode(blobUrl);
+                            if (rdfContent != null && !rdfContent.isEmpty()) {
+                                String lowerUrl = blobUrl.toLowerCase();
+                                Lang lang = Lang.TTL;
+                                if (lowerUrl.endsWith(".nt")) lang = Lang.NT;
+                                else if (lowerUrl.endsWith(".rdf")) lang = Lang.RDFXML;
+                                else if (lowerUrl.endsWith(".owl")) lang = Lang.RDFXML;
+                                
+                                java.io.InputStream is = new java.io.ByteArrayInputStream(
+                                    rdfContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                                model.read(is, null, lang.getName());
+                                logger.warn("Successfully loaded RDF from blob: " + blobUrl);
+                            } else {
+                                logger.error("Failed to load RDF content from blob: " + blobUrl);
+                            }
+                        }
+                    }
+                } else {
+                    // Single file URL
+                    logger.warn("Loading RDF from URL: " + graphPath);
+                    String rdfContent = fileUtil.readUnicode(graphPath);
+                    if (rdfContent != null && !rdfContent.isEmpty()) {
+                        // Guess the language from the URL extension
+                        String lowerPath = graphPath.toLowerCase();
                         Lang lang = Lang.TTL;
-                        if (fname.endsWith(".nt")) lang = Lang.NT;
-                        else if (fname.endsWith(".rdf")) lang = Lang.RDFXML;
-                        else if (fname.endsWith(".owl")) lang = Lang.RDFXML;
-                        model.read(f.getAbsolutePath(), lang.getName());
+                        if (lowerPath.endsWith(".nt")) lang = Lang.NT;
+                        else if (lowerPath.endsWith(".rdf")) lang = Lang.RDFXML;
+                        else if (lowerPath.endsWith(".owl")) lang = Lang.RDFXML;
+                        
+                        java.io.InputStream is = new java.io.ByteArrayInputStream(
+                            rdfContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                        model.read(is, null, lang.getName());
+                        logger.warn("Successfully loaded RDF from URL");
+                    } else {
+                        logger.error("Failed to load RDF content from URL: " + graphPath);
                     }
                 }
             } else {
-                // Single file
-                String fname = fileOrDir.getName().toLowerCase();
-                Lang lang = Lang.TTL;
-                if (fname.endsWith(".nt")) lang = Lang.NT;
-                else if (fname.endsWith(".rdf")) lang = Lang.RDFXML;
-                else if (fname.endsWith(".owl")) lang = Lang.RDFXML;
-                model = g.readGraphFromFile(graphPath, lang);
+                // Load from local file or directory
+                java.io.File fileOrDir = new java.io.File(graphPath);
+                if (fileOrDir.isDirectory()) {
+                    java.io.File[] files = fileOrDir.listFiles((dir, name) -> name.endsWith(".ttl") || name.endsWith(".nt") || name.endsWith(".rdf") || name.endsWith(".owl"));
+                    if (files != null) {
+                        for (java.io.File f : files) {
+                            logger.warn("Loading RDF file: " + f.getAbsolutePath());
+                            // Try to guess the language from the extension
+                            String fname = f.getName().toLowerCase();
+                            Lang lang = Lang.TTL;
+                            if (fname.endsWith(".nt")) lang = Lang.NT;
+                            else if (fname.endsWith(".rdf")) lang = Lang.RDFXML;
+                            else if (fname.endsWith(".owl")) lang = Lang.RDFXML;
+                            model.read(f.getAbsolutePath(), lang.getName());
+                        }
+                    }
+                } else {
+                    // Single file
+                    String fname = fileOrDir.getName().toLowerCase();
+                    Lang lang = Lang.TTL;
+                    if (fname.endsWith(".nt")) lang = Lang.NT;
+                    else if (fname.endsWith(".rdf")) lang = Lang.RDFXML;
+                    else if (fname.endsWith(".owl")) lang = Lang.RDFXML;
+                    model = g.readGraphFromFile(graphPath, lang);
+                }
             }
             logger.warn("model class:" + model.getClass().getName());
             logger.warn("empty: " + model.isEmpty());

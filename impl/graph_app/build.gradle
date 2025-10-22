@@ -42,6 +42,7 @@ dependencies {
 	implementation 'org.springframework.session:spring-session-core:4.0.0-M2'
 	compileOnly 'org.projectlombok:lombok:1.18.+'
 	implementation 'com.azure:azure-cosmos:4.74.+'
+	implementation 'com.azure:azure-storage-blob:12.+'
 	implementation 'org.apache.jena:apache-jena-libs:5.5.+'
 	annotationProcessor 'org.projectlombok:lombok:1.18.+'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test:4.0.0-M2'

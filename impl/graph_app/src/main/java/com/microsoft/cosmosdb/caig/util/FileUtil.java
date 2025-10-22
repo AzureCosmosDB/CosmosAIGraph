@@ -8,6 +8,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,7 +20,8 @@ import java.util.Map;
 import java.util.Scanner;
 
 /**
- * Instances of this class are used to perform all local disk IO for this application.
+ * Instances of this class are used to perform all local disk IO and HTTP-based
+ * resource loading for this application.
  *
  * Chris Joakim, Microsoft, 2025
  */
@@ -32,8 +36,29 @@ public class FileUtil {
         super();
     }
 
-    public String readUnicode(String filename) {
+    /**
+     * Read content from either a local file path or an HTTPS URL.
+     * This method supports both development (local files) and production (blob storage) scenarios.
+     */
+    public String readUnicode(String pathOrUrl) {
 
+        if (pathOrUrl == null || pathOrUrl.trim().isEmpty()) {
+            logger.error("readUnicode: pathOrUrl is null or empty");
+            return null;
+        }
+
+        // Check if this is an HTTP/HTTPS URL
+        if (pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://")) {
+            return readFromUrl(pathOrUrl);
+        } else {
+            return readFromFile(pathOrUrl);
+        }
+    }
+
+    /**
+     * Read content from a local file path.
+     */
+    private String readFromFile(String filename) {
         Path path = Paths.get(filename);
         StringBuffer sb = new StringBuffer();
 
@@ -45,7 +70,46 @@ public class FileUtil {
                 sb.append("\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error reading file: " + filename, e);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Read content from an HTTP/HTTPS URL (e.g., Azure Blob Storage).
+     */
+    private String readFromUrl(String urlString) {
+        StringBuffer sb = new StringBuffer();
+        HttpURLConnection connection = null;
+
+        try {
+            logger.warn("readFromUrl: fetching " + urlString);
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(30000); // 30 seconds
+            connection.setReadTimeout(60000);    // 60 seconds
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream(), "UTF-8"))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                        sb.append("\n");
+                    }
+                }
+                logger.warn("readFromUrl: successfully fetched " + sb.length() + " characters");
+            } else {
+                logger.error("readFromUrl: HTTP error " + responseCode + " for " + urlString);
+            }
+        } catch (Exception e) {
+            logger.error("Error reading from URL: " + urlString, e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
         return sb.toString();
     }
