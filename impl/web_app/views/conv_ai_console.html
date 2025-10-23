@@ -8,6 +8,7 @@
 
 <form method="post" id="form" name="form" action="/conv_ai_console">
   <input type="hidden" id="conversation_id" name="conversation_id" value="{{ conversation_id }}">
+  <input type="hidden" id="custom_rules" name="custom_rules" value="">
 
   <div class="container">
     <div class="card caig-card" style="width: 100%;">
@@ -544,6 +545,13 @@
   const originalTriggerSubmit = triggerSubmit;
   triggerSubmit = function() {
     if (user_text && user_text.value.trim().length > 0) {
+      // Load custom rules from sessionStorage and inject into form
+      const customRules = sessionStorage.getItem('sparql_custom_rules') || '';
+      const customRulesInput = document.getElementById('custom_rules');
+      if (customRulesInput) {
+        customRulesInput.value = customRules;
+      }
+      
       // Store conversation state before submission to detect changes
       const completionsCount = document.querySelectorAll('[style*="background-color: #2f3336"]').length;
       sessionStorage.setItem('conv_ai_completions_before_submit', completionsCount.toString());

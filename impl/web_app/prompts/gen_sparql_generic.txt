@@ -3,6 +3,8 @@ You are a helpful agent designed to generate a SPARQL 1.1 query for an Apache Je
 The following ontology describes the entities and relationships in the knowledge graph:
 {}
 
+{custom_rules}
+
 Generate the most accurate SPARQL 1.1 query that would return the relevant results, threading on the more permissive side if in doubt, e.g. include fewer filters.
 Keep queries as simple as possible - avoid unnecessary complexity like redundant BIND statements or overly specific class hierarchies unless the ontology explicitly requires them.
 Make sure to stick to SPARQL 1.1 standard, for example do not use aggregate functions such as COUNT inside BIND.

@@ -266,6 +266,39 @@ async def get_about(req: Request):
     return views.TemplateResponse(request=req, name="about.html", context=view_data)
 
 
+@app.get("/rules")
+async def get_rules(req: Request):
+    view_data = dict()
+    view_data["custom_rules"] = ""  # Will be loaded from session storage on client side
+    view_data["current_page"] = "rules"  # Set active page for navbar
+    view_data["message"] = None
+    view_data["message_type"] = None
+    return views.TemplateResponse(request=req, name="rules.html", context=view_data)
+
+
+@app.post("/rules")
+async def post_rules(req: Request):
+    form_data = await req.form()
+    logging.info("/rules form_data: {}".format(form_data))
+    custom_rules_raw = form_data.get("custom_rules", "")
+    custom_rules = custom_rules_raw.strip() if isinstance(custom_rules_raw, str) else ""
+    
+    view_data = dict()
+    view_data["custom_rules"] = custom_rules
+    view_data["current_page"] = "rules"
+    
+    if custom_rules:
+        view_data["message"] = f"Custom rules saved successfully ({len(custom_rules)} characters)"
+        view_data["message_type"] = "success"
+        logging.info(f"Custom SPARQL rules saved: {len(custom_rules)} characters")
+    else:
+        view_data["message"] = "Custom rules cleared"
+        view_data["message_type"] = "info"
+        logging.info("Custom SPARQL rules cleared")
+    
+    return views.TemplateResponse(request=req, name="rules.html", context=view_data)
+
+
 @app.get("/sparql_console")
 async def get_sparql_console(req: Request):
     view_data = get_sparql_console_view_data()
@@ -307,7 +340,20 @@ async def get_ai_console(req: Request):
 async def ai_post_gen_sparql(req: Request):
     form_data = await req.form()
     logging.info("/gen_sparql_console_generate_sparql form_data: {}".format(form_data))
-    natural_language = form_data.get("natural_language").strip()
+    natural_language_raw = form_data.get("natural_language")
+    natural_language = natural_language_raw.strip() if isinstance(natural_language_raw, str) else ""
+    custom_rules_raw = form_data.get("custom_rules", "")
+    custom_rules = custom_rules_raw if isinstance(custom_rules_raw, str) else None
+    
+    logging.warning("=" * 80)
+    logging.warning(f"WEB_APP.PY - Form data received")
+    logging.warning(f"WEB_APP.PY - custom_rules_raw from form: {repr(custom_rules_raw)}")
+    logging.warning(f"WEB_APP.PY - custom_rules_raw type: {type(custom_rules_raw)}")
+    logging.warning(f"WEB_APP.PY - custom_rules after processing: {repr(custom_rules)}")
+    logging.warning(f"WEB_APP.PY - custom_rules is None: {custom_rules is None}")
+    logging.warning(f"WEB_APP.PY - custom_rules is empty string: {custom_rules == ''}")
+    logging.warning("=" * 80)
+    
     view_data = gen_sparql_console_view_data()
     view_data["natural_language"] = natural_language
     view_data["generating_nl"] = natural_language
@@ -328,9 +374,17 @@ async def ai_post_gen_sparql(req: Request):
     resp_obj["error"] = ""
 
     try:
-        resp_obj = ai_svc.generate_sparql_from_user_prompt(resp_obj)
-        sparql = resp_obj["sparql"]
+        result = ai_svc.generate_sparql_from_user_prompt(resp_obj, custom_rules)
+        sparql = result.sparql if result.sparql else ""
         view_data["sparql"] = SparqlFormatter().pretty(sparql)
+        # Update resp_obj with result values
+        resp_obj["sparql"] = sparql
+        resp_obj["completion_id"] = result.completion_id if hasattr(result, 'completion_id') else ""
+        resp_obj["completion_model"] = result.completion_model if hasattr(result, 'completion_model') else ""
+        resp_obj["prompt_tokens"] = result.prompt_tokens if hasattr(result, 'prompt_tokens') else -1
+        resp_obj["completion_tokens"] = result.completion_tokens if hasattr(result, 'completion_tokens') else -1
+        resp_obj["total_tokens"] = result.total_tokens if hasattr(result, 'total_tokens') else -1
+        resp_obj["error"] = result.error if hasattr(result, 'error') else ""
     except Exception as e:
         resp_obj["error"] = str(e)
         logging.critical((str(e)))
@@ -726,6 +780,13 @@ async def conv_ai_console_post(req: Request):
             pass
     user_text = str(form_data.get("user_text") or "").strip()
     rag_strategy_choice = str(form_data.get("rag_strategy") or '').strip().lower()
+    
+    # Extract custom rules from form data (type-safe handling)
+    custom_rules_raw = form_data.get("custom_rules")
+    custom_rules = None
+    if custom_rules_raw and isinstance(custom_rules_raw, str):
+        custom_rules = custom_rules_raw.strip() or None
+    
     print(f"[DEBUG] conversation_id: {conversation_id}, user_text: {user_text}")
     logging.info(
         "conversation_id: {}, user_text: {}".format(conversation_id, user_text)
@@ -796,7 +857,7 @@ async def conv_ai_console_post(req: Request):
             prompt_text = ai_svc.generic_prompt_template()
 
             override = None if rag_strategy_choice in ("", "auto") else rag_strategy_choice
-            rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 20, override)
+            rdr: RAGDataResult = await rag_data_svc.get_rag_data(user_text, 20, override, custom_rules)
             if (LoggingLevelService.get_level() == logging.DEBUG):
                 FS.write_json(rdr.get_data(), "tmp/ai_conv_rdr.json")
 

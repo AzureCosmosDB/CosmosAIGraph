@@ -17,7 +17,7 @@ class SparqlGenerationResult(BaseModel):
     completion_model: str
     prompt_tokens: int
     completion_tokens: int
-    total_tokens: dict | None
+    total_tokens: int | None
     elapsed: float
     sparql: str
     error: str | None

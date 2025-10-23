@@ -121,7 +121,7 @@ class AiService:
             return 10000
 
     def generate_sparql_from_user_prompt(
-        self, resp_obj: dict
+        self, resp_obj: dict, custom_rules: str | None = None
     ) -> SparqlGenerationResult:
         try:
             user_prompt = resp_obj["natural_language"]
@@ -132,14 +132,25 @@ class AiService:
                     user_prompt
                 )
             )
-            if self.validate_sparql_gen_input(user_prompt, raw_owl):
-                t1 = time.perf_counter()
-                system_prompt = Prompts().generate_sparql_system_prompt(raw_owl)
+            if custom_rules:
                 logging.info(
-                    "AiService#generate_sparql_from_user_prompt - system_prompt: {}".format(
-                        system_prompt
+                    "AiService#generate_sparql_from_user_prompt - custom_rules length: {}".format(
+                        len(custom_rules)
                     )
                 )
+            if self.validate_sparql_gen_input(user_prompt, raw_owl):
+                t1 = time.perf_counter()
+                logging.warning("=" * 80)
+                logging.warning(f"AI_SERVICE.PY - About to call generate_sparql_system_prompt")
+                logging.warning(f"AI_SERVICE.PY - custom_rules parameter: {repr(custom_rules)}")
+                logging.warning("=" * 80)
+                system_prompt = Prompts().generate_sparql_system_prompt(raw_owl, custom_rules)
+                logging.warning("=" * 80)
+                logging.warning("AI_SERVICE.PY - CUSTOM RULES RECEIVED: {}".format(custom_rules if custom_rules else "(None)"))
+                logging.warning("=" * 80)
+                logging.warning("AI_SERVICE.PY - FULL SYSTEM PROMPT (first 5000 chars):")
+                logging.warning(system_prompt[:5000] if system_prompt else "(None)")
+                logging.warning("=" * 80)
                 completion = self.aoai_client.chat.completions.create(
                     model=self.completions_deployment,
                     temperature=ConfigService.moderate_sparql_temperature(),
@@ -186,7 +197,18 @@ class AiService:
                 )
             )
             logging.exception(e, stack_info=True, exc_info=True)
-        return resp_obj
+        
+        # Convert resp_obj dict to SparqlGenerationResult Pydantic model
+        return SparqlGenerationResult(
+            completion_id=resp_obj.get("completion_id", ""),
+            completion_model=resp_obj.get("completion_model", ""),
+            prompt_tokens=resp_obj.get("prompt_tokens", -1),
+            completion_tokens=resp_obj.get("completion_tokens", -1),
+            total_tokens=resp_obj.get("total_tokens", None),
+            elapsed=resp_obj.get("elapsed", 0.0),
+            sparql=resp_obj.get("sparql", ""),
+            error=resp_obj.get("error", None)
+        )
 
     def validate_sparql_gen_input(self, user_prompt, owl):
         """Return True if the input should be processed, else return False."""

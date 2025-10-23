@@ -36,6 +36,7 @@
           <label for="sparql" class="form-label">Natural language request:</label>
           <textarea rows="1" class="form-control" id="natural_language" name="natural_language"
             placeholder="Triple-click for suggestions.">{{ natural_language }}</textarea>
+          <input type="hidden" id="custom_rules" name="custom_rules" value="">
           <script>
             function autoResizeTextarea(textarea) {
               // Reset height to auto to get the correct scrollHeight
@@ -53,6 +54,16 @@
             // Auto-resize on input
             nlTextarea.addEventListener('input', function() {
               autoResizeTextarea(this);
+            });
+            
+            // Load custom rules from sessionStorage before form submission
+            document.getElementById('generate_form').addEventListener('submit', function() {
+              console.log('[GEN_SPARQL] Form submit triggered');
+              const customRules = sessionStorage.getItem('sparql_custom_rules') || '';
+              console.log('[GEN_SPARQL] Loaded from sessionStorage:', customRules);
+              console.log('[GEN_SPARQL] Rules length:', customRules.length);
+              document.getElementById('custom_rules').value = customRules;
+              console.log('[GEN_SPARQL] Set hidden field value to:', document.getElementById('custom_rules').value);
             });
           </script>
         </div>
@@ -286,6 +297,20 @@
       generate_button.disabled = true;
       generate_button.textContent = "Processing...";
       execute_button.disabled = true;
+      
+      // Load custom rules from sessionStorage and inject into form
+      console.log('[GEN_SPARQL] Generate button clicked');
+      const customRules = sessionStorage.getItem('sparql_custom_rules') || '';
+      console.log('[GEN_SPARQL] Loaded from sessionStorage:', customRules);
+      console.log('[GEN_SPARQL] Rules length:', customRules.length);
+      const customRulesInput = document.getElementById('custom_rules');
+      if (customRulesInput) {
+        customRulesInput.value = customRules;
+        console.log('[GEN_SPARQL] Set hidden field value to:', customRulesInput.value);
+      } else {
+        console.error('[GEN_SPARQL] Could not find custom_rules hidden input field!');
+      }
+      
       // Save current values before submit
       saveToLocalStorage();
       // Mark that we're submitting a form to prevent localStorage restoration

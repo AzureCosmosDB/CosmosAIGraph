@@ -45,7 +45,7 @@ class RAGDataService:
         except Exception as e:
             logging.critical("Exception in RagDataService#__init__: {}".format(str(e)))
 
-    async def get_rag_data(self, user_text, max_doc_count=10, strategy_override: Optional[str] = None) -> RAGDataResult:
+    async def get_rag_data(self, user_text, max_doc_count=10, strategy_override: Optional[str] = None, custom_rules: Optional[str] = None) -> RAGDataResult:
         """
         Return a RAGDataResult object which contains an array of documents to
         be used as a system prompt of a completion call to Azure OpenAI.
@@ -78,7 +78,7 @@ class RAGDataService:
                 await self.get_vector_rag_data(user_text, rdr, max_doc_count)
 
         elif strategy == "graph":
-            await self.get_graph_rag_data(user_text, rdr, max_doc_count)
+            await self.get_graph_rag_data(user_text, rdr, max_doc_count, custom_rules)
             if rdr.has_no_docs() and not (strategy_override and strategy_override in valid_choices): #don't fall back if was overridden
                 rdr.add_strategy("vector")
                 await self.get_vector_rag_data(user_text, rdr, max_doc_count)
@@ -162,7 +162,7 @@ class RAGDataService:
             logging.exception(e, stack_info=True, exc_info=True)
 
     async def get_graph_rag_data(
-        self, user_text, rdr: RAGDataResult, max_doc_count=10
+        self, user_text, rdr: RAGDataResult, max_doc_count=10, custom_rules: Optional[str] = None
     ) -> None:
         try:
             logging.warning(
@@ -172,7 +172,9 @@ class RAGDataService:
             info = dict()
             info["natural_language"] = user_text
             info["owl"] = OntologyService().get_owl_content()
-            sparql = self.ai_svc.generate_sparql_from_user_prompt(info)["sparql"]
+            # Use custom rules if provided
+            result = self.ai_svc.generate_sparql_from_user_prompt(info, custom_rules)
+            sparql = result.sparql if result.sparql else ""
             rdr.set_sparql(sparql)
             logging.warning("get_graph_rag_data - sparql:\n{}".format(sparql))
 

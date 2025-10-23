@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+
+{% block title %}Custom SPARQL Rules{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card caig-card">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">
+                        <i class="bi bi-list-check me-2"></i>Custom SPARQL Generation Rules
+                    </h3>
+                    
+                    <p class="text-muted mb-4">
+                        Define custom rules that will be injected into the SPARQL generation prompt. 
+                        These rules help guide the AI to generate queries that match your specific requirements and domain knowledge.
+                    </p>
+
+                    <form id="rulesForm" method="post" action="/rules">
+                        <div class="mb-4">
+                            <label for="customRules" class="form-label fw-bold">
+                                Custom Rules
+                                <small class="text-muted ms-2">(One rule per line or as a paragraph)</small>
+                            </label>
+                            <textarea 
+                                class="form-control" 
+                                id="customRules" 
+                                name="custom_rules" 
+                                rows="15"
+                                placeholder="Enter your custom rules here. For example:&#10;&#10;- Always filter by active status unless specified otherwise&#10;- When querying for people, include their email addresses&#10;- Use case-insensitive matching for all name fields&#10;- Limit results to 100 unless user specifies a different limit&#10;- Always sort results by creation date descending"
+                                style="font-family: 'Courier New', monospace; font-size: 0.9rem;">{{ custom_rules }}</textarea>
+                            <div class="form-text">
+                                These rules will be added to the system prompt when generating SPARQL queries. 
+                                Be specific and clear in your instructions.
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button type="submit" class="btn btn-outline-primary me-2">
+                                    <i class="bi bi-save me-1"></i>Save Rules
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="clearRulesBtn">
+                                    <i class="bi bi-trash me-1"></i>Clear Rules
+                                </button>
+                            </div>
+                            <div>
+                                <a href="/gen_sparql_console" class="btn btn-outline-info">
+                                    <i class="bi bi-arrow-right me-1"></i>Go to NL2SPARQL
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% if message %}
+                    <div class="alert alert-{{ message_type }} alert-dismissible fade show mt-4" role="alert">
+                        <i class="bi bi-{{ 'check-circle' if message_type == 'success' else 'info-circle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4 p-3 border border-secondary rounded bg-dark">
+                        <h5 class="mb-3"><i class="bi bi-lightbulb me-2"></i>Tips for Effective Rules</h5>
+                        <ul class="mb-0 small">
+                            <li>Be specific about the types of entities and relationships in your domain</li>
+                            <li>Specify default filters, sorting, or limits that should always apply</li>
+                            <li>Define naming conventions or abbreviations used in your data</li>
+                            <li>Clarify how to handle ambiguous queries</li>
+                            <li>Provide examples of expected patterns or query structures</li>
+                            <li>Rules are persisted in your session and will apply to all SPARQL generation requests</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+(function() {
+    const STORAGE_KEY = 'sparql_custom_rules';
+    const form = document.getElementById('rulesForm');
+    const textarea = document.getElementById('customRules');
+    const clearBtn = document.getElementById('clearRulesBtn');
+
+    // Load saved rules from sessionStorage on page load if textarea is empty
+    if (!textarea.value.trim()) {
+        const savedRules = sessionStorage.getItem(STORAGE_KEY);
+        if (savedRules) {
+            textarea.value = savedRules;
+        }
+    }
+
+    // Save to sessionStorage when form is submitted
+    form.addEventListener('submit', function(e) {
+        const rules = textarea.value.trim();
+        console.log('[RULES PAGE] Form submitted');
+        console.log('[RULES PAGE] Rules to save:', rules);
+        console.log('[RULES PAGE] Rules length:', rules.length);
+        if (rules) {
+            sessionStorage.setItem(STORAGE_KEY, rules);
+            console.log('[RULES PAGE] Saved to sessionStorage with key:', STORAGE_KEY);
+            console.log('[RULES PAGE] Verification - sessionStorage value:', sessionStorage.getItem(STORAGE_KEY));
+        } else {
+            sessionStorage.removeItem(STORAGE_KEY);
+            console.log('[RULES PAGE] Removed from sessionStorage (empty rules)');
+        }
+    });
+
+    // Clear rules button
+    clearBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear all custom rules?')) {
+            textarea.value = '';
+            sessionStorage.removeItem(STORAGE_KEY);
+            // Submit the form to clear on server side as well
+            form.submit();
+        }
+    });
+
+    // Auto-save to sessionStorage on change (debounced)
+    let saveTimeout;
+    textarea.addEventListener('input', function() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(function() {
+            const rules = textarea.value.trim();
+            if (rules) {
+                sessionStorage.setItem(STORAGE_KEY, rules);
+            } else {
+                sessionStorage.removeItem(STORAGE_KEY);
+            }
+        }, 1000);
+    });
+})();
+</script>
+{% endblock %}
