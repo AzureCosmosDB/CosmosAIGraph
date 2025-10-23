@@ -6,53 +6,49 @@ The following ontology describes the entities and relationships in the knowledge
 
 {custom_rules}
 
-CRITICAL SHORTEST PATH / CLOSEST NODE: When the query requests the "first", "closest", or a single specific node encountered during graph traversal, use the shortest path pattern to find the node with minimum hop distance:
+CRITICAL SHORTEST PATH / CLOSEST NODE: SPARQL property paths (^:StartNode/:EndNode)+ find ALL reachable nodes simultaneously as a set operation - they do NOT traverse sequentially or guarantee any particular order. When the user asks for the "first", "closest", or "nearest" node, they want the node with MINIMUM PATH LENGTH (fewest edges/hops), not an arbitrary result from LIMIT 1.
 
-**Pattern for finding closest/first node:**
-SELECT ?sourceNode ?targetNode (COUNT(?edge) as ?pathLength)
+**IMPORTANT: Do NOT use BIND(1 AS ?hops) - this assigns the same value to all paths and defeats shortest path logic!**
+
+**Correct approach - Simple queries without explicit path counting:**
+For most "first/closest" queries, the SIMPLEST approach is to just find matching nodes without trying to count hops. However, SPARQL property paths return results in ARBITRARY order (not breadth-first), so you MUST add ORDER BY to get deterministic "first" results:
+
+?equipment (^:StartNode/:EndNode)+ ?valve .
+# Add filters for valve type
+# CRITICAL: Add ORDER BY to ensure deterministic "first" selection
+ORDER BY ?valveTag  # Or ORDER BY ?valveSequenceNo if TagSequenceNo is available
+LIMIT 1
+
+**When to use TagSequenceNo vs ItemTag for ordering:**
+- If entities have :TagSequenceNo property, ORDER BY ?tagSeqNo gives numeric ordering (1.0 < 2.0 < 10.0)
+- If using :ItemTag, ORDER BY ?itemTag gives lexicographic ordering ("PSV-0001" < "PSV-0002")
+- ALWAYS include ORDER BY when using LIMIT 1 for "first/closest" queries - without it, results are non-deterministic
+
+**When explicit shortest path is required:**
+If user EXPLICITLY requests "shortest path" or "minimum hops" or "fewest edges", you must enumerate intermediate nodes and count them. This is complex and expensive - only use when truly needed:
+
+SELECT ?equipment ?valve (COUNT(DISTINCT ?edge) as ?pathLength)
 WHERE {{
-  # Find source node
-  ?sourceNode rdf:type :Equipment .
-  # ... source filters ...
+  ?equipment rdf:type :Equipment .
+  # equipment filters
   
-  # Traverse edges and count them
-  ?sourceNode (^:StartNode/:EndNode)* ?intermediate .
+  # Enumerate path: equipment -> edge1 -> node1 -> edge2 -> node2 -> ... -> valve
+  # This uses multiple triple patterns to explicitly walk the path
   ?edge :StartNode ?intermediate .
   ?edge :EndNode ?nextNode .
-  ?nextNode (^:StartNode/:EndNode)* ?targetNode .
+  ?equipment (^:StartNode/:EndNode)* ?intermediate .
+  ?valve (^:EndNode/:StartNode)* ?nextNode .
   
-  # Target node filters
-  ?targetNode rdf:type :Instrument .
-  # ... target filters ...
+  # valve filters
 }}
-GROUP BY ?sourceNode ?targetNode
+GROUP BY ?equipment ?valve
 ORDER BY ?pathLength
 LIMIT 1
 
-**Simplified approach for "first encountered" in traversal:**
-Use a subquery to find the minimum path length, then filter to only that length:
-SELECT ?equipment ?valve
-WHERE {{
-  {{
-    SELECT ?equipment (MIN(?hops) as ?minHops)
-    WHERE {{
-      ?equipment rdf:type :Equipment .
-      # equipment filters
-      ?equipment (^:StartNode/:EndNode)+ ?valve .
-      # valve filters
-      BIND(1 as ?hops) # This is simplified; actual counting requires edge enumeration
-    }}
-    GROUP BY ?equipment
-  }}
-  ?equipment (^:StartNode/:EndNode)+ ?valve .
-  # Apply same valve filters
-}}
-LIMIT 1
-
 **When to use shortest path:**
-- User asks for "first", "closest", "nearest" node
-- User specifies "the [equipment] has only one [valve]" or similar singular references
-- Query should return the most immediately connected match
+- User EXPLICITLY says "shortest path", "minimum hops", "fewest edges", "closest by distance"
+- User asks for "first encountered" in context of graph distance, not just any first match
+- For most queries asking "does X have Y" or "find Y on X", simple property path with LIMIT 1 is sufficient - do NOT overcomplicate with path counting unless explicitly required
 
 Generate the most accurate SPARQL 1.1 query that would return the relevant results, threading on the more permissive side if in doubt, e.g. include fewer filters.
 Keep queries as simple as possible - avoid unnecessary complexity like redundant BIND statements or overly specific class hierarchies unless the ontology explicitly requires them.
@@ -109,6 +105,14 @@ When filtering on OPTIONAL properties, always wrap conditions with BOUND checks 
 When combining multiple OPTIONAL property checks with OR, each condition must be independent: (BOUND(?var1) && CONTAINS(LCASE(?var1), "text")) || (BOUND(?var2) && CONTAINS(LCASE(?var2), "text")). Never use AND between different variable checks as this requires ALL variables to be bound simultaneously, which will fail.
 CRITICAL: OPTIONAL clauses MUST appear BEFORE any FILTER that references their variables. Place all OPTIONAL property bindings first, then place the FILTER afterwards. Example correct pattern: OPTIONAL with ?entity :property1 binding ?var1, then OPTIONAL with ?entity :property2 binding ?var2, then FILTER with BOUND(?var1) and CONTAINS(LCASE(?var1), "text"). Never place a FILTER before the OPTIONAL clauses that bind the variables it checks.
 Always assume that integer values should me compared to integers and float values with floats, alphanumeric values should be compared with strings.
+CRITICAL DATATYPE AWARENESS: Check the ontology for property ranges (xsd:string, xsd:decimal, xsd:integer). NEVER use CONTAINS, LCASE, or string functions on numeric properties (xsd:decimal, xsd:integer). For numeric properties, use numeric comparisons (=, !=, <, >, <=, >=). Common numeric properties: TagSequenceNo (xsd:decimal), NominalDiameter (xsd:decimal), InternalDiameter (xsd:decimal), XCoordinate (xsd:decimal), YCoordinate (xsd:decimal).
+CRITICAL TAG SEARCHING: When searching for equipment by tag like "1011-VES-301", the ItemTag property (xsd:string) contains the COMPLETE tag. Use simple CONTAINS on ItemTag only - do NOT search TagSequenceNo (numeric), TagPrefix, or TagSuffix separately unless you have a specific reason. Example: FILTER(BOUND(?itemTag) && CONTAINS(LCASE(?itemTag), "1011-ves-301"))
+CRITICAL FUZZY TERM MATCHING: Technical terms in the actual data may use ABBREVIATED or ALTERNATE spellings. When searching for terms like "pressure relief valve", ALSO search for common abbreviations and alternate forms:
+- "pressure" may appear as "press" in data
+- "temperature" may appear as "temp" in data
+- "relief" may appear as "relief" or be omitted entirely
+Use OR conditions to match both full and abbreviated forms. Example for pressure relief valve: (CONTAINS(?field, "pressure") OR CONTAINS(?field, "press")) AND (CONTAINS(?field, "relief") OR CONTAINS(?field, "safety") OR CONTAINS(?field, "psv"))
+CRITICAL: Apply fuzzy matching to ALL technical terms when searching Subtype, Type, or ItemTag fields - the data may not use full formal terminology.
 Always include all prefixes from the ontology. 
 CRITICAL: NO COMMENTS INSIDE FILTER EXPRESSIONS. The SPARQL parser will fail if you place comments inside FILTER blocks. Only place comments on their own lines between major query clauses.
 Only in case there are no aggregates/group keys (e.g. COUNT) used in the SELECT, include all intermediate variables used within SPARQL in that SELECT clause.
