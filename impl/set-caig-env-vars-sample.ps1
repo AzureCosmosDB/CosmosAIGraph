@@ -37,8 +37,8 @@ function Set-EnvIfMissing {
 }
 
 # Use the helper to set each variable only if missing
-Set-EnvIfMissing -Name "CAIG_AZURE_OPENAI_COMPLETIONS_DEP" -Value "gpt-4.1"
-Set-EnvIfMissing -Name "CAIG_AZURE_OPENAI_EMBEDDINGS_DEP" -Value "text-embedding-ada-002"
+Set-EnvIfMissing -Name "CAIG_AZURE_OPENAI_COMPLETIONS_DEP" -Value "gpt-5.1-codex-mini"
+Set-EnvIfMissing -Name "CAIG_AZURE_OPENAI_EMBEDDINGS_DEP" -Value "text-embedding-3-small"
 Set-EnvIfMissing -Name "CAIG_AZURE_OPENAI_KEY" -Value "" -WarnIfEmpty
 Set-EnvIfMissing -Name "CAIG_AZURE_OPENAI_URL" -Value "" -WarnIfEmpty
 Set-EnvIfMissing -Name "CAIG_CONFIG_CONTAINER" -Value "config"

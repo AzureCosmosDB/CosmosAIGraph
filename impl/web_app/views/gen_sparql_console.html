@@ -80,7 +80,9 @@
           <button type="submit" id="generate_button" name="generate_button"
             class="btn btn-outline-primary mb-3">Generate SPARQL</button>
         </div>
-        <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
+        {% if error_message %}
+        <div class="alert alert-danger mt-2" role="alert">{{ error_message }}</div>
+        {% endif %}
       </form>
       <p></p>
 
@@ -114,8 +116,6 @@
         </div>
         <input type="hidden" id="generating_nl" name="generating_nl" value="{{ generating_nl }}">
         <input type="hidden" id="execute_natural_language" name="natural_language" value="{{ natural_language }}">
-
-        <p class="text-danger fw-bold" id="error_message" name="error_message"></p>
       </form>
     </div>
 

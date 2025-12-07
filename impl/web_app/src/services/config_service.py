@@ -148,6 +148,9 @@ class ConfigService:
         d["CAIG_FULLTEXT_SEARCH_FIELDS"] = (
             "Comma-separated list of document fields to search for fulltext search operations.  (WEB RUNTIME)"
         )
+        d["CAIG_EMBEDDING_FIELD_NAME"] = (
+            "The name of the document field that contains embedding vectors.  (RUNTIME)"
+        )
         d["CAIG_CONFIG_CONTAINER"] = (
             "The Cosmos DB container for configuration JSON values.  (RUNTIME)"
         )
@@ -233,6 +236,7 @@ class ConfigService:
         d["CAIG_GRAPH_SOURCE_CONTAINER"] = "libraries"
         d["CAIG_GRAPH_SOURCE_PK"] = "pypi"
         d["CAIG_FULLTEXT_SEARCH_FIELDS"] = "description,summary,name"
+        d["CAIG_EMBEDDING_FIELD_NAME"] = "embedding"
         d["CAIG_GRAPH_DUMP_UPON_BUILD"] = "false"
         d["CAIG_GRAPH_DUMP_OUTFILE"] = ""
         d["CAIG_CONFIG_CONTAINER"] = "config"
@@ -340,8 +344,13 @@ class ConfigService:
     @classmethod
     def fulltext_search_fields(cls) -> list:
         """Return the list of fields to search for fulltext search operations."""
-        fields_str = cls.envvar("CAIG_FULLTEXT_SEARCH_FIELDS", "description")
+        fields_str = cls.envvar("CAIG_FULLTEXT_SEARCH_FIELDS", "description,summary,name")
         return [field.strip() for field in fields_str.split(",") if field.strip()]
+
+    @classmethod
+    def embedding_field_name(cls) -> str:
+        """Return the name of the document field that contains embedding vectors."""
+        return cls.envvar("CAIG_EMBEDDING_FIELD_NAME", "embedding")
 
     @classmethod
     def config_container(cls) -> str:
@@ -385,7 +394,7 @@ class ConfigService:
 
     @classmethod
     def azure_openai_completions_deployment(cls) -> str:
-        return cls.envvar("CAIG_AZURE_OPENAI_COMPLETIONS_DEP", "gpt4")
+        return cls.envvar("CAIG_AZURE_OPENAI_COMPLETIONS_DEP", "gpt-5.1-codex-mini")
 
     @classmethod
     def azure_openai_embeddings_deployment(cls) -> str:
@@ -409,7 +418,9 @@ class ConfigService:
         
         # Map model names to their context windows
         # Source: https://platform.openai.com/docs/models
-        if "gpt-4o" in model_name or "gpt4o" in model_name:
+        if "gpt-5.1-codex" in model_name or "gpt5.1-codex" in model_name:
+            return 200000  # GPT-5.1 Codex family: assumed 200K tokens (Azure doc rev 2025-10)
+        elif "gpt-4o" in model_name or "gpt4o" in model_name:
             return 128000  # GPT-4o and GPT-4o-mini: 128K tokens
         elif "gpt-4-turbo" in model_name or "gpt4turbo" in model_name:
             return 128000  # GPT-4 Turbo: 128K tokens
@@ -459,11 +470,11 @@ class ConfigService:
 
     @classmethod
     def moderate_sparql_temperature(cls) -> float:
-        return cls.float_envvar("CAIG_MODERATE_SPARQL_TEMPERATURE", 0.0)
+        return cls.float_envvar("CAIG_MODERATE_SPARQL_TEMPERATURE", 1.0)
 
     @classmethod
     def get_completion_temperature(cls) -> float:
-        return cls.float_envvar("CAIG_GET_COMPLETION_TEMPERATURE", 0.0)
+        return cls.float_envvar("CAIG_GET_COMPLETION_TEMPERATURE", 1.0)
 
     @classmethod
     def invoke_kernel_top_p(cls) -> float:

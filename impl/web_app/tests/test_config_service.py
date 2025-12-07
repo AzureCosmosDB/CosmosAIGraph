@@ -119,7 +119,7 @@ def test_azure_openai_deployment_names():
     ConfigService.set_standard_unit_test_env_vars()
     completions = ConfigService.azure_openai_completions_deployment()
     embeddings = ConfigService.azure_openai_embeddings_deployment()
-    assert completions == "gpt4"
+    assert completions == "gpt-5.1-codex-mini"
     assert embeddings == "embeddings"
 
 

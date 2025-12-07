@@ -45,20 +45,26 @@ class Prompts:
             else:
                 logging.warning("PROMPTS.PY - No custom rules provided or rules are empty")
             
-            # First inject custom_rules placeholder, then ontology
+            # Inject rule placeholder first, then protect the ontology placeholder
             prompt_with_rules = template.replace("{custom_rules}", rules_section)
-            logging.warning(f"PROMPTS.PY - Placeholder replacement complete. Looking for '{{custom_rules}}' in template...")
+            logging.warning("PROMPTS.PY - Placeholder replacement complete. Looking for '{custom_rules}' in template...")
             logging.warning(f"PROMPTS.PY - Placeholder found in template: {'{custom_rules}' in template}")
-            logging.warning(f"PROMPTS.PY - Rules section in final prompt: {rules_section in prompt_with_rules if rules_section else 'N/A (no rules)'}")
-            
+            logging.warning(
+                f"PROMPTS.PY - Rules section in final prompt: {rules_section in prompt_with_rules if rules_section else 'N/A (no rules)'}"
+            )
+
+            ontology_token = "__CAIG_ONTOLOGY_BLOCK__"
+            if "{}" not in prompt_with_rules:
+                logging.error("PROMPTS.PY - Ontology placeholder '{}' not found in template!")
+            prompt_protected = prompt_with_rules.replace("{}", ontology_token, 1)
+
             # Auto-escape literal braces in SPARQL code examples to prevent .format() errors
-            # Replace single { and } with {{ and }}, but preserve the ontology placeholder {}
-            # Strategy: Replace all braces with doubled versions, then restore the single {} placeholder
-            safe_prompt = prompt_with_rules.replace("{", "{{").replace("}", "}}")
-            # Restore the single {} for the ontology placeholder (now it's {{{{}}}} after doubling)
-            safe_prompt = safe_prompt.replace("{{{{}}}}", "{}")
-            
-            return safe_prompt.format(minimized_owl)
+            safe_prompt = prompt_protected.replace("{", "{{").replace("}", "}}")
+
+            # Restore the single {} placeholder for ontology injection after escaping
+            safe_prompt = safe_prompt.replace(ontology_token, "{}")
+
+            return safe_prompt.format(minimized_owl or "")
         except Exception as e:
             logging.critical(
                 "Exception in generate_sparql_system_prompt: {}".format(str(e))

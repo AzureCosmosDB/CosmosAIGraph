@@ -171,4 +171,4 @@ With aggregates: Only include grouped variables and aggregate expressions.
 
 ## 10. PREFIXES
 
-Always include all prefixes from the ontology.
+Always copy all prefixes from the ontology to the header of the SPARQL query.

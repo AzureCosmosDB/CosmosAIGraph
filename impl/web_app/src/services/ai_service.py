@@ -5,7 +5,7 @@ import os
 
 import tiktoken
 
-from openai import AzureOpenAI
+from openai import AzureOpenAI, NotFoundError, OpenAIError
 
 import semantic_kernel as sk
 
@@ -151,15 +151,31 @@ class AiService:
                 logging.warning("AI_SERVICE.PY - FULL SYSTEM PROMPT (first 5000 chars):")
                 logging.warning(system_prompt[:5000] if system_prompt else "(None)")
                 logging.warning("=" * 80)
-                completion = self.aoai_client.chat.completions.create(
-                    model=self.completions_deployment,
-                    temperature=ConfigService.moderate_sparql_temperature(),
-                    response_format={"type": "json_object"},
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                )
+                try:
+                    completion = self.aoai_client.chat.completions.create(
+                        model=self.completions_deployment,
+                        temperature=ConfigService.moderate_sparql_temperature(),
+                        response_format={"type": "json_object"},
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                    )
+                except NotFoundError as nf_err:
+                    friendly = (
+                        "Azure OpenAI deployment '{}' was not found at endpoint '{}'. "
+                        "Verify the deployment name or update CAIG_AZURE_OPENAI_COMPLETIONS_DEP."
+                    ).format(self.completions_deployment, self.aoai_endpoint)
+                    resp_obj["error"] = friendly
+                    logging.error(friendly)
+                    logging.exception(nf_err, stack_info=True, exc_info=True)
+                    return self._build_sparql_generation_result(resp_obj)
+                except OpenAIError as aoai_err:
+                    friendly = "Azure OpenAI request failed: {}".format(str(aoai_err))
+                    resp_obj["error"] = friendly
+                    logging.error(friendly)
+                    logging.exception(aoai_err, stack_info=True, exc_info=True)
+                    return self._build_sparql_generation_result(resp_obj)
                 t2 = time.perf_counter()
                 logging.info(
                     "AiService#generate_sparql_from_user_prompt - Completion: {}".format(
@@ -199,6 +215,9 @@ class AiService:
             logging.exception(e, stack_info=True, exc_info=True)
         
         # Convert resp_obj dict to SparqlGenerationResult Pydantic model
+        return self._build_sparql_generation_result(resp_obj)
+
+    def _build_sparql_generation_result(self, resp_obj: dict) -> SparqlGenerationResult:
         return SparqlGenerationResult(
             completion_id=resp_obj.get("completion_id", ""),
             completion_model=resp_obj.get("completion_model", ""),
@@ -207,7 +226,7 @@ class AiService:
             total_tokens=resp_obj.get("total_tokens", None),
             elapsed=resp_obj.get("elapsed", 0.0),
             sparql=resp_obj.get("sparql", ""),
-            error=resp_obj.get("error", None)
+            error=resp_obj.get("error", None),
         )
 
     def validate_sparql_gen_input(self, user_prompt, owl):

@@ -24,6 +24,7 @@ import time
 import logging
 import traceback
 import uuid
+import os
 
 from docopt import docopt
 from dotenv import load_dotenv
@@ -273,6 +274,8 @@ async def load_data(dbname, cname, max_docs):
         nosql_svc.set_db(dbname)
         nosql_svc.set_container(cname)
         data_dir = ConfigService.data_source_dir()
+        print(f"DEBUG load_data: data_dir = {data_dir}")
+        print(f"DEBUG load_data: os.environ CAIG_DATA_SOURCE_DIR = {os.environ.get('CAIG_DATA_SOURCE_DIR', 'NOT SET')}")
         await load_docs_from_directory(
             nosql_svc, data_dir, max_docs
         )
@@ -282,8 +285,8 @@ async def load_data(dbname, cname, max_docs):
     await nosql_svc.close()
 
 
-async def load_single_doc(nosql_svc, fq_name, filename, pk_field, max_retries=3, retry_delay=2):
-    """Load a single document with retry logic."""
+async def load_single_doc(nosql_svc, fq_name, filename, pk_field, ai_svc=None, max_retries=3, retry_delay=2):
+    """Load a single document with retry logic and automatic embedding generation."""
     result = {"success": False, "error": None}
     try:
         doc = FS.read_json(fq_name)
@@ -296,6 +299,36 @@ async def load_single_doc(nosql_svc, fq_name, filename, pk_field, max_retries=3,
         # Ensure id field exists, using filename without extension as default
         if "id" not in doc:
             doc["id"] = filename.replace(".json", "")
+        
+        # Check for embedding field and generate if missing or empty
+        embedding_field = ConfigService.embedding_field_name()
+        if embedding_field not in doc or not doc[embedding_field]:
+            if ai_svc is None:
+                ai_svc = AiService()
+            
+            # Create text to embed from document fields
+            text_to_embed = ""
+            for field in ConfigService.fulltext_search_fields():
+                if field in doc and doc[field]:
+                    text_to_embed += str(doc[field]) + "\n"
+            
+            if text_to_embed.strip():
+                # Limit text size to avoid exceeding token limit (8192 tokens)
+                # Using ~3 chars per token as conservative estimate: 8192 * 3 = ~24576 chars
+                # Using 20000 chars to be safe and leave room for overhead
+                max_chars = 16000
+                text_to_embed = text_to_embed.strip()
+                if len(text_to_embed) > max_chars:
+                    text_to_embed = text_to_embed[:max_chars]
+                    #logging.info(f"Truncated text for embedding generation in {filename} from {len(text_to_embed)} to {max_chars} chars")
+                
+                try:
+                    resp = ai_svc.generate_embeddings(text_to_embed)
+                    doc[embedding_field] = resp.data[0].embedding
+                    #logging.info(f"Generated embedding for document: {filename}")
+                except Exception as embed_error:
+                    logging.warning(f"Failed to generate embedding for {filename}: {str(embed_error)}")
+                    # Continue without embedding - don't fail the entire document load
         
         # Create the document with retry logic
         for attempt in range(max_retries):
@@ -321,28 +354,37 @@ async def load_single_doc(nosql_svc, fq_name, filename, pk_field, max_retries=3,
 
 
 async def load_docs_from_directory(nosql_svc, source_dir, max_docs):
-    files_list = FS.list_files_in_dir(source_dir)
-    filtered_files_list = filter_files_list(files_list, ".json")
-    max_idx = len(filtered_files_list) - 1
+    # Use walk() to recursively find all files in subdirectories
+    walked_files = FS.walk(source_dir)
+    if walked_files is None:
+        logging.error(f"Directory not found or inaccessible: {source_dir}")
+        return
+    
+    # Extract just the full file paths and filter for .json files
+    all_files = [f["full"] for f in walked_files]
+    filtered_files_list = filter_files_list(all_files, ".json")
+    
+    total_files = len(filtered_files_list)
+    files_to_process = min(max_docs, total_files)
     load_counter = Counter()
     pk_field = ConfigService.graph_source_pk()
+    ai_svc = AiService()  # Initialize once for all documents
+    
+    logging.info(f"Found {total_files} JSON files (recursively), will process {files_to_process} files")
     
     # Process documents in concurrent batches for better performance
-    batch_size = 50  # Number of concurrent operations
+    # Reduced batch size to avoid timeouts when sending large documents with embeddings
+    batch_size = 44  # Number of concurrent operations
     
-    for batch_start in range(0, min(max_docs, len(filtered_files_list)), batch_size):
-        batch_end = min(batch_start + batch_size, max_docs, len(filtered_files_list))
+    for batch_start in range(0, files_to_process, batch_size):
+        batch_end = min(batch_start + batch_size, files_to_process)
         tasks = []
         
         for idx in range(batch_start, batch_end):
-            filename = filtered_files_list[idx]
-            if filename.endswith(".json"):
-                fq_name = "{}{}{}".format(
-                    source_dir if source_dir else "",
-                    "/" if source_dir and not (source_dir.endswith("/") or source_dir.endswith("\\")) else "",
-                    filename
-                )
-                tasks.append(load_single_doc(nosql_svc, fq_name, filename, pk_field))
+            fq_name = filtered_files_list[idx]  # Already has full path from walk()
+            filename = os.path.basename(fq_name)  # Extract just the filename for id
+            
+            tasks.append(load_single_doc(nosql_svc, fq_name, filename, pk_field, ai_svc))
         
         # Execute batch concurrently
         results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -351,7 +393,7 @@ async def load_docs_from_directory(nosql_svc, source_dir, max_docs):
         for idx, result in enumerate(results):
             if isinstance(result, Exception):
                 load_counter.increment("exception")
-                logging.error(f"Batch task {batch_start + idx} raised exception: {result}")
+                logging.error("Batch task %d raised exception: %s", batch_start + idx, result)
             elif result.get("success"):
                 load_counter.increment("create_success")
             elif result.get("error"):
@@ -364,16 +406,18 @@ async def load_docs_from_directory(nosql_svc, source_dir, max_docs):
         
         logging.info(
             "Processed batch {}-{} of {}, cumulative results: {}".format(
-                batch_start, batch_end - 1, max_idx, json.dumps(load_counter.get_data())
+                batch_start, batch_end - 1, files_to_process - 1, json.dumps(load_counter.get_data())
             )
         )
+        
+        # Small delay between batches to prevent server timeout
+        await asyncio.sleep(0.1)
     
     logging.info(
         "load_docs_from_directory completed; results: {}".format(
             json.dumps(load_counter.get_data())
         )
     )
-
 
 async def load_batch(nosql_svc, load_counter, batch_number, batch_operations):
     batch_counter = Counter()
@@ -477,8 +521,29 @@ def create_random_document(id, pk):
 
 if __name__ == "__main__":
     # standard initialization of env and logger
-    load_dotenv(override=True)
-    logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
+    # Get the directory where this script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    env_file = os.path.join(script_dir, '.env')
+    
+    # Load .env file with explicit path
+    load_dotenv(dotenv_path=env_file, override=True)
+    
+    # Force logging configuration (in case it was already configured by imported modules)
+    logging.basicConfig(
+        format="%(asctime)s - %(message)s", 
+        level=logging.INFO,
+        force=True
+    )
+    
+    # Silence verbose HTTP logging from OpenAI/httpx libraries
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("openai").setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    
+    # Debug: Print configuration after logging is set up
+    logging.info(f"Loaded .env from: {env_file}")
+    logging.info(f"CAIG_DATA_SOURCE_DIR from env: {os.getenv('CAIG_DATA_SOURCE_DIR')}")
+    logging.info(f"CAIG_DATA_SOURCE_DIR from ConfigService: {ConfigService.data_source_dir()}")
     if len(sys.argv) < 2:
         print_options("Error: invalid command-line")
         exit(1)

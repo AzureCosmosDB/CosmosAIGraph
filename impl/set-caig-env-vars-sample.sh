@@ -33,8 +33,8 @@ set_env_if_missing() {
 # Note: To persist variables permanently, add them to your shell profile (~/.bashrc, ~/.zshrc)
 # or use a system-level mechanism; this script only affects the current shell when sourced.
 
-set_env_if_missing CAIG_AZURE_OPENAI_COMPLETIONS_DEP "gpt-4.1"
-set_env_if_missing CAIG_AZURE_OPENAI_EMBEDDINGS_DEP "text-embedding-ada-002"
+set_env_if_missing CAIG_AZURE_OPENAI_COMPLETIONS_DEP "gpt-5.1-codex-mini"
+set_env_if_missing CAIG_AZURE_OPENAI_EMBEDDINGS_DEP "text-embedding-3-small"
 set_env_if_missing CAIG_AZURE_OPENAI_KEY ""
 set_env_if_missing CAIG_AZURE_OPENAI_URL ""
 set_env_if_missing CAIG_CONFIG_CONTAINER "config"

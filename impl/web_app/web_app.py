@@ -10,6 +10,8 @@
 import asyncio
 import json
 import logging
+import re
+import string
 import sys
 import textwrap
 import time
@@ -251,6 +253,7 @@ async def get_home(req: Request):
     view_data["prompts_text"] = "no prompts yet"
     view_data["last_user_question"] = ""
     view_data["rag_strategy"] = "auto"
+    view_data["normalize_separators"] = False
     view_data["current_page"] = "conv_ai_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="conv_ai_console.html", context=view_data
@@ -360,7 +363,7 @@ async def verify_rules(req: Request):
                     # Get LLM response using the aoai_client directly
                     completion = ai_svc.aoai_client.chat.completions.create(
                         model=ai_svc.completions_deployment,
-                        temperature=0.0,
+                        temperature=ConfigService.moderate_sparql_temperature(),
                         messages=[
                             {"role": "user", "content": evaluation_prompt},
                         ],
@@ -509,6 +512,7 @@ async def ai_post_gen_sparql(req: Request):
     view_data["natural_language"] = natural_language
     view_data["generating_nl"] = natural_language
     sparql: str = ""
+    formatted_sparql: str = ""
 
     resp_obj = dict()
     resp_obj["session_id"] = (
@@ -527,22 +531,36 @@ async def ai_post_gen_sparql(req: Request):
     try:
         result = ai_svc.generate_sparql_from_user_prompt(resp_obj, custom_rules)
         sparql = result.sparql if result.sparql else ""
-        view_data["sparql"] = SparqlFormatter().pretty(sparql)
-        # Update resp_obj with result values
         resp_obj["sparql"] = sparql
         resp_obj["completion_id"] = result.completion_id if hasattr(result, 'completion_id') else ""
         resp_obj["completion_model"] = result.completion_model if hasattr(result, 'completion_model') else ""
         resp_obj["prompt_tokens"] = result.prompt_tokens if hasattr(result, 'prompt_tokens') else -1
         resp_obj["completion_tokens"] = result.completion_tokens if hasattr(result, 'completion_tokens') else -1
         resp_obj["total_tokens"] = result.total_tokens if hasattr(result, 'total_tokens') else -1
-        resp_obj["error"] = result.error if hasattr(result, 'error') else ""
+        resp_obj["error"] = (result.error if hasattr(result, 'error') else "") or ""
+        if sparql:
+            try:
+                formatted_sparql = SparqlFormatter().pretty(sparql)
+            except Exception as fmt_err:
+                logging.warning("Failed to pretty-print SPARQL: %s", fmt_err)
+                formatted_sparql = sparql
+        else:
+            formatted_sparql = ""
     except Exception as e:
         resp_obj["error"] = str(e)
-        logging.critical((str(e)))
+        logging.critical(str(e))
         logging.exception(e, stack_info=True, exc_info=True)
+        formatted_sparql = ""
 
     view_data["results"] = resp_obj#json.dumps(resp_obj, sort_keys=False, indent=2)
-    view_data["results_message"] = "Generative AI Response"
+    if resp_obj.get("error"):
+        view_data["results_message"] = "SPARQL Generation Error"
+        view_data["error_message"] = resp_obj.get("error")
+        view_data["sparql"] = formatted_sparql or ""
+    else:
+        view_data["results_message"] = "Generative AI Response"
+        view_data["error_message"] = ""
+        view_data["sparql"] = formatted_sparql
     view_data["current_page"] = "gen_sparql_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="gen_sparql_console.html", context=view_data
@@ -554,6 +572,7 @@ async def gen_sparql_console_execute_sparql(req: Request):
     form_data = await req.form()
     logging.info("/gen_sparql_console_execute_sparql form_data: {}".format(form_data))
     view_data = gen_sparql_console_view_data()
+    view_data["error_message"] = ""
     sparql = form_data.get("sparql")
     view_data["sparql"] = sparql
     # Prefer the actual textarea value if present, else fallback to generating_nl
@@ -846,6 +865,49 @@ def vector_search_view_data():
     return view_data
 
 
+TARGET_SEPARATOR_CHARS = {ch for ch in string.punctuation if ch not in ",;"}
+WHITESPACE_COLLAPSE_PATTERN = re.compile(r"\s+")
+
+
+def results_contain_phrase(results, phrase: str) -> bool:
+    try:
+        normalized = (phrase or "").strip().lower()
+        if not normalized:
+            return True
+        for doc in results or []:
+            try:
+                serialized = json.dumps(doc, ensure_ascii=False).lower()
+                if normalized in serialized:
+                    return True
+            except Exception:
+                continue
+        return False
+    except Exception:
+        return False
+
+
+def normalize_separator_characters(text: str) -> str:
+    """Replace separator punctuation with spaces only when flanked by characters on both sides."""
+    if not text:
+        return text
+
+    chars = list(text)
+    length = len(chars)
+    transformed = []
+
+    for idx, ch in enumerate(chars):
+        if ch in TARGET_SEPARATOR_CHARS:
+            left = chars[idx - 1] if idx > 0 else ""
+            right = chars[idx + 1] if idx < length - 1 else ""
+            if left.strip() and right.strip():
+                transformed.append(" ")
+                continue
+        transformed.append(ch)
+
+    collapsed = WHITESPACE_COLLAPSE_PATTERN.sub(" ", "".join(transformed))
+    return collapsed.strip()
+
+
 @app.get("/conv_ai_console")
 async def conv_ai_console(req: Request):
     global nosql_svc
@@ -907,6 +969,7 @@ async def conv_ai_console(req: Request):
         view_data["last_user_question"] = ""
     
     view_data["rag_strategy"] = "auto"
+    view_data["normalize_separators"] = False
     view_data["current_page"] = "conv_ai_console"  # Set active page for navbar
     return views.TemplateResponse(
         request=req, name="conv_ai_console.html", context=view_data
@@ -931,12 +994,30 @@ async def conv_ai_console_post(req: Request):
             pass
     user_text = str(form_data.get("user_text") or "").strip()
     rag_strategy_choice = str(form_data.get("rag_strategy") or '').strip().lower()
+    if "normalize_separators" in form_data:
+        normalize_flag = (
+            str(form_data.get("normalize_separators") or "")
+            .strip()
+            .lower()
+            in ("on", "true", "1", "yes")
+        )
+    else:
+        normalize_flag = False
     
     # Extract custom rules from form data (type-safe handling)
     custom_rules_raw = form_data.get("custom_rules")
     custom_rules = None
     if custom_rules_raw and isinstance(custom_rules_raw, str):
         custom_rules = custom_rules_raw.strip() or None
+    
+    if normalize_flag and user_text:
+        normalized_value = normalize_separator_characters(user_text)
+        logging.info(
+            "Normalize separators active; length %s -> %s",
+            len(user_text),
+            len(normalized_value),
+        )
+        user_text = normalized_value
     
     print(f"[DEBUG] conversation_id: {conversation_id}, user_text: {user_text}")
     logging.info(
@@ -1193,6 +1274,7 @@ async def conv_ai_console_post(req: Request):
     view_data["prompts_text"] = conv.formatted_prompts_text()
     view_data["last_user_question"] = conv.get_last_user_message()
     view_data["rag_strategy"] = rag_strategy_choice or (rdr.get_strategy() if 'rdr' in locals() and rdr else "auto")
+    view_data["normalize_separators"] = normalize_flag
     view_data["current_page"] = "conv_ai_console"  # Set active page for navbar
     
     # Debugging: Log the state of completions before rendering the template
@@ -1297,9 +1379,10 @@ def gen_sparql_console_view_data():
     view_data["sparql"] = ""
     view_data["owl"] = OntologyService.get_owl_content()
     view_data["results_message"] = ""
-    view_data["results"] = ""
+    view_data["results"] = {}
     view_data["generating_nl"] = ""
     view_data["count"] = ""
+    view_data["error_message"] = ""
     return view_data
 
 

@@ -25,8 +25,16 @@
             {{ comp["user_text"] }}
           </p>
         </div>
-        <div style="background-color: #2f3336; padding: 20px; margin: 0 -1.25rem;">
-          <div class="text-start fs-6" style="margin: 0;">
+        <div class="position-relative" style="background-color: #2f3336; padding: 20px; margin: 0 -1.25rem;">
+          <button type="button" class="btn btn-outline-light btn-sm copy-response-button position-absolute bottom-0 end-0 mb-2 me-2"
+            data-response-id="response_content_{{ loop.index0 }}" title="Copy response">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M4 1.5A1.5 1.5 0 0 1 5.5 0h6A1.5 1.5 0 0 1 13 1.5V10h-1V1.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0-.5.5V3H4z" />
+              <path d="M3.5 4h6A1.5 1.5 0 0 1 11 5.5v8A1.5 1.5 0 0 1 9.5 15h-6A1.5 1.5 0 0 1 2 13.5v-8A1.5 1.5 0 0 1 3.5 4m0 1a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5z" />
+            </svg>
+            <span class="visually-hidden">Copy response</span>
+          </button>
+          <div class="text-start fs-6" style="margin: 0;" id="response_content_{{ loop.index0 }}">
             {{ comp["content"] | markdown | safe }}
           </div>
         </div>
@@ -89,7 +97,7 @@
         {% if not loop.last %}<hr>{% endif %}
         {% endfor %}
         <hr>
-        <div class="row align-items-end mb-3">
+        <div class="row align-items-start mb-3">
           <div class="col-auto">
             <label class="form-label fs-6 d-block">RAG data source:</label>
             <div class="btn-group" role="group" aria-label="RAG strategy">
@@ -112,11 +120,18 @@
           </div>
           <div class="col">
             <label class="form-label fs-6" for="user_text">Enter your request:</label>
+            <input type="hidden" id="normalize_separators_value" name="normalize_separators" value="{{ 'on' if (normalize_separators | default(False)) else 'off' }}">
             <input class="form-control" type="text" id="user_text" name="user_text"
               placeholder="Enter your request here. Triple-click for suggestions.">
+            <div class="form-check form-check-sm mt-2">
+              <input class="form-check-input" type="checkbox" value="on" id="normalize_separators" {% if normalize_separators %}checked{% endif %}>
+              <label class="form-check-label text-light small mb-0" for="normalize_separators">
+                Replace separators (e.g., -, /, |, ., :)
+              </label>
+            </div>
           </div>
-          <div class="col-auto">
-            <label class="form-label fs-6 d-block">&nbsp;</label>
+          <div class="col-auto d-flex flex-column align-items-start gap-2">
+            <label class="form-label fs-6 mb-0">&nbsp;</label>
             <button type="button" class="btn btn-outline-primary" id="continue_button"
               name="continue_button">Submit</button>
           </div>
@@ -159,6 +174,8 @@
   var user_text = document.getElementById("user_text");
   const continue_button = document.getElementById("continue_button");
   const error_message = document.getElementById("error_message");
+  const normalizeCheckbox = document.getElementById("normalize_separators");
+  const normalizeValueInput = document.getElementById("normalize_separators_value");
 
   // Session state keys for toggle persistence (per completion)
   const CONVERSATION_ID = document.getElementById('conversation_id').value;
@@ -286,6 +303,14 @@
   // ensure latest completion is visible on render
   document.addEventListener('DOMContentLoaded', scrollToBottom);
 
+  if (normalizeCheckbox && normalizeValueInput) {
+    const syncNormalizeValue = () => {
+      normalizeValueInput.value = normalizeCheckbox.checked ? 'on' : 'off';
+    };
+    syncNormalizeValue();
+    normalizeCheckbox.addEventListener('change', syncNormalizeValue);
+  }
+
   var suggestions_index = -1;
   var suggestions = [
     "what are the dependencies of the python library called flask?",
@@ -328,6 +353,9 @@
       continue_button.classList.add('processing');
       continue_button.textContent = "Processing...";
       error_message.style.display = "none"; // Hide any previous errors
+      if (normalizeCheckbox && normalizeValueInput) {
+        normalizeValueInput.value = normalizeCheckbox.checked ? 'on' : 'off';
+      }
       
       // Store the submission time to detect if the page takes too long
       sessionStorage.setItem('conv_ai_form_submit_time', Date.now().toString());
@@ -353,6 +381,77 @@
   // Event delegation for completion-specific toggle buttons
   document.addEventListener('click', function(event) {
     const target = event.target;
+    const copyButton = target.closest('.copy-response-button');
+    if (copyButton) {
+      event.preventDefault();
+      const responseId = copyButton.getAttribute('data-response-id');
+
+      const setButtonState = (label, success) => {
+        const originalHtml = copyButton.innerHTML;
+        if (success) {
+          copyButton.classList.add('btn-success');
+          copyButton.classList.remove('btn-outline-light');
+        }
+        copyButton.dataset.originalContent = originalHtml;
+        copyButton.innerHTML = label;
+        setTimeout(() => {
+          if (copyButton.dataset.originalContent) {
+            copyButton.innerHTML = copyButton.dataset.originalContent;
+            copyButton.classList.remove('btn-success');
+            copyButton.classList.add('btn-outline-light');
+            delete copyButton.dataset.originalContent;
+          }
+        }, 1500);
+      };
+
+      const copyHtmlContent = async () => {
+        const sourceEl = document.getElementById(responseId);
+        if (!sourceEl) {
+          setButtonState('Copy failed', false);
+          return;
+        }
+        const html = `<div>${sourceEl.innerHTML}</div>`;
+        const text = sourceEl.innerText || sourceEl.textContent || '';
+        if (navigator.clipboard) {
+          try {
+            if (window.ClipboardItem) {
+              const htmlBlob = new Blob([html], { type: 'text/html' });
+              const textBlob = new Blob([text], { type: 'text/plain' });
+              await navigator.clipboard.write([
+                new ClipboardItem({
+                  'text/html': htmlBlob,
+                  'text/plain': textBlob
+                })
+              ]);
+            } else {
+              await navigator.clipboard.writeText(text);
+            }
+            setButtonState('Copied!', true);
+            return;
+          } catch (err) {
+            console.warn('Clipboard API error', err);
+          }
+        }
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.top = '-1000px';
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          setButtonState('Copied!', true);
+        } catch (fallbackErr) {
+          console.warn('Copy fallback failed', fallbackErr);
+          setButtonState('Copy failed', false);
+        }
+      };
+
+      copyHtmlContent();
+      return;
+    }
     
     // Handle feedback button clicks
     if (target.classList.contains('comp-feedback-button')) {
