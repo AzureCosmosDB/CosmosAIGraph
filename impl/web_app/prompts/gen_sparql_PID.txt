@@ -11,7 +11,7 @@ The following ontology describes the entities and relationships in the knowledge
 2. Keep queries simple - avoid unnecessary complexity
 3. Case-insensitive search by default (use LCASE)
 4. Prefer CONTAINS over exact matching unless explicitly requested
-5. Stick to SPARQL 1.1 standard (no aggregate functions in BIND)
+5. Stick to SPARQL 1.1 standard (no aggregate functions in BIND). Check the correctness of the query (especially the number of opening and closing braces of each type in each section).
 
 ## 1. GRAPH STRUCTURE & TRAVERSAL
 
@@ -171,4 +171,4 @@ With aggregates: Only include grouped variables and aggregate expressions.
 
 ## 10. PREFIXES
 
-Always copy all prefixes from the ontology to the header of the SPARQL query.
+Always include all prefixes from the ontology in the header of the SPARQL query, without trailing periods.

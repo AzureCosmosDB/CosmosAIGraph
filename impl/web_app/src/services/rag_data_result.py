@@ -19,6 +19,7 @@ class RAGDataResult:
         self.data["query"] = ""
         self.data["rag_docs"] = list()
         self.data["rag_doc_count"] = -1
+        self.data["multi_source_sections"] = list()
 
     def finish(self):
         self.data["rag_doc_count"] = len(self.data["rag_docs"])
@@ -96,6 +97,18 @@ class RAGDataResult:
     def add_strategy(self, value):
         if value is not None:
             self.data["strategy"].append(str(value))
+
+    def add_section(self, source: str, docs: list | None = None, label: str | None = None, metadata: dict | None = None):
+        section = {
+            "source": source,
+            "label": label or (f"context from {source}:" if source else "context:"),
+            "docs": docs or [],
+            "metadata": metadata or {},
+        }
+        self.data["multi_source_sections"].append(section)
+
+    def get_sections(self) -> list:
+        return self.data.get("multi_source_sections", [])
 
     def as_system_prompt_text(self):
         prompt_lines = list()

@@ -62,10 +62,14 @@ class RAGDataService:
         sb = StrategyBuilder(self.ai_svc)
         strategy_obj = sb.determine(user_text)
         # honor explicit user choice when provided and valid; still use name/context from builder
-        valid_choices = {"db", "vector", "graph"}
+        valid_choices = {"db", "vector", "graph", "all"}
         strategy = strategy_obj["strategy"]
         if strategy_override and strategy_override in valid_choices:
             strategy = strategy_override
+
+        if strategy == "all":
+            return await self.get_all_rag_data(user_text, max_doc_count, strategy_obj, custom_rules)
+
         rdr.add_strategy(strategy)
         rdr.set_context(strategy_obj["name"])
 
@@ -84,6 +88,74 @@ class RAGDataService:
                 await self.get_vector_rag_data(user_text, rdr, max_doc_count)
         else:
             await self.get_vector_rag_data(user_text, rdr, max_doc_count)
+
+        rdr.finish()
+        return rdr
+
+    async def get_all_rag_data(self, user_text, max_doc_count, strategy_obj, custom_rules: Optional[str] = None) -> RAGDataResult:
+        rdr = RAGDataResult()
+        rdr.set_user_text(user_text)
+        rdr.set_attr("max_doc_count", max_doc_count)
+        rdr.add_strategy("all")
+
+        name = strategy_obj.get("name") if strategy_obj else None
+
+        async def fetch_db():
+            temp = RAGDataResult()
+            await self.get_database_rag_data(user_text, name, temp, max_doc_count)
+            return ("db", temp.get_rag_docs(), None)
+
+        async def fetch_vector():
+            temp = RAGDataResult()
+            await self.get_vector_rag_data(user_text, temp, max_doc_count)
+            return ("vector", temp.get_rag_docs(), None)
+
+        async def fetch_graph():
+            temp = RAGDataResult()
+            await self.get_graph_rag_data(user_text, temp, max_doc_count, custom_rules)
+            return ("graph", temp.get_rag_docs(), temp.get_sparql())
+
+        tasks = [
+            asyncio.create_task(fetch_db()),
+            asyncio.create_task(fetch_vector()),
+            asyncio.create_task(fetch_graph()),
+        ]
+
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        context_chunks = []
+
+        for result in results:
+            if isinstance(result, Exception):
+                logging.exception(result, stack_info=True, exc_info=True)
+                continue
+            source, docs, metadata = result
+            docs = docs or []
+            rdr.add_strategy(source)
+
+            if not docs:
+                continue
+
+            metadata_dict = metadata if isinstance(metadata, dict) else {}
+            if isinstance(metadata, str) and metadata.strip():
+                metadata_dict = {"sparql": metadata.strip()}
+
+            if source == "graph" and metadata_dict.get("sparql"):
+                rdr.set_sparql(metadata_dict["sparql"])
+
+            label = f"context from {source}:"
+            rdr.add_section(source, docs, label, metadata_dict)
+
+            doc_lines = []
+            for doc in docs:
+                doc_copy = dict(doc)
+                doc_copy.setdefault("_caig_source", source)
+                rdr.add_doc(doc_copy)
+                doc_lines.append(json.dumps(doc, ensure_ascii=False))
+
+            context_chunks.append(f"{label}\n" + "\n".join(doc_lines))
+
+        if context_chunks:
+            rdr.set_context("\n\n".join(context_chunks))
 
         rdr.finish()
         return rdr

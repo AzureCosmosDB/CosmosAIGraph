@@ -116,6 +116,10 @@
               <input type="radio" class="btn-check" name="rag_strategy" id="rag_graph" autocomplete="off" value="graph"
                 {% if rag_strategy=='graph' %}checked{% endif %}>
               <label class="btn btn-sm btn-outline-secondary" for="rag_graph">Graph</label>
+
+              <input type="radio" class="btn-check" name="rag_strategy" id="rag_all" autocomplete="off" value="all"
+                {% if rag_strategy=='all' %}checked{% endif %}>
+              <label class="btn btn-sm btn-outline-secondary" for="rag_all">All</label>
             </div>
           </div>
           <div class="col">

@@ -1102,7 +1102,38 @@ async def conv_ai_console_post(req: Request):
             context = ""
             completion_context = conv.last_completion_content()
             
-            if rdr.has_db_rag_docs() == True:
+            strategy_signature = rdr.get_strategy() or ""
+            if "all" in strategy_signature:
+                sections = []
+                try:
+                    sections = rdr.get_sections()
+                except AttributeError:
+                    sections = rdr.get_data().get("multi_source_sections", [])
+
+                aggregated_chunks = []
+                for section in sections:
+                    docs = section.get("docs") or []
+                    if not docs:
+                        continue
+                    label = section.get("label") or f"context from {section.get('source', 'source')}:"
+                    doc_lines = [json.dumps(doc) for doc in docs]
+                    aggregated_chunks.append(f"{label}\n" + "\n".join(doc_lines))
+                    if section.get("source") == "graph":
+                        sparql_text = (section.get("metadata") or {}).get("sparql")
+                        if sparql_text:
+                            conv.add_diagnostic_message("sparql: {}".format(sparql_text))
+
+                aggregated_context = "\n\n".join(aggregated_chunks).strip()
+                if not aggregated_context:
+                    aggregated_context = rdr.get_context() or rdr.as_system_prompt_text()
+
+                conv.set_context(aggregated_context)
+                if completion_context:
+                    context = "{}\n{}".format(completion_context, aggregated_context)
+                else:
+                    context = aggregated_context
+
+            elif rdr.has_db_rag_docs() == True:
                 for doc in rdr.get_rag_docs():
                     logging.debug("doc: {}".format(doc))
                     line_parts = list()
