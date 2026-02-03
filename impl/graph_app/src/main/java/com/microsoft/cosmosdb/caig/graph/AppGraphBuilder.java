@@ -21,6 +21,8 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -138,60 +140,42 @@ public class AppGraphBuilder {
 
         // See https://jena.apache.org/documentation/ontology/
 
-        boolean useDefaultModelLogic = true;
-
-        if (useDefaultModelLogic) {
-            Model model = ModelFactory.createDefaultModel();
-            return model;
+        if (!readOntology) {
+            return ModelFactory.createDefaultModel();
         }
-        else {
-            try {
-                String owlFile = AppConfig.getGraphOwlFilename();
-                FileUtil fileUtil = new FileUtil();
-                String ontology = fileUtil.readUnicode(owlFile);
-                
-                if (ontology == null || ontology.isEmpty()) {
-                    logger.error("Failed to load OWL ontology from: " + owlFile);
-                    return ModelFactory.createDefaultModel();
-                }
-                
-                InputStream byteStream = new ByteArrayInputStream(ontology.getBytes(StandardCharsets.UTF_8));
-                logger.warn("owlFile:  " + owlFile);
-                logger.warn("ontology length: " + ontology.length());
 
-                
-                OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-                model.read(byteStream, "");
-
-                model.setNsPrefix("default", AppConfig.getGraphNamespace());
-
-                // set sample namespaces in case sample datasets are used
-                //model.setNsPrefix("caig", "http://cosmosdb.com/caig#");
-                //model.setNsPrefix("ns1", AppConfig.getGraphNamespace());
-                return model;
-
-                // Reasoner reasoner = ReasonerRegistry.getOWLReasoner().bindSchema(model.getGraph());
-                // InfModel infModel = ModelFactory.createInfModel(reasoner, model);
-                // return infModel;
-
-                 
-/*
-                // Load ontology as schema
-                Model schema = ModelFactory.createDefaultModel();
-                schema.read(byteStream, "", "TTL");
-
-                // Create base data model
-                Model dataModel = ModelFactory.createDefaultModel();
-
-                // After loading data into dataModel, wrap with RDFS reasoner:
-                InfModel infModel = ModelFactory.createRDFSModel(schema, dataModel);
-                return infModel;
-*/
-            } catch (Throwable t) {
-                t.printStackTrace();
+        try {
+            String owlFile = AppConfig.getGraphOwlFilename();
+            if (owlFile == null || owlFile.isBlank()) {
+                return ModelFactory.createDefaultModel();
             }
+
+            FileUtil fileUtil = new FileUtil();
+            String ontologyText = fileUtil.readUnicode(owlFile);
+            if (ontologyText == null || ontologyText.isEmpty()) {
+                logger.error("Failed to load ontology from: " + owlFile);
+                return ModelFactory.createDefaultModel();
+            }
+
+            logger.warn("owlFile:  " + owlFile);
+            logger.warn("ontology length: " + ontologyText.length());
+
+            Lang lang = RDFLanguages.filenameToLang(owlFile);
+            if (lang == null) {
+                lang = Lang.TTL;
+            }
+
+            OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+            InputStream byteStream = new ByteArrayInputStream(ontologyText.getBytes(StandardCharsets.UTF_8));
+            RDFDataMgr.read(model, byteStream, lang);
+
+            model.setNsPrefix("default", AppConfig.getGraphNamespace());
+            return model;
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
-        return null;
+
+        return ModelFactory.createDefaultModel();
     }
 
     /**
