@@ -14,7 +14,6 @@ param azureRegion string
 param configContainer string
 param conversationsContainer string
 param cosmosdbNosqlAcct string
-param cosmosdbNosqlAuthMechanism string
 param cosmosdbNosqlKey string
 param cosmosdbNosqlRg string
 param cosmosdbNosqlUri string
@@ -155,10 +154,6 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
             {
               name: 'CAIG_COSMOSDB_NOSQL_ACCT'
               value: cosmosdbNosqlAcct
-            }
-            {
-              name: 'CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM'
-              value: cosmosdbNosqlAuthMechanism
             }
             {
               name: 'CAIG_COSMOSDB_NOSQL_KEY'
@@ -327,10 +322,6 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
             {
               name: 'CAIG_COSMOSDB_NOSQL_ACCT'
               value: cosmosdbNosqlAcct
-            }
-            {
-              name: 'CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM'
-              value: cosmosdbNosqlAuthMechanism
             }
             {
               name: 'CAIG_COSMOSDB_NOSQL_KEY'

@@ -9,6 +9,10 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
+ext {
+	set('jackson.version', '2.18.6')
+}
+
 group = 'com.microsoft.cosmosdb'
 version = ''
 
@@ -26,6 +30,11 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	all {
+		resolutionStrategy {
+			force 'com.fasterxml.jackson.core:jackson-core:2.18.6'
+		}
+	}
 }
 
 test {
@@ -42,6 +51,7 @@ dependencies {
 	implementation 'org.springframework.session:spring-session-core:4.0.0-M2'
 	compileOnly 'org.projectlombok:lombok:1.18.+'
 	implementation 'com.azure:azure-cosmos:4.74.+'
+	implementation 'com.azure:azure-identity:1.15.3'
 	implementation 'com.azure:azure-storage-blob:12.+'
 	implementation 'org.apache.jena:apache-jena-libs:5.5.+'
 	annotationProcessor 'org.projectlombok:lombok:1.18.+'

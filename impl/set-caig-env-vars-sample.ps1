@@ -44,7 +44,6 @@ Set-EnvIfMissing -Name "CAIG_AZURE_OPENAI_URL" -Value "" -WarnIfEmpty
 Set-EnvIfMissing -Name "CAIG_CONFIG_CONTAINER" -Value "config"
 Set-EnvIfMissing -Name "CAIG_CONVERSATIONS_CONTAINER" -Value "conversations"
 Set-EnvIfMissing -Name "CAIG_COSMOSDB_NOSQL_ACCT" -Value "<your-account>" -WarnIfEmpty
-Set-EnvIfMissing -Name "CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM" -Value "key"
 Set-EnvIfMissing -Name "CAIG_COSMOSDB_NOSQL_KEY" -Value "" -WarnIfEmpty
 Set-EnvIfMissing -Name "CAIG_COSMOSDB_NOSQL_RG" -Value "<your-resource-group>" -WarnIfEmpty
 Set-EnvIfMissing -Name "CAIG_COSMOSDB_NOSQL_URI" -Value "https://<your-account>.documents.azure.com:443/" -WarnIfEmpty

@@ -26,7 +26,6 @@ public class AppConfig {
     // Constants - Environment Variable Names
     public static final String CAIG_COSMOSDB_NOSQL_ACCT           = "CAIG_COSMOSDB_NOSQL_ACCT";
     public static final String CAIG_COSMOSDB_NOSQL_URI            = "CAIG_COSMOSDB_NOSQL_URI";
-    public static final String CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM = "CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM";
     public static final String CAIG_COSMOSDB_NOSQL_KEY            = "CAIG_COSMOSDB_NOSQL_KEY";
     public static final String CAIG_GRAPH_SOURCE_TYPE             = "CAIG_GRAPH_SOURCE_TYPE";
     public static final String CAIG_GRAPH_SOURCE_DB               = "CAIG_GRAPH_SOURCE_DB";
@@ -40,7 +39,6 @@ public class AppConfig {
     public static final String[] DEFINED_ENVIRONMENT_VARIABLES = {
             CAIG_COSMOSDB_NOSQL_ACCT,
             CAIG_COSMOSDB_NOSQL_URI,
-            CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM,
             CAIG_COSMOSDB_NOSQL_KEY,
             CAIG_GRAPH_SOURCE_TYPE,
             CAIG_GRAPH_SOURCE_DB,
@@ -142,10 +140,6 @@ public class AppConfig {
 
     public static String getCosmosNoSqlUri() {
         return getEnvVar(CAIG_COSMOSDB_NOSQL_URI, null);
-    }
-
-    public static String getCosmosNoSqlAuthMechanism() {
-        return getEnvVar(CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM, null);
     }
 
     public static String getCosmosNoSqlKey1() {

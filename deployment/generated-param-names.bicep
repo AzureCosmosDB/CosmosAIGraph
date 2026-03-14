@@ -9,7 +9,6 @@ param azureOpenaiVersion string
 param configContainer string
 param conversationsContainer string
 param cosmosdbNosqlAcct string
-param cosmosdbNosqlAuthMechanism string
 param cosmosdbNosqlKey string
 param cosmosdbNosqlRg string
 param cosmosdbNosqlUri string

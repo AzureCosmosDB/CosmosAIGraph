@@ -109,6 +109,12 @@ def test_azure_openai_key():
     assert len(val) < 50
 
 
+def test_azure_openai_key_can_be_missing():
+    ConfigService.set_standard_unit_test_env_vars()
+    os.environ.pop("CAIG_AZURE_OPENAI_KEY", None)
+    assert ConfigService.azure_openai_key() is None
+
+
 def test_azure_openai_version():
     ConfigService.set_standard_unit_test_env_vars()
     val = ConfigService.azure_openai_version()

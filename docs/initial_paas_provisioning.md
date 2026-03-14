@@ -55,8 +55,6 @@ Note: this example uses Azure Cosmos DB for NoSQL with Capacity Mode: `Provision
 After the Azure Cosmos DB for NoSQL account has been created, 
 save the name you chose for that account in the environment variable called **CAIG_COSMOSDB_NOSQL_ACCT**.
 
-Also, set the environment variable called **CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM** to "key".
-
 Then, navigate to this account in your Azure Portal and open "Settings -> Keys" blade as shown below.  
 
 <p align="center">

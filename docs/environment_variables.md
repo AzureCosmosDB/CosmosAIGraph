@@ -20,7 +20,6 @@ All of these begin with the prefix `CAIG_`.
 | CAIG_CONFIG_CONTAINER | The Cosmos DB container for configuration JSON values.   | RUNTIME |
 | CAIG_CONVERSATIONS_CONTAINER | The Cosmos DB container where the chat conversations and history are persisted.   | WEB RUNTIME |
 | CAIG_COSMOSDB_NOSQL_ACCT | The Name of your Cosmos DB NoSQL account.   | RUNTIME |
-| CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM | The Cosmos DB NoSQL authentication mechanism; key or rbac.   | RUNTIME |
 | CAIG_COSMOSDB_NOSQL_KEY | The key of your Cosmos DB NoSQL account.   | RUNTIME |
 | CAIG_COSMOSDB_NOSQL_RG | The Resource Group of your Cosmos DB NoSQL account.   | DEV ENV |
 | CAIG_COSMOSDB_NOSQL_URI | The URI of your Cosmos DB NoSQL account.   | RUNTIME |

@@ -48,23 +48,43 @@ class CosmosNoSQLService:
         self._ctrproxy: ContainerProxy | None = None
         self._cname: str | None = None
         self._client: CosmosClient | None = None
+        self._credential: DefaultAzureCredential | None = None
         logging.info("CosmosNoSQLService - constructor")
 
     async def initialize(self):
         """This method should be called after the above constructor."""
-        auth_mechanism = ConfigService.cosmosdb_nosql_auth_mechanism()
+        auth_mechanism = "rbac"
         logging.info("CosmosNoSQLService#auth_mechanism: %s", auth_mechanism)
 
         try:
             uri = ConfigService.cosmosdb_nosql_uri()
-            if auth_mechanism == "key":
-                logging.info("Initializing CosmosClient with key authentication.")
-                key = ConfigService.cosmosdb_nosql_key()
-                self._client = CosmosClient(uri, credential=key, connection_mode="Direct")
-            else:
+            try:
                 logging.info("Initializing CosmosClient with DefaultAzureCredential.")
-                credential = DefaultAzureCredential()
-                self._client = CosmosClient(uri, credential=credential, connection_mode="Direct")
+                self._credential = DefaultAzureCredential()
+                await self._credential.get_token("https://cosmos.azure.com/.default")
+                self._client = CosmosClient(uri, credential=self._credential, connection_mode="Direct")
+            except Exception as credential_error:
+                if self._credential is not None:
+                    try:
+                        await self._credential.close()
+                    except Exception:
+                        pass
+                    self._credential = None
+
+                key = ConfigService.cosmosdb_nosql_key()
+                if key:
+                    auth_mechanism = "key"
+                    logging.warning(
+                        "DefaultAzureCredential unavailable for Cosmos DB; falling back to key auth: %s",
+                        str(credential_error),
+                    )
+                    self._client = CosmosClient(uri, credential=key, connection_mode="Direct")
+                else:
+                    raise RuntimeError(
+                        "Microsoft Entra ID authentication is unavailable and no CAIG_COSMOSDB_NOSQL_KEY fallback is configured"
+                    ) from credential_error
+
+            logging.info("CosmosNoSQLService#auth_mechanism selected: %s", auth_mechanism)
 
             logging.info("CosmosClient initialized successfully.")
             self.set_db(ConfigService.graph_source_db())
@@ -76,6 +96,9 @@ class CosmosNoSQLService:
         if self._client is not None:
             await self._client.close()
             logging.info("CosmosNoSQLService - client closed")
+        if self._credential is not None:
+            await self._credential.close()
+            self._credential = None
 
     async def list_databases(self):
         """Return the list of database names in the account."""

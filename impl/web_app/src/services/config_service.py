@@ -165,14 +165,11 @@ class ConfigService:
             "The Resource Group of your Cosmos DB NoSQL account.  (DEV ENV)"
         )
         d["CAIG_COSMOSDB_NOSQL_URI"] = "The URI of your Cosmos DB NoSQL account.  (RUNTIME)"
-        d["CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM"] = (
-            "The Cosmos DB NoSQL authentication mechanism; key or rbac.  (RUNTIME)"
-        )
-        d["CAIG_COSMOSDB_NOSQL_KEY"] = "The key of your Cosmos DB NoSQL account.  (RUNTIME)"
+        d["CAIG_COSMOSDB_NOSQL_KEY"] = "Optional fallback key for your Cosmos DB NoSQL account, used only when Microsoft Entra ID (RBAC) is unavailable.  (RUNTIME)"
         d["CAIG_DATA_SOURCE_DIR"] = "The directory path containing source data files for loading into Cosmos DB.  (DEV ENV)"
 
         d["CAIG_AZURE_OPENAI_URL"] = "The URL of your Azure OpenAI account.  (WEB RUNTIME)"
-        d["CAIG_AZURE_OPENAI_KEY"] = "The Key of your Azure OpenAI account.  (WEB RUNTIME)"
+        d["CAIG_AZURE_OPENAI_KEY"] = "Optional fallback key for your Azure OpenAI or Microsoft Foundry account, used only when Microsoft Entra ID (RBAC) is unavailable.  (WEB RUNTIME)"
         d["CAIG_AZURE_OPENAI_VERSION"] = "The Version of your Azure OpenAI account.  (WEB RUNTIME)"
         d["CAIG_AZURE_OPENAI_COMPLETIONS_DEP"] = (
             "The name of your Azure OpenAI completions deployment.  (WEB RUNTIME)"
@@ -244,7 +241,6 @@ class ConfigService:
         d["CAIG_COSMOSDB_NOSQL_ACCT"] = ""
         d["CAIG_COSMOSDB_NOSQL_RG"] = ""
         d["CAIG_COSMOSDB_NOSQL_URI"] = ""
-        d["CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM"] = "key"
         d["CAIG_COSMOSDB_NOSQL_KEY"] = ""
         d["CAIG_AZURE_OPENAI_URL"] = ""
         d["CAIG_AZURE_OPENAI_KEY"] = ""
@@ -373,10 +369,6 @@ class ConfigService:
         return cls.envvar("CAIG_COSMOSDB_NOSQL_URI", None)
 
     @classmethod
-    def cosmosdb_nosql_auth_mechanism(cls) -> str:
-        return cls.envvar("CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM", "key").lower()
-
-    @classmethod
     def cosmosdb_nosql_key(cls) -> str:
         return cls.envvar("CAIG_COSMOSDB_NOSQL_KEY", None)
 
@@ -385,8 +377,11 @@ class ConfigService:
         return cls.envvar("CAIG_AZURE_OPENAI_URL", None)
 
     @classmethod
-    def azure_openai_key(cls) -> str:
-        return cls.envvar("CAIG_AZURE_OPENAI_KEY", None)
+    def azure_openai_key(cls) -> str | None:
+        key = cls.envvar("CAIG_AZURE_OPENAI_KEY", "")
+        if len(key.strip()) == 0:
+            return None
+        return key
 
     @classmethod
     def azure_openai_version(cls) -> str:
@@ -533,6 +528,11 @@ class ConfigService:
         os.environ["CAIG_GRAPH_SOURCE_TYPE"] = "rdf_file"
         os.environ["CAIG_GRAPH_SOURCE_OWL_FILENAME"] = "ontologies/extracted_ontology.ttl"
         # os.environ["CAIG_GRAPH_SOURCE_PATH"] = ""
+        os.environ["CAIG_AZURE_OPENAI_URL"] = "https://example.openai.azure.com/"
+        os.environ["CAIG_AZURE_OPENAI_KEY"] = "0123456789012345678901234567890123456789"
+        os.environ["CAIG_AZURE_OPENAI_VERSION"] = "2023-12-01-preview"
+        os.environ["CAIG_AZURE_OPENAI_COMPLETIONS_DEP"] = "gpt-5.1-codex-mini"
+        os.environ["CAIG_AZURE_OPENAI_EMBEDDINGS_DEP"] = "embeddings"
         os.environ["CAIG_WEBSVC_AUTH_VALUE"] = "123go"
         os.environ["SAMPLE_INT_VAR"] = "98"
         os.environ["SAMPLE_FLOAT_VAR"] = "98.6"

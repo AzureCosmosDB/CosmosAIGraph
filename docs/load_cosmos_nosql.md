@@ -7,8 +7,7 @@ This page assumes that you have set the following environment variables:
 ```
 CAIG_GRAPH_SOURCE_TYPE              <-- must be set to 'cosmos_nosql'
 CAIG_COSMOSDB_NOSQL_URI             <-- this value is unique to your Azure deployment
-CAIG_COSMOSDB_NOSQL_KEY             <-- Read/Write key value
-CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM  <-- Authentication mechanism - key or RBAC (Entra ID)
+CAIG_COSMOSDB_NOSQL_KEY             <-- Optional fallback Read/Write key value when RBAC is unavailable
 
 CAIG_GRAPH_SOURCE_DB                <-- defaults to 'caig'
 CAIG_GRAPH_SOURCE_CONTAINER         <-- defaults to 'libraries'

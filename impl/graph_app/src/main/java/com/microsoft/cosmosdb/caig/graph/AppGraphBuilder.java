@@ -6,6 +6,9 @@ import com.azure.cosmos.CosmosAsyncDatabase;
 import com.azure.cosmos.CosmosClientBuilder;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.util.CosmosPagedFlux;
+import com.azure.core.credential.TokenCredential;
+import com.azure.core.credential.TokenRequestContext;
+import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.cosmosdb.caig.models.SparqlQueryRequest;
@@ -222,15 +225,36 @@ public class AppGraphBuilder {
         logger.warn("populateFromCosmosDbNoSQL, dbname: " + dbname);
         logger.warn("populateFromCosmosDbNoSQL, cname:  " + cname);
 
+        CosmosClientBuilder clientBuilder = new CosmosClientBuilder()
+            .endpoint(uri)
+            .gatewayMode();
+
         // Use Gateway mode for Java 21 compatibility
         // Direct mode with Java 21 has SSL hostname verification issues with regional endpoint redirects
         // Gateway mode adds ~5-10ms latency but is fully compatible and reliable
         // See: https://github.com/Azure/azure-sdk-for-java/issues/31847
-        CosmosAsyncClient cosmosAsyncClient = new CosmosClientBuilder()
-                .endpoint(uri)
-                .key(key)
-                .gatewayMode()
+        CosmosAsyncClient cosmosAsyncClient;
+        try {
+            TokenCredential credential = new DefaultAzureCredentialBuilder().build();
+            credential.getToken(new TokenRequestContext().addScopes("https://cosmos.azure.com/.default")).block();
+            logger.warn("populateFromCosmosDbNoSQL, using RBAC authentication with DefaultAzureCredential");
+            cosmosAsyncClient = clientBuilder
+                .credential(credential)
                 .buildAsyncClient();
+        }
+        catch (Exception credentialError) {
+            if (key != null && !key.isBlank()) {
+            logger.warn("populateFromCosmosDbNoSQL, DefaultAzureCredential unavailable; falling back to key auth: {}", credentialError.getMessage());
+            cosmosAsyncClient = clientBuilder
+                .key(key)
+                .buildAsyncClient();
+            }
+            else {
+            throw new RuntimeException(
+                "Microsoft Entra ID authentication is unavailable and no CAIG_COSMOSDB_NOSQL_KEY fallback is configured",
+                credentialError);
+            }
+        }
 
         CosmosAsyncDatabase database = cosmosAsyncClient.getDatabase(dbname);
         logger.warn("populateFromCosmosDbNoSQL, database id: " + database.getId());

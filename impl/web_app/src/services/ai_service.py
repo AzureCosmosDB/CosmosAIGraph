@@ -5,6 +5,8 @@ import os
 
 import tiktoken
 
+from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+
 from openai import AzureOpenAI, NotFoundError, OpenAIError
 
 import semantic_kernel as sk
@@ -50,20 +52,19 @@ class AiService:
             self.opts = opts
             self.aoai_endpoint = ConfigService.azure_openai_url()
             self.aoai_api_key = ConfigService.azure_openai_key()
+            self.aoai_auth_mechanism = "rbac"
             self.aoai_version = ConfigService.azure_openai_version()
             self.chat_function = None
             self.max_ntokens = ConfigService.truncate_llm_context_max_ntokens()
+            self.aoai_token_scope = "https://cognitiveservices.azure.com/.default"
+            self.aoai_credential = None
+            self.aoai_token_provider = None
 
             # tiktoken, for token estimation, doesn't work with gpt-4 at this time
             self.tiktoken_encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
             self.enc = tiktoken.get_encoding("cl100k_base")
             self.nosql_svc = CosmosNoSQLService()
 
-            self.aoai_client = AzureOpenAI(
-                azure_endpoint=self.aoai_endpoint,
-                api_key=self.aoai_api_key,
-                api_version=self.aoai_version,
-            )
             self.completions_deployment = (
                 # deployment name/model = gpt4/gpt-4
                 ConfigService.azure_openai_completions_deployment()
@@ -72,26 +73,64 @@ class AiService:
                 # deployment name/model = embeddings/text-embedding-ada-002
                 ConfigService.azure_openai_embeddings_deployment()
             )
+
+            aoai_client_kwargs = dict(
+                azure_endpoint=self.aoai_endpoint,
+                api_version=self.aoai_version,
+            )
+            sk_common_kwargs = dict(
+                endpoint=self.aoai_endpoint,
+                api_version=self.aoai_version,
+            )
+
+            try:
+                self.aoai_credential = DefaultAzureCredential()
+                self.aoai_token_provider = get_bearer_token_provider(
+                    self.aoai_credential, self.aoai_token_scope
+                )
+                # Validate that a bearer token can actually be obtained before choosing RBAC.
+                self.aoai_token_provider()
+                aoai_client_kwargs["azure_ad_token_provider"] = self.aoai_token_provider
+                sk_common_kwargs["ad_token_provider"] = self.aoai_token_provider
+            except Exception as credential_error:
+                self.aoai_credential = None
+                self.aoai_token_provider = None
+                if self.aoai_api_key:
+                    self.aoai_auth_mechanism = "key"
+                    logging.warning(
+                        "DefaultAzureCredential unavailable for Azure OpenAI; falling back to key auth: %s",
+                        str(credential_error),
+                    )
+                else:
+                    raise RuntimeError(
+                        "Microsoft Entra ID authentication is unavailable and no CAIG_AZURE_OPENAI_KEY fallback is configured"
+                    ) from credential_error
+
+            if self.aoai_auth_mechanism == "key":
+                aoai_client_kwargs["api_key"] = self.aoai_api_key
+                sk_common_kwargs["api_key"] = self.aoai_api_key
+
+            self.aoai_client = AzureOpenAI(**aoai_client_kwargs)
+
             self.sk_kernel = sk.Kernel()
             self.sk_kernel.add_service(
                 AzureChatCompletion(
                     service_id="chat_completion",
                     deployment_name=self.completions_deployment,
-                    endpoint=self.aoai_endpoint,
-                    api_key=self.aoai_api_key,
+                    **sk_common_kwargs,
                 )
             )
             self.sk_kernel.add_service(
                 AzureTextEmbedding(
                     service_id="text_embedding",
                     deployment_name=self.embeddings_deployment,
-                    endpoint=self.aoai_endpoint,
-                    api_key=self.aoai_api_key,
+                    **sk_common_kwargs,
                 )
             )
 
             logging.info("aoai endpoint:     {}".format(self.aoai_endpoint))
             logging.info("aoai version:      {}".format(self.aoai_version))
+            logging.info("aoai auth_mechanism: {}".format(self.aoai_auth_mechanism))
             logging.info("aoai client:  {}".format(self.aoai_client))
             logging.info(
                 "aoai completions_deployment: {}".format(self.completions_deployment)

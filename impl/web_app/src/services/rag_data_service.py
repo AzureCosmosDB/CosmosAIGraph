@@ -204,8 +204,8 @@ class RAGDataService:
             create_embedding_response = self.ai_svc.generate_embeddings(user_text)
             embedding = create_embedding_response.data[0].embedding
             logging.warning(
-                "RagDataService#get_vector_rag_data, embedding length: {}, first 5 values: {}".format(
-                    len(embedding), embedding[:5]
+                "RagDataService#get_vector_rag_data, embedding generated, length: {}".format(
+                    len(embedding)
                 )
             )
             db_name = ConfigService.graph_source_db()
