@@ -350,7 +350,7 @@ class CosmosNoSQLService:
             embedding_hash = hashlib.md5(json.dumps(embedding_value, sort_keys=True).encode()).hexdigest()
             timestamp = datetime.now().strftime("%H:%M:%S.%f")
             sql = self.vector_search_sql(embedding_value, embedding_attr, limit)
-            logging.warning(f"vector_search [{timestamp}] SQL (first 200 chars): {sql[:200]}")
+            logging.warning(f"vector_search [{timestamp}] SQL (first 200 chars): {sql[:1024]}")
             logging.warning(f"vector_search [{timestamp}] embedding hash: {embedding_hash}, length: {len(embedding_value)}")
             logging.warning(f"vector_search [{timestamp}] using DB: '{self._dbname}', container: '{self._cname}', limit: {limit}, ctrproxy id: {id(self._ctrproxy)}")
             docs = list()
@@ -417,19 +417,24 @@ class CosmosNoSQLService:
                 
                 # Try FullTextScore first
                 sql = f"""
-                SELECT TOP {limit} c, FullTextScore(c.{field}, {search_expr}) AS score
+                SELECT TOP {limit} *
                 FROM c 
                 WHERE IS_DEFINED(c.{field})
                 ORDER BY RANK FullTextScore(c.{field}, {search_expr})
                 """
                 
-                logging.info(f"fulltext_search: Trying field '{field}' with SQL: {sql[:150]}...")
+                logging.info(f"fulltext_search: Trying field '{field}' with SQL: {sql[:1024]}")
                 items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
+                field_result_count = 0
                 async for item in items_paged:
-                    cdf = CosmosDocFilter(item["c"])
+                    doc_source = item.get("c", item)
+                    cdf = CosmosDocFilter(doc_source)
                     doc_dict = cdf.filter_out_embedding("embedding", truncate=False)
                     doc_dict["_score"] = item.get("score", 0.0)
                     docs.append(doc_dict)
+                    field_result_count += 1
+
+                logging.info(f"Results returned: {field_result_count} documents for field '{field}'")
                 
                 if docs:
                     logging.info(f"fulltext_search: Found {len(docs)} results using field '{field}'")
@@ -452,6 +457,11 @@ class CosmosNoSQLService:
         """
         docs = list()
         logging.info(f"_fallback_text_search: search_text='{search_text}', limit={limit}")
+
+        tokens = [word for word in search_text.split() if len(word) > 1][-8:]
+        if not tokens:
+            logging.warning("_fallback_text_search: No valid tokens from search_text")
+            return docs
         
         # Try different field combinations
         field_combinations = [
@@ -467,8 +477,14 @@ class CosmosNoSQLService:
             try:
                 # Build WHERE clause with IS_DEFINED checks
                 conditions = []
+                params = []
+                for i, token in enumerate(tokens):
+                    params.append(dict(name=f"@token_{i}", value=token))
                 for field in fields:
-                    conditions.append(f"(IS_DEFINED(c.{field}) AND CONTAINS(c.{field}, @search_text))")
+                    for i in range(len(tokens)):
+                        conditions.append(
+                            f"(IS_DEFINED(c.{field}) AND CONTAINS(c.{field}, @token_{i}, true))"
+                        )
                 where_clause = " OR ".join(conditions)
                 
                 sql = f"""
@@ -478,7 +494,6 @@ class CosmosNoSQLService:
                 """
 
                 logging.info(f"_fallback_text_search: Trying fields {fields}")
-                params = [dict(name="@search_text", value=search_text)]
                 items_paged = self._ctrproxy.query_items(query=sql, parameters=params)
                 async for item in items_paged:
                     cdf = CosmosDocFilter(item.get("c", item))
