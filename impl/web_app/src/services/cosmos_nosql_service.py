@@ -385,6 +385,33 @@ class CosmosNoSQLService:
             logging.warning(f"vector_search [{timestamp}] Cosmos DB activity-id: {activity_id}, request-charge: {request_charge} RU")
             return docs
 
+    async def _indexed_fulltext_fields(self):
+        """
+        Return full-text indexed field names from the container indexing policy.
+        """
+        indexed_fields = []
+        try:
+            props = await self._ctrproxy.read()
+            indexing_policy = props.get("indexingPolicy", {})
+            full_text_indexes = indexing_policy.get("fullTextIndexes", [])
+
+            for index in full_text_indexes:
+                path = index.get("path", "")
+                if not path:
+                    continue
+
+                # Normalize Cosmos path (e.g. '/description/?') to SQL field path (e.g. 'description').
+                normalized = path.strip("/").replace("/?", "").replace("/*", "")
+                normalized = normalized.replace("/", ".")
+                if normalized and normalized not in indexed_fields:
+                    indexed_fields.append(normalized)
+        except Exception as index_error:
+            logging.warning(
+                f"fulltext_search: Could not read fullTextIndexes from container policy: {str(index_error)[:200]}"
+            )
+
+        return indexed_fields
+
     async def fulltext_search(self, search_text, limit=4):
         """
         Perform full-text search using FullTextScore function
@@ -402,9 +429,13 @@ class CosmosNoSQLService:
 
         logging.info(f"fulltext_search: search_text='{search_text}', tokens={tokens}, limit={limit}")
 
-        # Get search fields from configuration
-        search_fields = ConfigService.fulltext_search_fields()
-        logging.info(f"fulltext_search: Using configured search fields: {search_fields}")
+        # Prefer actual indexed fields from container policy, then fall back to config.
+        search_fields = await self._indexed_fulltext_fields()
+        if search_fields:
+            logging.info(f"fulltext_search: Using container indexed full-text fields: {search_fields}")
+        else:
+            search_fields = ConfigService.fulltext_search_fields()
+            logging.info(f"fulltext_search: Using configured search fields: {search_fields}")
         docs = list()
         
         for field in search_fields:
@@ -463,14 +494,42 @@ class CosmosNoSQLService:
             logging.warning("_fallback_text_search: No valid tokens from search_text")
             return docs
         
-        # Try different field combinations
-        field_combinations = [
-            ['description', 'summary', 'name'],
-            ['long_description', 'benefits', 'designation'],
-            ['name', 'designation'],  # Minimal fallback
-        ]
-        
-        for fields in field_combinations:
+        # Try configured full-text search fields
+        fulltext_search_fields = []
+
+        # First attempt: discover actual full-text indexed fields from container indexing policy.
+        # Fallback to config-based values if this fails or yields nothing.
+        indexed_fields = await self._indexed_fulltext_fields()
+        if indexed_fields:
+            # Keep existing loop contract where each item is a field-combination list.
+            fulltext_search_fields = [indexed_fields]
+            logging.info(
+                f"_fallback_text_search: Loaded {len(indexed_fields)} indexed full-text fields from container policy"
+            )
+
+        # Fallback: load from config (e.g., .env or config service)
+        if not fulltext_search_fields:
+            fulltext_search_config = getattr(ConfigService, "CAIG_FULLTEXT_SEARCH_FIELDS", None)
+            if callable(fulltext_search_config):
+                loaded = fulltext_search_config()
+            else:
+                loaded = fulltext_search_config
+
+            if loaded:
+                if isinstance(loaded, str):
+                    try:
+                        loaded = json.loads(loaded)
+                    except Exception:
+                        loaded = [f.strip() for f in loaded.split(",") if f.strip()]
+
+                if isinstance(loaded, list):
+                    if loaded and all(isinstance(v, str) for v in loaded):
+                        fulltext_search_fields = [loaded]
+                    else:
+                        fulltext_search_fields = loaded
+
+        # If config not set or empty, remains empty for backward compatibility
+        for fields in fulltext_search_fields:
             if docs:  # If we found results, stop
                 break
                 
