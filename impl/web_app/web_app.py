@@ -654,6 +654,10 @@ async def get_vector_search_console(req: Request):
         else:
             logging.info("No results found in session or results are empty")
 
+        view_data["embedding_fields_stripped"] = bool(
+            req.session.get("vector_search_embedding_fields_stripped", False)
+        )
+
         last_error_message = str(req.session.get("vector_search_error_message") or "").strip()
         if last_error_message:
             view_data["error_message"] = last_error_message
@@ -793,6 +797,7 @@ async def post_vector_search_console(req: Request):
     else:
         view_data["results_json"] = json.dumps([], indent=2)  # Show empty array instead of None
     
+    view_data["embedding_fields_stripped"] = nosql_svc.display_embeddings_stripped()
     view_data["results"] = results_obj
     hydrate_vector_search_results(view_data)
     view_data["current_page"] = "vector_search_console"  # Set active page for navbar
@@ -803,6 +808,9 @@ async def post_vector_search_console(req: Request):
         req.session["vector_search_method"] = search_method
         req.session["vector_search_limit"] = search_limit
         req.session["vector_search_error_message"] = view_data.get("error_message", "")
+        req.session["vector_search_embedding_fields_stripped"] = view_data.get(
+            "embedding_fields_stripped", False
+        )
         
         # Convert results to JSON serializable format and truncate large fields for session storage
         if results_obj:
@@ -854,6 +862,7 @@ def vector_search_view_data():
     view_data["embedding_message"] = ""
     view_data["embedding"] = ""
     view_data["error_message"] = ""
+    view_data["embedding_fields_stripped"] = False
     return view_data
 
 
@@ -871,6 +880,7 @@ def set_vector_search_error(view_data: dict, exc: Exception) -> str:
     view_data["results"] = list()
     view_data["rendered_results"] = []
     view_data["results_json"] = json.dumps([], indent=2)
+    view_data["embedding_fields_stripped"] = False
     return core_message
 
 

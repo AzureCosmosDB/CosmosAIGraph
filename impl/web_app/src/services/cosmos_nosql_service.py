@@ -49,6 +49,8 @@ class CosmosNoSQLService:
         self._cname: str | None = None
         self._client: CosmosClient | None = None
         self._credential: DefaultAzureCredential | None = None
+        self._vector_embedding_fields_cache: list[str] | None = None
+        self._display_embeddings_stripped = False
         logging.info("CosmosNoSQLService - constructor")
 
     async def initialize(self):
@@ -147,6 +149,7 @@ class CosmosNoSQLService:
                 logging.warning(f"set_container: Creating NEW container proxy for '{cname}' (previous: '{self._cname}')")
                 self._cname = cname
                 self._ctrproxy = self._dbproxy.get_container_client(cname)
+                self._vector_embedding_fields_cache = None
             else:
                 logging.warning(f"set_container: REUSING existing container proxy for '{cname}' (id: {id(self._ctrproxy)})")
         except Exception as e:
@@ -338,6 +341,8 @@ class CosmosNoSQLService:
         - fulltext: Full-text search using FullTextScore
         - rrf: Reciprocal Rank Fusion combining both vector and full-text search
         """
+        self._display_embeddings_stripped = False
+
         if search_method == "fulltext":
             return await self.fulltext_search(search_text, limit)
         elif search_method == "rrf":
@@ -359,21 +364,18 @@ class CosmosNoSQLService:
                 # Handle different query result structures
                 if "c" in item and "score" in item:
                     # Expected structure: {"c": {...}, "score": 0.123}
-                    cdf = CosmosDocFilter(item["c"])
-                    doc_dict = cdf.filter_out_embedding(embedding_attr, truncate=False)
+                    doc_dict = await self._filter_display_doc(item["c"], embedding_attr)
                     doc_dict["_score"] = item["score"]
                     docs.append(doc_dict)
                 elif "score" in item:
                     # Alternative structure where item itself is the doc with score
-                    cdf = CosmosDocFilter(item)
-                    doc_dict = cdf.filter_out_embedding(embedding_attr, truncate=False)
+                    doc_dict = await self._filter_display_doc(item, embedding_attr)
                     doc_dict["_score"] = item["score"]
                     docs.append(doc_dict)
                 else:
                     # No score returned - likely missing embedding field
                     logging.warning(f"vector_search: Item missing 'score' field. Item keys: {list(item.keys())[:10]}, has embedding: {embedding_attr in item}")
-                    cdf = CosmosDocFilter(item.get("c", item))
-                    doc_dict = cdf.filter_out_embedding(embedding_attr, truncate=False)
+                    doc_dict = await self._filter_display_doc(item.get("c", item), embedding_attr)
                     doc_dict["_score"] = None  # No score available
                     docs.append(doc_dict)
             
@@ -402,15 +404,118 @@ class CosmosNoSQLService:
 
                 # Normalize Cosmos path (e.g. '/description/?') to SQL field path (e.g. 'description').
                 normalized = path.strip("/").replace("/?", "").replace("/*", "")
-                normalized = normalized.replace("/", ".")
+                # normalized = normalized.replace("/", ".")
                 if normalized and normalized not in indexed_fields:
                     indexed_fields.append(normalized)
         except Exception as index_error:
             logging.warning(
-                f"fulltext_search: Could not read fullTextIndexes from container policy: {str(index_error)[:200]}"
+                "fulltext_search: Could not read fullTextIndexes from container policy: %s",
+                index_error,
             )
 
         return indexed_fields
+
+    async def _indexed_vector_fields(self):
+        """
+        Return vector embedding field names from the container policy.
+        """
+        if self._vector_embedding_fields_cache is not None:
+            return list(self._vector_embedding_fields_cache)
+
+        indexed_fields = []
+        try:
+            props = await self._ctrproxy.read()
+            vector_policy = props.get("vectorEmbeddingPolicy", {})
+            vector_embeddings = vector_policy.get("vectorEmbeddings", [])
+            indexing_policy = props.get("indexingPolicy", {})
+            vector_indexes = indexing_policy.get("vectorIndexes", [])
+
+            for index in vector_embeddings + vector_indexes:
+                path = index.get("path", "")
+                normalized = self._normalize_field_path_for_sql(path)
+                if normalized and normalized not in indexed_fields:
+                    indexed_fields.append(normalized)
+        except Exception as index_error:
+            logging.warning(
+                "vector_search: Could not read vector index fields from container policy: %s",
+                index_error,
+            )
+
+        self._vector_embedding_fields_cache = indexed_fields
+        return list(indexed_fields)
+
+    async def _display_embedding_fields(self, embedding_attr: str | None = None):
+        excluded_fields = set(await self._indexed_vector_fields())
+        normalized_embedding_attr = self._normalize_field_path_for_sql(embedding_attr)
+        if normalized_embedding_attr:
+            excluded_fields.add(normalized_embedding_attr)
+        return excluded_fields
+
+    async def _filter_display_doc(self, doc_source: dict, embedding_attr: str | None = None):
+        cdf = CosmosDocFilter(doc_source)
+        excluded_fields = await self._display_embedding_fields(embedding_attr)
+        if isinstance(doc_source, dict) and any(
+            field in doc_source for field in excluded_fields
+        ):
+            self._display_embeddings_stripped = True
+        return cdf.filter_out_embedding(excluded_fields, truncate=False)
+
+    def display_embeddings_stripped(self) -> bool:
+        return self._display_embeddings_stripped
+
+    def _is_array_element_field(self, field: str) -> bool:
+        if not isinstance(field, str):
+            return False
+        return field.strip().endswith("/[]")
+
+    def _normalize_field_path_for_sql(self, field: str) -> str:
+        if not isinstance(field, str):
+            return ""
+        normalized = field.strip().strip("/")
+        normalized = normalized.replace("/?", "").replace("/*", "")
+        normalized = normalized.replace("/[]", "")
+        normalized = normalized.replace("/", ".")
+        return normalized
+
+    def _fulltext_contains_sql(self, field: str, search_expr: str, limit: int) -> str:
+        if self._is_array_element_field(field):
+            array_path = self._normalize_field_path_for_sql(field)
+            return f"""
+            SELECT TOP {limit} c
+            FROM c
+            JOIN scalar_value IN c.{array_path}
+            WHERE FullTextContainsAny(scalar_value, {search_expr})
+            """
+
+        scalar_field = self._normalize_field_path_for_sql(field)
+        return f"""
+        SELECT TOP {limit} *
+        FROM c
+        WHERE FullTextContainsAny(c.{scalar_field}, {search_expr})
+        """
+
+    def _rrf_sql(self, field: str, embedding_attr: str, embedding_value, search_expr: str, limit: int) -> str:
+        if self._is_array_element_field(field):
+            array_path = self._normalize_field_path_for_sql(field)
+            return f"""
+            SELECT TOP {limit} c
+            FROM c
+            JOIN scalar_value IN c.{array_path}
+            WHERE IS_DEFINED(c.{embedding_attr})
+            ORDER BY RANK RRF(
+                VectorDistance(c.{embedding_attr}, {str(embedding_value)}),
+                FullTextScore(scalar_value, {search_expr}))
+            """
+
+        scalar_field = self._normalize_field_path_for_sql(field)
+        return f"""
+        SELECT TOP {limit} *
+        FROM c
+        WHERE IS_DEFINED(c.{embedding_attr}) AND IS_DEFINED(c.{scalar_field})
+        ORDER BY RANK RRF(
+            VectorDistance(c.{embedding_attr}, {str(embedding_value)}),
+            FullTextScore(c.{scalar_field}, {search_expr}))
+        """
 
     async def fulltext_search(self, search_text, limit=4):
         """
@@ -437,41 +542,50 @@ class CosmosNoSQLService:
             search_fields = ConfigService.fulltext_search_fields()
             logging.info(f"fulltext_search: Using configured search fields: {search_fields}")
         docs = list()
+        seen_doc_keys = set()
+
+        # Combine tokens into a single string separated by commas once for all field queries.
+        search_expr = ','.join(f'"{token}"' for token in tokens)
         
         for field in search_fields:
-            if docs:  # If we found results, stop trying other fields
-                break
-                
             try:
-                # Combine tokens into a single string separated by commas
-                search_expr = ','.join(f'"{token}"' for token in tokens)
-                
-                # Try FullTextScore first
-                sql = f"""
-                SELECT TOP {limit} *
-                FROM c 
-                WHERE IS_DEFINED(c.{field})
-                ORDER BY RANK FullTextScore(c.{field}, {search_expr})
-                """
-                
+                sql = self._fulltext_contains_sql(field, search_expr, limit)
+
                 logging.info(f"fulltext_search: Trying field '{field}' with SQL: {sql[:1024]}")
                 items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
                 field_result_count = 0
+                field_new_result_count = 0
                 async for item in items_paged:
                     doc_source = item.get("c", item)
-                    cdf = CosmosDocFilter(doc_source)
-                    doc_dict = cdf.filter_out_embedding("embedding", truncate=False)
+                    doc_key = self._doc_fusion_key(doc_source)
+                    if doc_key and doc_key in seen_doc_keys:
+                        continue
+
+                    doc_dict = await self._filter_display_doc(doc_source)
                     doc_dict["_score"] = item.get("score", 0.0)
                     docs.append(doc_dict)
+                    if doc_key:
+                        seen_doc_keys.add(doc_key)
                     field_result_count += 1
+                    field_new_result_count += 1
 
                 logging.info(f"Results returned: {field_result_count} documents for field '{field}'")
-                
-                if docs:
-                    logging.info(f"fulltext_search: Found {len(docs)} results using field '{field}'")
+
+                if field_new_result_count:
+                    logging.info(
+                        f"fulltext_search: Aggregated {field_new_result_count} new unique results from field '{field}' "
+                        f"({len(docs)} total so far)"
+                    )
             except Exception as e:
-                logging.warning(f"fulltext_search: Field '{field}' failed with FullTextScore: {str(e)[:200]}")
+                logging.warning(
+                    "fulltext_search: Field '%s' failed with FullTextScore: %s",
+                    field,
+                    e,
+                )
                 continue
+
+        if len(docs) > limit:
+            docs = docs[:limit]
         
         # If FullTextScore didn't work on any field, fall back to CONTAINS
         if not docs:
@@ -540,10 +654,26 @@ class CosmosNoSQLService:
                 for i, token in enumerate(tokens):
                     params.append(dict(name=f"@token_{i}", value=token))
                 for field in fields:
+                    normalized_field = self._normalize_field_path_for_sql(field)
+                    if not normalized_field:
+                        continue
+
+                    if self._is_array_element_field(field):
+                        for i in range(len(tokens)):
+                            conditions.append(
+                                f"(IS_ARRAY(c.{normalized_field}) AND EXISTS(SELECT VALUE scalar_value FROM scalar_value IN c.{normalized_field} WHERE CONTAINS(scalar_value, @token_{i}, true)))"
+                            )
+                        continue
+
                     for i in range(len(tokens)):
                         conditions.append(
-                            f"(IS_DEFINED(c.{field}) AND CONTAINS(c.{field}, @token_{i}, true))"
+                            f"(IS_DEFINED(c.{normalized_field}) AND CONTAINS(c.{normalized_field}, @token_{i}, true))"
                         )
+
+                if not conditions:
+                    logging.info("_fallback_text_search: No valid fields generated SQL conditions")
+                    continue
+
                 where_clause = " OR ".join(conditions)
                 
                 sql = f"""
@@ -555,15 +685,18 @@ class CosmosNoSQLService:
                 logging.info(f"_fallback_text_search: Trying fields {fields}")
                 items_paged = self._ctrproxy.query_items(query=sql, parameters=params)
                 async for item in items_paged:
-                    cdf = CosmosDocFilter(item.get("c", item))
-                    doc_dict = cdf.filter_out_embedding("embedding", truncate=False)
+                    doc_dict = await self._filter_display_doc(item.get("c", item))
                     doc_dict["_score"] = 0.0  # No score for CONTAINS search
                     docs.append(doc_dict)
                 
                 if docs:
                     logging.info(f"_fallback_text_search: Found {len(docs)} results using fields {fields}")
             except Exception as e:
-                logging.warning(f"_fallback_text_search: Fields {fields} failed: {str(e)[:200]}")
+                logging.warning(
+                    "_fallback_text_search: Fields %s failed: %s",
+                    fields,
+                    e,
+                )
                 continue
         
         if not docs:
@@ -589,42 +722,94 @@ class CosmosNoSQLService:
 
         docs = list()
 
-        # Build the RRF query using FullTextScore and VectorDistance; use proper RANK(...) syntax
-        sql = f"""
-        SELECT TOP {limit} *
-        FROM c
-        ORDER BY RANK RRF(
-            VectorDistance(c.{embedding_attr}, {str(embedding_value)}),
-            FullTextScore(c.description, {search_expr}))
-        """
-        try:
-            items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
-            async for item in items_paged:
-                cdf = CosmosDocFilter(item)
-                doc_dict = cdf.filter_out_embedding(embedding_attr, truncate=False)
-                # RRF doesn't expose a numerical score, use 0.0 as placeholder
-                doc_dict["_score"] = 0.0
-                docs.append(doc_dict)
+        # Prefer actual indexed fields from container policy for FullTextScore in RRF,
+        # then fall back to configured fields.
+        search_fields = await self._indexed_fulltext_fields()
+        if search_fields:
+            logging.info(f"rrf_search: Using container indexed full-text fields: {search_fields}")
+        else:
+            search_fields = ConfigService.fulltext_search_fields()
+            logging.info(f"rrf_search: Using configured full-text fields: {search_fields}")
 
-        except Exception as e:
-            logging.error(f"RRF search with FullTextScore failed: {e}\n Query was: {sql}")
-            # Fall back to vector search only
+        # Try server-side RRF first (Cosmos-native hybrid ranking).
+        for field in search_fields:
+            if docs:
+                break
+
+            sql = self._rrf_sql(field, embedding_attr, embedding_value, search_expr, limit)
+
             try:
-                sql = f"""
-                SELECT TOP {limit} c, VectorDistance(c.{embedding_attr}, {str(embedding_value)}) AS score
-                FROM c
-                ORDER BY VectorDistance(c.{embedding_attr}, {str(embedding_value)}) ASC
-                """
+                logging.info(f"rrf_search: Trying field '{field}' with SQL: {sql[:1024]}")
                 items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
                 async for item in items_paged:
-                    cdf = CosmosDocFilter(item["c"])
-                    doc_dict = cdf.filter_out_embedding(embedding_attr, truncate=False)
+                    doc_source = item.get("c", item)
+                    doc_dict = await self._filter_display_doc(doc_source, embedding_attr)
+                    # Cosmos RRF does not return a fused score value directly.
                     doc_dict["_score"] = item.get("score", 0.0)
                     docs.append(doc_dict)
-            except Exception as e2:
-                logging.error(f"Fallback vector search in RRF also failed: {e2}")
+
+                if docs:
+                    logging.info(f"rrf_search: Found {len(docs)} results using field '{field}'")
+            except Exception as e:
+                logging.warning(
+                    "rrf_search: Field '%s' failed with Cosmos RRF: %s",
+                    field,
+                    e,
+                )
+
+        # If server-side RRF fails, run both branches and fuse ranks in-app.
+        if not docs:
+            logging.warning("rrf_search: Cosmos RRF returned no results; falling back to client-side rank fusion")
+            vector_docs = await self.vector_search(
+                embedding_value=embedding_value,
+                search_method="vector",
+                embedding_attr=embedding_attr,
+                limit=limit,
+            )
+            text_docs = await self.fulltext_search(search_text=search_text, limit=limit)
+            docs = self._fuse_ranked_results(vector_docs, text_docs, limit)
+            logging.info(
+                f"rrf_search: Client-side fusion produced {len(docs)} results "
+                f"(vector={len(vector_docs)}, fulltext={len(text_docs)})"
+            )
 
         return docs
+
+    def _doc_fusion_key(self, doc: dict):
+        """Pick a stable identity for merging ranked lists."""
+        if not isinstance(doc, dict):
+            return None
+        return doc.get("id") or doc.get("_id") or doc.get("name")
+
+    def _fuse_ranked_results(self, vector_docs: list, text_docs: list, limit: int, k: int = 60) -> list:
+        """
+        Fuse two ranked result lists with Reciprocal Rank Fusion.
+        score(d) = sum(1 / (k + rank_i(d))).
+        """
+        fused = dict()
+
+        for rank, doc in enumerate(vector_docs or [], start=1):
+            key = self._doc_fusion_key(doc)
+            if not key:
+                continue
+            bucket = fused.setdefault(key, {"doc": doc, "score": 0.0})
+            bucket["score"] += 1.0 / (k + rank)
+
+        for rank, doc in enumerate(text_docs or [], start=1):
+            key = self._doc_fusion_key(doc)
+            if not key:
+                continue
+            bucket = fused.setdefault(key, {"doc": doc, "score": 0.0})
+            bucket["score"] += 1.0 / (k + rank)
+
+        ranked = sorted(fused.values(), key=lambda v: v["score"], reverse=True)[:limit]
+        results = []
+        for item in ranked:
+            doc = dict(item["doc"]) if isinstance(item["doc"], dict) else item["doc"]
+            if isinstance(doc, dict):
+                doc["_score"] = item["score"]
+            results.append(doc)
+        return results
 
     def vector_search_sql(self, embedding_value, embedding_attr="embedding", limit=4):
         parts = list()

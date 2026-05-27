@@ -72,16 +72,25 @@ class CosmosDocFilter:
             "release_count",
         ]
 
-    def filter_out_embedding(self, embedding_attr = "embedding", truncate=True):
+    def filter_out_embedding(self, embedding_attr="embedding", truncate=True):
         """
-        Remove embedding from Cosmos DB documents and optionally truncate some known ones.
+        Remove embedding fields from Cosmos DB documents and optionally
+        truncate some known ones.
         Set truncate=False to get full text content for display purposes.
         """
         filtered = dict()
-        #filtered_attrs = self.rag_attributes()
+        if embedding_attr is None:
+            excluded_attrs = set()
+        elif isinstance(embedding_attr, (list, tuple, set)):
+            excluded_attrs = {
+                attr for attr in embedding_attr if isinstance(attr, str)
+            }
+        else:
+            excluded_attrs = {embedding_attr}
+
         if self.cosmos_doc is not None:
             for attr in self.cosmos_doc.keys():
-                if attr != embedding_attr:
+                if attr not in excluded_attrs:
                     if attr == "dependency_ids":
                         filtered[attr] = list()
                         for dep_id in self.cosmos_doc[attr]:
