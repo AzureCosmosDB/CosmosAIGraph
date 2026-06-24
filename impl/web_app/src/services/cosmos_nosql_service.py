@@ -334,7 +334,7 @@ class CosmosNoSQLService:
                 lib = cdf.filter_library()
         return lib
 
-    async def vector_search(self, embedding_value=None, search_text=None, search_method="vector", embedding_attr="embedding", limit=4):
+    async def vector_search(self, embedding_value=None, search_text=None, search_method="vector", embedding_attr=None, limit=4):
         """
         Perform search using different methods:
         - vector: Traditional vector similarity search
@@ -342,6 +342,9 @@ class CosmosNoSQLService:
         - rrf: Reciprocal Rank Fusion combining both vector and full-text search
         """
         self._display_embeddings_stripped = False
+        embedding_attr = self._normalize_field_path_for_sql(
+            embedding_attr or ConfigService.embedding_field_name() or "embedding"
+        )
 
         if search_method == "fulltext":
             return await self.fulltext_search(search_text, limit)
@@ -354,30 +357,32 @@ class CosmosNoSQLService:
             from datetime import datetime
             embedding_hash = hashlib.md5(json.dumps(embedding_value, sort_keys=True).encode()).hexdigest()
             timestamp = datetime.now().strftime("%H:%M:%S.%f")
-            sql = self.vector_search_sql(embedding_value, embedding_attr, limit)
-            logging.warning(f"vector_search [{timestamp}] SQL (first 200 chars): {sql[:1024]}")
+            sql = self.vector_search_sql(embedding_attr, limit)
+            params = [{"name": "@embedding", "value": embedding_value}]
+            logging.warning(f"vector_search [{timestamp}] SQL: {sql}")
             logging.warning(f"vector_search [{timestamp}] embedding hash: {embedding_hash}, length: {len(embedding_value)}")
-            logging.warning(f"vector_search [{timestamp}] using DB: '{self._dbname}', container: '{self._cname}', limit: {limit}, ctrproxy id: {id(self._ctrproxy)}")
+            logging.warning(
+                f"vector_search [{timestamp}] using DB: '{self._dbname}', container: '{self._cname}', embedding_attr: '{embedding_attr}', limit: {limit}, ctrproxy id: {id(self._ctrproxy)}"
+            )
             docs = list()
-            items_paged = self._ctrproxy.query_items(query=sql, parameters=[])
+            missing_score_count = 0
+            items_paged = self._ctrproxy.query_items(query=sql, parameters=params)
             async for item in items_paged:
-                # Handle different query result structures
-                if "c" in item and "score" in item:
-                    # Expected structure: {"c": {...}, "score": 0.123}
-                    doc_dict = await self._filter_display_doc(item["c"], embedding_attr)
-                    doc_dict["_score"] = item["score"]
-                    docs.append(doc_dict)
-                elif "score" in item:
-                    # Alternative structure where item itself is the doc with score
-                    doc_dict = await self._filter_display_doc(item, embedding_attr)
-                    doc_dict["_score"] = item["score"]
-                    docs.append(doc_dict)
-                else:
-                    # No score returned - likely missing embedding field
-                    logging.warning(f"vector_search: Item missing 'score' field. Item keys: {list(item.keys())[:10]}, has embedding: {embedding_attr in item}")
-                    doc_dict = await self._filter_display_doc(item.get("c", item), embedding_attr)
-                    doc_dict["_score"] = None  # No score available
-                    docs.append(doc_dict)
+                # Each row is projected as {"c": {...}, "score": <float>}.
+                # VectorDistance is omitted (undefined) when c.<attr> is not a
+                # valid, same-dimension vector, so "score" may be absent.
+                doc_source = item.get("c", item) if isinstance(item, dict) else item
+                score = item.get("score") if isinstance(item, dict) else None
+                doc_dict = await self._filter_display_doc(doc_source, embedding_attr)
+                doc_dict["_score"] = score
+                if score is None:
+                    missing_score_count += 1
+                docs.append(doc_dict)
+            if missing_score_count:
+                logging.warning(
+                    f"vector_search [{timestamp}] {missing_score_count}/{len(docs)} rows had no VectorDistance "
+                    f"score; c.{embedding_attr} may not be a valid {len(embedding_value)}-dim vector on those docs"
+                )
             
             # Get Cosmos DB activity ID from response headers
             activity_id = self.last_response_header('x-ms-activity-id') or 'N/A'
@@ -811,21 +816,18 @@ class CosmosNoSQLService:
             results.append(doc)
         return results
 
-    def vector_search_sql(self, embedding_value, embedding_attr="embedding", limit=4):
-        parts = list()
-        parts.append("SELECT TOP {}".format(limit))
-        parts.append(
-            "c, VectorDistance(c.{}, {}) AS score".format(
-               embedding_attr, str(embedding_value)
-            )
-            #"*"
-        )
-        parts.append(
-            "FROM c ORDER BY VectorDistance(c.{}, {})".format(
-                embedding_attr, str(embedding_value)
-            )
-        )
-        return " ".join(parts).strip()
+    def vector_search_sql(self, embedding_attr="embedding", limit=4):
+        # Pass the query vector as the @embedding parameter rather than inlining
+        # the full 1536-float array into the SQL text. VectorDistance is given an
+        # alias so each result row is shaped as {"c": {...}, "score": <float>}.
+        # embedding_attr is a normalized, config-derived field path and limit is
+        # coerced to int, so neither is attacker-controlled.
+        return (
+            "SELECT TOP {limit} c, VectorDistance(c.{attr}, @embedding) AS score "
+            "FROM c "
+            "WHERE IS_DEFINED(c.{attr}) "
+            "ORDER BY VectorDistance(c.{attr}, @embedding)"
+        ).format(limit=int(limit), attr=embedding_attr)
         # See https://github.com/AzureCosmosDB/Azure-OpenAI-Python-Developer-Guide/blob/main/diskann/09_Vector_Search_Cosmos_DB/README.md
         # query=f"""SELECT TOP @num_results itm.id, VectorDistance(itm.{vector_field_name}, @embedding) AS SimilarityScore
         #         FROM itm

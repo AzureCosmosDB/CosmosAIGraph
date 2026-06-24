@@ -174,10 +174,12 @@ class RAGDataService:
             self.nosql_svc.set_container(ConfigService.graph_source_container())
             rag_docs_list = await self.nosql_svc.get_documents_by_name([name])
             #pertinent_attributes = "libtype,name, summary, documentation_summary"
+            embedding_attr = ConfigService.embedding_field_name()
             for doc in rag_docs_list:
                 #rdr.add_doc(self.filtered_cosmosdb_lib_doc(doc))
                 doc_copy = dict(doc)  # shallow copy
                 doc_copy.pop("embedding", None)
+                doc_copy.pop(embedding_attr, None)
                 rdr.add_doc(doc_copy)
 
         except Exception as e:
@@ -210,11 +212,18 @@ class RAGDataService:
             )
             db_name = ConfigService.graph_source_db()
             container_name = ConfigService.graph_source_container()
-            logging.warning(f"RagDataService#get_vector_rag_data, setting DB: '{db_name}', container: '{container_name}'")
+            embedding_attr = ConfigService.embedding_field_name()
+            logging.warning(
+                f"RagDataService#get_vector_rag_data, setting DB: '{db_name}', container: '{container_name}', embedding_attr: '{embedding_attr}'"
+            )
             self.nosql_svc.set_db(db_name)
             self.nosql_svc.set_container(container_name)
             vs_result = await self.nosql_svc.vector_search(
-                embedding_value=embedding, search_text=user_text, search_method="vector", embedding_attr="embedding", limit=max_doc_count
+                embedding_value=embedding,
+                search_text=user_text,
+                search_method="vector",
+                embedding_attr=embedding_attr,
+                limit=max_doc_count,
             )
             logging.warning(
                 "RagDataService#get_vector_rag_data, vs_result count: {}, first 3 doc names: {}".format(
@@ -225,6 +234,7 @@ class RAGDataService:
                 # Vector search now returns documents with _score field embedded
                 doc_copy = dict(vs_doc)  # shallow copy
                 doc_copy.pop("embedding", None)
+                doc_copy.pop(embedding_attr, None)
                 doc_copy.pop("_score", None)  # Remove score field for RAG context
                 rdr.add_doc(doc_copy)
         except Exception as e:
@@ -257,9 +267,11 @@ class RAGDataService:
                     sqr.response_obj,
                     "tmp/get_graph_rag_data_get_graph_rag_data_response_obj.json",
                 )
+                embedding_attr = ConfigService.embedding_field_name()
                 for doc in sqr.binding_values():
                     doc_copy = dict(doc)  # shallow copy
                     doc_copy.pop("embedding", None)
+                    doc_copy.pop(embedding_attr, None)
                     rdr.add_doc(doc_copy)
                 FS.write_json(rdr.get_data(), "tmp/rdr.json")
             else:

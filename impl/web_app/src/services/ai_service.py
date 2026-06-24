@@ -3,6 +3,7 @@ import logging
 import time
 import os
 
+import httpx
 import tiktoken
 
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
@@ -40,6 +41,26 @@ from src.util.prompt_optimizer import PromptOptimizer
 # Chris Joakim & Aleksey Savateyev, Microsoft, 2025
 
 
+class _OllamaEmbeddingDatum:
+    """Mirror of an OpenAI embeddings response item (resp.data[0])."""
+
+    def __init__(self, embedding):
+        self.embedding = embedding
+        self.index = 0
+        self.object = "embedding"
+
+
+class _OllamaEmbeddingResponse:
+    """
+    Minimal response wrapper exposing the same '.data[0].embedding' interface
+    as openai.types.create_embedding_response.CreateEmbeddingResponse, so that
+    existing callers work unchanged regardless of embeddings provider.
+    """
+
+    def __init__(self, embedding):
+        self.data = [_OllamaEmbeddingDatum(embedding)]
+
+
 class AiService:
     """Constructor method; call initialize() immediately after this."""
 
@@ -73,6 +94,16 @@ class AiService:
                 # deployment name/model = embeddings/text-embedding-ada-002
                 ConfigService.azure_openai_embeddings_deployment()
             )
+            # Optional output dimensionality; must match the Cosmos container's
+            # vectorEmbeddingPolicy dimensions (e.g. 1024). -1 means "model default".
+            self.embeddings_dimensions = (
+                ConfigService.azure_openai_embeddings_dimensions()
+            )
+            # Embeddings provider selection. Use 'ollama' when the target Cosmos
+            # container was vectorized by a local Ollama model (e.g. qwen3).
+            self.embeddings_provider = ConfigService.embeddings_provider()
+            self.ollama_url = ConfigService.ollama_url()
+            self.ollama_embeddings_model = ConfigService.ollama_embeddings_model()
 
             aoai_client_kwargs = dict(
                 azure_endpoint=self.aoai_endpoint,
@@ -287,20 +318,45 @@ class AiService:
     def generate_embeddings(self, text):
         """
         Generate an embeddings array from the given text.
-        Return an CreateEmbeddingResponse object or None.
-        Invoke 'resp.data[0].embedding' to get the array of 1536 floats.
+        Return an CreateEmbeddingResponse-like object or None.
+        Invoke 'resp.data[0].embedding' to get the array of floats.
         """
         try:
+            if self.embeddings_provider == "ollama":
+                return self._generate_embeddings_ollama(text)
             # <class 'openai.types.create_embedding_response.CreateEmbeddingResponse'>
-            return self.aoai_client.embeddings.create(
-                input=text, model=self.embeddings_deployment
-            )
+            create_kwargs = dict(input=text, model=self.embeddings_deployment)
+            # text-embedding-3-* models support reducing the output dimensions so
+            # query vectors match the stored container vectors (e.g. 1024).
+            if self.embeddings_dimensions and self.embeddings_dimensions > 0:
+                create_kwargs["dimensions"] = self.embeddings_dimensions
+            return self.aoai_client.embeddings.create(**create_kwargs)
         except Exception as e:
             logging.critical(
                 "Exception in AiService#generate_embeddings: {}".format(str(e))
             )
             logging.exception(e, stack_info=True, exc_info=True)
             return None
+
+    def _generate_embeddings_ollama(self, text):
+        """
+        Generate embeddings via a local Ollama server so query vectors share the
+        same model/vector space as Cosmos containers that were vectorized with
+        Ollama (e.g. qwen3-embedding:0.6b). Returns an object exposing the same
+        '.data[0].embedding' shape as the Azure OpenAI response.
+        """
+        url = "{}/api/embeddings".format(self.ollama_url.rstrip("/"))
+        payload = {"model": self.ollama_embeddings_model, "prompt": text}
+        resp = httpx.post(url, json=payload, timeout=60.0)
+        resp.raise_for_status()
+        embedding = resp.json().get("embedding")
+        if not embedding:
+            raise ValueError(
+                "Ollama returned no embedding for model '{}'".format(
+                    self.ollama_embeddings_model
+                )
+            )
+        return _OllamaEmbeddingResponse(embedding)
 
     def text_to_chunks(self, text):
         max_chunk_size = 2048

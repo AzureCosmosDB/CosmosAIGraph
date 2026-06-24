@@ -177,7 +177,18 @@ class ConfigService:
         d["CAIG_AZURE_OPENAI_EMBEDDINGS_DEP"] = (
             "The name of your Azure OpenAI embeddings deployment.  (WEB RUNTIME)"
         )
-        d["CAIG_WEB_APP_NAME"] = "Logical name.  (DEV ENV)"
+        d["CAIG_AZURE_OPENAI_EMBEDDINGS_DIMENSIONS"] = (
+            "Optional output dimensions for the embeddings model; must match the Cosmos container vector policy (e.g. 1024). Only text-embedding-3-* models support this.  (WEB RUNTIME)"
+        )
+        d["CAIG_EMBEDDINGS_PROVIDER"] = (
+            "Which provider generates query embeddings: 'azure' (default) or 'ollama'. Use 'ollama' when the target container was vectorized by a local Ollama model.  (WEB RUNTIME)"
+        )
+        d["CAIG_OLLAMA_URL"] = (
+            "Base URL of the local Ollama server used for embeddings, e.g. http://localhost:11434.  (WEB RUNTIME)"
+        )
+        d["CAIG_OLLAMA_EMBEDDINGS_MODEL"] = (
+            "The Ollama embeddings model name, e.g. qwen3-embedding:0.6b.  (WEB RUNTIME)"
+        )
         d["CAIG_WEB_APP_URL"] = "http://127.0.0.1 or determined by ACA.  (WEB RUNTIME)"
         d["CAIG_WEB_APP_PORT"] = "8000  (WEB RUNTIME)"
         d["CAIG_GRAPH_SERVICE_NAME"] = "Logical app name.  (DEV ENV)"
@@ -396,8 +407,49 @@ class ConfigService:
         return cls.envvar("CAIG_AZURE_OPENAI_EMBEDDINGS_DEP", "embeddings")
 
     @classmethod
+    def azure_openai_embeddings_dimensions(cls) -> int:
+        """
+        Optional output dimensionality for the embeddings model. Must match the
+        container's vectorEmbeddingPolicy dimensions. Return -1 when unset, in
+        which case the model's native dimension count is used.
+        Only text-embedding-3-* models support reducing dimensions.
+        """
+        return cls.int_envvar("CAIG_AZURE_OPENAI_EMBEDDINGS_DIMENSIONS", -1)
+
+    @classmethod
+    def embeddings_provider(cls) -> str:
+        """
+        Which provider generates query embeddings: 'azure' (default) or
+        'ollama'. Use 'ollama' when the target container was vectorized by a
+        local Ollama model (e.g. qwen3-embedding:0.6b).
+        """
+        return cls.envvar("CAIG_EMBEDDINGS_PROVIDER", "azure").strip().lower()
+
+    @classmethod
+    def ollama_url(cls) -> str:
+        return cls.envvar("CAIG_OLLAMA_URL", "http://localhost:11434")
+
+    @classmethod
+    def ollama_embeddings_model(cls) -> str:
+        return cls.envvar("CAIG_OLLAMA_EMBEDDINGS_MODEL", "qwen3-embedding:0.6b")
+
+    @classmethod
     def optimize_context_and_history_max_tokens(cls) -> int:
-        return cls.int_envvar("CAIG_OPTIMIZE_CONTEXT_AND_HISTORY_MAX_TOKENS", 10000)
+        """
+        Maximum prompt tokens (template + context + history + query) allowed by
+        the prompt optimizer. Uses the env var if explicitly set, otherwise
+        auto-derives from the current completion model's context window,
+        reserving room for the LLM response and a safety margin.
+        """
+        env_value = cls.int_envvar("CAIG_OPTIMIZE_CONTEXT_AND_HISTORY_MAX_TOKENS", -1)
+        if env_value > 0:
+            return env_value
+
+        context_window = cls.get_model_context_window()
+        response_tokens = 4096                       # reserve for the LLM response
+        safety_margin = int(context_window * 0.1)    # 10% safety margin
+        max_tokens = context_window - response_tokens - safety_margin
+        return max(max_tokens, 4096)
 
     @classmethod
     def get_model_context_window(cls, deployment_name: str | None = None) -> int:
@@ -415,6 +467,8 @@ class ConfigService:
         # Source: https://platform.openai.com/docs/models
         if "gpt-5.1-codex" in model_name or "gpt5.1-codex" in model_name:
             return 200000  # GPT-5.1 Codex family: assumed 200K tokens (Azure doc rev 2025-10)
+        elif "gpt-5" in model_name or "gpt5" in model_name:
+            return 400000  # GPT-5 family (incl. gpt-5.x): 400K token context window
         elif "gpt-4o" in model_name or "gpt4o" in model_name:
             return 128000  # GPT-4o and GPT-4o-mini: 128K tokens
         elif "gpt-4-turbo" in model_name or "gpt4turbo" in model_name:

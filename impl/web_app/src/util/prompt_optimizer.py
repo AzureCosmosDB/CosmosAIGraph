@@ -184,16 +184,19 @@ class PromptOptimizer:
                                     # This will likely fail validation, but better than breaking mid-object
                                     pruned_context = truncated_text
                         else:
-                            # For non-JSON context, use word-based truncation as before
+                            # For non-JSON context, retain the HEAD of the text.
+                            # RAG context lists the most-relevant matches first
+                            # (e.g. highest vector-similarity docs), so keep the
+                            # leading `context_words_ratio` fraction of words and
+                            # drop the tail, mirroring the JSON-array path.
                             context_words = pruned_context.split()
-                            retain_index = int(
-                                float(len(context_words)) * context_words_ratio
+                            keep_count = max(
+                                1,
+                                int(float(len(context_words)) * context_words_ratio),
                             )
-                            retained_words_list = list()
-                            for idx, word in enumerate(context_words):
-                                if idx >= retain_index:
-                                    retained_words_list.append(word)
-                            pruned_context = (" ".join(retained_words_list)).strip()
+                            pruned_context = (
+                                " ".join(context_words[:keep_count])
+                            ).strip()
                         
                         result_obj["pruned_context"] = pruned_context
 

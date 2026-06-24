@@ -9,6 +9,10 @@ import json
 
 class RAGDataResult:
 
+    # Cosmos DB system/plumbing fields that carry no value for the LLM context
+    # and only consume tokens; stripped from every doc added to the result.
+    COSMOS_SYSTEM_FIELDS = ("_rid", "_self", "_etag", "_attachments", "_ts")
+
     def __init__(self):
         self.data = dict()
         self.data["type"] = "RAGDataResult"
@@ -36,6 +40,8 @@ class RAGDataResult:
         return self.data["rag_docs"]
 
     def add_doc(self, doc):
+        if isinstance(doc, dict):
+            doc = {k: v for k, v in doc.items() if k not in self.COSMOS_SYSTEM_FIELDS}
         self.data["rag_docs"].append(doc)
 
     def add_additional_data(self, key, value):
