@@ -59,6 +59,11 @@ Set-EnvIfMissing -Name "CAIG_GRAPH_SOURCE_DB" -Value "caig"
 Set-EnvIfMissing -Name "CAIG_GRAPH_SOURCE_OWL_FILENAME" -Value "ontologies/libraries.owl"
 Set-EnvIfMissing -Name "CAIG_GRAPH_SOURCE_PATH" -Value "rdf/libraries-graph.nt"
 Set-EnvIfMissing -Name "CAIG_GRAPH_SOURCE_TYPE" -Value "cosmos_nosql"
+# Graph backend: "in_memory" (default) or "fuseki" (Apache Jena Fuseki sidecar)
+Set-EnvIfMissing -Name "CAIG_GRAPH_BACKEND" -Value "in_memory"
+Set-EnvIfMissing -Name "CAIG_FUSEKI_DATASET_URL" -Value "http://localhost:3030/caig"
+Set-EnvIfMissing -Name "CAIG_FUSEKI_USER" -Value "admin"
+Set-EnvIfMissing -Name "CAIG_FUSEKI_PASSWORD" -Value "admin"
 Set-EnvIfMissing -Name "CAIG_HOME" -Value "" -WarnIfEmpty
 Set-EnvIfMissing -Name "CAIG_LOG_LEVEL" -Value "info"
 Set-EnvIfMissing -Name "CAIG_WEBSVC_AUTH_HEADER" -Value "xxx"
