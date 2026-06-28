@@ -30,6 +30,12 @@ param graphSourcePath string
 param graphSourceType string
 param laWorkspaceName string
 param logLevel string
+// Graph backend: 'in_memory' (default, in-process Jena) or 'fuseki' (Apache Jena Fuseki sidecar)
+param graphBackend string = 'in_memory'
+// Admin-UI password for the internal-only Fuseki sidecar (only used when graphBackend == 'fuseki').
+// This guards the Fuseki admin UI only; the graph data endpoints are reached over localhost.
+@secure()
+param fusekiAdminPassword string = ''
 param websvcAuthHeader string
 param websvcAuthValue string
 param webAppName string
@@ -96,6 +102,31 @@ resource acaEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
   }
 }
 
+// Optional Apache Jena Fuseki sidecar container, co-located with the graph
+// Container App so the graph reaches it over http://localhost:3030/caig.
+// Included only when graphBackend == 'fuseki'. The dataset is ephemeral and
+// re-populated by the graph_app at startup.
+var fusekiSidecarContainers = graphBackend == 'fuseki' ? [
+  {
+    image: 'stain/jena-fuseki:latest'
+    name: 'fuseki'
+    resources: {
+      cpu: json('0.5')
+      memory: '1Gi'
+    }
+    env: [
+      {
+        name: 'ADMIN_PASSWORD'
+        value: empty(fusekiAdminPassword) ? 'admin' : fusekiAdminPassword
+      }
+      {
+        name: 'FUSEKI_DATASET_1'
+        value: 'caig'
+      }
+    ]
+  }
+] : []
+
 resource graph 'Microsoft.App/containerApps@2023-05-01' = {
   name: graphServiceName
   location: azureRegion
@@ -114,7 +145,7 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
       }
     }
     template: {
-      containers: [
+      containers: concat([
         {
           image: 'omnirag/caig_graph:latest'
           name: graphServiceName
@@ -227,6 +258,22 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
               name: 'CAIG_WEB_APP_NAME'
               value: webAppName
             }
+            {
+              name: 'CAIG_GRAPH_BACKEND'
+              value: graphBackend
+            }
+            {
+              name: 'CAIG_FUSEKI_DATASET_URL'
+              value: 'http://localhost:3030/caig'
+            }
+            {
+              name: 'CAIG_FUSEKI_USER'
+              value: 'admin'
+            }
+            {
+              name: 'CAIG_FUSEKI_PASSWORD'
+              value: empty(fusekiAdminPassword) ? 'admin' : fusekiAdminPassword
+            }
           ]
           probes: [
             {
@@ -244,7 +291,7 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
             }
           ]
         }
-      ]
+      ], fusekiSidecarContainers)
       scale: {
         maxReplicas: 2
         minReplicas: 1

@@ -13,6 +13,9 @@ import org.apache.jena.riot.RDFWriter;
 import org.apache.jena.riot.RIOT;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.apache.jena.rdfconnection.RDFConnectionRemote;
+import org.apache.jena.http.auth.AuthEnv;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.update.UpdateExecution;
 import org.apache.jena.update.UpdateExecutionFactory;
@@ -46,6 +49,13 @@ public class AppGraph {
     private long docsRead = 0;
     private Model model;
     final private String namespace;
+    private boolean useFuseki = false;
+    private RDFConnection fusekiConn = null;
+    // Transient local snapshot of the Fuseki dataset, used only for the duration
+    // of a single (synchronized) BOM query. The BOM traversal issues many small
+    // per-node queries; running them against a one-time local snapshot avoids an
+    // N+1 storm of HTTP round-trips to Fuseki. Null except during bomQuery().
+    private Model bomSnapshotModel = null;
     private long successfulQueries;
     private long unsuccessfulQueries;
     private long lastSuccessfulQueryTime;
@@ -81,6 +91,68 @@ public class AppGraph {
     }
 
     /**
+     * Establish a remote connection to an Apache Jena Fuseki sidecar dataset.
+     * After this call read queries and SPARQL updates are executed against the
+     * remote Fuseki dataset rather than the in-process Jena model.
+     * The in-memory model is still used transiently by the builder to assemble
+     * triples prior to uploading them to Fuseki via loadModelToFuseki().
+     */
+    public void connectToFuseki() {
+        String datasetUrl = AppConfig.getFusekiDatasetUrl();
+        logger.warn("connectToFuseki - datasetUrl: " + datasetUrl);
+        String user = AppConfig.getFusekiUser();
+        String password = AppConfig.getFusekiPassword();
+        if (user != null && !user.isEmpty()) {
+            // Register HTTP Basic credentials so that authenticated write operations
+            // (SPARQL update and Graph Store Protocol uploads) succeed against Fuseki.
+            AuthEnv.get().registerUsernamePassword(java.net.URI.create(datasetUrl), user, password);
+            logger.warn("connectToFuseki - registered credentials for user: " + user);
+        }
+        this.fusekiConn = RDFConnectionRemote.newBuilder()
+                .destination(datasetUrl)
+                .queryEndpoint("query")
+                .updateEndpoint("update")
+                .gspEndpoint("data")
+                .build();
+        this.useFuseki = true;
+        logger.warn("connectToFuseki - connected");
+    }
+
+    public boolean isUsingFuseki() {
+        return this.useFuseki;
+    }
+
+    /**
+     * Upload the locally-built model (ontology + data triples) to the connected
+     * Fuseki dataset's default graph via the SPARQL Graph Store Protocol.
+     */
+    public synchronized void loadModelToFuseki() {
+        if (this.fusekiConn == null) {
+            logger.error("loadModelToFuseki - no Fuseki connection established");
+            return;
+        }
+        long size = (this.model != null) ? this.model.size() : 0;
+        logger.warn("loadModelToFuseki - uploading " + size + " triples to Fuseki");
+        this.fusekiConn.load(this.model);
+        logger.warn("loadModelToFuseki - upload complete");
+    }
+
+    /**
+     * Create a QueryExecution for the given query, targeting either the remote
+     * Fuseki dataset (when the Fuseki backend is enabled) or the in-process model.
+     */
+    private QueryExecution createQueryExecution(Query query) {
+        if (this.bomSnapshotModel != null) {
+            // A BOM traversal is in progress against a local Fuseki snapshot.
+            return QueryExecutionFactory.create(query, this.bomSnapshotModel);
+        }
+        if (this.useFuseki && this.fusekiConn != null) {
+            return this.fusekiConn.query(query);
+        }
+        return QueryExecutionFactory.create(query, this.model);
+    }
+
+    /**
      * Query the in-memory graph using the SPARQL in the given SparqlQueryRequest object.
      * The "synchronized" keyword is used here to allow only one thread to execute at any given time.
      * Each HTTP request runs in its own Thread.
@@ -91,8 +163,7 @@ public class AppGraph {
         QueryExecution qexec = null;
         try {
             Query query = QueryFactory.create(response.getSparql());
-            qexec = QueryExecutionFactory.create(
-                    query, AppGraph.getSingleton().getModel());
+            qexec = createQueryExecution(query);
             ResultSet results = qexec.execSelect();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ResultSetFormatter.outputAsJSON(outputStream, results);
@@ -125,10 +196,25 @@ public class AppGraph {
         SparqlBomQueryResponse response = new SparqlBomQueryResponse(request);
         HashMap<String, TraversedNode> nodes = new HashMap<String, TraversedNode>();
         response.setNodes(nodes);
-        
+
+        // When using the Fuseki backend, fetch a single local snapshot of the
+        // dataset up front and run the entire (chatty, per-node) BOM traversal
+        // against it. This turns thousands of HTTP round-trips into one.
+        if (this.useFuseki && this.fusekiConn != null) {
+            try {
+                this.bomSnapshotModel = this.fusekiConn.fetch();
+                logger.warn("bomQuery - fetched Fuseki snapshot, triples: " + this.bomSnapshotModel.size());
+            } catch (Exception e) {
+                logger.error("bomQuery - failed to fetch Fuseki snapshot; falling back to remote queries", e);
+                this.bomSnapshotModel = null;
+            }
+        }
+
+        try {
         // First try exact ID matching
         String exactNodeUri = namespaceWithSeparator() + response.getEntrypoint();
         boolean foundExactMatch = nodeExists(exactNodeUri);
+
         
         if (foundExactMatch) {
             logger.info("Found exact match for: " + exactNodeUri);
@@ -201,6 +287,10 @@ public class AppGraph {
                 qexec.close();
             }
         }
+        } finally {
+            // Release the transient Fuseki snapshot used for this BOM traversal.
+            this.bomSnapshotModel = null;
+        }
         response.finish();
         return response;
     }
@@ -226,7 +316,7 @@ public class AppGraph {
                            "ASK { " + formatUri(nodeUri) + " ?p ?o }";
             
             Query query = QueryFactory.create(sparql);
-            qexec = QueryExecutionFactory.create(query, this.model);
+            qexec = createQueryExecution(query);
             boolean exists = qexec.execAsk();
             logger.debug("nodeExists check for " + nodeUri + ": " + exists);
             return exists;
@@ -258,7 +348,7 @@ public class AppGraph {
             logger.debug("Loose matching SPARQL: " + sparql);
             
             Query query = QueryFactory.create(sparql);
-            qexec = QueryExecutionFactory.create(query, this.model);
+            qexec = createQueryExecution(query);
             ResultSet results = qexec.execSelect();
             
             while (results.hasNext()) {
@@ -309,7 +399,7 @@ public class AppGraph {
                 return;
             }
             
-            qexec = QueryExecutionFactory.create(query, AppGraph.getSingleton().getModel());
+            qexec = createQueryExecution(query);
             ResultSet results = qexec.execSelect();
 
             ArrayList<String> allConnections = new ArrayList<String>();
@@ -728,10 +818,14 @@ public class AppGraph {
         try {
             UpdateRequest updateRequest = UpdateFactory.create();
             updateRequest.add(request.getSparql());  // multiple statements may be added
-            Dataset ds = DatasetFactory.create(this.model);
-            uexec = UpdateExecutionFactory.create(updateRequest, ds);
-            uexec.execute();
-            ds.commit();
+            if (this.useFuseki && this.fusekiConn != null) {
+                this.fusekiConn.update(updateRequest);
+            } else {
+                Dataset ds = DatasetFactory.create(this.model);
+                uexec = UpdateExecutionFactory.create(updateRequest, ds);
+                uexec.execute();
+                ds.commit();
+            }
             this.successfulUpdates++;
             this.lastSuccessfulUpdateTime = System.currentTimeMillis();
             logger.warn("successful update: " + this.successfulUpdates + " at: " + this.lastSuccessfulUpdateTime);
@@ -752,7 +846,17 @@ public class AppGraph {
      * Typical use of this method is from the Cosmos DB Change Feed.
      */
     public synchronized AddDocumentsResponse addDocuments(ArrayList<Map<String, Object>> documents) {
-        LibrariesGraphTriplesBuilder triplesBuilder = new LibrariesGraphTriplesBuilder(this);
+        // When using the Fuseki backend, ingest the documents into a transient
+        // staging model and then append its triples to the Fuseki dataset.
+        // Otherwise ingest directly into the in-process model.
+        AppGraph ingestTarget = this;
+        Model stagingModel = null;
+        if (this.useFuseki && this.fusekiConn != null) {
+            stagingModel = ModelFactory.createDefaultModel();
+            ingestTarget = new AppGraph();
+            ingestTarget.setModel(stagingModel);
+        }
+        LibrariesGraphTriplesBuilder triplesBuilder = new LibrariesGraphTriplesBuilder(ingestTarget);
         AddDocumentsResponse response = new AddDocumentsResponse();
 
         if (documents != null) {
@@ -768,6 +872,15 @@ public class AppGraph {
                         response.setErrorMessage(e.getMessage());
                         e.printStackTrace();
                     }
+                }
+            }
+            if (stagingModel != null && response.getFailuresCount() == 0) {
+                try {
+                    this.fusekiConn.load(stagingModel);
+                } catch (Exception e) {
+                    response.incrementFailuresCount();
+                    response.setErrorMessage(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         } else {
@@ -947,7 +1060,7 @@ public class AppGraph {
             logger.debug("Rich dependency query for " + depUri + ":\n" + sparql);
             
             Query query = QueryFactory.create(sparql);
-            qexec = QueryExecutionFactory.create(query, this.model);
+            qexec = createQueryExecution(query);
             ResultSet results = qexec.execSelect();
             
             while (results.hasNext()) {
@@ -1075,7 +1188,7 @@ public class AppGraph {
                            "} LIMIT 100";
 
             Query query = QueryFactory.create(sparql);
-            qexec = QueryExecutionFactory.create(query, this.model);
+            qexec = createQueryExecution(query);
             ResultSet results = qexec.execSelect();
 
             while (results.hasNext()) {

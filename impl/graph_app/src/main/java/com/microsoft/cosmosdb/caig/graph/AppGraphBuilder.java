@@ -111,6 +111,15 @@ public class AppGraphBuilder {
             }
             AppGraph.setSingleton(appGraph);
 
+            // When the Fuseki sidecar backend is enabled, connect to the external
+            // Apache Jena Fuseki dataset and upload the locally-assembled triples.
+            // Subsequent queries and updates are served by Fuseki.
+            if (AppConfig.useFusekiBackend()) {
+                logger.warn("build() - Fuseki backend enabled; connecting and uploading model");
+                appGraph.connectToFuseki();
+                appGraph.loadModelToFuseki();
+            }
+
             // Initial query to check the newly loaded graph.
             if (postLoadQuery != null) {
                 SparqlQueryRequest req = new SparqlQueryRequest();

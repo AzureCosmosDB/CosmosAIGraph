@@ -35,6 +35,14 @@ public class AppConfig {
     public static final String CAIG_GRAPH_NAMESPACE               = "CAIG_GRAPH_NAMESPACE";
     public static final String CAIG_GRAPH_DUMP_UPON_BUILD         = "CAIG_GRAPH_DUMP_UPON_BUILD";
     public static final String CAIG_GRAPH_DUMP_OUTFILE            = "CAIG_GRAPH_DUMP_OUTFILE";
+    public static final String CAIG_GRAPH_BACKEND                 = "CAIG_GRAPH_BACKEND";
+    public static final String CAIG_FUSEKI_DATASET_URL           = "CAIG_FUSEKI_DATASET_URL";
+    public static final String CAIG_FUSEKI_USER                  = "CAIG_FUSEKI_USER";
+    public static final String CAIG_FUSEKI_PASSWORD              = "CAIG_FUSEKI_PASSWORD";
+
+    // Graph backend types
+    public static final String GRAPH_BACKEND_IN_MEMORY = "in_memory";
+    public static final String GRAPH_BACKEND_FUSEKI    = "fuseki";
 
     public static final String[] DEFINED_ENVIRONMENT_VARIABLES = {
             CAIG_COSMOSDB_NOSQL_ACCT,
@@ -47,7 +55,10 @@ public class AppConfig {
             CAIG_GRAPH_SOURCE_PATH,
             CAIG_GRAPH_NAMESPACE,
             CAIG_GRAPH_DUMP_UPON_BUILD,
-            CAIG_GRAPH_DUMP_OUTFILE
+            CAIG_GRAPH_DUMP_OUTFILE,
+            CAIG_GRAPH_BACKEND,
+            CAIG_FUSEKI_DATASET_URL,
+            CAIG_FUSEKI_USER
     };
 
     private static Properties overrideProperties = new Properties();
@@ -180,5 +191,47 @@ public class AppConfig {
 
     public static String getGraphDumpOutfile() {
         return getEnvVar(CAIG_GRAPH_DUMP_OUTFILE, null);
+    }
+
+    /**
+     * Return the configured graph backend type, defaulting to "in_memory".
+     * Supported values are "in_memory" (the default, in-process Apache Jena model)
+     * and "fuseki" (an external Apache Jena Fuseki triple store sidecar).
+     */
+    public static String getGraphBackend() {
+        return getEnvVar(CAIG_GRAPH_BACKEND, GRAPH_BACKEND_IN_MEMORY).trim().toLowerCase();
+    }
+
+    /**
+     * Return true if the graph should be served from an external Apache Jena
+     * Fuseki sidecar rather than the in-process in-memory Jena model.
+     */
+    public static boolean useFusekiBackend() {
+        return GRAPH_BACKEND_FUSEKI.equals(getGraphBackend());
+    }
+
+    /**
+     * Return the base URL of the Fuseki dataset, e.g. "http://localhost:3030/caig".
+     * The standard query, update, and Graph Store Protocol endpoints are derived
+     * from this base URL ("/query", "/update", "/data").
+     */
+    public static String getFusekiDatasetUrl() {
+        return getEnvVar(CAIG_FUSEKI_DATASET_URL, "http://localhost:3030/caig");
+    }
+
+    /**
+     * Return the username used to authenticate to the Fuseki sidecar, defaulting
+     * to "admin". Return an empty string to disable HTTP authentication.
+     */
+    public static String getFusekiUser() {
+        return getEnvVar(CAIG_FUSEKI_USER, "admin");
+    }
+
+    /**
+     * Return the password used to authenticate to the Fuseki sidecar, defaulting
+     * to "admin".
+     */
+    public static String getFusekiPassword() {
+        return getEnvVar(CAIG_FUSEKI_PASSWORD, "admin");
     }
 }

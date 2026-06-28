@@ -5,18 +5,33 @@
 # Chris Joakim, Aleksey Savateyev
 
 services:
+  fuseki:
+    image: stain/jena-fuseki:latest
+    ports:
+      - "3030:3030"
+    environment:
+      ADMIN_PASSWORD:   ${CAIG_FUSEKI_ADMIN_PASSWORD:-admin}
+      FUSEKI_DATASET_1: caig
+
   graph:
     image: omnirag/caig_graph:latest
     ports:
       - "8001:8001"
     volumes:
       - ./tmp:/tmp:rw
+    depends_on:
+      fuseki:
+        condition: service_started
     environment:
       CAIG_CONFIG_CONTAINER:              $CAIG_CONFIG_CONTAINER
       CAIG_COSMOSDB_NOSQL_ACCT:           $CAIG_COSMOSDB_NOSQL_ACCT
       CAIG_COSMOSDB_NOSQL_AUTH_MECHANISM: key
       CAIG_COSMOSDB_NOSQL_KEY:            $CAIG_COSMOSDB_NOSQL_KEY
       CAIG_COSMOSDB_NOSQL_URI:            $CAIG_COSMOSDB_NOSQL_URI
+      CAIG_GRAPH_BACKEND:                 ${CAIG_GRAPH_BACKEND:-in_memory}
+      CAIG_FUSEKI_DATASET_URL:            ${CAIG_FUSEKI_DATASET_URL:-http://fuseki:3030/caig}
+      CAIG_FUSEKI_USER:                   ${CAIG_FUSEKI_USER:-admin}
+      CAIG_FUSEKI_PASSWORD:               ${CAIG_FUSEKI_ADMIN_PASSWORD:-admin}
       CAIG_GRAPH_DUMP_OUTFILE:            $CAIG_GRAPH_DUMP_OUTFILE
       CAIG_GRAPH_DUMP_UPON_BUILD:         $CAIG_GRAPH_DUMP_UPON_BUILD
       CAIG_GRAPH_NAMESPACE:               $CAIG_GRAPH_NAMESPACE
