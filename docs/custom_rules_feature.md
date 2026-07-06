@@ -179,8 +179,8 @@ Use case-insensitive matching for all string comparisons.
 ### 1. Rebuild Web App Container
 ```powershell
 cd c:\_projects\CosmosAIGraph\impl\web_app
-docker build -t omnirag/caig_web:latest .
-docker push omnirag/caig_web:latest
+docker build -t alexsavat/caig_web:latest .
+docker push alexsavat/caig_web:latest
 ```
 
 ### 2. Restart Azure Container App

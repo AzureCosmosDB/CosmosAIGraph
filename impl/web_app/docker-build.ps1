@@ -9,16 +9,16 @@
 # Chris Joakim, Aleksey Savateyev
 
 Write-Host 'building caig_web image ...'
-docker build -f Dockerfile -t omnirag/caig_web .
+docker build -f Dockerfile -t alexsavat/caig_web .
 
 Write-Host 'next steps:'
-Write-Host '  docker push omnirag/caig_web:latest'
+Write-Host '  docker push alexsavat/caig_web:latest'
 
 Write-Host 'done'
 
 
 # Developer Notes:
-# docker build -f Dockerfile -t omnirag/caig_web .
+# docker build -f Dockerfile -t alexsavat/caig_web .
 # docker image ls
 # docker ps
 # docker stop -t 2 008038664a58
@@ -27,4 +27,4 @@ Write-Host 'done'
 # docker images | grep v3
 #
 # DockerHub:
-# docker push omnirag/caig_web:latest
+# docker push alexsavat/caig_web:latest

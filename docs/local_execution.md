@@ -97,8 +97,8 @@ You should see similar verbose output that includes the following:
 
 These two pre-built Docker containers are available on **DockerHub**:
 
-- omnirag/caig_web:latest
-- omnirag/caig_graph:latest
+- alexsavat/caig_web:latest
+- alexsavat/caig_graph:latest
 
 These are used by default by the above **docker-compose** scripts
 and also by the **Azure Container Apps** deployment process.
@@ -106,7 +106,7 @@ and also by the **Azure Container Apps** deployment process.
 If you wish to rebuild these containers and deploy them to your own
 Container Registry, please see the following Dockerfiles in this repo.
 You're free to modify these as necessary.
-Please change the **omnirag** prefix to your own identifier.
+Please change the **alexsavat** prefix to your own identifier.
 
 - impl/graph_app/docker/Dockerfile_graph
 - impl/web_app/docker/Dockerfile_web

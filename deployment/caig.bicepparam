@@ -31,6 +31,11 @@ param websvcAuthHeader = readEnvironmentVariable('CAIG_WEBSVC_AUTH_HEADER')
 param websvcAuthValue = readEnvironmentVariable('CAIG_WEBSVC_AUTH_VALUE')
 param webAppName = readEnvironmentVariable('CAIG_WEB_APP_NAME')
 
+// Graph/web container images. Default to the public images on the alexsavat Docker Hub
+// namespace; override via CAIG_GRAPH_SERVICE_IMAGE / CAIG_WEB_APP_IMAGE (e.g. an ACR image).
+param graphServiceImage = readEnvironmentVariable('CAIG_GRAPH_SERVICE_IMAGE', 'alexsavat/caig_graph:latest')
+param webAppImage = readEnvironmentVariable('CAIG_WEB_APP_IMAGE', 'alexsavat/caig_web:latest')
+
 // Graph backend selection. Default 'in_memory' (in-process Jena, no Fuseki).
 // Set CAIG_GRAPH_BACKEND=fuseki to deploy the Apache Jena Fuseki Container App
 // as the secondary backend option.

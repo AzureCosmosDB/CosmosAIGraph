@@ -59,6 +59,12 @@ param acrPassword string = ''
 param websvcAuthHeader string
 param websvcAuthValue string
 param webAppName string
+// Container images for the graph and web apps. Default to the public images on the
+// alexsavat Docker Hub namespace; override via CAIG_GRAPH_SERVICE_IMAGE / CAIG_WEB_APP_IMAGE
+// (e.g. to an <acr>.azurecr.io/... image). When the image lives in the ACR, pull
+// credentials are wired automatically from acrLoginServer/acrUsername/acrPassword.
+param graphServiceImage string = 'alexsavat/caig_graph:latest'
+param webAppImage string = 'alexsavat/caig_web:latest'
 param storageAccountName string = 'caigstore${uniqueString(resourceGroup().id)}'
 param storageContainerName string = 'data'
 
@@ -133,12 +139,20 @@ resource acaEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
 var fusekiInternalFqdn = '${fusekiServiceName}.internal.${acaEnvironment.properties.defaultDomain}'
 var fusekiDatasetUrl = graphBackend == 'fuseki' ? 'http://${fusekiInternalFqdn}/caig' : 'http://localhost:3030/caig'
 
+// The graph/web images default to public Docker Hub (no pull creds needed). Pull creds
+// are only wired when an image is overridden to one hosted in the ACR (acrLoginServer).
+// acrRegistries/acrSecrets are defined further below (near the MCP resource).
+var graphUsesAcr = !empty(acrLoginServer) && contains(graphServiceImage, acrLoginServer)
+var webUsesAcr = !empty(acrLoginServer) && contains(webAppImage, acrLoginServer)
+
 resource graph 'Microsoft.App/containerApps@2023-05-01' = {
   name: graphServiceName
   location: azureRegion
   properties: {
     environmentId: acaEnvironment.id
     configuration: {
+      registries: graphUsesAcr ? acrRegistries : []
+      secrets: graphUsesAcr ? acrSecrets : []
       ingress: {
         allowInsecure: true
         clientCertificateMode: 'ignore'
@@ -153,7 +167,7 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
     template: {
       containers: [
         {
-          image: 'omnirag/caig_graph:latest'
+          image: graphServiceImage
           name: graphServiceName
           env: [
             {
@@ -314,6 +328,8 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
   properties: {
     environmentId: acaEnvironment.id
     configuration: {
+      registries: webUsesAcr ? acrRegistries : []
+      secrets: webUsesAcr ? acrSecrets : []
       ingress: {
         allowInsecure: true
         clientCertificateMode: 'ignore'
@@ -328,7 +344,7 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
     template: {
       containers: [
         {
-          image: 'omnirag/caig_web:latest'
+          image: webAppImage
           name: webAppName
           env: [
             {
@@ -536,16 +552,16 @@ resource fuseki 'Microsoft.App/containerApps@2023-05-01' = if (graphBackend == '
 // It reaches Fuseki over the environment-internal FQDN, not the public internet.
 // Single replica so Streamable HTTP sessions are not split across instances.
 
-// Private-registry (ACR) pull configuration for the MCP image. Empty when a
-// public image is used.
-var mcpRegistries = empty(acrLoginServer) ? [] : [
+// Private-registry (ACR) pull configuration, used by the MCP image (always) and by the
+// graph/web images when they are overridden to an ACR-hosted image. Empty when no ACR.
+var acrRegistries = empty(acrLoginServer) ? [] : [
   {
     server: acrLoginServer
     username: acrUsername
     passwordSecretRef: 'acr-password'
   }
 ]
-var mcpSecrets = empty(acrPassword) ? [] : [
+var acrSecrets = empty(acrPassword) ? [] : [
   {
     name: 'acr-password'
     value: acrPassword
@@ -558,8 +574,8 @@ resource mcp 'Microsoft.App/containerApps@2023-05-01' = if (graphBackend == 'fus
   properties: {
     environmentId: acaEnvironment.id
     configuration: {
-      registries: mcpRegistries
-      secrets: mcpSecrets
+      registries: acrRegistries
+      secrets: acrSecrets
       ingress: {
         allowInsecure: false
         clientCertificateMode: 'ignore'

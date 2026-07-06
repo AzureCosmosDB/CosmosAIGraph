@@ -33,7 +33,7 @@ services:
       JENA_PASSWORD:   ${CAIG_FUSEKI_ADMIN_PASSWORD:-admin}
 
   graph:
-    image: omnirag/caig_graph:latest
+    image: ${CAIG_GRAPH_SERVICE_IMAGE:-alexsavat/caig_graph:latest}
     ports:
       - "8001:8001"
     volumes:
@@ -65,7 +65,7 @@ services:
       PORT:                               8001
 
   web:
-    image: omnirag/caig_web:latest
+    image: ${CAIG_WEB_APP_IMAGE:-alexsavat/caig_web:latest}
     ports:
       - "8000:8000"
     volumes:
