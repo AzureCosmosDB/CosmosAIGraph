@@ -648,8 +648,10 @@ output storageAccountId string = storageAccount.id
 output storageBlobEndpoint string = storageAccount.properties.primaryEndpoints.blob
 output storageContainerName string = storageContainerName
 output storageContainerUrl string = '${storageAccount.properties.primaryEndpoints.blob}${storageContainerName}'
-output graphServiceFqdn string = graph.properties.latestRevisionFqdn
-output webAppFqdn string = web.properties.latestRevisionFqdn
+// Stable app-level ingress FQDNs (NOT latestRevisionFqdn, which is revision-specific
+// and changes with every new revision).
+output graphServiceFqdn string = graph.properties.configuration.ingress.fqdn
+output webAppFqdn string = web.properties.configuration.ingress.fqdn
 output graphBackend string = graphBackend
 output fusekiDatasetUrl string = graphBackend == 'fuseki' ? fusekiDatasetUrl : ''
 output mcpServerFqdn string = mcp.?properties.configuration.ingress.fqdn ?? ''

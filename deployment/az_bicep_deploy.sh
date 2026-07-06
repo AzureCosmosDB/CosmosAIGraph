@@ -76,25 +76,30 @@ if [ "$GRAPH_BACKEND" = "fuseki" ]; then
     fi
 
     # 2. Ensure an Azure Container Registry (idempotent). The name is derived
-    #    deterministically from the resource group + subscription so re-runs reuse it.
-    if [ -z "$CAIG_ACR_NAME" ]; then
-        SUB_ID="$(az account show --query id -o tsv)"
-        HASH="$(printf '%s' "${RESOURCE_GROUP}${SUB_ID}" | sha256sum | cut -c1-12)"
-        export CAIG_ACR_NAME="caig${HASH}"
-    fi
+    #    deterministically from the resource group + subscription, fresh each run, so
+    #    switching RESOURCE_GROUP always targets the matching registry (no stale caching).
+    SUB_ID="$(az account show --query id -o tsv)"
+    HASH="$(printf '%s' "${RESOURCE_GROUP}${SUB_ID}" | sha256sum | cut -c1-12)"
+    ACR_NAME="caig${HASH}"
     echo ""
-    echo "Ensuring Azure Container Registry '$CAIG_ACR_NAME' ..."
-    az acr create --resource-group "$RESOURCE_GROUP" --name "$CAIG_ACR_NAME" --sku Basic --admin-enabled true --only-show-errors || { echo "ERROR: az acr create failed"; exit 1; }
+    echo "Ensuring Azure Container Registry '$ACR_NAME' ..."
+    az acr create --resource-group "$RESOURCE_GROUP" --name "$ACR_NAME" --sku Basic --admin-enabled true --only-show-errors || { echo "ERROR: az acr create failed"; exit 1; }
 
     # 3. Build the image directly from the Git repo, server-side (uses your az login).
-    echo "Building MCP image from $MCP_JENA_REPO via ACR Tasks ..."
-    az acr build --registry "$CAIG_ACR_NAME" --image mcp-jena:latest "$MCP_JENA_REPO" --only-show-errors || { echo "ERROR: az acr build failed"; exit 1; }
+    #    Skip the build if the image already exists in the ACR (re-runs are fast and
+    #    don't queue on ACR Tasks agents). Set CAIG_MCP_FORCE_BUILD=1 to force a rebuild.
+    if [ -z "$CAIG_MCP_FORCE_BUILD" ] && az acr repository show --name "$ACR_NAME" --image mcp-jena:latest --only-show-errors -o none 2>/dev/null; then
+        echo "MCP image already present in ACR - skipping build (set CAIG_MCP_FORCE_BUILD=1 to rebuild)."
+    else
+        echo "Building MCP image from $MCP_JENA_REPO via ACR Tasks ..."
+        az acr build --registry "$ACR_NAME" --image mcp-jena:latest "$MCP_JENA_REPO" --only-show-errors || { echo "ERROR: az acr build failed"; exit 1; }
+    fi
 
     # 4. Export the image + registry credentials for the Bicep parameters.
-    export CAIG_ACR_LOGIN_SERVER="$(az acr show --name "$CAIG_ACR_NAME" --query loginServer -o tsv)"
+    export CAIG_ACR_LOGIN_SERVER="$(az acr show --name "$ACR_NAME" --query loginServer -o tsv)"
     export CAIG_MCP_SERVER_IMAGE="${CAIG_ACR_LOGIN_SERVER}/mcp-jena:latest"
-    export CAIG_ACR_USERNAME="$(az acr credential show --name "$CAIG_ACR_NAME" --query username -o tsv)"
-    export CAIG_ACR_PASSWORD="$(az acr credential show --name "$CAIG_ACR_NAME" --query "passwords[0].value" -o tsv)"
+    export CAIG_ACR_USERNAME="$(az acr credential show --name "$ACR_NAME" --query username -o tsv)"
+    export CAIG_ACR_PASSWORD="$(az acr credential show --name "$ACR_NAME" --query "passwords[0].value" -o tsv)"
     echo "MCP image built: $CAIG_MCP_SERVER_IMAGE"
 fi
 

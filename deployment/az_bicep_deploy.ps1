@@ -80,23 +80,33 @@ if ($GRAPH_BACKEND -eq 'fuseki') {
     }
 
     # 2. Ensure an Azure Container Registry (idempotent). The name is derived
-    #    deterministically from the resource group + subscription so re-runs reuse it.
-    if ([string]::IsNullOrWhiteSpace($env:CAIG_ACR_NAME)) {
-        $subId = az account show --query id -o tsv
-        $sha = [System.Security.Cryptography.SHA256]::Create()
-        $hash = [Convert]::ToHexString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes("$RESOURCE_GROUP$subId"))).ToLower()
-        $env:CAIG_ACR_NAME = "caig" + $hash.Substring(0, 12)
-    }
-    $acrName = $env:CAIG_ACR_NAME
+    #    deterministically from the resource group + subscription, fresh each run (NOT
+    #    cached in $env), so switching $RESOURCE_GROUP always targets the matching
+    #    registry and never reuses a previous run's name.
+    $subId = az account show --query id -o tsv
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    $hash = [Convert]::ToHexString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes("$RESOURCE_GROUP$subId"))).ToLower()
+    $acrName = "caig" + $hash.Substring(0, 12)
     Write-Host ""
     Write-Host "Ensuring Azure Container Registry '$acrName' ..." -ForegroundColor Green
     az acr create --resource-group $RESOURCE_GROUP --name $acrName --sku Basic --admin-enabled true --only-show-errors | Out-Null
     if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: az acr create failed" -ForegroundColor Red; exit 1 }
 
     # 3. Build the image directly from the Git repo, server-side (uses your az login).
-    Write-Host "Building MCP image from $MCP_JENA_REPO via ACR Tasks ..." -ForegroundColor Green
-    az acr build --registry $acrName --image mcp-jena:latest $MCP_JENA_REPO --only-show-errors
-    if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: az acr build failed" -ForegroundColor Red; exit 1 }
+    #    Skip the build if the image already exists in the ACR (re-runs are fast and
+    #    don't queue on ACR Tasks agents). Set CAIG_MCP_FORCE_BUILD=1 to force a rebuild.
+    $mcpImageExists = $false
+    if ([string]::IsNullOrWhiteSpace($env:CAIG_MCP_FORCE_BUILD)) {
+        az acr repository show --name $acrName --image mcp-jena:latest --only-show-errors --output none 2>$null
+        if ($LASTEXITCODE -eq 0) { $mcpImageExists = $true }
+    }
+    if ($mcpImageExists) {
+        Write-Host "MCP image already present in ACR - skipping build (set CAIG_MCP_FORCE_BUILD=1 to rebuild)." -ForegroundColor Green
+    } else {
+        Write-Host "Building MCP image from $MCP_JENA_REPO via ACR Tasks ..." -ForegroundColor Green
+        az acr build --registry $acrName --image mcp-jena:latest $MCP_JENA_REPO --only-show-errors
+        if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: az acr build failed" -ForegroundColor Red; exit 1 }
+    }
 
     # 4. Export the image + registry credentials for the Bicep parameters.
     $env:CAIG_ACR_LOGIN_SERVER = az acr show --name $acrName --query loginServer -o tsv
