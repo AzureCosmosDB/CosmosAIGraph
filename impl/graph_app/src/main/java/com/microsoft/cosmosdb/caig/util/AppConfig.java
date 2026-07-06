@@ -134,7 +134,10 @@ public class AppConfig {
         }
         try {
             String jsonStr = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(env);
-            System.out.println("logDefinedEnvironmentVariables\n%s\n".format(jsonStr));
+            // Use plain concatenation, NOT String.format, because env var values may
+            // contain '%' sequences (e.g. SAS URLs with %2F/%3D) that would otherwise be
+            // parsed as format conversions and throw UnknownFormatConversionException.
+            System.out.println("logDefinedEnvironmentVariables\n" + jsonStr + "\n");
         }
         catch (JsonProcessingException e) {
             throw new RuntimeException(e);
