@@ -9,14 +9,18 @@ if (-not(Test-Path $tmp_dir -PathType Container)) {
     New-Item -path $tmp_dir -ItemType Directory
 }
 
+# Use the Gradle wrapper (gradlew.bat) if present so a global 'gradle' install
+# isn't required; fall back to a 'gradle' on PATH otherwise.
+$gradle = if (Test-Path ".\gradlew.bat") { ".\gradlew.bat" } else { "gradle" }
+
 Write-Host 'clean ...'
-gradle clean
+& $gradle clean
 
 Write-Host 'build ...'
-gradle build -x test
+& $gradle build -x test
 
 Write-Host 'jar ...'
-gradle jar
+& $gradle jar
 
 # Write-Host 'dependencies ...'
 # gradle dependencies > tmp\gradle_dependencies.txt
