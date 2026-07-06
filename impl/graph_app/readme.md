@@ -62,5 +62,5 @@ OS:            Windows 11 10.0 amd64
   - http_client.ps1
   - http_client.sh
 
-- Java/Jena HTTP port is 8001, same as the Python implementation
+- Java/Jena HTTP port is 9001, same as the Python implementation
 

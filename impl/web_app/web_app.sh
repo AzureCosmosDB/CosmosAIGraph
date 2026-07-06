@@ -13,4 +13,4 @@ source venv/bin/activate
 echo '.env file contents ...'
 cat .env 
 
-hypercorn web_app:app --bind 127.0.0.1:8000 --workers 1 
+hypercorn web_app:app --bind 127.0.0.1:9008 --workers 1 

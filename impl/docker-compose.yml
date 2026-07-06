@@ -35,7 +35,7 @@ services:
   graph:
     image: ${CAIG_GRAPH_SERVICE_IMAGE:-alexsavat/caig_graph:latest}
     ports:
-      - "8001:8001"
+      - "9001:9001"
     volumes:
       - ./tmp:/tmp:rw
     depends_on:
@@ -62,12 +62,12 @@ services:
       CAIG_LOG_LEVEL:                     $CAIG_LOG_LEVEL
       CAIG_WEBSVC_AUTH_HEADER:            $CAIG_WEBSVC_AUTH_HEADER
       CAIG_WEBSVC_AUTH_VALUE:             $CAIG_WEBSVC_AUTH_VALUE
-      PORT:                               8001
+      PORT:                               9001
 
   web:
     image: ${CAIG_WEB_APP_IMAGE:-alexsavat/caig_web:latest}
     ports:
-      - "8000:8000"
+      - "9008:9008"
     volumes:
       - ./tmp:/tmp:rw
     depends_on:
@@ -94,7 +94,7 @@ services:
       CAIG_PROMPT_SPARQL_PATH:           $CAIG_PROMPT_SPARQL_PATH
       CAIG_PROMPT_COMPLETION_PATH:        $CAIG_PROMPT_COMPLETION_PATH
       CAIG_GRAPH_SERVICE_URL:             http://graph
-      PORT:                               8000
+      PORT:                               9008
       WEB_CONCURRENCY:                    1
 
 
@@ -105,7 +105,7 @@ services:
 #   docker compose -f docker-compose.yml down   (in a second terminal window, in this directory)
 
 #  Neither Afterburner nor Blackbird Jackson module loaded.  Consider adding one to your classpath for maximum Jackson performance.
-# graph_service-1  | 12:33:25.215 INFO  Http11Processor - The host [graph_service:8001] is not valid
+# graph_service-1  | 12:33:25.215 INFO  Http11Processor - The host [graph_service:9001] is not valid
 
-# POST http://graph_service:8001/sparql_query "HTTP/1.1 400 "
+# POST http://graph_service:9001/sparql_query "HTTP/1.1 400 "
 # graph_service-1  | java.lang.IllegalArgumentException: The character [_] is never valid in a domain name.

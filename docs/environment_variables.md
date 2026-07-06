@@ -46,7 +46,7 @@ All of these begin with the prefix `CAIG_`.
 | CAIG_WEBSVC_AUTH_HEADER | Name of the custom HTTP authentication header; defaults to 'x-caig-auth'.   | RUNTIME |
 | CAIG_WEBSVC_AUTH_VALUE | your-secret-value   | RUNTIME |
 | CAIG_WEB_APP_NAME | Logical name.   | DEV ENV |
-| CAIG_WEB_APP_PORT | 8000   | WEB RUNTIME |
+| CAIG_WEB_APP_PORT | 9008   | WEB RUNTIME |
 | CAIG_WEB_APP_URL | http://127.0.0.1 or determined by ACA.   | WEB RUNTIME |
 | CAIG_ACA_ENVIRONMENT_NAME |  The name of your Azure Container Apps environment.   | DEPLOYMENT |
 | CAIG_DEFINED_AUTH_USERS |  The list of defined Azure Container Apps users.   | DEPLOYMENT |

@@ -23,8 +23,8 @@ Get-Content .env | ForEach-Object {
     }
 }
 
-# Get port from environment variable, default to 8000 if not set
-$port = if ($env:CAIG_WEB_APP_PORT) { $env:CAIG_WEB_APP_PORT } else { "8000" }
+# Get port from environment variable, default to 9008 if not set
+$port = if ($env:CAIG_WEB_APP_PORT) { $env:CAIG_WEB_APP_PORT } else { "9008" }
 Write-Host "Starting web app on port $port ..."
 
 hypercorn web_app:app --bind "127.0.0.1:$port" --workers 1 

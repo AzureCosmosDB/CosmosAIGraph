@@ -4,24 +4,24 @@
 #
 # Chris Joakim, Microsoft, 2025
 
-http://127.0.0.1:8001/ping
+http://127.0.0.1:9001/ping
 
 ###
 
-http://127.0.0.1:8001/health
+http://127.0.0.1:9001/health
 
 ###
 
-http://127.0.0.1:8001/reload_graph
+http://127.0.0.1:9001/reload_graph
 
 ###
 
-http://127.0.0.1:8001/ontology
+http://127.0.0.1:9001/ontology
 
 
 ###
 
-POST http://127.0.0.1:8001/sparql_query
+POST http://127.0.0.1:9001/sparql_query
 User-Agent: VSC-REST-Client
 content-type: application/json
 
@@ -31,7 +31,7 @@ content-type: application/json
 
 ###
 
-POST http://127.0.0.1:8001/sparql_query
+POST http://127.0.0.1:9001/sparql_query
 User-Agent: VSC-REST-Client
 content-type: application/json
 
@@ -42,7 +42,7 @@ content-type: application/json
 
 ###
 
-POST http://127.0.0.1:8001/sparql_query
+POST http://127.0.0.1:9001/sparql_query
 User-Agent: VSC-REST-Client
 content-type: application/json
 
@@ -54,7 +54,7 @@ content-type: application/json
 ###
 
 
-POST http://127.0.0.1:8001/sparql_bom_query
+POST http://127.0.0.1:9001/sparql_bom_query
 User-Agent: VSC-REST-Client
 content-type: application/json
 
@@ -66,20 +66,20 @@ content-type: application/json
 
 ###
 
-GET http://127.0.0.1:8000/ping
+GET http://127.0.0.1:9008/ping
 
 ###
 
-GET http://127.0.0.1:8000/liveness
+GET http://127.0.0.1:9008/liveness
 
 ###
 
-GET http://127.0.0.1:8000/sparql_console
+GET http://127.0.0.1:9008/sparql_console
 
 
 ###
 
-POST http://127.0.0.1:8001/sparql_query
+POST http://127.0.0.1:9001/sparql_query
 User-Agent: VSC-REST-Client
 content-type: application/json
 
