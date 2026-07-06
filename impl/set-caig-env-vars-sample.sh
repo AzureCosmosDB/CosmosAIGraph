@@ -55,11 +55,17 @@ set_env_if_missing CAIG_GRAPH_SOURCE_DB "caig"
 set_env_if_missing CAIG_GRAPH_SOURCE_OWL_FILENAME "ontologies/libraries.owl"
 set_env_if_missing CAIG_GRAPH_SOURCE_PATH "rdf/libraries-graph.nt"
 set_env_if_missing CAIG_GRAPH_SOURCE_TYPE "cosmos_nosql"
-# Graph backend: "in_memory" (default) or "fuseki" (Apache Jena Fuseki sidecar)
+# --- LOCAL execution only ---
+# Graph backend for running graph_app on your workstation: "in_memory" (default) or
+# "fuseki". For local Fuseki use run_fuseki.ps1 (it sets these for you). The ACA
+# DEPLOYMENT backend is chosen with GRAPH_BACKEND in deployment/az_bicep_deploy.sh,
+# not here.
 set_env_if_missing CAIG_GRAPH_BACKEND "in_memory"
 set_env_if_missing CAIG_FUSEKI_DATASET_URL "http://localhost:3030/caig"
 set_env_if_missing CAIG_FUSEKI_USER "admin"
 set_env_if_missing CAIG_FUSEKI_PASSWORD "admin"
+# The MCP server is a deployment-only component; it is configured by
+# deployment/az_bicep_deploy.sh (image built via az acr build, API key auto-generated).
 set_env_if_missing CAIG_HOME ""
 set_env_if_missing CAIG_LOG_LEVEL "info"
 set_env_if_missing CAIG_WEBSVC_AUTH_HEADER "xxx"

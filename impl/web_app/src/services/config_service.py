@@ -200,6 +200,18 @@ class ConfigService:
         d["CAIG_GRAPH_DUMP_OUTFILE"] = (
             "The file to write to if CAIG_GRAPH_DUMP_UPON_BUILD is true.  (GRAPH RUNTIME)"
         )
+        d["CAIG_GRAPH_BACKEND"] = (
+            "The graph backend: 'in_memory' (default, in-process Jena) or 'fuseki' (external Apache Jena Fuseki triple store).  (GRAPH RUNTIME)"
+        )
+        d["CAIG_FUSEKI_DATASET_URL"] = (
+            "Base URL of the Fuseki dataset, used when CAIG_GRAPH_BACKEND is 'fuseki'.  (GRAPH RUNTIME)"
+        )
+        d["CAIG_FUSEKI_USER"] = (
+            "HTTP Basic username the graph app uses for authenticated Fuseki writes; defaults to 'admin'.  (GRAPH RUNTIME)"
+        )
+        d["CAIG_FUSEKI_PASSWORD"] = (
+            "HTTP Basic password for Fuseki writes; must match the Fuseki container's ADMIN_PASSWORD.  (GRAPH RUNTIME)"
+        )
         d["CAIG_WEBSVC_AUTH_HEADER"] = "Name of the custom HTTP authentication header; defaults to 'x-caig-auth'.  (RUNTIME)"
         d["CAIG_WEBSVC_AUTH_VALUE"] = "your-secret-value  (RUNTIME)"
         d["CAIG_LOG_LEVEL"] = (
