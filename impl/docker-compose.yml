@@ -13,6 +13,25 @@ services:
       ADMIN_PASSWORD:   ${CAIG_FUSEKI_ADMIN_PASSWORD:-admin}
       FUSEKI_DATASET_1: caig
 
+  # Apache Jena MCP server for Microsoft Foundry IQ (Streamable HTTP on /mcp).
+  # Built directly from its own repo so it stays a separate, reusable project.
+  mcp:
+    build:
+      context: https://github.com/alekseys/mcp-jena.git
+    ports:
+      - "8080:8080"
+    depends_on:
+      fuseki:
+        condition: service_started
+    environment:
+      MCP_TRANSPORT:   http
+      PORT:            "8080"
+      API_KEY:         ${CAIG_MCP_API_KEY:-}
+      JENA_FUSEKI_URL: http://fuseki:3030
+      DEFAULT_DATASET: caig
+      JENA_USERNAME:   ${CAIG_FUSEKI_USER:-admin}
+      JENA_PASSWORD:   ${CAIG_FUSEKI_ADMIN_PASSWORD:-admin}
+
   graph:
     image: omnirag/caig_graph:latest
     ports:

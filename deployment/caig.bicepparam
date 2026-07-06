@@ -30,3 +30,20 @@ param logLevel = readEnvironmentVariable('CAIG_LOG_LEVEL')
 param websvcAuthHeader = readEnvironmentVariable('CAIG_WEBSVC_AUTH_HEADER')
 param websvcAuthValue = readEnvironmentVariable('CAIG_WEBSVC_AUTH_VALUE')
 param webAppName = readEnvironmentVariable('CAIG_WEB_APP_NAME')
+
+// Graph backend selection. Default 'in_memory' (in-process Jena, no Fuseki).
+// Set CAIG_GRAPH_BACKEND=fuseki to deploy the Apache Jena Fuseki Container App
+// as the secondary backend option.
+param graphBackend = readEnvironmentVariable('CAIG_GRAPH_BACKEND', 'in_memory')
+param fusekiServiceName = readEnvironmentVariable('CAIG_FUSEKI_SERVICE_NAME', 'fuseki')
+param fusekiAdminPassword = readEnvironmentVariable('CAIG_FUSEKI_ADMIN_PASSWORD', 'admin')
+
+// Apache Jena MCP server (deployed only when graphBackend == 'fuseki').
+// The deploy script builds the image with `az acr build` from the separate
+// github.com/alekseys/mcp-jena repo and sets these values automatically.
+param mcpServerName = readEnvironmentVariable('CAIG_MCP_SERVER_NAME', 'mcp-jena')
+param mcpServerImage = readEnvironmentVariable('CAIG_MCP_SERVER_IMAGE', 'mcp-jena:latest')
+param mcpApiKey = readEnvironmentVariable('CAIG_MCP_API_KEY', '')
+param acrLoginServer = readEnvironmentVariable('CAIG_ACR_LOGIN_SERVER', '')
+param acrUsername = readEnvironmentVariable('CAIG_ACR_USERNAME', '')
+param acrPassword = readEnvironmentVariable('CAIG_ACR_PASSWORD', '')

@@ -25,6 +25,9 @@
 **/pyvenv.cfg
 **/.override.properties*
 
+# User-specific deployment env script (contains account keys)
+deployment/my-caig-deploy-env.ps1
+
 
 # Standard Python .gitignore entries per GitHub below:
 # Byte-compiled / optimized / DLL files
@@ -230,3 +233,4 @@ impl/graph_app/ontologies/example.org/
 impl/graph_app/rdf/example.org/
 impl/web_app/ontologies/example.org/
 deploy.ps1
+deployment/my_bicep_deploy.ps1

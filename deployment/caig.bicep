@@ -32,10 +32,30 @@ param laWorkspaceName string
 param logLevel string
 // Graph backend: 'in_memory' (default, in-process Jena) or 'fuseki' (Apache Jena Fuseki sidecar)
 param graphBackend string = 'in_memory'
-// Admin-UI password for the internal-only Fuseki sidecar (only used when graphBackend == 'fuseki').
-// This guards the Fuseki admin UI only; the graph data endpoints are reached over localhost.
+// Admin-UI password for the internal-only Fuseki Container App (only used when graphBackend == 'fuseki').
+// This guards the Fuseki admin UI / write endpoints; the graph app authenticates with it.
 @secure()
 param fusekiAdminPassword string = ''
+// Name of the Apache Jena Fuseki Container App (deployed only when graphBackend == 'fuseki').
+param fusekiServiceName string = 'fuseki'
+// Apache Jena MCP server (https://github.com/alekseys/mcp-jena), deployed as its own
+// ACA Container App when graphBackend == 'fuseki'. It exposes the Fuseki dataset over
+// Streamable HTTP so Microsoft Foundry IQ can consume it as a Knowledge Source.
+param mcpServerName string = 'mcp-jena'
+// Container image for the MCP server. The deploy script builds this from the
+// separate mcp-jena repo with `az acr build` and sets it to <acr>.azurecr.io/mcp-jena:latest.
+param mcpServerImage string = 'mcp-jena:latest'
+// API key that remote MCP clients (e.g. Foundry IQ) must present as a Bearer token
+// or x-api-key header. The deploy script auto-generates a strong value if unset.
+@secure()
+param mcpApiKey string = ''
+// Azure Container Registry that hosts the MCP image (set by the deploy script when
+// graphBackend == 'fuseki'). When acrLoginServer is empty the MCP app pulls from a
+// public registry and no pull credentials are configured.
+param acrLoginServer string = ''
+param acrUsername string = ''
+@secure()
+param acrPassword string = ''
 param websvcAuthHeader string
 param websvcAuthValue string
 param webAppName string
@@ -61,7 +81,9 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   kind: 'StorageV2'
   properties: {
     accessTier: 'Hot'
-    allowBlobPublicAccess: true
+    // Public blob access is disabled (more secure, and required by common Azure
+    // Policies). RDF/ontology assets are read via authenticated URLs (see docs).
+    allowBlobPublicAccess: false
     minimumTlsVersion: 'TLS1_2'
     supportsHttpsTrafficOnly: true
   }
@@ -78,7 +100,7 @@ resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/container
   parent: blobService
   name: storageContainerName
   properties: {
-    publicAccess: 'Blob'
+    publicAccess: 'None'
   }
 }
 
@@ -102,30 +124,14 @@ resource acaEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
   }
 }
 
-// Optional Apache Jena Fuseki sidecar container, co-located with the graph
-// Container App so the graph reaches it over http://localhost:3030/caig.
-// Included only when graphBackend == 'fuseki'. The dataset is ephemeral and
-// re-populated by the graph_app at startup.
-var fusekiSidecarContainers = graphBackend == 'fuseki' ? [
-  {
-    image: 'stain/jena-fuseki:latest'
-    name: 'fuseki'
-    resources: {
-      cpu: json('0.5')
-      memory: '1Gi'
-    }
-    env: [
-      {
-        name: 'ADMIN_PASSWORD'
-        value: empty(fusekiAdminPassword) ? 'admin' : fusekiAdminPassword
-      }
-      {
-        name: 'FUSEKI_DATASET_1'
-        value: 'caig'
-      }
-    ]
-  }
-] : []
+// Apache Jena Fuseki is deployed as its own internal-only ACA Container App
+// (see the 'fuseki' resource below) when graphBackend == 'fuseki'. The graph
+// Container App reaches it over the environment-internal ingress FQDN, which has
+// the form <app-name>.internal.<defaultDomain>. Building the URL from the
+// environment's defaultDomain avoids a conditional-resource reference from the
+// always-deployed graph app.
+var fusekiInternalFqdn = '${fusekiServiceName}.internal.${acaEnvironment.properties.defaultDomain}'
+var fusekiDatasetUrl = graphBackend == 'fuseki' ? 'http://${fusekiInternalFqdn}/caig' : 'http://localhost:3030/caig'
 
 resource graph 'Microsoft.App/containerApps@2023-05-01' = {
   name: graphServiceName
@@ -145,7 +151,7 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
       }
     }
     template: {
-      containers: concat([
+      containers: [
         {
           image: 'omnirag/caig_graph:latest'
           name: graphServiceName
@@ -264,7 +270,7 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
             }
             {
               name: 'CAIG_FUSEKI_DATASET_URL'
-              value: 'http://localhost:3030/caig'
+              value: fusekiDatasetUrl
             }
             {
               name: 'CAIG_FUSEKI_USER'
@@ -291,7 +297,7 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
             }
           ]
         }
-      ], fusekiSidecarContainers)
+      ]
       scale: {
         maxReplicas: 2
         minReplicas: 1
@@ -469,11 +475,184 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
   }
 }
 
+// Apache Jena Fuseki triple store, deployed as its own ACA Container App (the
+// same way as the web and graph apps) when graphBackend == 'fuseki'. This is the
+// secondary deployment option; the default 'in_memory' backend does not deploy it.
+// Uses internal-only ingress so it is reachable by the graph Container App over
+// the environment-internal network but NOT the public internet. The dataset is
+// ephemeral and re-populated by graph_app at startup, so a single replica is
+// required (all reads/writes must hit the same in-memory instance).
+resource fuseki 'Microsoft.App/containerApps@2023-05-01' = if (graphBackend == 'fuseki') {
+  name: fusekiServiceName
+  location: azureRegion
+  properties: {
+    environmentId: acaEnvironment.id
+    configuration: {
+      ingress: {
+        allowInsecure: true
+        clientCertificateMode: 'ignore'
+        targetPort: 3030
+        external: false
+        stickySessions: {
+          affinity: 'none'
+        }
+        transport: 'http'
+      }
+    }
+    template: {
+      containers: [
+        {
+          image: 'stain/jena-fuseki:latest'
+          name: fusekiServiceName
+          resources: {
+            cpu: json('1.0')
+            memory: '2Gi'
+          }
+          env: [
+            {
+              name: 'ADMIN_PASSWORD'
+              value: empty(fusekiAdminPassword) ? 'admin' : fusekiAdminPassword
+            }
+            {
+              name: 'FUSEKI_DATASET_1'
+              value: 'caig'
+            }
+          ]
+        }
+      ]
+      scale: {
+        maxReplicas: 1
+        minReplicas: 1
+      }
+      terminationGracePeriodSeconds: 30
+    }
+  }
+}
+
+// Apache Jena MCP server, deployed as its own ACA Container App (same pattern as
+// web / graph / fuseki) when graphBackend == 'fuseki'. Exposes the Fuseki dataset
+// over Streamable HTTP (POST /mcp, health at /health) so Microsoft Foundry IQ can
+// use it as a Knowledge Source. External ingress on port 8080, secured by API_KEY.
+// It reaches Fuseki over the environment-internal FQDN, not the public internet.
+// Single replica so Streamable HTTP sessions are not split across instances.
+
+// Private-registry (ACR) pull configuration for the MCP image. Empty when a
+// public image is used.
+var mcpRegistries = empty(acrLoginServer) ? [] : [
+  {
+    server: acrLoginServer
+    username: acrUsername
+    passwordSecretRef: 'acr-password'
+  }
+]
+var mcpSecrets = empty(acrPassword) ? [] : [
+  {
+    name: 'acr-password'
+    value: acrPassword
+  }
+]
+
+resource mcp 'Microsoft.App/containerApps@2023-05-01' = if (graphBackend == 'fuseki') {
+  name: mcpServerName
+  location: azureRegion
+  properties: {
+    environmentId: acaEnvironment.id
+    configuration: {
+      registries: mcpRegistries
+      secrets: mcpSecrets
+      ingress: {
+        allowInsecure: false
+        clientCertificateMode: 'ignore'
+        targetPort: 8080
+        external: true
+        stickySessions: {
+          affinity: 'none'
+        }
+        transport: 'http'
+      }
+    }
+    template: {
+      containers: [
+        {
+          image: mcpServerImage
+          name: mcpServerName
+          resources: {
+            cpu: json('0.5')
+            memory: '1Gi'
+          }
+          env: [
+            {
+              name: 'MCP_TRANSPORT'
+              value: 'http'
+            }
+            {
+              name: 'PORT'
+              value: '8080'
+            }
+            {
+              name: 'API_KEY'
+              // Guard: this MCP app is on PUBLIC ingress, so it must have an API
+              // key. The deploy scripts auto-generate one; if a direct `az
+              // deployment` leaves it empty, accessing the (non-existent) property
+              // below fails the deployment instead of exposing an unauthenticated
+              // public endpoint. any(json('{}')) keeps it out of Bicep's static
+              // property check so it fails at deploy time, not compile time.
+              value: empty(mcpApiKey) ? any(json('{}')).CAIG_MCP_API_KEY_must_be_set_when_graphBackend_is_fuseki : mcpApiKey
+            }
+            {
+              name: 'JENA_FUSEKI_URL'
+              value: 'http://${fusekiInternalFqdn}'
+            }
+            {
+              name: 'DEFAULT_DATASET'
+              value: 'caig'
+            }
+            {
+              name: 'JENA_USERNAME'
+              value: 'admin'
+            }
+            {
+              name: 'JENA_PASSWORD'
+              value: empty(fusekiAdminPassword) ? 'admin' : fusekiAdminPassword
+            }
+          ]
+          probes: [
+            {
+              type: 'liveness'
+              failureThreshold: 5
+              httpGet: {
+                path: '/health'
+                port: 8080
+                scheme: 'http'
+              }
+              initialDelaySeconds: 20
+              periodSeconds: 120
+              successThreshold: 1
+              timeoutSeconds: 10
+            }
+          ]
+        }
+      ]
+      scale: {
+        maxReplicas: 1
+        minReplicas: 1
+      }
+      terminationGracePeriodSeconds: 30
+    }
+  }
+}
+
 // Outputs for reference and deployment scripts
 output storageAccountName string = storageAccount.name
 output storageAccountId string = storageAccount.id
 output storageBlobEndpoint string = storageAccount.properties.primaryEndpoints.blob
 output storageContainerName string = storageContainerName
 output storageContainerUrl string = '${storageAccount.properties.primaryEndpoints.blob}${storageContainerName}'
-output graphServiceFqdn string = graph.properties.latestRevisionFqdn
-output webAppFqdn string = web.properties.latestRevisionFqdn
+// Stable app-level ingress FQDNs (NOT latestRevisionFqdn, which is revision-specific
+// and changes with every new revision).
+output graphServiceFqdn string = graph.properties.configuration.ingress.fqdn
+output webAppFqdn string = web.properties.configuration.ingress.fqdn
+output graphBackend string = graphBackend
+output fusekiDatasetUrl string = graphBackend == 'fuseki' ? fusekiDatasetUrl : ''
+output mcpServerFqdn string = mcp.?properties.configuration.ingress.fqdn ?? ''
+output mcpServerEndpoint string = empty(mcp.?properties.configuration.ingress.fqdn ?? '') ? '' : 'https://${mcp.?properties.configuration.ingress.fqdn}/mcp'
