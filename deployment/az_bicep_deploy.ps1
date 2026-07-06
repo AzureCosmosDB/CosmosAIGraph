@@ -133,6 +133,78 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "Deployment completed successfully" -ForegroundColor Green
 
+# --- Grant the Container Apps' managed identities access to Azure OpenAI (RBAC) ---
+# The Azure OpenAI / AI Services resource is provisioned OUTSIDE this template and may
+# have key-based auth disabled (403 AuthenticationTypeDisabled). The apps therefore
+# authenticate with their system-assigned managed identity via Microsoft Entra ID; the
+# app code (ai_service.py) prefers RBAC and only falls back to CAIG_AZURE_OPENAI_KEY.
+# Grant each identity the built-in 'Cognitive Services OpenAI User' data-plane role.
+$webPrincipalId   = $deploymentOutput.properties.outputs.webAppPrincipalId.value
+$graphPrincipalId = $deploymentOutput.properties.outputs.graphServicePrincipalId.value
+
+# Resolve the Azure OpenAI resource id from its endpoint host. The resource name is the
+# first label of the host (e.g. https://alesai.services.ai.azure.com -> 'alesai').
+$aoaiName = ([System.Uri]$env:CAIG_AZURE_OPENAI_URL).Host.Split('.')[0]
+$aoaiResourceId = az cognitiveservices account list --query "[?name=='$aoaiName'].id | [0]" -o tsv
+if ([string]::IsNullOrWhiteSpace($aoaiResourceId)) {
+    Write-Host "WARNING: could not locate Azure OpenAI resource '$aoaiName' in this subscription." -ForegroundColor Yellow
+    Write-Host "         Grant 'Cognitive Services OpenAI User' to the app identities manually." -ForegroundColor Yellow
+} else {
+    Write-Host ""
+    Write-Host "Granting 'Cognitive Services OpenAI User' on '$aoaiName' to the app identities..." -ForegroundColor Green
+    foreach ($principalId in @($webPrincipalId, $graphPrincipalId)) {
+        if (-not [string]::IsNullOrWhiteSpace($principalId)) {
+            az role assignment create `
+                --assignee-object-id $principalId `
+                --assignee-principal-type ServicePrincipal `
+                --role "Cognitive Services OpenAI User" `
+                --scope $aoaiResourceId `
+                --only-show-errors | Out-Null
+        }
+    }
+    Write-Host "Role assignments applied (allow ~1-2 min for RBAC propagation)." -ForegroundColor Green
+}
+
+# --- Grant the same managed identities data-plane access to Cosmos DB (RBAC) ---
+# cosmos_nosql_service.py uses the identical RBAC-first / key-fallback pattern, so the
+# apps can drop CAIG_COSMOSDB_NOSQL_KEY once this is in place. Cosmos NoSQL DATA-plane
+# access needs a Cosmos-SPECIFIC role assignment (az cosmosdb sql role assignment), NOT
+# the control-plane 'az role assignment'. Role definition id
+# 00000000-0000-0000-0000-000000000002 is the built-in 'Cosmos DB Built-in Data
+# Contributor' (read+write; the app writes to the conversations/feedback containers).
+$cosmosDataContributorRoleId = '00000000-0000-0000-0000-000000000002'
+$cosmosAcct = $env:CAIG_COSMOSDB_NOSQL_ACCT
+if ([string]::IsNullOrWhiteSpace($cosmosAcct)) {
+    $cosmosAcct = ([System.Uri]$env:CAIG_COSMOSDB_NOSQL_URI).Host.Split('.')[0]
+}
+$cosmosRg = $env:CAIG_COSMOSDB_NOSQL_RG
+if ([string]::IsNullOrWhiteSpace($cosmosAcct) -or [string]::IsNullOrWhiteSpace($cosmosRg)) {
+    Write-Host "WARNING: Cosmos DB account/RG unknown; skipping data-plane role assignment." -ForegroundColor Yellow
+    Write-Host "         Set CAIG_COSMOSDB_NOSQL_ACCT / CAIG_COSMOSDB_NOSQL_RG, or assign the" -ForegroundColor Yellow
+    Write-Host "         'Cosmos DB Built-in Data Contributor' role to the app identities manually." -ForegroundColor Yellow
+} else {
+    Write-Host ""
+    Write-Host "Granting 'Cosmos DB Built-in Data Contributor' on '$cosmosAcct' to the app identities..." -ForegroundColor Green
+    foreach ($principalId in @($webPrincipalId, $graphPrincipalId)) {
+        if ([string]::IsNullOrWhiteSpace($principalId)) { continue }
+        # az cosmosdb sql role assignment create is NOT idempotent (it mints a new GUID
+        # each run), so skip when an equivalent assignment already exists.
+        $existing = az cosmosdb sql role assignment list `
+            --account-name $cosmosAcct --resource-group $cosmosRg `
+            --query "[?principalId=='$principalId' && contains(roleDefinitionId, '$cosmosDataContributorRoleId')] | [0].id" -o tsv
+        if ([string]::IsNullOrWhiteSpace($existing)) {
+            az cosmosdb sql role assignment create `
+                --account-name $cosmosAcct `
+                --resource-group $cosmosRg `
+                --scope "/" `
+                --principal-id $principalId `
+                --role-definition-id $cosmosDataContributorRoleId `
+                --only-show-errors | Out-Null
+        }
+    }
+    Write-Host "Cosmos DB role assignments applied (allow ~1-2 min for RBAC propagation)." -ForegroundColor Green
+}
+
 # Extract storage account name from deployment outputs
 $storageAccountName = $deploymentOutput.properties.outputs.storageAccountName.value
 $storageContainerName = $deploymentOutput.properties.outputs.storageContainerName.value

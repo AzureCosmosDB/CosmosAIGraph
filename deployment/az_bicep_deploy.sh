@@ -114,6 +114,71 @@ az deployment group create \
 
 echo "Deployment completed successfully"
 
+# --- Grant the Container Apps' managed identities access to Azure OpenAI (RBAC) ---
+# The Azure OpenAI / AI Services resource is provisioned OUTSIDE this template and may
+# have key-based auth disabled (403 AuthenticationTypeDisabled). The apps authenticate
+# with their system-assigned managed identity via Microsoft Entra ID; the app code
+# (ai_service.py) prefers RBAC and only falls back to CAIG_AZURE_OPENAI_KEY. Grant each
+# identity the built-in 'Cognitive Services OpenAI User' data-plane role.
+WEB_PRINCIPAL_ID="$(az deployment group show -g "$RESOURCE_GROUP" -n caig-deploy --query 'properties.outputs.webAppPrincipalId.value' -o tsv)"
+GRAPH_PRINCIPAL_ID="$(az deployment group show -g "$RESOURCE_GROUP" -n caig-deploy --query 'properties.outputs.graphServicePrincipalId.value' -o tsv)"
+
+# Resolve the Azure OpenAI resource id from its endpoint host (resource name = first
+# label of the host, e.g. https://alesai.services.ai.azure.com -> 'alesai').
+AOAI_NAME="$(printf '%s' "$CAIG_AZURE_OPENAI_URL" | sed -E 's#^https?://##; s#\..*##')"
+AOAI_RESOURCE_ID="$(az cognitiveservices account list --query "[?name=='$AOAI_NAME'].id | [0]" -o tsv)"
+if [ -z "$AOAI_RESOURCE_ID" ]; then
+    echo "WARNING: could not locate Azure OpenAI resource '$AOAI_NAME' in this subscription."
+    echo "         Grant 'Cognitive Services OpenAI User' to the app identities manually."
+else
+    echo "Granting 'Cognitive Services OpenAI User' on '$AOAI_NAME' to the app identities..."
+    for PRINCIPAL_ID in "$WEB_PRINCIPAL_ID" "$GRAPH_PRINCIPAL_ID"; do
+        [ -z "$PRINCIPAL_ID" ] && continue
+        az role assignment create \
+            --assignee-object-id "$PRINCIPAL_ID" \
+            --assignee-principal-type ServicePrincipal \
+            --role "Cognitive Services OpenAI User" \
+            --scope "$AOAI_RESOURCE_ID" \
+            --only-show-errors --output none
+    done
+    echo "Role assignments applied (allow ~1-2 min for RBAC propagation)."
+fi
+
+# --- Grant the same managed identities data-plane access to Cosmos DB (RBAC) ---
+# cosmos_nosql_service.py uses the identical RBAC-first / key-fallback pattern. Cosmos
+# NoSQL DATA-plane access needs a Cosmos-SPECIFIC role assignment (az cosmosdb sql role
+# assignment), NOT the control-plane 'az role assignment'. Role definition id
+# 00000000-0000-0000-0000-000000000002 is the built-in 'Cosmos DB Built-in Data
+# Contributor' (read+write; the app writes to the conversations/feedback containers).
+COSMOS_DATA_CONTRIBUTOR_ROLE_ID="00000000-0000-0000-0000-000000000002"
+COSMOS_ACCT="$CAIG_COSMOSDB_NOSQL_ACCT"
+if [ -z "$COSMOS_ACCT" ]; then
+    COSMOS_ACCT="$(printf '%s' "$CAIG_COSMOSDB_NOSQL_URI" | sed -E 's#^https?://##; s#\..*##')"
+fi
+if [ -z "$COSMOS_ACCT" ] || [ -z "$CAIG_COSMOSDB_NOSQL_RG" ]; then
+    echo "WARNING: Cosmos DB account/RG unknown; skipping data-plane role assignment."
+    echo "         Set CAIG_COSMOSDB_NOSQL_ACCT / CAIG_COSMOSDB_NOSQL_RG, or assign the"
+    echo "         'Cosmos DB Built-in Data Contributor' role to the app identities manually."
+else
+    echo "Granting 'Cosmos DB Built-in Data Contributor' on '$COSMOS_ACCT' to the app identities..."
+    for PRINCIPAL_ID in "$WEB_PRINCIPAL_ID" "$GRAPH_PRINCIPAL_ID"; do
+        [ -z "$PRINCIPAL_ID" ] && continue
+        # az cosmosdb sql role assignment create is NOT idempotent (it mints a new GUID
+        # each run), so skip when an equivalent assignment already exists.
+        EXISTING="$(az cosmosdb sql role assignment list --account-name "$COSMOS_ACCT" --resource-group "$CAIG_COSMOSDB_NOSQL_RG" --query "[?principalId=='$PRINCIPAL_ID' && contains(roleDefinitionId, '$COSMOS_DATA_CONTRIBUTOR_ROLE_ID')] | [0].id" -o tsv)"
+        if [ -z "$EXISTING" ]; then
+            az cosmosdb sql role assignment create \
+                --account-name "$COSMOS_ACCT" \
+                --resource-group "$CAIG_COSMOSDB_NOSQL_RG" \
+                --scope "/" \
+                --principal-id "$PRINCIPAL_ID" \
+                --role-definition-id "$COSMOS_DATA_CONTRIBUTOR_ROLE_ID" \
+                --only-show-errors --output none
+        fi
+    done
+    echo "Cosmos DB role assignments applied (allow ~1-2 min for RBAC propagation)."
+fi
+
 # Read deployment outputs (via az --query, no jq dependency).
 STORAGE_ACCOUNT="$(az deployment group show -g "$RESOURCE_GROUP" -n caig-deploy --query 'properties.outputs.storageAccountName.value' -o tsv)"
 STORAGE_CONTAINER="$(az deployment group show -g "$RESOURCE_GROUP" -n caig-deploy --query 'properties.outputs.storageContainerName.value' -o tsv)"

@@ -234,3 +234,4 @@ impl/graph_app/rdf/example.org/
 impl/web_app/ontologies/example.org/
 deploy.ps1
 deployment/my_bicep_deploy.ps1
+deployment/my_caig_deploy_env.ps1

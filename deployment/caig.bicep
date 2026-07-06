@@ -148,6 +148,9 @@ var webUsesAcr = !empty(acrLoginServer) && contains(webAppImage, acrLoginServer)
 resource graph 'Microsoft.App/containerApps@2023-05-01' = {
   name: graphServiceName
   location: azureRegion
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     environmentId: acaEnvironment.id
     configuration: {
@@ -325,6 +328,9 @@ resource graph 'Microsoft.App/containerApps@2023-05-01' = {
 resource web 'Microsoft.App/containerApps@2023-05-01' = {
   name: webAppName
   location: azureRegion
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     environmentId: acaEnvironment.id
     configuration: {
@@ -668,6 +674,10 @@ output storageContainerUrl string = '${storageAccount.properties.primaryEndpoint
 // and changes with every new revision).
 output graphServiceFqdn string = graph.properties.configuration.ingress.fqdn
 output webAppFqdn string = web.properties.configuration.ingress.fqdn
+// System-assigned managed identity principal IDs, used by the deploy script to grant
+// the 'Cognitive Services OpenAI User' role on the (external) Azure OpenAI resource.
+output graphServicePrincipalId string = graph.identity.principalId
+output webAppPrincipalId string = web.identity.principalId
 output graphBackend string = graphBackend
 output fusekiDatasetUrl string = graphBackend == 'fuseki' ? fusekiDatasetUrl : ''
 output mcpServerFqdn string = mcp.?properties.configuration.ingress.fqdn ?? ''
