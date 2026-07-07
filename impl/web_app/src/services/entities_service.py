@@ -39,10 +39,23 @@ class EntitiesService:
 
         # Query Cosmos DB source container to build entity catalog
         try:
+            container_name = ConfigService.graph_source_container()
             nosql_svc = CosmosNoSQLService()
             await nosql_svc.initialize()
             nosql_svc.set_db(ConfigService.graph_source_db())
-            nosql_svc.set_container(ConfigService.graph_source_container())
+
+            # If the configured container is not present, skip building the entity catalog gracefully
+            existing_containers = await nosql_svc.list_containers()
+            if container_name not in existing_containers:
+                logging.warning(
+                    "EntitiesService#initialize - graph source container '{}' not found; skipping entity catalog build".format(
+                        container_name
+                    )
+                )
+                await nosql_svc.close()
+                return
+
+            nosql_svc.set_container(container_name)
             
             # Query for all documents that have 'name' and 'libtype' fields
             # This makes the service generic - works with any entity type

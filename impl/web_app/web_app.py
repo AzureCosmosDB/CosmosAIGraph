@@ -1169,7 +1169,10 @@ async def conv_ai_console_post(req: Request):
                 conv = None
         else:
             print(f"[DEBUG] NO FILE found either for conversation_id: {conversation_id}")
-            use_file_storage = True  # Use file storage for new conversations if DB failed
+            # No DB record and no file is the normal case for a brand-new
+            # conversation; it does NOT mean the database is unavailable.
+            # Leave use_file_storage as-is (only the DB load exception handler
+            # above sets it True) so new conversations are saved to Cosmos DB.
 
     # DEBUGGING: Log completions immediately after loading
     if conv:
