@@ -46,9 +46,7 @@ export CAIG_MCP_SERVER_NAME="$MCP_SERVER_NAME"
 MCP_JENA_REPO="https://github.com/alekseys/mcp-jena.git"
 
 echo "az group create ..."
-# Optional RG tags (e.g. internal security-policy exemptions such as
-# 'SecurityControl=Ignore') come from the gitignored env script via CAIG_RG_TAGS,
-# so the value stays out of the public repo. Applied at creation, before any resources.
+# Optional RG tags. Applied at creation, before any resources.
 if [ -z "$CAIG_RG_TAGS" ]; then
     az group create --name "$RESOURCE_GROUP" --location "$REGION"
 else

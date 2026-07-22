@@ -412,11 +412,11 @@ class ConfigService:
 
     @classmethod
     def azure_openai_completions_deployment(cls) -> str:
-        return cls.envvar("CAIG_AZURE_OPENAI_COMPLETIONS_DEP", "gpt-5.1-codex-mini")
+        return cls.envvar("CAIG_AZURE_OPENAI_COMPLETIONS_DEP", "gpt-5.4")
 
     @classmethod
     def azure_openai_embeddings_deployment(cls) -> str:
-        return cls.envvar("CAIG_AZURE_OPENAI_EMBEDDINGS_DEP", "embeddings")
+        return cls.envvar("CAIG_AZURE_OPENAI_EMBEDDINGS_DEP", "text-embedding-3-small")
 
     @classmethod
     def azure_openai_embeddings_dimensions(cls) -> int:
@@ -596,8 +596,8 @@ class ConfigService:
         # os.environ["CAIG_GRAPH_SOURCE_PATH"] = ""
         os.environ["CAIG_AZURE_OPENAI_URL"] = "https://example.openai.azure.com/"
         os.environ["CAIG_AZURE_OPENAI_KEY"] = "0123456789012345678901234567890123456789"
-        os.environ["CAIG_AZURE_OPENAI_VERSION"] = "2023-12-01-preview"
-        os.environ["CAIG_AZURE_OPENAI_COMPLETIONS_DEP"] = "gpt-5.1-codex-mini"
+        os.environ["CAIG_AZURE_OPENAI_VERSION"] = "2025-04-01-preview"
+        os.environ["CAIG_AZURE_OPENAI_COMPLETIONS_DEP"] = "gpt-5.4"
         os.environ["CAIG_AZURE_OPENAI_EMBEDDINGS_DEP"] = "embeddings"
         os.environ["CAIG_WEBSVC_AUTH_VALUE"] = "123go"
         os.environ["SAMPLE_INT_VAR"] = "98"

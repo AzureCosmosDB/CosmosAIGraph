@@ -50,9 +50,7 @@ Write-Host "================================================" -ForegroundColor C
 Write-Host ""
 
 Write-Host "Creating resource group..." -ForegroundColor Green
-# Optional RG tags (e.g. internal security-policy exemptions such as
-# 'SecurityControl=Ignore') come from the gitignored env script via CAIG_RG_TAGS,
-# so the value stays out of the public repo. Applied at creation, before any resources.
+# Optional RG tags. Applied at creation, before any resources.
 if ([string]::IsNullOrWhiteSpace($env:CAIG_RG_TAGS)) {
     az group create --name $RESOURCE_GROUP --location $REGION
 } else {
