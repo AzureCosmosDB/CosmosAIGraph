@@ -81,6 +81,27 @@ String tool results now require their original model tool-call ID:
 preserved when a conversation is serialized and restored; invalid IDs raise
 an error without changing either conversation history.
 
+Audit both complete generated files using `pip-audit` in a separate tooling
+environment:
+
+```powershell
+pip-audit --strict --disable-pip --no-deps -r requirements.txt
+pip-audit --strict --disable-pip --no-deps -r requirements-alpine.txt
+```
+
+Both files already pin their transitive dependencies, so `--no-deps` audits
+every listed package without resolving the Alpine installation on Windows.
+Do not treat skipped packages, audit infrastructure errors, or contradictory
+advisory records as a clean audit.
+
+The `Dependency review` PR workflow uses the official GitHub action pinned to
+an immutable revision. It fails on low through critical vulnerabilities in
+runtime, development, and unknown dependency scopes, without advisory
+allowlists. Dependency Review checks changes, not all unchanged packages, and
+does not replace full-file audits. For merge enforcement, a repository
+administrator must make its exact `Dependency review` check required on
+`main`; adding the workflow alone does not enforce it.
+
 ### impl\app\src\models directory
 
 File **webservice_models.py** contains the several **Pydantic models** 
