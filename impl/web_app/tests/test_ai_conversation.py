@@ -1,6 +1,9 @@
 import json
 
+import pytest
+
 from semantic_kernel.contents.chat_history import ChatHistory
+from semantic_kernel.exceptions import ContentInitializationError
 
 from src.services.ai_conversation import AiConversation
 from src.util.fs import FS
@@ -14,22 +17,24 @@ def test_chat_history():
     hist1.add_user_message("this is a user message")
     hist1.add_system_message("this is a system message")
     hist1.add_assistant_message("this is an assistant message")
-    hist1.add_tool_message("this is an assistant message")
+    hist1.add_tool_message("this is a tool result", tool_call_id="call_1")
     jstr = hist1.serialize()
     print(jstr)
     assert len(hist1.messages) == 4
 
     hist2 = ChatHistory.restore_chat_history(jstr)
     assert len(hist2.messages) == 4
+    assert hist2.messages[-1].items[0].id == "call_1"
 
 
-def test_constructor_and_messages():
+def test_constructor_and_messages(monkeypatch):
+    monkeypatch.setenv("CAIG_AZURE_OPENAI_EMBEDDINGS_DEP", "embeddings")
     conv1 = AiConversation()
     conv1.set_context("pandas")
     conv1.add_user_message("this is a user message")
     conv1.add_system_message("this is a system message")
     conv1.add_assistant_message("this is an assistant message")
-    conv1.add_tool_message("this is an assistant message")
+    conv1.add_tool_message("this is a tool result", tool_call_id="call_1")
 
     jstr = conv1.serialize()
     print(jstr)
@@ -45,6 +50,7 @@ def test_constructor_and_messages():
     assert conv1.get_message_count() == conv2.get_message_count()
     assert conv2.get_message_count() == 4
     assert conv2.get_context() == "pandas"
+    assert conv2.get_chat_history().messages[-1].items[0].id == "call_1"
 
     conv2.add_user_message("this is another user message")
     conv3 = AiConversation(json.loads(conv2.serialize()))
@@ -84,3 +90,16 @@ def test_constructor_and_messages():
 
 def test_truncate_context_and_history():
     pass
+
+
+@pytest.mark.parametrize("tool_call_id", ["", " "])
+def test_invalid_tool_message_preserves_histories(tool_call_id, caplog):
+    conv = AiConversation()
+    conv.add_user_message("request")
+
+    with pytest.raises(ContentInitializationError, match="tool_call_id is required"):
+        conv.add_tool_message("result", tool_call_id=tool_call_id)
+
+    assert conv.get_app_chat_history() == ["request"]
+    assert len(conv.get_chat_history().messages) == 1
+    assert "tool_call_id is required" in caplog.text

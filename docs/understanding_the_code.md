@@ -47,6 +47,61 @@ Their output looks like the following:
   <img src="img/pytest_unit_tests.png" width="100%">
 </p>
 
+### Regenerating the web application's dependencies
+
+Edit `impl\web_app\requirements.in`, not the generated requirements files.
+Its security floors cover direct and transitive dependencies. Use Python 3.13
+and run the following from `impl\web_app` in an activated virtual environment:
+
+```powershell
+python --version
+python -m pip install pip-tools
+pip-compile --output-file=requirements.txt requirements.in
+python -m pip install -r requirements.txt
+python main_common.py gen_alpine_requirements_txt
+python -m pip check
+```
+
+Commit `requirements.in`, `requirements.txt`, and `requirements-alpine.txt`
+together. The Alpine generator reads the compiled Windows requirements and
+removes comments and Windows-only `pywin` packages; it does not resolve a
+separate dependency set. Validate the resulting `python:3.13-alpine` image
+with `docker build .` when a Linux Docker daemon is available.
+
+Use selective `pip-compile --upgrade-package package==version` arguments for
+reviewed security upgrades rather than upgrading every existing pin. Starlette
+1.x requires FastAPI 0.133.0 or later, pytest 9 requires pytest-asyncio 1.3.0 or
+later, Semantic Kernel 1.39.4 requires OpenAI 1.108.1 or later within the 1.x
+series at runtime, and OpenTelemetry API/SDK versions must resolve together. Keep any
+necessary application or container compatibility changes separate from the
+dependency-only update.
+
+String tool results now require their original model tool-call ID:
+`conversation.add_tool_message(result, tool_call_id=tool_call_id)`. The ID is
+preserved when a conversation is serialized and restored; invalid IDs raise
+an error without changing either conversation history.
+
+Audit both complete generated files using `pip-audit` in a separate tooling
+environment:
+
+```powershell
+pip-audit --strict --disable-pip --no-deps -r requirements.txt
+pip-audit --strict --disable-pip --no-deps -r requirements-alpine.txt
+```
+
+Both files already pin their transitive dependencies, so `--no-deps` audits
+every listed package without resolving the Alpine installation on Windows.
+Do not treat skipped packages, audit infrastructure errors, or contradictory
+advisory records as a clean audit.
+
+The `Dependency review` PR workflow uses the official GitHub action pinned to
+an immutable revision. It fails on low through critical vulnerabilities in
+runtime, development, and unknown dependency scopes, without advisory
+allowlists. Dependency Review checks changes, not all unchanged packages, and
+does not replace full-file audits. For merge enforcement, a repository
+administrator must make its exact `Dependency review` check required on
+`main`; adding the workflow alone does not enforce it.
+
 ### impl\app\src\models directory
 
 File **webservice_models.py** contains the several **Pydantic models** 

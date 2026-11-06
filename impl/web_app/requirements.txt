@@ -4,28 +4,48 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-aiohappyeyeballs==2.4.6
+aiohappyeyeballs==2.7.1
     # via aiohttp
-aiohttp==3.11.12
+aiohttp==3.14.4
     # via
     #   -r requirements.in
     #   semantic-kernel
-aiosignal==1.3.2
+aioice==0.10.2
+    # via aiortc
+aiortc==1.15.0
+    # via semantic-kernel
+aiosignal==1.4.0
     # via aiohttp
+annotated-doc==0.0.5
+    # via fastapi
 annotated-types==0.7.0
     # via pydantic
-anyio==4.8.0
+anyio==4.14.2
     # via
+    #   -r requirements.in
     #   httpx
+    #   mcp
     #   openai
+    #   sse-starlette
     #   starlette
 attrs==25.1.0
     # via
     #   aiohttp
     #   jsonschema
     #   referencing
-azure-core==1.32.0
+av==17.1.0
+    # via aiortc
+azure-ai-agents==1.2.0b6
     # via
+    #   azure-ai-projects
+    #   semantic-kernel
+azure-ai-projects==1.0.0
+    # via semantic-kernel
+azure-core==1.38.0
+    # via
+    #   -r requirements.in
+    #   azure-ai-agents
+    #   azure-ai-projects
     #   azure-cosmos
     #   azure-identity
     #   azure-storage-blob
@@ -36,18 +56,23 @@ azure-identity==1.20.0
     #   -r requirements.in
     #   semantic-kernel
 azure-storage-blob==12.24.1
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   azure-ai-projects
 beautifulsoup4==4.13.3
     # via -r requirements.in
-black==25.1.0
+black==26.10.1
     # via -r requirements.in
-certifi==2025.1.31
+certifi==2026.10.18
     # via
+    #   -r requirements.in
     #   httpcore
     #   httpx
     #   requests
-cffi==1.17.1
-    # via cryptography
+cffi==2.1.1
+    # via
+    #   cryptography
+    #   pylibsrtp
 chardet==5.2.0
     # via prance
 charset-normalizer==3.4.1
@@ -68,32 +93,32 @@ colorama==0.4.6
     #   tqdm
 coverage[toml]==7.6.12
     # via pytest-cov
-cryptography==44.0.1
+cryptography==50.0.0
     # via
     #   -r requirements.in
+    #   aiortc
     #   azure-identity
     #   azure-storage-blob
     #   msal
     #   pyjwt
+    #   pyopenssl
 debugpy==1.8.14
     # via -r requirements.in
 defusedxml==0.7.1
     # via
     #   httpie
     #   semantic-kernel
-deprecated==1.2.18
-    # via
-    #   opentelemetry-api
-    #   opentelemetry-semantic-conventions
 deprecation==2.1.0
     # via cloudevents
 distro==1.9.0
     # via openai
+dnspython==2.9.1
+    # via aioice
 docopt==0.6.2
     # via -r requirements.in
 faker==36.1.1
     # via -r requirements.in
-fastapi==0.115.8
+fastapi==0.133.0
     # via
     #   -r requirements.in
     #   fastapi-msal
@@ -103,45 +128,58 @@ frozenlist==1.5.0
     # via
     #   aiohttp
     #   aiosignal
-h11==0.14.0
+google-crc32c==1.9.0
+    # via aiortc
+h11==0.16.0
     # via
+    #   -r requirements.in
     #   httpcore
     #   hypercorn
     #   uvicorn
     #   wsproto
-h2==4.2.0
-    # via hypercorn
-hpack==4.1.0
-    # via h2
-httpcore==1.0.7
+h2==4.4.1
+    # via
+    #   -r requirements.in
+    #   hypercorn
+hpack==4.2.0
+    # via
+    #   -r requirements.in
+    #   h2
+httpcore==1.0.9
     # via httpx
 httpie==3.2.4
     # via -r requirements.in
 httpx==0.28.1
     # via
     #   -r requirements.in
+    #   mcp
     #   openai
+httpx-sse==0.4.3
+    # via mcp
 hypercorn==0.17.3
     # via -r requirements.in
 hyperframe==6.1.0
     # via h2
-idna==3.10
+idna==3.15
     # via
+    #   -r requirements.in
     #   anyio
     #   httpx
     #   requests
     #   yarl
-importlib-metadata==8.5.0
-    # via opentelemetry-api
+ifaddr==0.2.0
+    # via aioice
 iniconfig==2.0.0
     # via pytest
 isodate==0.7.2
     # via
+    #   azure-ai-agents
+    #   azure-ai-projects
     #   azure-storage-blob
     #   openapi-core
 itsdangerous==2.2.0
     # via -r requirements.in
-jinja2==3.1.5
+jinja2==3.1.6
     # via
     #   -r requirements.in
     #   semantic-kernel
@@ -149,6 +187,7 @@ jiter==0.8.2
     # via openai
 jsonschema==4.23.0
     # via
+    #   mcp
     #   openapi-core
     #   openapi-schema-validator
     #   openapi-spec-validator
@@ -170,11 +209,15 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   werkzeug
+mcp==1.30.0
+    # via
+    #   -r requirements.in
+    #   semantic-kernel
 mdurl==0.1.2
     # via markdown-it-py
 more-itertools==10.6.0
     # via openapi-core
-msal==1.31.1
+msal==1.37.0
     # via
     #   azure-identity
     #   fastapi-msal
@@ -196,7 +239,7 @@ numpy==2.2.3
     #   pandas
     #   scipy
     #   semantic-kernel
-openai==1.63.0
+openai==1.108.1
     # via
     #   -r requirements.in
     #   semantic-kernel
@@ -208,14 +251,15 @@ openapi-schema-validator==0.6.3
     #   openapi-spec-validator
 openapi-spec-validator==0.7.1
     # via openapi-core
-opentelemetry-api==1.30.0
+opentelemetry-api==1.45.1
     # via
+    #   -r requirements.in
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
     #   semantic-kernel
-opentelemetry-sdk==1.30.0
+opentelemetry-sdk==1.45.1
     # via semantic-kernel
-opentelemetry-semantic-conventions==0.51b0
+opentelemetry-semantic-conventions==0.66b1
     # via opentelemetry-sdk
 packaging==24.2
     # via
@@ -229,7 +273,7 @@ parse==1.20.2
     # via openapi-core
 pathable==0.4.4
     # via jsonschema-path
-pathspec==0.12.1
+pathspec==1.1.1
     # via black
 platformdirs==4.3.6
     # via black
@@ -245,60 +289,79 @@ propcache==0.2.1
     # via
     #   aiohttp
     #   yarl
+protobuf==7.36.2
+    # via semantic-kernel
 psutil==7.0.0
     # via -r requirements.in
 pybars4==0.9.13
     # via semantic-kernel
 pycparser==2.22
     # via cffi
-pydantic==2.10.6
+pydantic==2.11.10
     # via
     #   fastapi
     #   fastapi-msal
+    #   mcp
     #   openai
     #   pydantic-settings
     #   semantic-kernel
-pydantic-core==2.27.2
+pydantic-core==2.33.2
     # via pydantic
 pydantic-settings==2.7.1
     # via
     #   fastapi-msal
+    #   mcp
     #   semantic-kernel
-pygments==2.19.1
+pyee==16.0.0
+    # via aiortc
+pygments==2.20.0
     # via
+    #   -r requirements.in
     #   httpie
+    #   pytest
     #   rich
-pyjwt[crypto]==2.10.1
+pyjwt[crypto]==2.15.0
     # via
+    #   -r requirements.in
+    #   mcp
     #   msal
-    #   pyjwt
+pylibsrtp==1.0.0
+    # via aiortc
 pymeta3==0.5.1
-    # via pybars4
+    # via -r requirements.in
+pyopenssl==26.4.0
+    # via aiortc
 pyparsing==3.2.3
     # via rdflib
 pysocks==1.7.1
     # via requests
-pytest==8.3.4
+pytest==9.0.3
     # via
     #   -r requirements.in
     #   pytest-asyncio
     #   pytest-cov
-pytest-asyncio==0.25.3
+pytest-asyncio==1.3.0
     # via -r requirements.in
 pytest-cov==6.0.0
     # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via pandas
-python-dotenv==1.0.1
+python-dotenv==1.2.2
     # via
     #   -r requirements.in
     #   pydantic-settings
-python-multipart==0.0.20
-    # via -r requirements.in
+python-multipart==0.0.31
+    # via
+    #   -r requirements.in
+    #   mcp
+pytokens==0.4.1
+    # via black
 pytz==2025.1
     # via pandas
-pywin32==308
-    # via portalocker
+pywin32==310
+    # via
+    #   mcp
+    #   portalocker
 pyyaml==6.0.2
     # via jsonschema-path
 rdflib==7.1.4
@@ -310,7 +373,7 @@ referencing==0.36.2
     #   jsonschema-specifications
 regex==2024.11.6
     # via tiktoken
-requests[socks]==2.32.3
+requests[socks]==2.33.0
     # via
     #   -r requirements.in
     #   azure-core
@@ -334,63 +397,81 @@ ruamel-yaml==0.18.10
     # via prance
 scipy==1.15.1
     # via semantic-kernel
-semantic-kernel==1.21.1
+semantic-kernel==1.39.4
     # via -r requirements.in
 six==1.17.0
     # via
-    #   azure-core
     #   prance
     #   python-dateutil
     #   rfc3339-validator
 sniffio==1.3.1
+    # via openai
+soupsieve==2.9
     # via
-    #   anyio
-    #   openai
-soupsieve==2.6
-    # via beautifulsoup4
-starlette==0.45.3
+    #   -r requirements.in
+    #   beautifulsoup4
+sse-starlette==3.6.0
+    # via mcp
+starlette==1.3.1
     # via
     #   -r requirements.in
     #   fastapi
     #   fastapi-msal
+    #   mcp
+    #   sse-starlette
 tiktoken==0.9.0
     # via -r requirements.in
 tqdm==4.67.1
     # via openai
-typing-extensions==4.12.2
+typing-extensions==4.16.0
     # via
+    #   azure-ai-agents
+    #   azure-ai-projects
     #   azure-core
     #   azure-cosmos
     #   azure-identity
     #   azure-storage-blob
     #   beautifulsoup4
     #   fastapi
+    #   mcp
     #   openai
+    #   opentelemetry-api
     #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
     #   pydantic
     #   pydantic-core
+    #   pyee
+    #   semantic-kernel
+    #   typing-inspection
+typing-inspection==0.4.4
+    # via
+    #   fastapi
+    #   mcp
+    #   pydantic
 tzdata==2025.1
     # via
     #   faker
     #   pandas
-urllib3==2.3.0
-    # via requests
+urllib3==2.8.0
+    # via
+    #   -r requirements.in
+    #   requests
 uvicorn==0.34.0
-    # via -r requirements.in
-werkzeug==3.1.3
+    # via
+    #   -r requirements.in
+    #   mcp
+websockets==15.0.1
+    # via semantic-kernel
+werkzeug==3.1.9
     # via
     #   -r requirements.in
     #   openapi-core
-wrapt==1.17.2
-    # via deprecated
 wsproto==1.2.0
     # via hypercorn
 xmlformatter==0.2.8
     # via -r requirements.in
-yarl==1.18.3
+yarl==1.25.1
     # via aiohttp
-zipp==3.21.0
-    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip

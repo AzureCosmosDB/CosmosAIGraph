@@ -10,7 +10,10 @@ from typing import Any, Dict, Final, Iterator, List, Optional, Tuple, Type, Unio
 from semantic_kernel.contents.chat_history import ChatHistory
 from semantic_kernel.contents.chat_message_content import ChatMessageContent
 
-from semantic_kernel.exceptions import ContentSerializationError
+from semantic_kernel.exceptions import (
+    ContentInitializationError,
+    ContentSerializationError,
+)
 
 from src.services.ai_completion import AiCompletion
 from src.services.config_service import ConfigService
@@ -173,15 +176,20 @@ class AiConversation:
             )
             logging.exception(e, stack_info=True, exc_info=True)
 
-    def add_tool_message(self, msg) -> None:
+    def add_tool_message(self, msg: str, *, tool_call_id: str) -> None:
         try:
+            if not tool_call_id or not tool_call_id.strip():
+                raise ContentInitializationError(
+                    "tool_call_id is required for a tool message"
+                )
+            self.chat_history.add_tool_message(msg, tool_call_id=tool_call_id)
             self.app_chat_history.append(msg)
-            return self.chat_history.add_tool_message(msg)
-        except Exception as e:
+        except ContentInitializationError as e:
             logging.critical(
                 "Exception in AiConversation#add_tool_message: {}".format(str(e))
             )
             logging.exception(e, stack_info=True, exc_info=True)
+            raise
 
     def add_message(
         self,
