@@ -14,7 +14,6 @@ black>=26.10.1
 docopt
 fastapi>=0.133.0
 fastapi_msal
-httpie
 httpx
 hypercorn
 itsdangerous

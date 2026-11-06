@@ -76,9 +76,7 @@ cffi==2.1.1
 chardet==5.2.0
     # via prance
 charset-normalizer==3.4.1
-    # via
-    #   httpie
-    #   requests
+    # via requests
 click==8.1.8
     # via
     #   black
@@ -88,7 +86,6 @@ cloudevents==1.11.0
 colorama==0.4.6
     # via
     #   click
-    #   httpie
     #   pytest
     #   tqdm
 coverage[toml]==7.6.12
@@ -105,9 +102,7 @@ cryptography==50.0.0
 debugpy==1.8.14
     # via -r requirements.in
 defusedxml==0.7.1
-    # via
-    #   httpie
-    #   semantic-kernel
+    # via semantic-kernel
 deprecation==2.1.0
     # via cloudevents
 distro==1.9.0
@@ -147,8 +142,6 @@ hpack==4.2.0
     #   h2
 httpcore==1.0.9
     # via httpx
-httpie==3.2.4
-    # via -r requirements.in
 httpx==0.28.1
     # via
     #   -r requirements.in
@@ -203,8 +196,6 @@ lazy-object-proxy==1.10.0
     # via openapi-spec-validator
 markdown==3.8.2
     # via -r requirements.in
-markdown-it-py==3.0.0
-    # via rich
 markupsafe==3.0.2
     # via
     #   jinja2
@@ -213,8 +204,6 @@ mcp==1.30.0
     # via
     #   -r requirements.in
     #   semantic-kernel
-mdurl==0.1.2
-    # via markdown-it-py
 more-itertools==10.6.0
     # via openapi-core
 msal==1.37.0
@@ -228,7 +217,6 @@ multidict==6.1.0
     # via
     #   -r requirements.in
     #   aiohttp
-    #   httpie
     #   yarl
 mypy-extensions==1.0.0
     # via black
@@ -317,9 +305,7 @@ pyee==16.0.0
 pygments==2.20.0
     # via
     #   -r requirements.in
-    #   httpie
     #   pytest
-    #   rich
 pyjwt[crypto]==2.15.0
     # via
     #   -r requirements.in
@@ -333,8 +319,6 @@ pyopenssl==26.4.0
     # via aiortc
 pyparsing==3.2.3
     # via rdflib
-pysocks==1.7.1
-    # via requests
 pytest==9.0.3
     # via
     #   -r requirements.in
@@ -373,22 +357,16 @@ referencing==0.36.2
     #   jsonschema-specifications
 regex==2024.11.6
     # via tiktoken
-requests[socks]==2.33.0
+requests==2.33.0
     # via
     #   -r requirements.in
     #   azure-core
-    #   httpie
     #   jsonschema-path
     #   msal
     #   prance
-    #   requests-toolbelt
     #   tiktoken
-requests-toolbelt==1.0.0
-    # via httpie
 rfc3339-validator==0.1.4
     # via openapi-schema-validator
-rich==13.9.4
-    # via httpie
 rpds-py==0.22.3
     # via
     #   jsonschema
@@ -472,7 +450,3 @@ xmlformatter==0.2.8
     # via -r requirements.in
 yarl==1.25.1
     # via aiohttp
-
-# The following packages are considered to be unsafe in a requirements file:
-# pip
-# setuptools
