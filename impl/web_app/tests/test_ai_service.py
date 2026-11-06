@@ -15,6 +15,29 @@ from src.util.sparql_formatter import SparqlFormatter
 # pytest -v tests/test_ai_service.py
 
 
+def test_patched_sdk_initializes_offline(monkeypatch):
+    from pybars import Compiler
+
+    monkeypatch.setenv("CAIG_AZURE_OPENAI_URL", "https://example.openai.azure.com/")
+    monkeypatch.setenv("CAIG_AZURE_OPENAI_VERSION", "2025-04-01-preview")
+    monkeypatch.setenv("CAIG_AZURE_OPENAI_COMPLETIONS_DEP", "chat-model")
+    monkeypatch.setenv("CAIG_AZURE_OPENAI_EMBEDDINGS_DEP", "embedding-model")
+    monkeypatch.setattr(
+        "src.services.ai_service.DefaultAzureCredential", lambda: object()
+    )
+    monkeypatch.setattr(
+        "src.services.ai_service.get_bearer_token_provider",
+        lambda credential, scope: lambda: "test-token",
+    )
+    monkeypatch.setattr("src.services.ai_service.CosmosNoSQLService", lambda: object())
+
+    ai_svc = AiService()
+    assert ai_svc.aoai_client is not None
+    assert ai_svc.sk_kernel.get_service("chat_completion") is not None
+    assert ai_svc.sk_kernel.get_service("text_embedding") is not None
+    assert Compiler().compile("Hello {{name}}")({"name": "Cosmos"}) == "Hello Cosmos"
+
+
 @pytest.mark.asyncio
 async def test_constructor():
     ai_svc = AiService()
