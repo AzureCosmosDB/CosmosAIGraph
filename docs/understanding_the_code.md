@@ -76,6 +76,12 @@ series at runtime, and OpenTelemetry API/SDK versions must resolve together. Kee
 necessary application or container compatibility changes separate from the
 dependency-only update.
 
+HTTPie is not an application dependency: no application code, deployment
+script, or documented workflow uses its CLI. It is excluded from the shared
+runtime requirements; library-graph sample data mentioning HTTPie is unchanged.
+Developers who choose to use HTTPie can install it separately from the
+application environment.
+
 String tool results now require their original model tool-call ID:
 `conversation.add_tool_message(result, tool_call_id=tool_call_id)`. The ID is
 preserved when a conversation is serialized and restored; invalid IDs raise
