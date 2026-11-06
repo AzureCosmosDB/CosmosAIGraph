@@ -76,6 +76,11 @@ series at runtime, and OpenTelemetry API/SDK versions must resolve together. Kee
 necessary application or container compatibility changes separate from the
 dependency-only update.
 
+String tool results now require their original model tool-call ID:
+`conversation.add_tool_message(result, tool_call_id=tool_call_id)`. The ID is
+preserved when a conversation is serialized and restored; invalid IDs raise
+an error without changing either conversation history.
+
 ### impl\app\src\models directory
 
 File **webservice_models.py** contains the several **Pydantic models** 
