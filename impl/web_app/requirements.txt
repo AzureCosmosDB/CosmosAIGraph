@@ -209,8 +209,10 @@ markupsafe==3.0.2
     # via
     #   jinja2
     #   werkzeug
-mcp==1.26.0
-    # via semantic-kernel
+mcp==1.30.0
+    # via
+    #   -r requirements.in
+    #   semantic-kernel
 mdurl==0.1.2
     # via markdown-it-py
 more-itertools==10.6.0
@@ -460,7 +462,7 @@ uvicorn==0.34.0
     #   mcp
 websockets==15.0.1
     # via semantic-kernel
-werkzeug==3.1.5
+werkzeug==3.1.9
     # via
     #   -r requirements.in
     #   openapi-core
